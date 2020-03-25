@@ -94,5 +94,17 @@ namespace TGC.Group {
                 this["TexturaCaja"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("megalodon.png")]
+        public string TexturaTiburon {
+            get {
+                return ((string)(this["TexturaTiburon"]));
+            }
+            set {
+                this["TexturaTiburon"] = value;
+            }
+        }
     }
 }

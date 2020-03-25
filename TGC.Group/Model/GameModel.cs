@@ -52,7 +52,10 @@ namespace TGC.Group.Model
 
             //Textura de la carperta Media. Game.Default es un archivo de configuracion (Game.settings) util para poner cosas.
             //Pueden abrir el Game.settings que se ubica dentro de nuestro proyecto para configurar.
-            var pathTexturaCaja = MediaDir + Game.Default.TexturaCaja;
+            // var pathTexturaCaja = MediaDir + Game.Default.TexturaCaja;
+
+            //Con esto carga las texturas del tiburon para probarlas
+            var pathTexturaCaja = MediaDir + "Tiburon\\Textures\\" + Game.Default.TexturaTiburon;
 
             //Cargamos una textura, tener en cuenta que cargar una textura significa crear una copia en memoria.
             //Es importante cargar texturas en Init, si se hace en el render loop podemos tener grandes problemas si instanciamos muchas.
@@ -67,7 +70,10 @@ namespace TGC.Group.Model
             Box.Position = new TGCVector3(-25, 0, 0);
 
             //Cargo el unico mesh que tiene la escena.
-            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + "LogoTGC-TgcScene.xml").Meshes[0];
+            //   Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + "LogoTGC-TgcScene.xml").Meshes[0];
+
+            // En lugar de cargar el mesh del logo de tgc voy a cargar al tiburon para realizar la prueba.
+            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + "Tiburon\\shark-TgcScene.xml").Meshes[0];
             //Defino una escala en el modelo logico del mesh que es muy grande.
             Mesh.Scale = new TGCVector3(0.5f, 0.5f, 0.5f);
 
@@ -75,7 +81,9 @@ namespace TGC.Group.Model
             //Lo que en realidad necesitamos gráficamente es una matriz de View.
             //El framework maneja una cámara estática, pero debe ser inicializada.
             //Posición de la camara.
-            var cameraPosition = new TGCVector3(0, 0, 125);
+            // var cameraPosition = new TGCVector3(0, 0, 125);
+            // Modifico la camara para enfocar al tiburon de frente
+            var cameraPosition = new TGCVector3(0, 0, -125);
             //Quiero que la camara mire hacia el origen (0,0,0).
             var lookAt = TGCVector3.Empty;
             //Configuro donde esta la posicion de la camara y hacia donde mira.
