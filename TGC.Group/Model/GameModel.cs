@@ -12,8 +12,8 @@ namespace TGC.Group.Model
 {
     public class GameModel : TgcExample
     {
+        //private Heightmap heightmap;
         private TgcSimpleTerrain heightmap;
-
         private string rutaTerreno;
         private float scaleXZ;
         private float scaleY;
@@ -31,16 +31,19 @@ namespace TGC.Group.Model
             var d3dDevice = D3DDevice.Instance.Device;
             
             heightmap = new TgcSimpleTerrain();
+            //heightmap = new Heightmap(MediaDir,ShadersDir);
             
             // Path del heigthmap del terreno
             rutaTerreno = MediaDir + "Heightmaps\\" + "suelo.jpg";
 
             // Determinar escala
             scaleXZ = 15f;
-            scaleY = 6.40f;
+            scaleY = 10.40f;
 
             // Textura del terreno
             rutaTextura = MediaDir + "Textures\\" + "arena.jpg";
+
+            //heightmap.CrearHeigthmap(d3dDevice, rutaTerreno, scaleXZ, scaleY, rutaTextura);
 
             heightmap.loadHeightmap(rutaTerreno, scaleXZ, scaleY, new TGCVector3(0, 0, 0));
             heightmap.loadTexture(rutaTextura);
@@ -50,8 +53,7 @@ namespace TGC.Group.Model
             var cameraPosition = new TGCVector3(4500, 3600, 1100);
             var lookAt = new TGCVector3(1905, 1457, 45);
                  
-            Camara.SetCamera(cameraPosition, lookAt);
-             
+            Camara.SetCamera(cameraPosition, lookAt);          
           
         }
 

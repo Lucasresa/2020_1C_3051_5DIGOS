@@ -2,11 +2,12 @@
 using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
+using System.Windows.Forms;
 using TGC.Core.Mathematica;
 
 namespace TGC.Group.Model
 {
-    public class Heightmap : TgcExample
+    public class Heightmap : GameModel
     {
         private string rutaTerreno;
         private float scaleXZ;
@@ -48,19 +49,19 @@ namespace TGC.Group.Model
             texturaTerreno = Texture.FromBitmap(d3dDevice, b, Usage.None, Pool.Managed);
         }
 
-        private void CrearHeigthmap(Device device, string terreno, float scaleXZ, float scaleY, string texturaTerreno)
+        public void CrearHeigthmap(Device device, string terreno, float scaleXZ, float scaleY, string texturaTerreno)
         {
+
             // Parsear bitmap y cargar matriz de alturas
             var heigthmap = CargarHeigthMap(terreno);
-
             //Crear vertexBuffer
             totalVertices = 2 * 3 * (heigthmap.GetLength(0) - 1) * (heigthmap.GetLength(1) - 1);
+
             vbTerreno = new VertexBuffer(typeof(CustomVertex.PositionTextured), totalVertices, device, Usage.Dynamic | Usage.WriteOnly, CustomVertex.PositionTextured.Format, Pool.Default);
 
             //Crear array temporal de vertices
             var dataIdx = 0;
             var data = new CustomVertex.PositionTextured[totalVertices];
-
 
             //Iterar sobre toda la matriz del Heightmap y crear los triangulos necesarios para el terreno
             for (var i = 0; i < heigthmap.GetLength(0) - 1; i++)
@@ -121,6 +122,7 @@ namespace TGC.Group.Model
                     heigthmap[i, j] = (int)intensity;
                 }
             }
+    
             bitmap.Dispose();
             return heigthmap;
         }
@@ -143,8 +145,8 @@ namespace TGC.Group.Model
 
         public override void Dispose()
         {
-            texturaTerreno.Dispose();
             vbTerreno.Dispose();
+            texturaTerreno.Dispose();
         }
     }
 }
