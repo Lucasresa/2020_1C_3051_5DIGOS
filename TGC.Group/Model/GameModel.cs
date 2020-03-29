@@ -61,6 +61,7 @@ namespace TGC.Group.Model
             // Inicializar camara          
             Camara = new CamaraFPS(Input);
 
+            
         }
 
         public override void Update()
