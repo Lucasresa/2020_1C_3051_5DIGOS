@@ -12,7 +12,7 @@ namespace TGC.Group.Model
 {
     public class GameModel : TgcExample
     {
-        private const float SCALEXZ = 14.4f;
+        private const float SCALEXZ = 20f;
         private const float SCALEY = 10.4f;
 
         private TgcSimpleTerrain terrainHeightmap;
@@ -53,7 +53,9 @@ namespace TGC.Group.Model
             // Textura del oceano
             pathTextureWater = MediaDir + "Textures\\" + "agua.jpg";
 
-            waterHeightmap.loadHeightmap(pathWater, SCALEXZ, 0, new TGCVector3(0, 0, 0));
+            //esto es para que tengan el mismo size ambos terrenos (despues hay que fixear esto haciendo terrenos del mismo size)
+            var factor = 0.5859375f;
+            waterHeightmap.loadHeightmap(pathWater, SCALEXZ*factor, 1, new TGCVector3(0, 1000, 0));
             waterHeightmap.loadTexture(pathTextureWater);       
 
             // Inicializar camara
