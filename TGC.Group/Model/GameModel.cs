@@ -24,6 +24,7 @@ namespace TGC.Group.Model
         private string pathTextureWater;
         
         private TgcScene navecita;
+        private TgcScene roomNavecita;
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
@@ -64,12 +65,20 @@ namespace TGC.Group.Model
             // Inicializar camara          
             Camara = new CamaraFPS(Input);
 
+            // Instanciar navecita
             navecita = new TgcSceneLoader().loadSceneFromFile(MediaDir + "navecita-TgcScene.xml", MediaDir + "\\");
             navecita.Meshes.ForEach(parte => { 
                 parte.Scale = new TGCVector3(10.5f, 10.5f, 10.5f); 
-                parte.Position = new TGCVector3(350, 3500, 45);
+                parte.Position = new TGCVector3(350, 5500, 45);
             });
 
+            // TODO: La habitacion no hay que mostrarlar, ahora esta cargandola para probarla.
+            // Prueba de instanciacion de la habitacion de la navecita
+            roomNavecita = new TgcSceneLoader().loadSceneFromFile(MediaDir + "RoomNavecita-TgcScene.xml", MediaDir + "\\");
+            roomNavecita.Meshes.ForEach(paredes => {
+                paredes.Scale = new TGCVector3(10.5f, 10.5f, 10.5f);
+                paredes.Position = new TGCVector3(350, 7500, -45);
+            });
         }
 
         public override void Update()
@@ -85,7 +94,7 @@ namespace TGC.Group.Model
             PreRender();
 
             // Dibuja un texto por pantalla
-            DrawText.drawText("Prueba del terreno junto al oceano", 0, 20, Color.OrangeRed);
+            //DrawText.drawText("Prueba del terreno junto al oceano", 0, 20, Color.OrangeRed);
 
             // Render de los terrenos
             terrainHeightmap.Render();
@@ -93,6 +102,8 @@ namespace TGC.Group.Model
 
             // Render de la nave
             navecita.RenderAll();
+            // TODO: Render de la habitacion de la nave..
+            roomNavecita.RenderAll();
 
             PostRender();
         }
