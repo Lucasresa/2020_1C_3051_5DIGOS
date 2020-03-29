@@ -59,7 +59,6 @@ namespace TGC.Group.Utils
         public CamaraFPS(TgcD3dInput input)
         {
             Cursor.Hide();
-            Cursor.Position = mouseCenter;
             this.Input = input;      
             this.positionEye = TGCVector3.Empty;
             this.mouseCenter = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
@@ -80,8 +79,6 @@ namespace TGC.Group.Utils
         /// <param name="input"></param>
         public CamaraFPS(TGCVector3 positionEye, TgcD3dInput input) : this(input)
         {
-            Cursor.Hide();
-            Cursor.Position = mouseCenter;
             this.positionEye = positionEye;
         }
 
@@ -96,8 +93,6 @@ namespace TGC.Group.Utils
         public CamaraFPS(TGCVector3 positionEye, float moveSpeed, float jumpSpeed, TgcD3dInput input)
             : this(positionEye, input)
         {
-            Cursor.Hide();
-            Cursor.Position = mouseCenter;
             this.MovementSpeed = moveSpeed;
             this.JumpSpeed = jumpSpeed;
         }
@@ -114,8 +109,6 @@ namespace TGC.Group.Utils
         public CamaraFPS(TGCVector3 positionEye, float moveSpeed, float jumpSpeed, float rotationSpeed, TgcD3dInput input)
             : this(positionEye, moveSpeed, jumpSpeed, input)
         {
-            Cursor.Hide();
-            Cursor.Position = mouseCenter;
             this.RotationSpeed = rotationSpeed;
         }
 
@@ -179,7 +172,9 @@ namespace TGC.Group.Utils
             {
                 moveVector += TGCVector3.Down * JumpSpeed;
             }
-            
+
+            Cursor.Position = mouseCenter;
+
             leftrightRot -= -Input.XposRelative * RotationSpeed;
             updownRot -= Input.YposRelative * RotationSpeed;
             //Se actualiza matrix de rotacion, para no hacer este calculo cada vez y solo cuando en verdad es necesario.
