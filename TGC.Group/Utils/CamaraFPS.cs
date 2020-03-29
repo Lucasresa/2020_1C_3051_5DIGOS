@@ -44,7 +44,7 @@ namespace TGC.Group.Utils
         /// <summary>
         ///  Se traba la camara, se utiliza para ocultar el puntero del mouse y manejar la rotacion de la camara.
         /// </summary>
-        private bool lockCam;
+        private bool lockCam = true;
 
         /// <summary>
         ///     Posicion de la camara
@@ -58,7 +58,9 @@ namespace TGC.Group.Utils
         /// <param name="input"></param>
         public CamaraFPS(TgcD3dInput input)
         {
-            this.Input = input;
+            Cursor.Hide();
+            Cursor.Position = mouseCenter;
+            this.Input = input;      
             this.positionEye = TGCVector3.Empty;
             this.mouseCenter = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
             this.RotationSpeed = 0.1f;
@@ -78,6 +80,8 @@ namespace TGC.Group.Utils
         /// <param name="input"></param>
         public CamaraFPS(TGCVector3 positionEye, TgcD3dInput input) : this(input)
         {
+            Cursor.Hide();
+            Cursor.Position = mouseCenter;
             this.positionEye = positionEye;
         }
 
@@ -92,6 +96,8 @@ namespace TGC.Group.Utils
         public CamaraFPS(TGCVector3 positionEye, float moveSpeed, float jumpSpeed, TgcD3dInput input)
             : this(positionEye, input)
         {
+            Cursor.Hide();
+            Cursor.Position = mouseCenter;
             this.MovementSpeed = moveSpeed;
             this.JumpSpeed = jumpSpeed;
         }
@@ -108,30 +114,12 @@ namespace TGC.Group.Utils
         public CamaraFPS(TGCVector3 positionEye, float moveSpeed, float jumpSpeed, float rotationSpeed, TgcD3dInput input)
             : this(positionEye, moveSpeed, jumpSpeed, input)
         {
+            Cursor.Hide();
+            Cursor.Position = mouseCenter;
             this.RotationSpeed = rotationSpeed;
         }
 
         private TgcD3dInput Input { get; }
-
-        /// <summary>
-        ///  Condicion para trabar y destrabar la camara y ocultar el puntero de mouse.
-        /// </summary>
-        public bool LockCam
-        {
-            get { return lockCam; }
-            set
-            {
-                if (!lockCam && value)
-                {
-                    Cursor.Position = mouseCenter;
-
-                    Cursor.Hide();
-                }
-                if (lockCam && !value)
-                    Cursor.Show();
-                this.lockCam = value;
-            }
-        }
 
         /// <summary>
         ///  Velocidad de movimiento
@@ -147,14 +135,6 @@ namespace TGC.Group.Utils
         ///  Velocidad de Salto
         /// </summary>
         public float JumpSpeed { get; set; }
-
-        /// <summary>
-        ///     Cuando se elimina esto hay que desbloquear la camera.
-        /// </summary>
-        ~CamaraFPS()
-        {
-            LockCam = false;
-        }
 
         /// <summary>
         ///     Realiza un update de la camara a partir del elapsedTime, actualizando Position,LookAt y UpVector.
@@ -199,24 +179,12 @@ namespace TGC.Group.Utils
             {
                 moveVector += TGCVector3.Down * JumpSpeed;
             }
-
-            if (Input.keyPressed(Key.L) || Input.keyPressed(Key.Escape))
-            {
-                LockCam = !lockCam;
-            }
-
-            //Solo rotar si se esta aprentando el boton izq del mouse
-            if (lockCam || Input.buttonDown(TgcD3dInput.MouseButtons.BUTTON_LEFT))
-            {
-                leftrightRot -= -Input.XposRelative * RotationSpeed;
-                updownRot -= Input.YposRelative * RotationSpeed;
-                //Se actualiza matrix de rotacion, para no hacer este calculo cada vez y solo cuando en verdad es necesario.
-                cameraRotation = TGCMatrix.RotationX(updownRot) * TGCMatrix.RotationY(leftrightRot);
-            }
-
-            if (lockCam)
-                Cursor.Position = mouseCenter;
-
+            
+            leftrightRot -= -Input.XposRelative * RotationSpeed;
+            updownRot -= Input.YposRelative * RotationSpeed;
+            //Se actualiza matrix de rotacion, para no hacer este calculo cada vez y solo cuando en verdad es necesario.
+            cameraRotation = TGCMatrix.RotationX(updownRot) * TGCMatrix.RotationY(leftrightRot);
+            
             //Calculamos la nueva posicion del ojo segun la rotacion actual de la camara.
             var cameraRotatedPositionEye = TGCVector3.TransformNormal(moveVector * elapsedTime, cameraRotation);
             positionEye += cameraRotatedPositionEye;

@@ -58,16 +58,12 @@ namespace TGC.Group.Model
 
             //esto es para que tengan el mismo size ambos terrenos (despues hay que fixear esto haciendo terrenos del mismo size)
             var factor = 0.5859375f;
-            waterHeightmap.loadHeightmap(pathWater, SCALEXZ*factor, 1, new TGCVector3(0, 1000, 0));
+            waterHeightmap.loadHeightmap(pathWater, SCALEXZ*factor, 1, new TGCVector3(0, 2500, 0));
             waterHeightmap.loadTexture(pathTextureWater);   
 
             // Inicializar camara
           
             Camara = new CamaraFPS(Input);
-
-            var cameraPosition = new TGCVector3(4500, 1300, 1100);
-            var lookAt = new TGCVector3(1905, 1457, 45);
-            Camara.SetCamera(cameraPosition, lookAt);
 
         }
 
