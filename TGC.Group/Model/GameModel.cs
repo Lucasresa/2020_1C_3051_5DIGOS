@@ -53,12 +53,12 @@ namespace TGC.Group.Model
             // Textura del oceano
             pathTextureWater = MediaDir + "Textures\\" + "agua.jpg";
 
-            waterHeightmap.loadHeightmap(pathWater, SCALEXZ, 0, new TGCVector3(0, 0, 0));
+            waterHeightmap.loadHeightmap(pathWater, SCALEXZ, 1, new TGCVector3(0, 2500, 0));
             waterHeightmap.loadTexture(pathTextureWater);       
 
             // Inicializar camara
 
-            var cameraPosition = new TGCVector3(4500, 3600, 1100);
+            var cameraPosition = new TGCVector3(4500, 1300, 1100);
             var lookAt = new TGCVector3(1905, 1457, 45);
             Camara.SetCamera(cameraPosition, lookAt);
           
