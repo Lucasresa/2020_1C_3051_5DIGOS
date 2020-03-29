@@ -102,7 +102,6 @@
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
     <Compile Include="Model\GameModel.cs" />
-    <Compile Include="Model\Heightmap.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
@@ -202,6 +201,9 @@
     <Content Include="Media\Textures\rock_wall.jpg" />
     <Content Include="Media\Textures\skeleton.png" />
     <Content Include="Media\tunel_rock-TgcScene.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utils\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
