@@ -60,7 +60,7 @@ namespace TGC.Group.Model
 
             // Inicializar camara
 
-            var cameraPosition = new TGCVector3(4500, 3600, 1100);
+            var cameraPosition = new TGCVector3(4500, 1300, 1100);
             var lookAt = new TGCVector3(1905, 1457, 45);
             Camara.SetCamera(cameraPosition, lookAt);
           
