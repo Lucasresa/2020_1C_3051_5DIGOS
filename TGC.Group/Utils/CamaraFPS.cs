@@ -60,7 +60,7 @@ namespace TGC.Group.Utils
         {
             Cursor.Hide();
             this.Input = input;
-            this.positionEye = new TGCVector3(0, 2600, -0);
+            this.positionEye = new TGCVector3(0, 3500, -0);
             this.mouseCenter = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
             this.RotationSpeed = 0.1f;
             this.MovementSpeed = 500f;

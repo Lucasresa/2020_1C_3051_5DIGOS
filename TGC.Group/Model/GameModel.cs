@@ -7,13 +7,14 @@ using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Terrain;
 using TGC.Group.Utils;
+using System.Collections.Generic;
 
 namespace TGC.Group.Model
 {
     public class GameModel : TgcExample
     {
-        private const float SCALEXZ = 20f;
-        private const float SCALEY = 10.4f;
+        private const float SCALEXZ = 120f;
+        private const float SCALEY = 8.4f;
 
         private TgcSimpleTerrain terrainHeightmap;
         private TgcSimpleTerrain waterHeightmap;
@@ -21,6 +22,8 @@ namespace TGC.Group.Model
         private string pathTextureTerrain;
         private string pathWater;
         private string pathTextureWater;
+        
+        private TgcScene navecita;
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
@@ -53,21 +56,26 @@ namespace TGC.Group.Model
             // Textura del oceano
             pathTextureWater = MediaDir + "Textures\\" + "agua.jpg";
 
-            //esto es para que tengan el mismo size ambos terrenos (despues hay que fixear esto haciendo terrenos del mismo size)
+            // Esto es para que tengan el mismo size ambos terrenos (despues hay que fixear esto haciendo terrenos del mismo size)
             var factor = 0.5859375f;
-            waterHeightmap.loadHeightmap(pathWater, SCALEXZ*factor, 1, new TGCVector3(0, 2500, 0));
+            waterHeightmap.loadHeightmap(pathWater, SCALEXZ*factor, 1, new TGCVector3(0, 3500, 0));
             waterHeightmap.loadTexture(pathTextureWater);   
 
             // Inicializar camara          
             Camara = new CamaraFPS(Input);
 
-            
+            navecita = new TgcSceneLoader().loadSceneFromFile(MediaDir + "navecita-TgcScene.xml", MediaDir + "\\");
+            navecita.Meshes.ForEach(parte => { 
+                parte.Scale = new TGCVector3(10.5f, 10.5f, 10.5f); 
+                parte.Position = new TGCVector3(350, 3500, 45);
+            });
+
         }
 
         public override void Update()
         {
             PreUpdate();
-            //Camara.UpdateCamera(ElapsedTime);
+            
             PostUpdate();
         }
 
@@ -82,12 +90,16 @@ namespace TGC.Group.Model
             // Render de los terrenos
             terrainHeightmap.Render();
             waterHeightmap.Render();
-            
+
+            // Render de la nave
+            navecita.RenderAll();
+
             PostRender();
         }
 
         public override void Dispose()
         {
+            navecita.DisposeAll();
             terrainHeightmap.Dispose();
             waterHeightmap.Dispose();
         }
