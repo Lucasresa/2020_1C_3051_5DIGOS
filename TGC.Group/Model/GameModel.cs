@@ -6,7 +6,6 @@ using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Terrain;
-using TGC.Core.Camara;
 using TGC.Group.Utils;
 
 namespace TGC.Group.Model
@@ -15,8 +14,6 @@ namespace TGC.Group.Model
     {
         private const float SCALEXZ = 20f;
         private const float SCALEY = 10.4f;
-
-        private TgcCamera cam;
 
         private TgcSimpleTerrain terrainHeightmap;
         private TgcSimpleTerrain waterHeightmap;
@@ -61,8 +58,7 @@ namespace TGC.Group.Model
             waterHeightmap.loadHeightmap(pathWater, SCALEXZ*factor, 1, new TGCVector3(0, 2500, 0));
             waterHeightmap.loadTexture(pathTextureWater);   
 
-            // Inicializar camara
-          
+            // Inicializar camara          
             Camara = new CamaraFPS(Input);
 
         }
