@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.DirectX.DirectInput;
 using System.Threading;
 using System.Windows.Forms;
 using TGC.Core.Direct3D;
@@ -124,6 +125,7 @@ namespace TGC.Group.Form
                     {
                         Modelo.Update();
                         Modelo.Render();
+                        if (Input.keyDown(Key.Escape)) Close(); // TODO Cambiar cuando haya inventario y menu
                     }
                     else
                     {

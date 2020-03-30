@@ -16,12 +16,6 @@
     </Setting>
     <Setting Name="MediaDirectory" Type="System.String" Scope="User">
       <Value Profile="(Default)">..\..\..\Media\</Value>
-    </Setting>
-    <Setting Name="TexturaCaja" Type="System.String" Scope="User">
-      <Value Profile="(Default)">cajaMadera4.jpg</Value>
-    </Setting>
-	<Setting Name="TexturaTiburon" Type="System.String" Scope="User">
-		<Value Profile="(Default)">megalodon.png</Value>
 	</Setting>
   </Settings>
 </SettingsFile>

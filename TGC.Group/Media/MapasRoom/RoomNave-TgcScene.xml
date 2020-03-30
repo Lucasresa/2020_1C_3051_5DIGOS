@@ -1,0 +1,13 @@
+<roomsEditor-Map>
+  <mapSettings width="1000" height="1000" scaleX="1" scaleY="1" scaleZ="1" />
+  <rooms count="1">
+    <room name="Room-1" x="190" y="150" width="160" length="210" height="150" floorLevel="0">
+      <wall name="Roof" textureName="ArribaNavecita - copia.png" autoAdjustUv="True" uTile="1" vTile="1" />
+      <wall name="Floor" textureName="PisoNavecita.png" autoAdjustUv="True" uTile="1" vTile="1" />
+      <wall name="East" textureName="Der_Izq_Navecita.png" autoAdjustUv="True" uTile="1" vTile="1" />
+      <wall name="West" textureName="Der_Izq_Navecita.png" autoAdjustUv="True" uTile="1" vTile="1" />
+      <wall name="North" textureName="PosteriorNavecita - copia.png" autoAdjustUv="True" uTile="1" vTile="1" />
+      <wall name="South" textureName="FrenteNavecita.png" autoAdjustUv="True" uTile="1" vTile="1" />
+    </room>
+  </rooms>
+</roomsEditor-Map>

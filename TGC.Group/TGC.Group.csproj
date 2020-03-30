@@ -104,6 +104,7 @@
     <Compile Include="Model\GameModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\CamaraFPS.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
       <DependentUpon>GameForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -172,9 +173,37 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Media\cajaMadera4.jpg" />
-    <Content Include="Media\LogoTGC-TgcScene.xml" />
+    <Content Include="Media\coral-rock-2-TgcScene.xml" />
+    <Content Include="Media\coral_rock-TgcScene.xml" />
+    <Content Include="Media\Heightmaps\mar.jpg" />
+    <Content Include="Media\Heightmaps\suelo.jpg" />
+    <Content Include="Media\rock2-TgcScene.xml" />
+    <Content Include="Media\rock3-TgcScene.xml" />
+    <Content Include="Media\ship-TgcScene.xml" />
+    <Content Include="Media\skeleton_lovers-TgcScene.xml" />
+    <Content Include="Media\Textures\1.jpg" />
+    <Content Include="Media\Textures\10010_Coral_v1_Diffuse.jpg" />
+    <Content Include="Media\Textures\2.jpg" />
+    <Content Include="Media\Textures\20943_Spiral_Wire_Coral_v1_diff.JPG" />
+    <Content Include="Media\Textures\aguaHD3.jpg" />
+    <Content Include="Media\Textures\Arbusto.png" />
+    <Content Include="Media\Textures\Arbusto2.png" />
+    <Content Include="Media\Textures\arena.jpg" />
+    <Content Include="Media\Textures\arena4.jpg" />
+    <Content Include="Media\Textures\auvBG.jpg" />
+    <Content Include="Media\Textures\bodyColor_de_la_Superficie.png" />
+    <Content Include="Media\Textures\Color_helice.png" />
+    <Content Include="Media\Textures\difuse_enganche.png" />
+    <Content Include="Media\Textures\float_texColor_de_la_Superficie.png" />
+    <Content Include="Media\Textures\LAMP_UVS.png" />
+    <Content Include="Media\Textures\Piedra3.jpg" />
+    <Content Include="Media\Textures\pjrock6.jpg" />
+    <Content Include="Media\Textures\red.jpg" />
+    <Content Include="Media\Textures\rock_wall.jpg" />
+    <Content Include="Media\Textures\skeleton.png" />
+    <Content Include="Media\tunel_rock-TgcScene.xml" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
