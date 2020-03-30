@@ -33,6 +33,13 @@ namespace TGC.Group.Model
             Description = Game.Default.Description;
         }
 
+        private float time;
+
+        /// <summary>
+        ///     Posicion inicial en el mapa
+        /// </summary>
+        public TGCVector3 PosicionInicialCamara { get; set; }
+
         public override void Init()
         {
             var d3dDevice = D3DDevice.Instance.Device;
@@ -59,12 +66,12 @@ namespace TGC.Group.Model
 
             // Esto es para que tengan el mismo size ambos terrenos (despues hay que fixear esto haciendo terrenos del mismo size)
             var factor = 0.5859375f;
-            waterHeightmap.loadHeightmap(pathWater, SCALEXZ*factor, 1, new TGCVector3(0, 3500, 0));
-            waterHeightmap.loadTexture(pathTextureWater);   
+            waterHeightmap.loadHeightmap(pathWater, SCALEXZ * factor, 1, new TGCVector3(0, 3500, 0));
+            waterHeightmap.loadTexture(pathTextureWater);
 
-            // Inicializar camara          
+            // Inicializar camara
             Camara = new CamaraFPS(Input);
-
+            
             // Instanciar navecita
             navecita = new TgcSceneLoader().loadSceneFromFile(MediaDir + "navecita-TgcScene.xml", MediaDir + "\\");
             navecita.Meshes.ForEach(parte => { 
@@ -84,25 +91,24 @@ namespace TGC.Group.Model
         public override void Update()
         {
             PreUpdate();
-            
             PostUpdate();
         }
-
 
         public override void Render()
         {
             PreRender();
 
+            time += ElapsedTime;
+
             // Dibuja un texto por pantalla
-            //DrawText.drawText("Prueba del terreno junto al oceano", 0, 20, Color.OrangeRed);
+            DrawText.drawText("Prueba de la camara q3fps", 0, 20, Color.OrangeRed);
+            DrawText.drawText("camPos: [" + Camara.Position.ToString() + "]", 0, 40, Color.OrangeRed);
+            DrawText.drawText("camLookAt: [" + Camara.LookAt.ToString() + "]", 0, 110, Color.OrangeRed);
+            DrawText.drawText("Time: [" + time.ToString() + "]", 0, 180, Color.OrangeRed);            
 
-            // Render de los terrenos
             terrainHeightmap.Render();
-            waterHeightmap.Render();
-
-            // Render de la nave
-            navecita.RenderAll();
-            // TODO: Render de la habitacion de la nave..
+            waterHeightmap.Render();            
+            navecita.RenderAll();            
             roomNavecita.RenderAll();
 
             PostRender();
@@ -111,6 +117,7 @@ namespace TGC.Group.Model
         public override void Dispose()
         {
             navecita.DisposeAll();
+            roomNavecita.DisposeAll();
             terrainHeightmap.Dispose();
             waterHeightmap.Dispose();
         }
