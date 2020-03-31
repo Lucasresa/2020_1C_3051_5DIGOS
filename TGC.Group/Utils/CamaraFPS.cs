@@ -114,6 +114,7 @@ namespace TGC.Group.Utils
         public override void UpdateCamera(float elapsedTime)
         {
             Cursor.Hide();
+            Cursor.Position = CentroMouse;
             DetectarMovimientoCamara();
             DetectarRotacionCamara();
             
