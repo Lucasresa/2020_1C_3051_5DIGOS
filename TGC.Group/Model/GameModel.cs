@@ -8,16 +8,18 @@ using TGC.Core.SceneLoader;
 using TGC.Core.Terrain;
 using TGC.Group.Utils;
 using System.Collections.Generic;
+using System.Windows.Forms;
+using TGC.Tools.TerrainEditor;
 
 namespace TGC.Group.Model
 {
     public class GameModel : TgcExample
     {
-        private const float SCALEXZ = 120f;
+        private const float SCALEXZ = 20f;
         private const float SCALEY = 8.4f;
 
-        private TgcSimpleTerrain terrainHeightmap;
-        private TgcSimpleTerrain waterHeightmap;
+        private SmartTerrain terrainHeightmap;
+        private SmartTerrain waterHeightmap;
         private string pathTerrain;
         private string pathTextureTerrain;
         private string pathWater;
@@ -25,6 +27,7 @@ namespace TGC.Group.Model
         
         private TgcScene navecita;
         private TgcScene roomNavecita;
+        private List<Coral> corales = new List<Coral>();
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
@@ -45,7 +48,7 @@ namespace TGC.Group.Model
             var d3dDevice = D3DDevice.Instance.Device;
 
             // Creacion del terreno del juego
-            terrainHeightmap = new TgcSimpleTerrain();
+            terrainHeightmap = new SmartTerrain();
 
             // Path del heigthmap del terreno
             pathTerrain = MediaDir + "Heightmaps\\" + "suelo.jpg";
@@ -53,10 +56,12 @@ namespace TGC.Group.Model
             // Textura del terreno
             pathTextureTerrain = MediaDir + "Textures\\" + "arena.jpg";
 
-            terrainHeightmap.loadHeightmap(pathTerrain, SCALEXZ, SCALEY, new TGCVector3(0, 0, 0));
+            terrainHeightmap.loadHeightmap(pathTerrain, SCALEXZ, SCALEY, TGCVector3.Empty);
             terrainHeightmap.loadTexture(pathTextureTerrain);
 
-            waterHeightmap = new TgcSimpleTerrain();
+            //MessageBox.Show("Ancho X: " + terrainHeightmap.HeightmapData.GetLength(0).ToString() + "- Ancho Z: " +
+            //                                                terrainHeightmap.HeightmapData.GetLength(1).ToString());
+            waterHeightmap = new SmartTerrain();
 
             // Path del heigthmap del oceano
             pathWater = MediaDir + "Heightmaps\\" + "oceano.jpg";
@@ -78,6 +83,20 @@ namespace TGC.Group.Model
                 parte.Scale = new TGCVector3(10.5f, 10.5f, 10.5f); 
                 parte.Position = new TGCVector3(350, 5500, 45);
             });
+
+
+            // Instanciar Coral
+            for (int i = -10; i < 10; i++)
+            {
+                var coralPrueba = new Coral(MediaDir, new TGCVector3(i * 300f, 3550f, i * 300f));
+                coralPrueba.Init();
+                if (terrainHeightmap.setObjectPosition(coralPrueba.Mesh)) 
+                {
+                    terrainHeightmap.AdaptToSurface(coralPrueba.Mesh);
+                    corales.Add(coralPrueba);
+                }
+            }
+            
 
             // TODO: La habitacion no hay que mostrarlar, ahora esta cargandola para probarla.
             // Prueba de instanciacion de la habitacion de la navecita
@@ -106,11 +125,11 @@ namespace TGC.Group.Model
             DrawText.drawText("camLookAt: [" + Camara.LookAt.ToString() + "]", 0, 110, Color.OrangeRed);
             DrawText.drawText("Time: [" + time.ToString() + "]", 0, 180, Color.OrangeRed);            
 
-            terrainHeightmap.Render();
-            waterHeightmap.Render();            
+            terrainHeightmap.render();
+            waterHeightmap.render();            
             navecita.RenderAll();            
             roomNavecita.RenderAll();
-
+            corales.ForEach( coral =>  coral.Render() );
             PostRender();
         }
 
@@ -118,8 +137,9 @@ namespace TGC.Group.Model
         {
             navecita.DisposeAll();
             roomNavecita.DisposeAll();
-            terrainHeightmap.Dispose();
-            waterHeightmap.Dispose();
+            terrainHeightmap.dispose();
+            waterHeightmap.dispose();
         }
+
     }
 }
