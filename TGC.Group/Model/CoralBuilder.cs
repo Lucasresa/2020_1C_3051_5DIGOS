@@ -23,11 +23,20 @@ namespace TGC.Group.Model
     {
         private Random random;
         private string MediaDir;
+        private TreeCoral treeCoral;
+        private SpiralCoral spiralCoral;
+        private NormalCoral normalCoral;
 
         public CoralBuilder(string mediaDir)
         {
             MediaDir = mediaDir;
             random = new Random();
+            treeCoral = new TreeCoral(MediaDir, TGCVector3.Empty);
+            treeCoral.LoadMesh();
+            normalCoral = new NormalCoral(MediaDir, TGCVector3.Empty);
+            normalCoral.LoadMesh();
+            spiralCoral = new SpiralCoral(MediaDir, TGCVector3.Empty);
+            spiralCoral.LoadMesh();
         }
         
         //TODO: Cambiar el vector4 por dos tuplas para que tenga mas sentido
@@ -37,23 +46,38 @@ namespace TGC.Group.Model
                                            0, 
                                            random.Next((int)position.Z, (int)position.W));
 
+            Coral newCoral;
             switch (coralType)
             {
                 case CoralType.normal:
-                    return new NormalCoral(MediaDir, XZPosition);
+                    newCoral = new NormalCoral(MediaDir, XZPosition)
+                    {
+                        Mesh = normalCoral.Mesh.createMeshInstance(normalCoral.Mesh.Name + "1")
+                    };
+                    newCoral.Mesh.Transform = TGCMatrix.Translation(XZPosition);
+                    break;
                 case CoralType.spiral:
-                    return new SpiralCoral(MediaDir, XZPosition);
+                    newCoral = new SpiralCoral(MediaDir, XZPosition)
+                    {
+                        Mesh = spiralCoral.Mesh.createMeshInstance(spiralCoral.Mesh.Name + "1")
+                    };
+                    newCoral.Mesh.Transform = TGCMatrix.Translation(XZPosition);
+                    break;
                 case CoralType.tree:
-                    return new TreeCoral(MediaDir, XZPosition);
+                    newCoral = new TreeCoral(MediaDir, XZPosition)
+                    {
+                        Mesh = treeCoral.Mesh.createMeshInstance(treeCoral.Mesh.Name + "1")
+                    };
+                    newCoral.Mesh.Transform = TGCMatrix.Translation(XZPosition);
+                    break;
                 default:
                     throw new Exception("Unsupported coralType Object");
             }
+            return newCoral;
         }
 
-        public List<Coral> BuildCorals(SmartTerrain terrain, int objectsQuantity, TGCVector4 positionRange)
+        public void LocateCoralsInTerrain(SmartTerrain terrain, List<Coral> corals)
         {
-            var corals = CreateRandomCorals(objectsQuantity, positionRange);
-
             corals.ForEach(coral => {
                 coral.Init();
                 if ( terrain.setObjectPosition(coral.Mesh) )
@@ -61,10 +85,9 @@ namespace TGC.Group.Model
                 else
                     corals.Remove(coral);
             });
-            return corals;
         }
 
-        private List<Coral> CreateRandomCorals(int quantity, TGCVector4 positionRange)
+        public List<Coral> CreateRandomCorals(int quantity, TGCVector4 positionRange)
         {
             var typesList = new List<CoralType>();
             var corals = new List<Coral>();

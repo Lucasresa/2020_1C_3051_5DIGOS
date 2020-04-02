@@ -30,6 +30,9 @@ namespace TGC.Group.Model
         private TgcScene navecita;
         private TgcScene roomNavecita;
         private List<Coral> corales;
+        private Coral coral0;
+        private Coral coral1;
+        private Coral coral2;
 
         private CoralBuilder coralBuilder;
 
@@ -91,8 +94,15 @@ namespace TGC.Group.Model
 
 
             // Instanciar Corales
-            // TODO: Esto habria que derivarselo a otro objeto
-            corales = coralBuilder.BuildCorals(terrainHeightmap, 100, new TGCVector4(-3000, 3000, -3000, 3000));            
+            //coral0 = coralBuilder.BuildCoral(CoralType.normal, new TGCVector4(-3000, 3000, -3000, 3000));
+            //coral1 = coralBuilder.BuildCoral(CoralType.normal, new TGCVector4(-3000, 3000, -3000, 3000));
+            //coral2 = coralBuilder.BuildCoral(CoralType.normal, new TGCVector4(-3000, 3000, -3000, 3000));
+
+            //coral0.Init();
+            //coral1.Init();
+            //coral2.Init();
+            corales = coralBuilder.CreateRandomCorals(50, new TGCVector4(-3000, 3000, -3000, 3000));
+            coralBuilder.LocateCoralsInTerrain(terrainHeightmap, corales);
 
             // TODO: La habitacion no hay que mostrarlar, ahora esta cargandola para probarla.
             // Prueba de instanciacion de la habitacion de la navecita
@@ -126,6 +136,9 @@ namespace TGC.Group.Model
             navecita.RenderAll();            
             roomNavecita.RenderAll();
             corales.ForEach( coral =>  coral.Render() );
+            //coral0.Render();
+            //coral1.Render();
+            //coral2.Render();
             PostRender();
         }
 

@@ -22,10 +22,8 @@ namespace TGC.Group.Model.Corales
             Center = center ?? new TGCVector3(0f, 3550f, 0f);
         }
 
-
         public virtual void Init()
-        {
-            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
+        {     
             Mesh.Position = Center;
         }
 
@@ -37,6 +35,11 @@ namespace TGC.Group.Model.Corales
         public virtual void Update()
         {
 
+        }
+
+        public void LoadMesh()
+        {
+            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
         }
 
     }
