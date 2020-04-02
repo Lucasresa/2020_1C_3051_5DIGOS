@@ -101,7 +101,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
-    <Compile Include="Model\Coral.cs" />
+    <Compile Include="Model\Corales\Coral.cs" />
+    <Compile Include="Model\CoralBuilder.cs" />
+    <Compile Include="Model\Corales\NormalCoral.cs" />
+    <Compile Include="Model\Corales\SpiralCoral.cs" />
+    <Compile Include="Model\Corales\TreeCoral.cs" />
     <Compile Include="Model\GameModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

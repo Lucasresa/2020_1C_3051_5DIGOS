@@ -10,6 +10,8 @@ using TGC.Group.Utils;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using TGC.Tools.TerrainEditor;
+using TGC.Group.Model.Corales;
+using System;
 
 namespace TGC.Group.Model
 {
@@ -27,13 +29,16 @@ namespace TGC.Group.Model
         
         private TgcScene navecita;
         private TgcScene roomNavecita;
-        private List<Coral> corales = new List<Coral>();
+        private List<Coral> corales;
+
+        private CoralBuilder coralBuilder;
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
             Category = Game.Default.Category;
             Name = Game.Default.Name;
             Description = Game.Default.Description;
+            coralBuilder = new CoralBuilder(mediaDir);
         }
 
         private float time;
@@ -76,27 +81,18 @@ namespace TGC.Group.Model
 
             // Inicializar camara
             Camara = new CamaraFPS(Input);
-            
+
             // Instanciar navecita
             navecita = new TgcSceneLoader().loadSceneFromFile(MediaDir + "navecita-TgcScene.xml", MediaDir + "\\");
-            navecita.Meshes.ForEach(parte => { 
-                parte.Scale = new TGCVector3(10.5f, 10.5f, 10.5f); 
+            navecita.Meshes.ForEach(parte => {
+                parte.Scale = new TGCVector3(10.5f, 10.5f, 10.5f);
                 parte.Position = new TGCVector3(350, 5500, 45);
             });
 
 
-            // Instanciar Coral
-            for (int i = -10; i < 10; i++)
-            {
-                var coralPrueba = new Coral(MediaDir, new TGCVector3(i * 300f, 3550f, i * 300f));
-                coralPrueba.Init();
-                if (terrainHeightmap.setObjectPosition(coralPrueba.Mesh)) 
-                {
-                    terrainHeightmap.AdaptToSurface(coralPrueba.Mesh);
-                    corales.Add(coralPrueba);
-                }
-            }
-            
+            // Instanciar Corales
+            // TODO: Esto habria que derivarselo a otro objeto
+            corales = coralBuilder.BuildCorals(terrainHeightmap, 100, new TGCVector4(-3000, 3000, -3000, 3000));            
 
             // TODO: La habitacion no hay que mostrarlar, ahora esta cargandola para probarla.
             // Prueba de instanciacion de la habitacion de la navecita
@@ -139,6 +135,23 @@ namespace TGC.Group.Model
             roomNavecita.DisposeAll();
             terrainHeightmap.dispose();
             waterHeightmap.dispose();
+        }
+
+        private float ObtenerMaximaAlturaTerreno()
+        {
+            var maximo = 0f;
+            for (int x = 0; x < terrainHeightmap.HeightmapData.GetLength(0); x++)
+            {
+                for (int z = 0; z < terrainHeightmap.HeightmapData.GetLength(0); z++)
+                {
+                    var posibleMaximo = terrainHeightmap.HeightmapData[x, z];
+                    if (maximo < terrainHeightmap.HeightmapData[x, z])
+                    {
+                        maximo = posibleMaximo;
+                    }
+                }
+            }
+            return maximo;
         }
 
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.DirectX.Direct3D;
+using System;
 using System.Drawing;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Collision;
@@ -22,6 +23,7 @@ namespace TGC.Tools.TerrainEditor
             technique = TGCShaders.T_POSITION_TEXTURED;
 
             aabb = new TgcBoundingAxisAlignBox();
+            random = new Random();
         }
 
         /// <summary>
@@ -52,6 +54,7 @@ namespace TGC.Tools.TerrainEditor
         private CustomVertex.PositionColoredTextured[] vertices;
         private Texture terrainTexture;
         private readonly TgcBoundingAxisAlignBox aabb;
+        private Random random;
 
         #endregion Private fields
 
@@ -493,6 +496,8 @@ namespace TGC.Tools.TerrainEditor
             o.Position = new TGCVector3(o.Position.X, y, o.Position.Z);
             return true;
         }
+
+        //TODO: Este codigo deberia ir en otro lado 
         public TGCVector3 NormalEnPunto(float X, float Z)
         {
             float delta = 0.3f;
@@ -508,6 +513,7 @@ namespace TGC.Tools.TerrainEditor
             return TGCVector3.Cross(vectorNS, vectorEO);
         }
 
+        //TODO: Este codigo deberia ir en otro lado
         public void RotarObjetoEnFuncionDelTerreno(ITransformObject o)
         {
             TGCVector3 normalObjeto = NormalEnPunto(o.Position.X, o.Position.Z);
@@ -522,7 +528,7 @@ namespace TGC.Tools.TerrainEditor
             o.RotateX(anguloRotX);
             o.RotateX(anguloRotY);
         }
-
+        //TODO: Esto habria que ver si lo dejamos porque anda masomenos y no se entiende bien
         public void AdaptToSurface(ITransformObject o)
         {
             var normalObjeto = NormalEnPunto(o.Position.X, o.Position.Z);
