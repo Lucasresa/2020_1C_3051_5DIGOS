@@ -13,6 +13,7 @@ namespace TGC.Group.Model.Corales
         protected string FILE_NAME;
         private readonly string MediaDir;
         protected TGCVector3 Center;
+        private TGCVector3 scale = new TGCVector3(10, 10, 10);
 
         public TgcMesh Mesh { get; set; }
 
@@ -24,7 +25,8 @@ namespace TGC.Group.Model.Corales
 
         public virtual void Init()
         {     
-            Mesh.Position = Center;            
+            Mesh.Position = Center;
+            Mesh.Scale = scale;
         }
 
         public virtual void Render()

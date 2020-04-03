@@ -1,5 +1,5 @@
 <tgcScene>
-  <name>coral</name>
+  <name>coral_normal</name>
   <texturesExport enabled="True" dir="Textures" />
   <lightmapExport enabled="False" dir="LightMaps" />
   <sceneBoundingBox min="[-8.8471,0.012,-10.2931]" max="[8.7064,9.9881,10.415]" />

@@ -9,9 +9,9 @@ using TGC.Core.Terrain;
 using TGC.Group.Utils;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using TGC.Tools.TerrainEditor;
 using TGC.Group.Model.Corales;
 using System;
+using TGC.Group.Model.Minerals;
 
 namespace TGC.Group.Model
 {
@@ -30,11 +30,13 @@ namespace TGC.Group.Model
         private TgcScene navecita;
         private TgcScene roomNavecita;
         private List<Coral> corales;
+        private List<Ore> minerals;
         // private Coral coral0;
         // private Coral coral1;
         // private Coral coral2;
 
         private CoralBuilder coralBuilder;
+        private OreBuilder oreBuilder;
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
@@ -42,14 +44,10 @@ namespace TGC.Group.Model
             Name = Game.Default.Name;
             Description = Game.Default.Description;
             coralBuilder = new CoralBuilder(mediaDir);
+            oreBuilder = new OreBuilder(mediaDir);
         }
 
         private float time;
-
-        /// <summary>
-        ///     Posicion inicial en el mapa
-        /// </summary>
-        public TGCVector3 PosicionInicialCamara { get; set; }
 
         public override void Init()
         {
@@ -102,11 +100,17 @@ namespace TGC.Group.Model
             //coral1.Init();
             //coral2.Init();
 
-            Tuple<float, float> positionRangeX = new Tuple<float, float>(-3000, 3000);
-            Tuple<float, float> positionRangeZ = new Tuple<float, float>(-3000, 3000);
+            Tuple<float, float> positionRangeXCoral = new Tuple<float, float>(-3000, 3000);
+            Tuple<float, float> positionRangeZCoral = new Tuple<float, float>(-3000, 3000);
 
-            corales = coralBuilder.CreateRandomCorals(50, positionRangeX, positionRangeZ);
+            corales = coralBuilder.CreateRandomCorals(50, positionRangeXCoral, positionRangeZCoral);
             coralBuilder.LocateCoralsInTerrain(terrainHeightmap, corales);
+            
+            Tuple<float, float> positionRangeXOre = new Tuple<float, float>(-3000, 3000);
+            Tuple<float, float> positionRangeZOre = new Tuple<float, float>(-3000, 3000);
+
+            minerals = oreBuilder.CreateRandomMinerals(50, positionRangeXOre, positionRangeZOre);
+            oreBuilder.LocateMineralsInTerrain(terrainHeightmap, minerals);
 
             // TODO: La habitacion no hay que mostrarlar, ahora esta cargandola para probarla.
             // Prueba de instanciacion de la habitacion de la navecita
@@ -139,10 +143,22 @@ namespace TGC.Group.Model
             waterHeightmap.render();            
             navecita.RenderAll();            
             roomNavecita.RenderAll();
-            corales.ForEach(coral => { coral.Mesh.UpdateMeshTransform();
-                                       coral.Render();
-                                    });
-            
+
+            corales.ForEach(coral =>
+            {
+                coral.Mesh.UpdateMeshTransform();
+                coral.Render();
+            });
+
+            minerals.ForEach(ore =>
+            {
+                ore.Mesh.UpdateMeshTransform();
+                ore.Render();
+
+            });
+
+
+
             //coral0.Render();
             //coral1.Render();
             //coral2.Render();
@@ -156,6 +172,8 @@ namespace TGC.Group.Model
             terrainHeightmap.dispose();
             waterHeightmap.dispose();
             corales.ForEach(coral => coral.Dispose());
+            minerals.ForEach(ore => ore.Dispose());
+
         }
 
         private float ObtenerMaximaAlturaTerreno()

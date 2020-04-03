@@ -6,7 +6,7 @@ namespace TGC.Group.Model.Corales
     {
         public SpiralCoral(string mediaDir, TGCVector3 position) : base(mediaDir, position)
         {
-            FILE_NAME = "spiral_wire_coral-TgcScene.xml";
+            FILE_NAME = "spiral_coral-TgcScene.xml";
         }
     }
 }

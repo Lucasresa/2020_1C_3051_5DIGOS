@@ -6,7 +6,7 @@ namespace TGC.Group.Model.Corales
     {
         public NormalCoral(string mediaDir, TGCVector3 position) : base(mediaDir, position)
         {
-            FILE_NAME = "coral-TgcScene.xml";
+            FILE_NAME = "coral_normal-TgcScene.xml";
         }
     }
 }

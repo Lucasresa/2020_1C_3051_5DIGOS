@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Corales;
-using TGC.Tools.TerrainEditor;
+using TGC.Group.Utils;
 
 namespace TGC.Group.Model
 {
@@ -74,10 +74,8 @@ namespace TGC.Group.Model
                 default:
                     throw new Exception("Unsupported coralType Object");                
             }
-            newCoral.Mesh.Scale = new TGCVector3(10, 10, 10);
             return newCoral;
         }
-
 
         public void LocateCoralsInTerrain(SmartTerrain terrain, List<Coral> corals)
         {
@@ -102,7 +100,7 @@ namespace TGC.Group.Model
             var typesList = new List<CoralType>();
             var corals = new List<Coral>();
 
-            foreach ( string name in CoralType.GetNames(typeof(CoralType)) ) 
+            foreach ( string name in Enum.GetNames(typeof(CoralType)) ) 
                 typesList.Add((CoralType)Enum.Parse(typeof(CoralType), name));
 
             foreach ( int _ in Enumerable.Range(1, quantity) ) 
@@ -111,6 +109,5 @@ namespace TGC.Group.Model
             }
             return corals;
         }
-
     }
 }

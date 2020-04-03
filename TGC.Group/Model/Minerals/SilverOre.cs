@@ -2,11 +2,11 @@
 
 namespace TGC.Group.Model.Minerals
 {
-    class SilverOre : Mineral
+    class SilverOre : Ore
     {
         public SilverOre(string mediaDir, TGCVector3 position) : base(mediaDir, position)
         {
-            FILE_NAME = "Plata-TgcScene.xml";
+            FILE_NAME = "silver-TgcScene.xml";
         }        
     }
 }

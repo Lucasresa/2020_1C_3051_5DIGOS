@@ -9,7 +9,7 @@ using TGC.Core.SceneLoader;
 using TGC.Core.Shaders;
 using TGC.Core.Textures;
 
-namespace TGC.Tools.TerrainEditor
+namespace TGC.Group.Utils
 {
     public class SmartTerrain
     {

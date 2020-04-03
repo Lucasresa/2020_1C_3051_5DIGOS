@@ -107,10 +107,11 @@
     <Compile Include="Model\Corales\SpiralCoral.cs" />
     <Compile Include="Model\Corales\TreeCoral.cs" />
     <Compile Include="Model\GameModel.cs" />
-    <Compile Include="Model\Minerals\Mineral.cs" />
+    <Compile Include="Model\Minerals\Ore.cs" />
     <Compile Include="Model\Minerals\GoldOre.cs" />
     <Compile Include="Model\Minerals\SilverOre.cs" />
     <Compile Include="Model\Minerals\IronOre.cs" />
+    <Compile Include="Model\OreBuilders.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CamaraFPS.cs" />

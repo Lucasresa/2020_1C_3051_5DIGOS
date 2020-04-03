@@ -3,15 +3,16 @@ using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model.Minerals
 {
-    abstract class Mineral
+    abstract class Ore
     {
         protected string FILE_NAME;
         private readonly string MediaDir;
         protected TGCVector3 Center;
+        private TGCVector3 scale = new TGCVector3(10, 10, 10);
 
         public TgcMesh Mesh { get; set; }
 
-        public Mineral(string mediaDir, TGCVector3? center)
+        public Ore(string mediaDir, TGCVector3? center)
         {
             MediaDir = mediaDir;
             Center = center ?? new TGCVector3(0f, 3550f, 0f);
@@ -20,6 +21,7 @@ namespace TGC.Group.Model.Minerals
         public virtual void Init()
         {
             Mesh.Position = Center;
+            Mesh.Scale = scale;
         }
 
         public virtual void Render()
