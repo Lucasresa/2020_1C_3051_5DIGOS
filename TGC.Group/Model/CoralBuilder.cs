@@ -72,8 +72,9 @@ namespace TGC.Group.Model
                     };
                     break;
                 default:
-                    throw new Exception("Unsupported coralType Object");
+                    throw new Exception("Unsupported coralType Object");                
             }
+            newCoral.Mesh.Scale = new TGCVector3(10, 10, 10);
             return newCoral;
         }
 

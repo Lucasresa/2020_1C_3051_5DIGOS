@@ -102,8 +102,8 @@ namespace TGC.Group.Model
             //coral1.Init();
             //coral2.Init();
 
-            Tuple<float, float> positionRangeX = new Tuple<float, float>(25, 100);
-            Tuple<float, float> positionRangeZ = new Tuple<float, float>(25, 100);
+            Tuple<float, float> positionRangeX = new Tuple<float, float>(-3000, 3000);
+            Tuple<float, float> positionRangeZ = new Tuple<float, float>(-3000, 3000);
 
             corales = coralBuilder.CreateRandomCorals(50, positionRangeX, positionRangeZ);
             coralBuilder.LocateCoralsInTerrain(terrainHeightmap, corales);
@@ -119,7 +119,7 @@ namespace TGC.Group.Model
 
         public override void Update()
         {
-            PreUpdate();
+            PreUpdate();            
             PostUpdate();
         }
 
@@ -130,7 +130,7 @@ namespace TGC.Group.Model
             time += ElapsedTime;
 
             // Dibuja un texto por pantalla
-            DrawText.drawText("Prueba de la camara q3fps", 0, 20, Color.OrangeRed);
+            DrawText.drawText("Prueba de ubicacion de objetos en el terreno", 0, 20, Color.OrangeRed);
             DrawText.drawText("camPos: [" + Camara.Position.ToString() + "]", 0, 40, Color.OrangeRed);
             DrawText.drawText("camLookAt: [" + Camara.LookAt.ToString() + "]", 0, 110, Color.OrangeRed);
             DrawText.drawText("Time: [" + time.ToString() + "]", 0, 180, Color.OrangeRed);            
@@ -139,7 +139,10 @@ namespace TGC.Group.Model
             waterHeightmap.render();            
             navecita.RenderAll();            
             roomNavecita.RenderAll();
-            corales.ForEach( coral =>  coral.Render() );
+            corales.ForEach(coral => { coral.Mesh.UpdateMeshTransform();
+                                       coral.Render();
+                                    });
+            
             //coral0.Render();
             //coral1.Render();
             //coral2.Render();

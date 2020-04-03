@@ -19,7 +19,7 @@ namespace TGC.Group.Model.Corales
         public Coral(string mediaDir, TGCVector3? center)
         {
             MediaDir = mediaDir;
-            Center = center ?? new TGCVector3(0f, 3550f, 0f);
+            Center = center ?? new TGCVector3(0f, 3550f, 0f);            
         }
 
         public virtual void Init()
@@ -44,7 +44,7 @@ namespace TGC.Group.Model.Corales
 
         public void LoadMesh()
         {
-            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
+            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];            
         }
 
     }
