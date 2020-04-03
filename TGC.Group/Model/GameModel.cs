@@ -101,7 +101,11 @@ namespace TGC.Group.Model
             //coral0.Init();
             //coral1.Init();
             //coral2.Init();
-            corales = coralBuilder.CreateRandomCorals(50, new TGCVector4(-3000, 3000, -3000, 3000));
+
+            Tuple<float, float> positionRangeX = new Tuple<float, float>(25, 100);
+            Tuple<float, float> positionRangeZ = new Tuple<float, float>(25, 100);
+
+            corales = coralBuilder.CreateRandomCorals(50, positionRangeX, positionRangeZ);
             coralBuilder.LocateCoralsInTerrain(terrainHeightmap, corales);
 
             // TODO: La habitacion no hay que mostrarlar, ahora esta cargandola para probarla.

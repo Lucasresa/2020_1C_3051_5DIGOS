@@ -38,13 +38,17 @@ namespace TGC.Group.Model
             spiralCoral = new SpiralCoral(MediaDir, TGCVector3.Empty);
             spiralCoral.LoadMesh();
         }
-        
-        //TODO: Cambiar el vector4 por dos tuplas para que tenga mas sentido
-        public Coral BuildCoral(CoralType coralType, TGCVector4 position)
+
+        public Coral BuildCoral(CoralType coralType, Tuple<float, float> positionRangeX, Tuple<float, float> positionRangeZ)
         {
-            var XZPosition = new TGCVector3(random.Next((int)position.X, (int)position.Y),
-                                           0, 
-                                           random.Next((int)position.Z, (int)position.W));
+            var XMin = (int)positionRangeX.Item1;
+            var XMax = (int)positionRangeX.Item2;
+            var ZMin = (int)positionRangeZ.Item1;
+            var ZMax = (int)positionRangeZ.Item2;
+
+            var XZPosition = new TGCVector3(random.Next(XMin, XMax),
+                                           0,
+                                           random.Next(ZMin, ZMax));
 
             Coral newCoral;
             switch (coralType)
@@ -65,14 +69,15 @@ namespace TGC.Group.Model
                     newCoral = new TreeCoral(MediaDir, XZPosition)
                     {
                         Mesh = treeCoral.Mesh.createMeshInstance(treeCoral.Mesh.Name + "1")
-                    };                    
+                    };
                     break;
                 default:
                     throw new Exception("Unsupported coralType Object");
             }
             return newCoral;
         }
-        // return bool interpoledHeight(float x, float z, out float y)
+
+
         public void LocateCoralsInTerrain(SmartTerrain terrain, List<Coral> corals)
         {
             corals.ForEach(coral =>
@@ -91,7 +96,7 @@ namespace TGC.Group.Model
             });
         }
 
-        public List<Coral> CreateRandomCorals(int quantity, TGCVector4 positionRange)
+        public List<Coral> CreateRandomCorals(int quantity, Tuple<float, float> positionRangeX, Tuple<float, float> positionRangeZ)
         {
             var typesList = new List<CoralType>();
             var corals = new List<Coral>();
@@ -101,7 +106,7 @@ namespace TGC.Group.Model
 
             foreach ( int _ in Enumerable.Range(1, quantity) ) 
             {
-                corals.Add( BuildCoral(typesList[random.Next(0, typesList.Count)] , positionRange) );
+                corals.Add( BuildCoral(typesList[random.Next(0, typesList.Count)] , positionRangeX, positionRangeZ) );
             }
             return corals;
         }
