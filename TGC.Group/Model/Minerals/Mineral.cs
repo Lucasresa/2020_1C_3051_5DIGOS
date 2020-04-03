@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TGC.Core.Mathematica;
+﻿using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 
-namespace TGC.Group.Model.Corales
+namespace TGC.Group.Model.Minerals
 {
-    abstract class Coral
+    abstract class Mineral
     {
         protected string FILE_NAME;
         private readonly string MediaDir;
@@ -16,15 +11,15 @@ namespace TGC.Group.Model.Corales
 
         public TgcMesh Mesh { get; set; }
 
-        public Coral(string mediaDir, TGCVector3? center)
+        public Mineral(string mediaDir, TGCVector3? center)
         {
             MediaDir = mediaDir;
             Center = center ?? new TGCVector3(0f, 3550f, 0f);
         }
 
         public virtual void Init()
-        {     
-            Mesh.Position = Center;            
+        {
+            Mesh.Position = Center;
         }
 
         public virtual void Render()
@@ -44,10 +39,7 @@ namespace TGC.Group.Model.Corales
 
         public void LoadMesh()
         {
-            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
+            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];            
         }
-
     }
-
-
 }

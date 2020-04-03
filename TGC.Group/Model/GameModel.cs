@@ -152,6 +152,7 @@ namespace TGC.Group.Model
             roomNavecita.DisposeAll();
             terrainHeightmap.dispose();
             waterHeightmap.dispose();
+            corales.ForEach(coral => coral.Dispose());
         }
 
         private float ObtenerMaximaAlturaTerreno()

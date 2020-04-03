@@ -18,7 +18,7 @@ namespace TGC.Group.Model.Corales
         public override void Init()
         {
             base.Init();
-            Mesh.Scale = new TGCVector3(10.5f, 10.5f, 10.5f);
+            Mesh.Scale = new TGCVector3(100.5f, 100.5f, 100.5f);
         }
 
 
