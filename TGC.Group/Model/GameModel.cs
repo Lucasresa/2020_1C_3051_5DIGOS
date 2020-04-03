@@ -30,9 +30,9 @@ namespace TGC.Group.Model
         private TgcScene navecita;
         private TgcScene roomNavecita;
         private List<Coral> corales;
-        private Coral coral0;
-        private Coral coral1;
-        private Coral coral2;
+        // private Coral coral0;
+        // private Coral coral1;
+        // private Coral coral2;
 
         private CoralBuilder coralBuilder;
 

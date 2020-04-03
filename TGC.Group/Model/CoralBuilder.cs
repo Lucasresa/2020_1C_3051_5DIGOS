@@ -54,34 +54,38 @@ namespace TGC.Group.Model
                     {
                         Mesh = normalCoral.Mesh.createMeshInstance(normalCoral.Mesh.Name + "1")
                     };
-                    newCoral.Mesh.Transform = TGCMatrix.Translation(XZPosition);
                     break;
                 case CoralType.spiral:
                     newCoral = new SpiralCoral(MediaDir, XZPosition)
                     {
                         Mesh = spiralCoral.Mesh.createMeshInstance(spiralCoral.Mesh.Name + "1")
                     };
-                    newCoral.Mesh.Transform = TGCMatrix.Translation(XZPosition);
                     break;
                 case CoralType.tree:
                     newCoral = new TreeCoral(MediaDir, XZPosition)
                     {
                         Mesh = treeCoral.Mesh.createMeshInstance(treeCoral.Mesh.Name + "1")
-                    };
-                    newCoral.Mesh.Transform = TGCMatrix.Translation(XZPosition);
+                    };                    
                     break;
                 default:
                     throw new Exception("Unsupported coralType Object");
             }
             return newCoral;
         }
-
+        // return bool interpoledHeight(float x, float z, out float y)
         public void LocateCoralsInTerrain(SmartTerrain terrain, List<Coral> corals)
         {
-            corals.ForEach(coral => {
+            corals.ForEach(coral =>
+            {
                 coral.Init();
-                if ( terrain.setObjectPosition(coral.Mesh) )
+                if (terrain.setObjectPosition(coral.Mesh))
+                {
+                    terrain.interpoledHeight(coral.Mesh.Position.X, coral.Mesh.Position.Z, out float YPosition);
+                    coral.Mesh.Transform = TGCMatrix.Translation(new TGCVector3 (coral.Mesh.Position.X,
+                                                                                 YPosition,
+                                                                                 coral.Mesh.Position.Z ));
                     terrain.AdaptToSurface(coral.Mesh);
+                }
                 else
                     corals.Remove(coral);
             });
