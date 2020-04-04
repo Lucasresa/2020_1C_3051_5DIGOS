@@ -35,6 +35,8 @@ namespace TGC.Group.Model
         // private Coral coral1;
         // private Coral coral2;
 
+        private Sky skyBox;
+
         private CoralBuilder coralBuilder;
         private OreBuilder oreBuilder;
 
@@ -79,6 +81,9 @@ namespace TGC.Group.Model
             var factor = 0.5859375f;
             waterHeightmap.loadHeightmap(pathWater, SCALEXZ * factor, 1, new TGCVector3(0, 3500, 0));
             waterHeightmap.loadTexture(pathTextureWater);
+
+            skyBox = new Sky(MediaDir,ShadersDir);
+            skyBox.Init();
 
             // Inicializar camara
             Camara = new CamaraFPS(Input);
@@ -144,6 +149,8 @@ namespace TGC.Group.Model
             navecita.RenderAll();            
             roomNavecita.RenderAll();
 
+            skyBox.Render();
+            
             corales.ForEach(coral =>
             {
                 coral.Mesh.UpdateMeshTransform();
