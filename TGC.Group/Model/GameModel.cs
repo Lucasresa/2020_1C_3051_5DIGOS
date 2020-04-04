@@ -82,19 +82,21 @@ namespace TGC.Group.Model
             waterHeightmap.loadHeightmap(pathWater, SCALEXZ * factor, 1, new TGCVector3(0, 3500, 0));
             waterHeightmap.loadTexture(pathTextureWater);
 
+            // TODO: Habria que encontrar imagenes con mayor resolucion para el sky box
             skyBox = new Sky(MediaDir,ShadersDir);
             skyBox.Init();
 
             // Inicializar camara
             Camara = new CamaraFPS(Input);
 
+            // TODO: Hay que corregir la posicion de la nave y lo ideal seria utilizando una transformacion
             // Instanciar navecita
             navecita = new TgcSceneLoader().loadSceneFromFile(MediaDir + "navecita-TgcScene.xml", MediaDir + "\\");
             navecita.Meshes.ForEach(parte => {
-                parte.Scale = new TGCVector3(10.5f, 10.5f, 10.5f);
-                parte.Position = new TGCVector3(350, 5500, 45);
+                parte.Scale = new TGCVector3(10, 10, 10);
+                parte.Position = new TGCVector3(530, 3630, 100);
+                parte.Rotation = new TGCVector3(-13, 1, 270);
             });
-
 
             // Instanciar Corales
             //coral0 = coralBuilder.BuildCoral(CoralType.normal, new TGCVector4(-3000, 3000, -3000, 3000));
@@ -119,11 +121,11 @@ namespace TGC.Group.Model
 
             // TODO: La habitacion no hay que mostrarlar, ahora esta cargandola para probarla.
             // Prueba de instanciacion de la habitacion de la navecita
-            roomNavecita = new TgcSceneLoader().loadSceneFromFile(MediaDir + "RoomNavecita-TgcScene.xml", MediaDir + "\\");
-            roomNavecita.Meshes.ForEach(paredes => {
-                paredes.Scale = new TGCVector3(10.5f, 10.5f, 10.5f);
-                paredes.Position = new TGCVector3(350, 7500, -45);
-            });
+            //roomNavecita = new TgcSceneLoader().loadSceneFromFile(MediaDir + "RoomNavecita-TgcScene.xml", MediaDir + "\\");
+            //roomNavecita.Meshes.ForEach(paredes => {
+            //    paredes.Scale = new TGCVector3(10.5f, 10.5f, 10.5f);
+            //    paredes.Position = new TGCVector3(350, 7500, -45);
+            //});
         }
 
         public override void Update()
@@ -147,7 +149,7 @@ namespace TGC.Group.Model
             terrainHeightmap.render();
             waterHeightmap.render();            
             navecita.RenderAll();            
-            roomNavecita.RenderAll();
+            //roomNavecita.RenderAll();
 
             skyBox.Render();
             
@@ -164,8 +166,6 @@ namespace TGC.Group.Model
 
             });
 
-
-
             //coral0.Render();
             //coral1.Render();
             //coral2.Render();
@@ -175,12 +175,11 @@ namespace TGC.Group.Model
         public override void Dispose()
         {
             navecita.DisposeAll();
-            roomNavecita.DisposeAll();
+            //roomNavecita.DisposeAll();
             terrainHeightmap.dispose();
             waterHeightmap.dispose();
             corales.ForEach(coral => coral.Dispose());
             minerals.ForEach(ore => ore.Dispose());
-
         }
 
         private float ObtenerMaximaAlturaTerreno()
