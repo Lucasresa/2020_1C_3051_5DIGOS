@@ -37,7 +37,7 @@ namespace TGC.Group.Utils
         public CamaraFPS(TgcD3dInput input)
         {
             Entrada = input;
-            Posicion = new TGCVector3(0, 3505, 0);
+            Posicion = new TGCVector3(1300, 3505, 20);
             VelocidadRotacion = VEL_ROTACION;
             VelocidadMovimiento = VEL_MOVIMIENTO;
             VelocidadSalto = VEL_SALTO;
