@@ -8,7 +8,7 @@ using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Terrains
 {
-    class World
+    abstract class World
     {
         protected string FILE_HEIGHTMAPS;
         protected string FILE_TEXTURES;

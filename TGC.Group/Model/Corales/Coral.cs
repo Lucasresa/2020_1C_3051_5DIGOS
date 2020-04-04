@@ -48,8 +48,5 @@ namespace TGC.Group.Model.Corales
         {
             Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];            
         }
-
     }
-
-
 }

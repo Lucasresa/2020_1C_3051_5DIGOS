@@ -13,6 +13,7 @@ using TGC.Group.Model.Corales;
 using System;
 using TGC.Group.Model.Minerals;
 using TGC.Group.Model.Terrains;
+using TGC.Group.Model.Sharky;
 
 namespace TGC.Group.Model
 {
@@ -30,6 +31,7 @@ namespace TGC.Group.Model
         private OreBuilder oreBuilder;
         private World terrain;
         private World water;
+        private Shark shark;
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
@@ -56,6 +58,9 @@ namespace TGC.Group.Model
             skyBox = new Sky(MediaDir, ShadersDir);
             skyBox.Init();
 
+            shark = new Shark(MediaDir, ShadersDir);
+            shark.loadMesh();
+            
             // TODO: Hay que corregir la posicion de la nave y lo ideal seria utilizando una transformacion
             navecita = new TgcSceneLoader().loadSceneFromFile(MediaDir + "navecita-TgcScene.xml", MediaDir + "\\");
             navecita.Meshes.ForEach(parte => {
@@ -112,7 +117,9 @@ namespace TGC.Group.Model
 
             terrain.Render();
             water.Render();
-            
+
+            shark.Render();
+
             navecita.RenderAll();            
             //roomNavecita.RenderAll();
 
@@ -144,7 +151,9 @@ namespace TGC.Group.Model
             
             terrain.Dispose();
             water.Dispose();
-            
+
+            shark.Dispose();
+
             corales.ForEach(coral => coral.Dispose());
             minerals.ForEach(ore => ore.Dispose());
         }
