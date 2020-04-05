@@ -5,7 +5,7 @@
         public Terrain(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
             FILE_HEIGHTMAPS = "Heightmaps\\suelo.jpg";
-            FILE_TEXTURES = "Textures\\arena.jpg";
+            FILE_TEXTURES = "Textures\\sandy.png";
         }
     }
 }

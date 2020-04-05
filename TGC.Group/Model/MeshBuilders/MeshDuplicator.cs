@@ -29,6 +29,10 @@ namespace TGC.Group.Model.MeshBuilders
             Meshes.Add(MeshType.ironOre, new IronOre(MediaDir, TGCVector3.Empty, "iron"));
             Meshes.Add(MeshType.silverOre, new SilverOre(MediaDir, TGCVector3.Empty, "silver"));
             Meshes.Add(MeshType.goldOre, new GoldOre(MediaDir, TGCVector3.Empty, "gold"));
+            Meshes.Add(MeshType.ironOreCommon, new IronOreCommon(MediaDir, TGCVector3.Empty, "iron-n"));
+            Meshes.Add(MeshType.silverOreCommon, new SilverOreCommon(MediaDir, TGCVector3.Empty, "silver-n"));
+            Meshes.Add(MeshType.goldOreCommon, new GoldOreCommon(MediaDir, TGCVector3.Empty, "gold-n"));
+            Meshes.Add(MeshType.rock, new Rock(MediaDir, TGCVector3.Empty, "rock-n"));
         }
 
         public static TgcMesh GetDuplicateMesh(MeshType meshType)

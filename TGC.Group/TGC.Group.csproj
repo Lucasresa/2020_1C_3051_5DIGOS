@@ -112,8 +112,12 @@
     <Compile Include="Model\MeshBuilders\MeshBuilder.cs" />
     <Compile Include="Model\MeshBuilders\MeshDuplicator.cs" />
     <Compile Include="Model\MeshBuilders\MeshType.cs" />
+    <Compile Include="Model\Minerals\Rock.cs" />
+    <Compile Include="Model\Minerals\GoldOreCommon.cs" />
+    <Compile Include="Model\Minerals\IronOreCommon.cs" />
     <Compile Include="Model\Minerals\Ore.cs" />
     <Compile Include="Model\Minerals\GoldOre.cs" />
+    <Compile Include="Model\Minerals\SilverOreCommon.cs" />
     <Compile Include="Model\Minerals\SilverOre.cs" />
     <Compile Include="Model\Minerals\IronOre.cs" />
     <Compile Include="Model\Fishes\Shark.cs" />

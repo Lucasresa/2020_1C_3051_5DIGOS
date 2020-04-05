@@ -25,7 +25,7 @@ namespace TGC.Group.Model
         private TgcScene navecita;
         // private TgcScene roomNavecita;
         private List<TgcMesh> corales = new List<TgcMesh>();
-        private List<TgcMesh> minerals;
+        private List<TgcMesh> minerals = new List<TgcMesh>();
         private List<Fish> fishes;
         private Sky skyBox;
 
@@ -74,27 +74,50 @@ namespace TGC.Group.Model
                 parte.Rotation = new TGCVector3(-13, 1, 270);
             });
 
-            Tuple<float, float> positionRangeXCoral = new Tuple<float, float>(-2900, 2900);
-            Tuple<float, float> positionRangeZCoral = new Tuple<float, float>(-2900, 2900);
+            Tuple<float, float> positionRangeX = new Tuple<float, float>(-2900, 2900);
+            Tuple<float, float> positionRangeZ = new Tuple<float, float>(-2900, 2900);
 
-            fishes = fishBuilder.CreateRandomFishes(30, positionRangeXCoral, positionRangeZCoral);
+            fishes = fishBuilder.CreateRandomFishes(30, positionRangeX, positionRangeZ);
             fishBuilder.LocateFishesInTerrain(terrain.world, fishes, water.world.Center.Y);
 
             MeshDuplicator.InitOriginalMeshes();
 
             var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 33, 4);
-            meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeXCoral, positionRangeZCoral, terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
             var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 33, 10);
-            meshBuilder.LocateMeshesInTerrain(ref treeCorals, positionRangeXCoral, positionRangeZCoral, terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref treeCorals, positionRangeX, positionRangeZ, terrain.world);
             var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 33, 10);
-            meshBuilder.LocateMeshesInTerrain(ref spiralCorals, positionRangeXCoral, positionRangeZCoral, terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref spiralCorals, positionRangeX, positionRangeZ, terrain.world);
+
+            var goldOre = meshBuilder.CreateNewScaledMeshes(MeshType.goldOre, 15, 5);
+            meshBuilder.LocateMeshesInTerrain(ref goldOre, positionRangeX, positionRangeZ, terrain.world);
+            var goldOreCommon = meshBuilder.CreateNewScaledMeshes(MeshType.goldOreCommon, 15, 5);
+            meshBuilder.LocateMeshesInTerrain(ref goldOreCommon, positionRangeX, positionRangeZ, terrain.world);
+            var silverOre = meshBuilder.CreateNewScaledMeshes(MeshType.silverOre, 15, 5);
+            meshBuilder.LocateMeshesInTerrain(ref silverOre, positionRangeX, positionRangeZ, terrain.world);
+            var silverOreCommon = meshBuilder.CreateNewScaledMeshes(MeshType.silverOreCommon, 15, 5);
+            meshBuilder.LocateMeshesInTerrain(ref silverOreCommon, positionRangeX, positionRangeZ, terrain.world);
+            var ironOre = meshBuilder.CreateNewScaledMeshes(MeshType.ironOre, 15, 5);
+            meshBuilder.LocateMeshesInTerrain(ref ironOre, positionRangeX, positionRangeZ, terrain.world);
+            var ironOreCommon = meshBuilder.CreateNewScaledMeshes(MeshType.ironOreCommon, 15, 5);
+            meshBuilder.LocateMeshesInTerrain(ref ironOreCommon, positionRangeX, positionRangeZ, terrain.world);
+            var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 30, 8);
+            meshBuilder.LocateMeshesInTerrain(ref rock, positionRangeX, positionRangeZ, terrain.world);
 
             corales.AddRange(normalCorals);
             corales.AddRange(treeCorals);
             corales.AddRange(spiralCorals);
 
-            minerals = meshBuilder.CreateNewScaledMeshes(MeshType.ironOre, 20, 5);
-            meshBuilder.LocateMeshesInTerrain(ref minerals, positionRangeXCoral, positionRangeZCoral, terrain.world);
+            minerals.AddRange(goldOre);
+            minerals.AddRange(goldOreCommon);
+            minerals.AddRange(silverOre);
+            minerals.AddRange(silverOreCommon);
+            minerals.AddRange(ironOre);
+            minerals.AddRange(ironOreCommon);
+            minerals.AddRange(rock);
+
+            //  minerals = meshBuilder.CreateNewScaledMeshes(MeshType.ironOre, 20, 5);
+            //  meshBuilder.LocateMeshesInTerrain(ref minerals, positionRangeX, positionRangeZ, terrain.world);
 
 
             // TODO: La habitacion no hay que mostrarlar, ahora esta cargandola para probarla.
