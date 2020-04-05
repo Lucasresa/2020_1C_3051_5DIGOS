@@ -4,9 +4,8 @@ namespace TGC.Group.Model.Corales
 {
     class NormalCoral : Coral
     {
-        public NormalCoral(string mediaDir, TGCVector3 position) : base(mediaDir, position)
+        public NormalCoral(string mediaDir, TGCVector3 position, string meshName) : base(mediaDir, position, meshName)
         {
-            FILE_NAME = "coral_normal-TgcScene.xml";
         }
     }
 }

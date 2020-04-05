@@ -4,9 +4,8 @@ namespace TGC.Group.Model.Corales
 {
     class TreeCoral : Coral
     {
-        public TreeCoral(string mediaDir, TGCVector3 position) : base(mediaDir, position)
+        public TreeCoral(string mediaDir, TGCVector3 position, string meshName) : base(mediaDir, position, meshName)
         {
-            FILE_NAME = "tree_coral-TgcScene.xml";
         }
     }
 }
