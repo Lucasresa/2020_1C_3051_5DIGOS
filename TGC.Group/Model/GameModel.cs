@@ -24,13 +24,11 @@ namespace TGC.Group.Model
         private float time;
         private TgcScene navecita;
         // private TgcScene roomNavecita;
-        private List<TgcMesh> corales;
+        private List<TgcMesh> corales = new List<TgcMesh>();
         private List<TgcMesh> minerals;
         private List<Fish> fishes;
         private Sky skyBox;
 
-        //private CoralBuilder coralBuilder;
-        //private OreBuilder oreBuilder;
         private FishBuilder fishBuilder;
         private World terrain;
         private World water;
@@ -43,8 +41,6 @@ namespace TGC.Group.Model
             Category = Game.Default.Category;
             Name = Game.Default.Name;
             Description = Game.Default.Description;
-            //coralBuilder = new CoralBuilder(mediaDir);
-            //oreBuilder = new OreBuilder(mediaDir);
             fishBuilder = new FishBuilder(mediaDir);
             meshBuilder = new MeshBuilder();
         }
@@ -81,24 +77,23 @@ namespace TGC.Group.Model
             Tuple<float, float> positionRangeXCoral = new Tuple<float, float>(-2900, 2900);
             Tuple<float, float> positionRangeZCoral = new Tuple<float, float>(-2900, 2900);
 
-            //corales = coralBuilder.CreateRandomCorals(100, positionRangeXCoral, positionRangeZCoral);
-            //coralBuilder.LocateCoralsInTerrain(terrain.world, corales);
-
-            //Tuple<float, float> positionRangeXOre = new Tuple<float, float>(-3000, 3000);
-            //Tuple<float, float> positionRangeZOre = new Tuple<float, float>(-3000, 3000);
-
-            //minerals = oreBuilder.CreateRandomMinerals(100, positionRangeXOre, positionRangeZOre);
-            //oreBuilder.LocateMineralsInTerrain(terrain.world, minerals);
-
-            //fishes = fishBuilder.CreateRandomFishes(30, positionRangeXOre, positionRangeZOre);
-            //fishBuilder.LocateFishesInTerrain(terrain.world, fishes, water.world.Center.Y);
+            fishes = fishBuilder.CreateRandomFishes(30, positionRangeXCoral, positionRangeZCoral);
+            fishBuilder.LocateFishesInTerrain(terrain.world, fishes, water.world.Center.Y);
 
             MeshDuplicator.InitOriginalMeshes();
 
-            corales = meshBuilder.CreateNewScaledMeshes(50, MeshType.normalCoral, 10);
-            meshBuilder.LocateMeshesInTerrain(ref corales, positionRangeXCoral, positionRangeZCoral, terrain.world);
+            var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 33, 4);
+            meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeXCoral, positionRangeZCoral, terrain.world);
+            var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 33, 10);
+            meshBuilder.LocateMeshesInTerrain(ref treeCorals, positionRangeXCoral, positionRangeZCoral, terrain.world);
+            var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 33, 10);
+            meshBuilder.LocateMeshesInTerrain(ref spiralCorals, positionRangeXCoral, positionRangeZCoral, terrain.world);
 
-            minerals = meshBuilder.CreateNewScaledMeshes(20, MeshType.ironOre, 5);
+            corales.AddRange(normalCorals);
+            corales.AddRange(treeCorals);
+            corales.AddRange(spiralCorals);
+
+            minerals = meshBuilder.CreateNewScaledMeshes(MeshType.ironOre, 20, 5);
             meshBuilder.LocateMeshesInTerrain(ref minerals, positionRangeXCoral, positionRangeZCoral, terrain.world);
 
 
@@ -159,12 +154,12 @@ namespace TGC.Group.Model
 
             });
 
-            //fishes.ForEach(fish =>
-            //{
-            //    fish.Mesh.UpdateMeshTransform();
-            //    fish.Render();
+            fishes.ForEach(fish =>
+            {
+                fish.Mesh.UpdateMeshTransform();
+                fish.Render();
 
-            //});
+            });
             PostRender();
         }
 
@@ -180,7 +175,7 @@ namespace TGC.Group.Model
 
             corales.ForEach(coral => coral.Dispose());
             minerals.ForEach(ore => ore.Dispose());
-            //fishes.ForEach(fish => fish.Dispose());
+            fishes.ForEach(fish => fish.Dispose());
         }
 
        /* private float ObtenerMaximaAlturaTerreno()
