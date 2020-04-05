@@ -106,13 +106,15 @@
     <Compile Include="Model\Corales\NormalCoral.cs" />
     <Compile Include="Model\Corales\SpiralCoral.cs" />
     <Compile Include="Model\Corales\TreeCoral.cs" />
+    <Compile Include="Model\FishBuilder.cs" />
+    <Compile Include="Model\Fishes\Fish.cs" />
     <Compile Include="Model\GameModel.cs" />
     <Compile Include="Model\Minerals\Ore.cs" />
     <Compile Include="Model\Minerals\GoldOre.cs" />
     <Compile Include="Model\Minerals\SilverOre.cs" />
     <Compile Include="Model\Minerals\IronOre.cs" />
-    <Compile Include="Model\OreBuilders.cs" />
-    <Compile Include="Model\Sharky\Shark.cs" />
+    <Compile Include="Model\OreBuilder.cs" />
+    <Compile Include="Model\Fishes\Shark.cs" />
     <Compile Include="Model\Terrains\Sky.cs" />
     <Compile Include="Model\Terrains\Terrain.cs" />
     <Compile Include="Model\Terrains\Water.cs" />

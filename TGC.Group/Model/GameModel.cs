@@ -14,6 +14,7 @@ using System;
 using TGC.Group.Model.Minerals;
 using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Sharky;
+using TGC.Group.Model.Fishes;
 
 namespace TGC.Group.Model
 {
@@ -24,11 +25,12 @@ namespace TGC.Group.Model
         // private TgcScene roomNavecita;
         private List<Coral> corales;
         private List<Ore> minerals;
-
+        private List<Fish> fishes;
         private Sky skyBox;
 
         private CoralBuilder coralBuilder;
         private OreBuilder oreBuilder;
+        private FishBuilder fishBuilder;
         private World terrain;
         private World water;
         private Shark shark;
@@ -40,6 +42,7 @@ namespace TGC.Group.Model
             Description = Game.Default.Description;
             coralBuilder = new CoralBuilder(mediaDir);
             oreBuilder = new OreBuilder(mediaDir);
+            fishBuilder = new FishBuilder(mediaDir);
         }
 
         public override void Init()
@@ -72,14 +75,17 @@ namespace TGC.Group.Model
             Tuple<float, float> positionRangeXCoral = new Tuple<float, float>(-3000, 3000);
             Tuple<float, float> positionRangeZCoral = new Tuple<float, float>(-3000, 3000);
 
-            corales = coralBuilder.CreateRandomCorals(50, positionRangeXCoral, positionRangeZCoral);
+            corales = coralBuilder.CreateRandomCorals(100, positionRangeXCoral, positionRangeZCoral);
             coralBuilder.LocateCoralsInTerrain(terrain.world, corales);
 
             Tuple<float, float> positionRangeXOre = new Tuple<float, float>(-3000, 3000);
             Tuple<float, float> positionRangeZOre = new Tuple<float, float>(-3000, 3000);
 
-            minerals = oreBuilder.CreateRandomMinerals(50, positionRangeXOre, positionRangeZOre);
+            minerals = oreBuilder.CreateRandomMinerals(100, positionRangeXOre, positionRangeZOre);
             oreBuilder.LocateMineralsInTerrain(terrain.world, minerals);
+
+            fishes = fishBuilder.CreateRandomFishes(30, positionRangeXOre, positionRangeZOre);
+            fishBuilder.LocateFishesInTerrain(terrain.world, fishes, water.world.Center.Y);
 
             // TODO: La habitacion no hay que mostrarlar, ahora esta cargandola para probarla.
             // Prueba de instanciacion de la habitacion de la navecita
@@ -138,9 +144,12 @@ namespace TGC.Group.Model
 
             });
 
-            //coral0.Render();
-            //coral1.Render();
-            //coral2.Render();
+            fishes.ForEach(fish =>
+            {
+                fish.Mesh.UpdateMeshTransform();
+                fish.Render();
+
+            });
             PostRender();
         }
 
@@ -156,6 +165,7 @@ namespace TGC.Group.Model
 
             corales.ForEach(coral => coral.Dispose());
             minerals.ForEach(ore => ore.Dispose());
+            fishes.ForEach(fish => fish.Dispose());
         }
 
        /* private float ObtenerMaximaAlturaTerreno()
