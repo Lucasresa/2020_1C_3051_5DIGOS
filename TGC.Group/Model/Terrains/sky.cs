@@ -8,25 +8,31 @@ using TGC.Core.Mathematica;
 using TGC.Core.Terrain;
 using TGC.Group.Utils;
 
-namespace TGC.Group.Model
+namespace TGC.Group.Model.Terrains
 {
-    class Sky : GameModel
+    class Sky
     {
         private TgcSkyBox sky;
 
-        public Sky(string mediaDir, string shadersDir) : base(mediaDir,shadersDir)
+        private string MediaDir;
+        private string ShadersDir;
+
+        public Sky(string mediaDir, string shadersDir)
         {
             sky = new TgcSkyBox
             {
                 Size = new TGCVector3(7000, 7000, 7000),
                 Center = new TGCVector3(0, 1500, 0)
             };
+
+            MediaDir = mediaDir;
+            ShadersDir = shadersDir;
         }
 
-        public override void Init()
+        public void LoadSkyBox()
         {         
             var texturesPath = MediaDir + "SkyBox\\";
-                   
+            // TODO: Habria que encontrar imagenes con mayor resolucion para el SkyBox
             sky.setFaceTexture(TgcSkyBox.SkyFaces.Up, texturesPath + "sup.jpg");
             sky.setFaceTexture(TgcSkyBox.SkyFaces.Down, texturesPath + "inf.jpg");
             sky.setFaceTexture(TgcSkyBox.SkyFaces.Left, texturesPath + "izq.jpg");
@@ -39,25 +45,13 @@ namespace TGC.Group.Model
             sky.Init();            
         }
 
-        public override void Update()
-        {
-            PreUpdate();
-
-            //Se cambia el valor por defecto del farplane para evitar cliping de farplane.
-            D3DDevice.Instance.Device.Transform.Projection = TGCMatrix.PerspectiveFovLH(D3DDevice.Instance.FieldOfView, D3DDevice.Instance.AspectRatio,
-                    D3DDevice.Instance.ZNearPlaneDistance, D3DDevice.Instance.ZFarPlaneDistance * 2f).ToMatrix();
-         
-            PostUpdate();
-        }
-
-        public override void Render()
+        public virtual void Render()
         {
             sky.Render();
         }
 
-        public override void Dispose()
+        public virtual void Dispose()
         {
-            //Liberar recursos del SkyBox
             sky.Dispose();
         }
     }

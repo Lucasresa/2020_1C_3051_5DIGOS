@@ -16,18 +16,23 @@ using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Fishes;
 using TGC.Group.Model.MeshBuilders;
+using TGC.Group.Model.Watercraft;
 
 namespace TGC.Group.Model
 {
     public class GameModel : TgcExample
     {
-        private float time;
-        private TgcScene navecita;
-        // private TgcScene roomNavecita;
+        private float time;        
+        private TgcScene roomNavecita;
         private List<TgcMesh> corales = new List<TgcMesh>();
         private List<TgcMesh> minerals = new List<TgcMesh>();
         private List<Fish> fishes;
         private Sky skyBox;
+        private InsideRoom room;
+        private Ship ship;
+
+        private Tuple<float, float> positionRangeX = new Tuple<float, float>(-2900, 2900);
+        private Tuple<float, float> positionRangeZ = new Tuple<float, float>(-2900, 2900);
 
         private FishBuilder fishBuilder;
         private World terrain;
@@ -43,52 +48,40 @@ namespace TGC.Group.Model
             Description = Game.Default.Description;
             fishBuilder = new FishBuilder(mediaDir);
             meshBuilder = new MeshBuilder();
+            MeshDuplicator.MediaDir = mediaDir;
         }
 
         public override void Init()
-        {
-            MeshDuplicator.MediaDir = MediaDir;
-
-            var d3dDevice = D3DDevice.Instance.Device;
-
+        {   
+            /** Camera **/
             Camara = new CamaraFPS(Input);
-
+            /** World **/
             terrain = new Terrain(MediaDir, ShadersDir);
-            water = new Water(MediaDir, ShadersDir);
-            
             terrain.LoadWorld(TGCVector3.Empty);
-            water.LoadWorld(new TGCVector3(0, 3500, 0));
-
-            // TODO: Habria que encontrar imagenes con mayor resolucion para el SkyBox
+            water = new Water(MediaDir, ShadersDir);
+            water.LoadWorld(new TGCVector3(0, 3500, 0));                        
             skyBox = new Sky(MediaDir, ShadersDir);
-            skyBox.Init();
-
+            skyBox.LoadSkyBox();
+            /** InsideRoom **/
+            room = new InsideRoom(MediaDir, ShadersDir);
+            room.LoadRoom();
+            /** Enemy **/
             shark = new Shark(MediaDir, ShadersDir);
-            shark.loadMesh();
-            
-            // TODO: Hay que corregir la posicion de la nave y lo ideal seria utilizando una transformacion
-            navecita = new TgcSceneLoader().loadSceneFromFile(MediaDir + "navecita-TgcScene.xml", MediaDir + "\\");
-            navecita.Meshes.ForEach(parte => {
-                parte.Scale = new TGCVector3(10, 10, 10);
-                parte.Position = new TGCVector3(530, 3630, 100);
-                parte.Rotation = new TGCVector3(-13, 1, 270);
-            });
-
-            Tuple<float, float> positionRangeX = new Tuple<float, float>(-2900, 2900);
-            Tuple<float, float> positionRangeZ = new Tuple<float, float>(-2900, 2900);
-
+            shark.LoadShark();
+            /** Ship **/
+            ship = new Ship(MediaDir, ShadersDir);
+            ship.LoadShip();            
+            /** Fish **/
             fishes = fishBuilder.CreateRandomFishes(30, positionRangeX, positionRangeZ);
-            fishBuilder.LocateFishesInTerrain(terrain.world, fishes, water.world.Center.Y);
-
+            fishBuilder.LocateFishesInTerrain(terrain.world, fishes, water.world.Center.Y - 300);
+            /** Vegetation **/
             MeshDuplicator.InitOriginalMeshes();
-
             var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 33, 4);
             meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
             var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 33, 10);
             meshBuilder.LocateMeshesInTerrain(ref treeCorals, positionRangeX, positionRangeZ, terrain.world);
             var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 33, 10);
             meshBuilder.LocateMeshesInTerrain(ref spiralCorals, positionRangeX, positionRangeZ, terrain.world);
-
             var goldOre = meshBuilder.CreateNewScaledMeshes(MeshType.goldOre, 15, 5);
             meshBuilder.LocateMeshesInTerrain(ref goldOre, positionRangeX, positionRangeZ, terrain.world);
             var goldOreCommon = meshBuilder.CreateNewScaledMeshes(MeshType.goldOreCommon, 15, 5);
@@ -107,7 +100,6 @@ namespace TGC.Group.Model
             corales.AddRange(normalCorals);
             corales.AddRange(treeCorals);
             corales.AddRange(spiralCorals);
-
             minerals.AddRange(goldOre);
             minerals.AddRange(goldOreCommon);
             minerals.AddRange(silverOre);
@@ -116,22 +108,11 @@ namespace TGC.Group.Model
             minerals.AddRange(ironOreCommon);
             minerals.AddRange(rock);
 
-            //  minerals = meshBuilder.CreateNewScaledMeshes(MeshType.ironOre, 20, 5);
-            //  meshBuilder.LocateMeshesInTerrain(ref minerals, positionRangeX, positionRangeZ, terrain.world);
-
-
-            // TODO: La habitacion no hay que mostrarlar, ahora esta cargandola para probarla.
-            // Prueba de instanciacion de la habitacion de la navecita
-            //roomNavecita = new TgcSceneLoader().loadSceneFromFile(MediaDir + "RoomNavecita-TgcScene.xml", MediaDir + "\\");
-            //roomNavecita.Meshes.ForEach(paredes => {
-            //    paredes.Scale = new TGCVector3(10.5f, 10.5f, 10.5f);
-            //    paredes.Position = new TGCVector3(350, 7500, -45);
-            //});
         }
 
         public override void Update()
         {
-            PreUpdate();
+            PreUpdate();            
             PostUpdate();
         }
 
@@ -141,7 +122,6 @@ namespace TGC.Group.Model
 
             time += ElapsedTime;
 
-            // Dibuja un texto por pantalla
             DrawText.drawText("Prueba de ubicacion de objetos en el terreno", 0, 20, Color.Red);
             DrawText.drawText("camPos: [" + Camara.Position.X.ToString() + "; "
                                           + Camara.Position.Y.ToString() + "; "
@@ -154,16 +134,15 @@ namespace TGC.Group.Model
 
             DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.DarkRed);
 
+            // TODO: Habilito la habitacion para que se muestre en un rango de tiempo
+            if (time <= 30 && time >= 20)
+                room.Render();            
+
             terrain.Render();
             water.Render();
-
-            shark.Render();
-
-            navecita.RenderAll();            
-            //roomNavecita.RenderAll();
-
             skyBox.Render();
-            
+            ship.Render();
+
             corales.ForEach(coral =>
             {
                 coral.UpdateMeshTransform();
@@ -177,25 +156,25 @@ namespace TGC.Group.Model
 
             });
 
+            shark.Render();
             fishes.ForEach(fish =>
             {
                 fish.Mesh.UpdateMeshTransform();
                 fish.Render();
 
             });
+
             PostRender();
         }
 
         public override void Dispose()
         {
-            navecita.DisposeAll();
-            //roomNavecita.DisposeAll();
-            
+            ship.Dispose();
+            room.Dispose();            
             terrain.Dispose();
             water.Dispose();
-
+            skyBox.Dispose();
             shark.Dispose();
-
             corales.ForEach(coral => coral.Dispose());
             minerals.ForEach(ore => ore.Dispose());
             fishes.ForEach(fish => fish.Dispose());

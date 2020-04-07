@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 
-namespace TGC.Group.Model.Sharky
+namespace TGC.Group.Model.Watercraft
 {
-    class Shark
+    class Ship
     {
         protected string FILE_NAME;
 
@@ -17,20 +17,11 @@ namespace TGC.Group.Model.Sharky
 
         public TgcMesh Mesh;
 
-        private TGCVector3 scale = new TGCVector3(3, 3, 3);
-        private TGCVector3 position = new TGCVector3(-2185, 420 , -525);
-
-
-        public Shark(string mediaDir, string shadersDir)
+        public Ship(string mediaDir, string shadersDir)
         {
-            FILE_NAME = "shark-TgcScene.xml";
+            FILE_NAME = "ship-TgcScene.xml";
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
-        }
-
-        public virtual void Init()
-        {
-           
         }
 
         public virtual void Render()
@@ -38,21 +29,17 @@ namespace TGC.Group.Model.Sharky
             Mesh.Render();
         }
 
-        public virtual void Update()
-        {
-
-        }
-
         public virtual void Dispose()
         {
             Mesh.Dispose();
         }
 
-        public void LoadShark()
+        public void LoadShip()
         {
             Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
-            Mesh.Position = position;
-            Mesh.Scale = scale;
+            Mesh.Scale = new TGCVector3(10, 10, 10);
+            Mesh.Position = new TGCVector3(530, 3630, 100);
+            Mesh.Rotation = new TGCVector3(-13, 1, 270);
         }
     }
 }
