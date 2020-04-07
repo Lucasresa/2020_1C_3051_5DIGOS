@@ -53,7 +53,7 @@ namespace TGC.Group.Model
                     };
                     break;
                 default:
-                    throw new Exception("Unsupported oreType Object");
+                    throw new Exception("Unsupported fishType Object");
             }
             return newFish;
         }

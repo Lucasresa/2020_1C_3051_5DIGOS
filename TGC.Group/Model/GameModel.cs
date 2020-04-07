@@ -23,9 +23,9 @@ namespace TGC.Group.Model
     public class GameModel : TgcExample
     {
         private float time;        
-        private TgcScene roomNavecita;
         private List<TgcMesh> corales = new List<TgcMesh>();
         private List<TgcMesh> minerals = new List<TgcMesh>();
+        private List<TgcMesh> vegetation = new List<TgcMesh>();
         private List<Fish> fishes;
         private Sky skyBox;
         private InsideRoom room;
@@ -96,6 +96,8 @@ namespace TGC.Group.Model
             meshBuilder.LocateMeshesInTerrain(ref ironOreCommon, positionRangeX, positionRangeZ, terrain.world);
             var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 30, 8);
             meshBuilder.LocateMeshesInTerrain(ref rock, positionRangeX, positionRangeZ, terrain.world);
+            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 1200, 5);
+            meshBuilder.LocateMeshesInTerrain(ref alga, positionRangeX, positionRangeZ, terrain.world);
 
             corales.AddRange(normalCorals);
             corales.AddRange(treeCorals);
@@ -107,7 +109,7 @@ namespace TGC.Group.Model
             minerals.AddRange(ironOre);
             minerals.AddRange(ironOreCommon);
             minerals.AddRange(rock);
-
+            vegetation.AddRange(alga);
         }
 
         public override void Update()
@@ -156,6 +158,14 @@ namespace TGC.Group.Model
 
             });
 
+            vegetation.ForEach(vegetation =>
+            {
+                vegetation.AlphaBlendEnable = true;
+                vegetation.UpdateMeshTransform();
+                vegetation.Render();
+
+            });
+
             shark.Render();
             fishes.ForEach(fish =>
             {
@@ -177,6 +187,7 @@ namespace TGC.Group.Model
             shark.Dispose();
             corales.ForEach(coral => coral.Dispose());
             minerals.ForEach(ore => ore.Dispose());
+            vegetation.ForEach(vegetation => vegetation.Dispose());
             fishes.ForEach(fish => fish.Dispose());
         }
 

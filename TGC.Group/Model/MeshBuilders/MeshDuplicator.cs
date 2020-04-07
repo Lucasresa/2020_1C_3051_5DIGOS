@@ -7,6 +7,7 @@ using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Corales;
 using TGC.Group.Model.Minerals;
+using TGC.Group.Model.Vegetation;
 
 namespace TGC.Group.Model.MeshBuilders
 {
@@ -33,6 +34,8 @@ namespace TGC.Group.Model.MeshBuilders
             Meshes.Add(MeshType.silverOreCommon, new SilverOreCommon(MediaDir, TGCVector3.Empty, "silver-n"));
             Meshes.Add(MeshType.goldOreCommon, new GoldOreCommon(MediaDir, TGCVector3.Empty, "gold-n"));
             Meshes.Add(MeshType.rock, new Rock(MediaDir, TGCVector3.Empty, "rock-n"));
+            Meshes.Add(MeshType.alga, new Alga(MediaDir, TGCVector3.Empty, "alga"));
+            
         }
 
         public static TgcMesh GetDuplicateMesh(MeshType meshType)
