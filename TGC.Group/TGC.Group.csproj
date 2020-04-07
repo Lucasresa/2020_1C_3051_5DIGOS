@@ -126,6 +126,7 @@
     <Compile Include="Model\Terrains\Terrain.cs" />
     <Compile Include="Model\Terrains\Water.cs" />
     <Compile Include="Model\Terrains\World.cs" />
+    <Compile Include="Model\Vegetation\AlgaRed.cs" />
     <Compile Include="Model\Vegetation\Alga.cs" />
     <Compile Include="Model\Watercraft\Ship.cs" />
     <Compile Include="Program.cs" />
