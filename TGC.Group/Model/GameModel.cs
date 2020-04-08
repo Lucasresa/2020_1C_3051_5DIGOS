@@ -108,8 +108,8 @@ namespace TGC.Group.Model
             meshBuilder.LocateMeshesInTerrain(ref rock, positionRangeX, positionRangeZ, terrain.world);
             var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 1200, 5);
             meshBuilder.LocateMeshesInTerrain(ref alga, positionRangeX, positionRangeZ, terrain.world);
-            var algaRed = meshBuilder.CreateNewScaledMeshes(MeshType.algaRed, 400, 5);
-            meshBuilder.LocateMeshesInTerrain(ref algaRed, positionRangeX, positionRangeZ, terrain.world);
+            var plant_1 = meshBuilder.CreateNewScaledMeshes(MeshType.plant_1, 400, 5);
+            meshBuilder.LocateMeshesInTerrain(ref plant_1, positionRangeX, positionRangeZ, terrain.world);
 
             corales.AddRange(normalCorals);
             corales.AddRange(treeCorals);
@@ -122,7 +122,7 @@ namespace TGC.Group.Model
             minerals.AddRange(ironOreCommon);
             minerals.AddRange(rock);
             vegetation.AddRange(alga);
-            vegetation.AddRange(algaRed);
+            vegetation.AddRange(plant_1);
 
             #endregion
 

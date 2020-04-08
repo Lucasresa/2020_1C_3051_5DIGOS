@@ -1,8 +1,8 @@
 <tgcScene>
-  <name>algaRed</name>
+  <name>plant_1</name>
   <texturesExport enabled="True" dir="Textures" />
   <lightmapExport enabled="False" dir="LightMaps" />
-  <sceneBoundingBox min="[-8.8065,-1.5869,-9.9223]" max="[8.8065,41.5869,9.9223]" />
+  <sceneBoundingBox min="[-13.9133,-9,-13.2183]" max="[13.9133,34.9012,13.2183]" />
   <materials count="1">
     <m name="Multimaterial" type="Multimaterial">
       <subM name="Standardmaterial" type="Standardmaterial">
@@ -11,7 +11,7 @@
         <specular>[0,0,0,0]</specular>
         <opacity>1</opacity>
         <alphaBlendEnable>True</alphaBlendEnable>
-        <bitmap uvTiling="[1,1]" uvOffset="[1,1]">Alga-v2.png</bitmap>
+        <bitmap uvTiling="[1,1]" uvOffset="[1,1]">planta.png</bitmap>
       </subM>
       <subM name="Standardmaterial" type="Standardmaterial">
         <ambient>[0,0,0,0]</ambient>
@@ -19,21 +19,21 @@
         <specular>[0,0,0,0]</specular>
         <opacity>1</opacity>
         <alphaBlendEnable>True</alphaBlendEnable>
-        <bitmap uvTiling="[1,1]" uvOffset="[1,1]">Alga-v2.png</bitmap>
+        <bitmap uvTiling="[1,1]" uvOffset="[1,1]">planta.png</bitmap>
       </subM>
     </m>
   </materials>
   <meshes count="1">
     <mesh name="TGCPlane_1" layer="Default" type="Original" matId="0" color="[1,1,1]" visibility="0" lightmap="">
-      <boundingBox min="[-8.8065,-1.5869,-9.9223]" max="[8.8065,41.5869,9.9223]" />
+      <boundingBox min="[-13.9133,-9,-13.2183]" max="[13.9133,34.9012,13.2183]" />
       <coordinatesIdx count="12">0 1 2 0 2 3 4 5 6 4 6 7 </coordinatesIdx>
       <textCoordsIdx count="12">0 1 2 0 2 3 0 1 2 0 2 3 </textCoordsIdx>
       <colorsIdx count="12">0 0 0 0 0 0 0 0 0 0 0 0 </colorsIdx>
       <matIds count="4">0 0 1 1 </matIds>
       <textCoordsLightMapIdx count="0">
       </textCoordsLightMapIdx>
-      <vertices count="24">-8.8065 -0.7372 -0.8575 8.8065 -0.7372 -0.8575 8.8065 39.8525 -0.8575 -8.8065 39.8525 -0.8575 0.0028 -1.5869 -9.9223 0.0028 -1.5869 9.9223 0.0028 41.5869 9.9223 0.0028 41.5869 -9.9223 </vertices>
-      <normals count="24">0 0 1 0 0 1 0 0 1 0 0 1 -1 0 0 -1 0 0 -1 0 0 -1 0 0 </normals>
+      <vertices count="24">1.4133 -9 -13.2183 1.4133 -9 13.2183 1.4133 34.8473 13.2183 1.4133 34.8473 -13.2183 -13.9133 -9 0.0815 13.9133 -9 0.0815 13.9133 34.9012 0.0815 -13.9133 34.9012 0.0815 </vertices>
+      <normals count="24">-1 0 0 -1 0 0 -1 0 0 -1 0 0 0 0 1 0 0 1 0 0 1 0 0 1 </normals>
       <texCoords count="8">1 1 0 1 0 0 1 0 </texCoords>
       <colors count="3">255 255 255 </colors>
       <texCoordsLightMap count="0">
