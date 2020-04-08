@@ -22,6 +22,7 @@ namespace TGC.Group.Model
 {
     public class GameModel : TgcExample
     {
+        #region Atributos
         private float time;        
         private List<TgcMesh> corales = new List<TgcMesh>();
         private List<TgcMesh> minerals = new List<TgcMesh>();
@@ -30,16 +31,14 @@ namespace TGC.Group.Model
         private Sky skyBox;
         private InsideRoom room;
         private Ship ship;
-
         private Tuple<float, float> positionRangeX = new Tuple<float, float>(-2900, 2900);
         private Tuple<float, float> positionRangeZ = new Tuple<float, float>(-2900, 2900);
-
         private FishBuilder fishBuilder;
         private World terrain;
         private World water;
         private Shark shark;
-
         private MeshBuilder meshBuilder;
+        #endregion
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
@@ -52,29 +51,40 @@ namespace TGC.Group.Model
         }
 
         public override void Init()
-        {   
-            /** Camera **/
-            Camara = new CamaraFPS(Input);
-            /** World **/
+        {
+            #region Camara
+            Camara = new CameraFPS(Input);
+            #endregion
+
+            #region Mundo            
             terrain = new Terrain(MediaDir, ShadersDir);
             terrain.LoadWorld(TGCVector3.Empty);
             water = new Water(MediaDir, ShadersDir);
             water.LoadWorld(new TGCVector3(0, 3500, 0));                        
             skyBox = new Sky(MediaDir, ShadersDir);
             skyBox.LoadSkyBox();
-            /** InsideRoom **/
+            #endregion
+
+            #region Nave
+            ship = new Ship(MediaDir, ShadersDir);
+            ship.LoadShip();
+            #endregion
+
+            #region Interior de la Nave            
             room = new InsideRoom(MediaDir, ShadersDir);
             room.LoadRoom();
-            /** Enemy **/
+            #endregion
+
+            #region Enemigo
             shark = new Shark(MediaDir, ShadersDir);
             shark.LoadShark();
-            /** Ship **/
-            ship = new Ship(MediaDir, ShadersDir);
-            ship.LoadShip();            
-            /** Fish **/
+            #endregion
+
+            #region Vegetacion del mundo
+
             fishes = fishBuilder.CreateRandomFishes(30, positionRangeX, positionRangeZ);
             fishBuilder.LocateFishesInTerrain(terrain.world, fishes, water.world.Center.Y - 300);
-            /** Vegetation **/
+            
             MeshDuplicator.InitOriginalMeshes();
             var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 33, 4);
             meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
@@ -113,6 +123,9 @@ namespace TGC.Group.Model
             minerals.AddRange(rock);
             vegetation.AddRange(alga);
             vegetation.AddRange(algaRed);
+
+            #endregion
+
         }
 
         public override void Update()
@@ -125,23 +138,28 @@ namespace TGC.Group.Model
         {
             PreRender();
 
+            #region Texto en pantalla
+
             time += ElapsedTime;
 
-            DrawText.drawText("Prueba de ubicacion de objetos en el terreno", 0, 20, Color.Red);
-            DrawText.drawText("camPos: [" + Camara.Position.X.ToString() + "; "
+            DrawText.drawText("DATOS DE LA CAMARA: ", 0, 20, Color.Red);
+            DrawText.drawText("Posicion: [" + Camara.Position.X.ToString() + "; "
                                           + Camara.Position.Y.ToString() + "; "
                                           + Camara.Position.Z.ToString() + "] ",
                               0, 60, Color.DarkRed);
-            DrawText.drawText("camLookAt: [" + Camara.LookAt.X.ToString() + "; "
+            DrawText.drawText("Objetivo: [" + Camara.LookAt.X.ToString() + "; "
                                           + Camara.LookAt.Y.ToString() + "; "
                                           + Camara.LookAt.Z.ToString() + "] ",
                               0, 80, Color.DarkRed);
-
             DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.DarkRed);
+
+            #endregion
 
             // TODO: Habilito la habitacion para que se muestre en un rango de tiempo
             if (time <= 30 && time >= 20)
-                room.Render();            
+                room.Render();
+
+            #region Renderizado
 
             terrain.Render();
             water.Render();
@@ -177,11 +195,15 @@ namespace TGC.Group.Model
 
             });
 
+            #endregion
+
             PostRender();
         }
 
         public override void Dispose()
         {
+            #region Liberacion de recursos
+
             ship.Dispose();
             room.Dispose();            
             terrain.Dispose();
@@ -192,24 +214,26 @@ namespace TGC.Group.Model
             minerals.ForEach(ore => ore.Dispose());
             vegetation.ForEach(vegetation => vegetation.Dispose());
             fishes.ForEach(fish => fish.Dispose());
+
+            #endregion
         }
 
-       /* private float ObtenerMaximaAlturaTerreno()
-        {
-            var maximo = 0f;
-            for (int x = 0; x < terrainHeightmap.HeightmapData.GetLength(0); x++)
-            {
-                for (int z = 0; z < terrainHeightmap.HeightmapData.GetLength(0); z++)
-                {
-                    var posibleMaximo = terrainHeightmap.HeightmapData[x, z];
-                    if (maximo < terrainHeightmap.HeightmapData[x, z])
-                    {
-                        maximo = posibleMaximo;
-                    }
-                }
-            }
-            return maximo;
-        }
-        */
+        /* private float ObtenerMaximaAlturaTerreno()
+         {
+             var maximo = 0f;
+             for (int x = 0; x < terrainHeightmap.HeightmapData.GetLength(0); x++)
+             {
+                 for (int z = 0; z < terrainHeightmap.HeightmapData.GetLength(0); z++)
+                 {
+                     var posibleMaximo = terrainHeightmap.HeightmapData[x, z];
+                     if (maximo < terrainHeightmap.HeightmapData[x, z])
+                     {
+                         maximo = posibleMaximo;
+                     }
+                 }
+             }
+             return maximo;
+         }
+         */
     }
 }
