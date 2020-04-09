@@ -1,6 +1,8 @@
 ﻿using Microsoft.DirectX.Direct3D;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Collision;
 using TGC.Core.Direct3D;
@@ -483,6 +485,58 @@ namespace TGC.Group.Utils
             return true;
         }
 
+        public List<TGCVector2> getPositionRangeXZGivenY(float ypos)
+        {
+            List<TGCVector2> coords = new List<TGCVector2>();
+
+            float deltaY = 5f;
+
+            for (int row = 0; row < HeightmapData.GetLength(0); row++)
+            {
+                for (int column = 0; column < HeightmapData.GetLength(1); column++)
+                {
+                    interpoledIntensity(row, column, out float yPosHeightmap);
+                    var possibleY = (yPosHeightmap + traslation.Y) * ScaleY;
+
+                    if (ypos - deltaY < possibleY && ypos + deltaY > possibleY)
+                    {                       
+                        coords.Add(new TGCVector2(row, column));
+                        row += 10;
+                        column += 10;
+                    }
+                }
+            }
+
+            for(int index = 0; index < coords.Count(); index++)
+                 coords[index] = xzWorldToHeightmap(coords[index].X, coords[index].Y);
+            
+            return coords;
+        }    
+
+        private TGCVector2 xzWorldToHeightmap(float x, float z)
+        {
+            var WorldPosX = (x + traslation.X) * ScaleXZ;
+            var WorldPosZ = (z + traslation.Z) * ScaleXZ;
+
+            var sizeX = HeightmapData.GetLength(0) * ScaleXZ / 2;
+            var sizeZ = HeightmapData.GetLength(1) * ScaleXZ / 2;
+
+            WorldPosX = FastMath.Clamp(WorldPosX, -sizeX + 200, sizeX - 200);
+            WorldPosZ = FastMath.Clamp(WorldPosZ, -sizeZ + 200, sizeZ - 200);
+
+            return new TGCVector2(WorldPosX, WorldPosZ);
+
+        }
+
+    
+
+        //public TGCVector2 getRandomXZ(List<TGCVector2> listXZPosition)
+        //{
+        //    Random random = new Random();
+        //    var index = random.Next(0, listXZPosition.Count);            
+        //    return listXZPosition[index];
+        //}
+
         /// <summary>
         ///     Coloca el objeto a la altura correspondiente segun su posicion en el terreno.
         ///     Retorna false si esta fuera del terreno.
@@ -536,8 +590,8 @@ namespace TGC.Group.Utils
             var objectInclinationX = FastMath.Atan2(normalObjeto.X, normalObjeto.Y) * -FastMath.Sin(0);
             var objectInclinationZ = FastMath.Atan2(normalObjeto.X, normalObjeto.Y) * FastMath.Cos(0);
 
-            float rotationX = - objectInclinationX;
-            float rotationZ = - objectInclinationZ;
+            float rotationX = -objectInclinationX;
+            float rotationZ = -objectInclinationZ;
 
             o.RotateX(rotationX);
             o.RotateZ(rotationZ);

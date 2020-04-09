@@ -47,5 +47,13 @@ namespace TGC.Group.Model.Terrains
             world.loadHeightmap(MediaDir + FILE_HEIGHTMAPS, SCALEXZ, SCALEY, position);
             world.loadTexture(MediaDir + FILE_TEXTURES);
         }
+
+        public virtual Tuple<float,float> SizeWorld()
+        {
+            var sizeX = world.HeightmapData.GetLength(0) * SCALEXZ / 2;
+            var sizeZ = world.HeightmapData.GetLength(1) * SCALEXZ / 2;
+
+            return new Tuple<float, float>(sizeX, sizeZ);
+        }
     }
 }

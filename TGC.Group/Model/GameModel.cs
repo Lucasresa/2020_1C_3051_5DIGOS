@@ -23,7 +23,7 @@ namespace TGC.Group.Model
     public class GameModel : TgcExample
     {
         #region Atributos
-        private float time;        
+        private float time;
         private List<TgcMesh> corales = new List<TgcMesh>();
         private List<TgcMesh> minerals = new List<TgcMesh>();
         private List<TgcMesh> vegetation = new List<TgcMesh>();
@@ -60,7 +60,7 @@ namespace TGC.Group.Model
             terrain = new Terrain(MediaDir, ShadersDir);
             terrain.LoadWorld(TGCVector3.Empty);
             water = new Water(MediaDir, ShadersDir);
-            water.LoadWorld(new TGCVector3(0, 3500, 0));                        
+            water.LoadWorld(new TGCVector3(0, 3500, 0));
             skyBox = new Sky(MediaDir, ShadersDir);
             skyBox.LoadSkyBox();
             #endregion
@@ -84,10 +84,9 @@ namespace TGC.Group.Model
 
             fishes = fishBuilder.CreateRandomFishes(30, positionRangeX, positionRangeZ);
             fishBuilder.LocateFishesInTerrain(terrain.world, fishes, water.world.Center.Y - 300);
-            
-            MeshDuplicator.InitOriginalMeshes();
-            var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 33, 4);
-            meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
+
+            MeshDuplicator.InitOriginalMeshes();            
+
             var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 33, 10);
             meshBuilder.LocateMeshesInTerrain(ref treeCorals, positionRangeX, positionRangeZ, terrain.world);
             var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 33, 10);
@@ -106,12 +105,11 @@ namespace TGC.Group.Model
             meshBuilder.LocateMeshesInTerrain(ref ironOreCommon, positionRangeX, positionRangeZ, terrain.world);
             var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 30, 8);
             meshBuilder.LocateMeshesInTerrain(ref rock, positionRangeX, positionRangeZ, terrain.world);
-            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 1200, 5);
+            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 100, 5);
             meshBuilder.LocateMeshesInTerrain(ref alga, positionRangeX, positionRangeZ, terrain.world);
-            var plant_1 = meshBuilder.CreateNewScaledMeshes(MeshType.plant_1, 400, 5);
+            var plant_1 = meshBuilder.CreateNewScaledMeshes(MeshType.plant_1, 60, 5);
             meshBuilder.LocateMeshesInTerrain(ref plant_1, positionRangeX, positionRangeZ, terrain.world);
 
-            corales.AddRange(normalCorals);
             corales.AddRange(treeCorals);
             corales.AddRange(spiralCorals);
             minerals.AddRange(goldOre);
@@ -124,13 +122,50 @@ namespace TGC.Group.Model
             vegetation.AddRange(alga);
             vegetation.AddRange(plant_1);
 
-            #endregion
 
+            // TODO: Habria que ver que tan util es esto.. porque me baja mucho los FPS..
+            var rangeXZ = terrain.world.getPositionRangeXZGivenY(500);
+
+            foreach (var range in rangeXZ)
+            {
+                positionRangeX = new Tuple<float, float>(range.X - 100, range.X + 100);
+                positionRangeZ = new Tuple<float, float>(range.Y - 100, range.Y + 100);
+
+                var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 10, 4);
+                meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
+                corales.AddRange(normalCorals);
+            }
+
+            rangeXZ = terrain.world.getPositionRangeXZGivenY(1700);
+
+            foreach (var range in rangeXZ)
+            {
+                positionRangeX = new Tuple<float, float>(range.X - 100, range.X + 100);
+                positionRangeZ = new Tuple<float, float>(range.Y - 100, range.Y + 100);
+
+                var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 10, 4);
+                meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
+                corales.AddRange(normalCorals);
+            }
+
+            rangeXZ = terrain.world.getPositionRangeXZGivenY(200);
+
+            foreach (var range in rangeXZ)
+            {
+                positionRangeX = new Tuple<float, float>(range.X - 100, range.X + 100);
+                positionRangeZ = new Tuple<float, float>(range.Y - 100, range.Y + 100);
+
+                var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 10, 4);
+                meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
+                corales.AddRange(normalCorals);
+            }
+
+            #endregion
         }
 
         public override void Update()
         {
-            PreUpdate();            
+            PreUpdate();
             PostUpdate();
         }
 
@@ -176,15 +211,15 @@ namespace TGC.Group.Model
             {
                 ore.UpdateMeshTransform();
                 ore.Render();
-
+            
             });
-
+            
             vegetation.ForEach(vegetation =>
             {
                 vegetation.AlphaBlendEnable = true;
                 vegetation.UpdateMeshTransform();
                 vegetation.Render();
-
+            
             });
 
             shark.Render();
@@ -192,7 +227,7 @@ namespace TGC.Group.Model
             {
                 fish.Mesh.UpdateMeshTransform();
                 fish.Render();
-
+            
             });
 
             #endregion
@@ -205,35 +240,34 @@ namespace TGC.Group.Model
             #region Liberacion de recursos
 
             ship.Dispose();
-            room.Dispose();            
+            room.Dispose();
             terrain.Dispose();
             water.Dispose();
             skyBox.Dispose();
             shark.Dispose();
+            fishes.ForEach(fish => fish.Dispose());
             corales.ForEach(coral => coral.Dispose());
             minerals.ForEach(ore => ore.Dispose());
-            vegetation.ForEach(vegetation => vegetation.Dispose());
-            fishes.ForEach(fish => fish.Dispose());
+            vegetation.ForEach(vegetation => vegetation.Dispose());            
 
             #endregion
         }
 
-        /* private float ObtenerMaximaAlturaTerreno()
-         {
-             var maximo = 0f;
-             for (int x = 0; x < terrainHeightmap.HeightmapData.GetLength(0); x++)
-             {
-                 for (int z = 0; z < terrainHeightmap.HeightmapData.GetLength(0); z++)
-                 {
-                     var posibleMaximo = terrainHeightmap.HeightmapData[x, z];
-                     if (maximo < terrainHeightmap.HeightmapData[x, z])
-                     {
-                         maximo = posibleMaximo;
-                     }
-                 }
-             }
-             return maximo;
-         }
-         */
+        //private float ObtenerMaximaAlturaTerreno()
+        //{
+        //    var maximo = 0f;
+        //    for (int x = 0; x < terrain.world.HeightmapData.GetLength(0); x++)
+        //    {
+        //        for (int z = 0; z < terrain.world.HeightmapData.GetLength(0); z++)
+        //        {
+        //            var posibleMaximo = terrain.world.HeightmapData[x, z];
+        //            if (maximo < terrain.world.HeightmapData[x, z])
+        //            {
+        //                maximo = posibleMaximo;
+        //            }
+        //        }
+        //    }
+        //    return maximo;
+        //}
     }
 }

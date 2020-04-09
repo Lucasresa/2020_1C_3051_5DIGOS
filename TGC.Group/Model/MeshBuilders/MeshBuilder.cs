@@ -42,8 +42,29 @@ namespace TGC.Group.Model.MeshBuilders
         #endregion
 
         #region Location
+        //public bool LocateMeshInTerrain(ref TgcMesh mesh, Tuple<float, float> positionRangeX, Tuple<float, float> positionRangeZ,
+        //                              SmartTerrain terrain)
+        //{
+        //    var XZPosition = getXZPositionByRange(positionRangeX, positionRangeZ);
+        //    var XPosition = XZPosition.Item1;
+        //    var ZPosition = XZPosition.Item2;
+        //    if (!terrain.interpoledHeight(XPosition, ZPosition, out float YPosition))
+        //        throw new Exception("The Mesh: " + mesh.Name + " calculated position was outside of terrain");
+        //    var MeshPosition = new TGCVector3(XPosition, YPosition, ZPosition);
+        //    mesh.Position = MeshPosition;
+        //    terrain.AdaptToSurface(mesh);
+        //    return true;
+        //}
+
+        //public void LocateMeshesInTerrain(ref List<TgcMesh> meshes, Tuple<float, float> positionRangeX, Tuple<float, float> positionRangeZ,
+        //                                     SmartTerrain terrain)
+        //{
+        //    meshes.ForEach(mesh => LocateMeshInTerrain(ref mesh, positionRangeX, positionRangeZ, terrain));
+        //}
+
+
         public bool LocateMeshInTerrain(ref TgcMesh mesh, Tuple<float, float> positionRangeX, Tuple<float, float> positionRangeZ,
-                                      SmartTerrain terrain)
+                                 SmartTerrain terrain)
         {
             var XZPosition = getXZPositionByRange(positionRangeX, positionRangeZ);
             var XPosition = XZPosition.Item1;
@@ -61,6 +82,7 @@ namespace TGC.Group.Model.MeshBuilders
         {
             meshes.ForEach(mesh => LocateMeshInTerrain(ref mesh, positionRangeX, positionRangeZ, terrain));
         }
+
         #endregion
 
         // Retorna una tupla con el valor de X y Z (X, Z)
