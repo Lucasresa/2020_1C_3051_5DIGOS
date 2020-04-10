@@ -38,6 +38,7 @@ namespace TGC.Group.Model
         private World water;
         private Shark shark;
         private MeshBuilder meshBuilder;
+        private bool showDebugInfo { get; set; }
         #endregion
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
@@ -82,11 +83,18 @@ namespace TGC.Group.Model
 
             #region Vegetacion del mundo
 
+            // TODO: La creacion del fish hay que agregarlo a meshbuilders
             fishes = fishBuilder.CreateRandomFishes(30, positionRangeX, positionRangeZ);
             fishBuilder.LocateFishesInTerrain(terrain.world, fishes, water.world.Center.Y - 300);
 
-            MeshDuplicator.InitOriginalMeshes();            
+            MeshDuplicator.InitOriginalMeshes();
+            meshInitializer();
+            
+            #endregion
+        }
 
+        private void meshInitializer()
+        {
             var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 33, 10);
             meshBuilder.LocateMeshesInTerrain(ref treeCorals, positionRangeX, positionRangeZ, terrain.world);
             var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 33, 10);
@@ -121,51 +129,15 @@ namespace TGC.Group.Model
             minerals.AddRange(rock);
             vegetation.AddRange(alga);
             vegetation.AddRange(plant_1);
-
-
-            // TODO: Habria que ver que tan util es esto.. porque me baja mucho los FPS..
-            var rangeXZ = terrain.world.getPositionRangeXZGivenY(500);
-
-            foreach (var range in rangeXZ)
-            {
-                positionRangeX = new Tuple<float, float>(range.X - 100, range.X + 100);
-                positionRangeZ = new Tuple<float, float>(range.Y - 100, range.Y + 100);
-
-                var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 10, 4);
-                meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
-                corales.AddRange(normalCorals);
-            }
-
-            rangeXZ = terrain.world.getPositionRangeXZGivenY(1700);
-
-            foreach (var range in rangeXZ)
-            {
-                positionRangeX = new Tuple<float, float>(range.X - 100, range.X + 100);
-                positionRangeZ = new Tuple<float, float>(range.Y - 100, range.Y + 100);
-
-                var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 10, 4);
-                meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
-                corales.AddRange(normalCorals);
-            }
-
-            rangeXZ = terrain.world.getPositionRangeXZGivenY(200);
-
-            foreach (var range in rangeXZ)
-            {
-                positionRangeX = new Tuple<float, float>(range.X - 100, range.X + 100);
-                positionRangeZ = new Tuple<float, float>(range.Y - 100, range.Y + 100);
-
-                var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 10, 4);
-                meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
-                corales.AddRange(normalCorals);
-            }
-
-            #endregion
         }
 
         public override void Update()
         {
             PreUpdate();
+
+            if (Input.keyPressed(Key.F))
+                showDebugInfo = !showDebugInfo;
+            
             PostUpdate();
         }
 
@@ -177,16 +149,19 @@ namespace TGC.Group.Model
 
             time += ElapsedTime;
 
-            DrawText.drawText("DATOS DE LA CAMARA: ", 0, 20, Color.Red);
-            DrawText.drawText("Posicion: [" + Camara.Position.X.ToString() + "; "
-                                          + Camara.Position.Y.ToString() + "; "
-                                          + Camara.Position.Z.ToString() + "] ",
-                              0, 60, Color.DarkRed);
-            DrawText.drawText("Objetivo: [" + Camara.LookAt.X.ToString() + "; "
-                                          + Camara.LookAt.Y.ToString() + "; "
-                                          + Camara.LookAt.Z.ToString() + "] ",
-                              0, 80, Color.DarkRed);
-            DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.DarkRed);
+            if (showDebugInfo)
+            {
+                DrawText.drawText("DATOS DE LA CAMARA: ", 0, 20, Color.Red);
+                DrawText.drawText("Posicion: [" + Camara.Position.X.ToString() + "; "
+                                              + Camara.Position.Y.ToString() + "; "
+                                              + Camara.Position.Z.ToString() + "] ",
+                                  0, 60, Color.DarkRed);
+                DrawText.drawText("Objetivo: [" + Camara.LookAt.X.ToString() + "; "
+                                              + Camara.LookAt.Y.ToString() + "; "
+                                              + Camara.LookAt.Z.ToString() + "] ",
+                                  0, 80, Color.DarkRed);
+                DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.DarkRed);
+            }
 
             #endregion
 
@@ -253,6 +228,46 @@ namespace TGC.Group.Model
             #endregion
         }
 
+
+        #region Codigo inutil
+
+        // TODO: Habria que ver que tan util es esto.. porque me baja mucho los FPS..
+        //var rangeXZ = terrain.world.getPositionRangeXZGivenY(500);
+        //
+        //foreach (var range in rangeXZ)
+        //{
+        //    positionRangeX = new Tuple<float, float>(range.X - 100, range.X + 100);
+        //    positionRangeZ = new Tuple<float, float>(range.Y - 100, range.Y + 100);
+        //
+        //    var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 20, 4);
+        //    meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
+        //    corales.AddRange(normalCorals);
+        //}
+        //
+        //rangeXZ = terrain.world.getPositionRangeXZGivenY(1700);
+        //
+        //foreach (var range in rangeXZ)
+        //{
+        //    positionRangeX = new Tuple<float, float>(range.X - 100, range.X + 100);
+        //    positionRangeZ = new Tuple<float, float>(range.Y - 100, range.Y + 100);
+        //
+        //    var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 10, 4);
+        //    meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
+        //    corales.AddRange(normalCorals);
+        //}
+        //
+        //rangeXZ = terrain.world.getPositionRangeXZGivenY(200);
+        //
+        //foreach (var range in rangeXZ)
+        //{
+        //    positionRangeX = new Tuple<float, float>(range.X - 100, range.X + 100);
+        //    positionRangeZ = new Tuple<float, float>(range.Y - 100, range.Y + 100);
+        //
+        //    var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 10, 4);
+        //    meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
+        //    corales.AddRange(normalCorals);
+        //}
+
         //private float ObtenerMaximaAlturaTerreno()
         //{
         //    var maximo = 0f;
@@ -269,5 +284,9 @@ namespace TGC.Group.Model
         //    }
         //    return maximo;
         //}
+
+        #endregion
+
+
     }
 }

@@ -489,7 +489,7 @@ namespace TGC.Group.Utils
         {
             List<TGCVector2> coords = new List<TGCVector2>();
 
-            float deltaY = 5f;
+            float deltaY = 5;
 
             for (int row = 0; row < HeightmapData.GetLength(0); row++)
             {
@@ -527,9 +527,7 @@ namespace TGC.Group.Utils
             return new TGCVector2(WorldPosX, WorldPosZ);
 
         }
-
-    
-
+        
         //public TGCVector2 getRandomXZ(List<TGCVector2> listXZPosition)
         //{
         //    Random random = new Random();
