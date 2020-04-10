@@ -49,9 +49,9 @@ namespace TGC.Group.Form
         private void GameForm_Load(object sender, EventArgs e)
         {
             //FullScreen, van en este orden para que queda oculta la barra de Windows.
-            //this.WindowState = FormWindowState.Normal;
-            //this.FormBorderStyle = FormBorderStyle.None;
-            //this.WindowState = FormWindowState.Maximized;
+            WindowState = FormWindowState.Normal;
+            FormBorderStyle = FormBorderStyle.None;
+            WindowState = FormWindowState.Maximized;
 
             //OriginalBorderStyle
             //this.FormBorderStyle = FormBorderStyle.Sizable;
