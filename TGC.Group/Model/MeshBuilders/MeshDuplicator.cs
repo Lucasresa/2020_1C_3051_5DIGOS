@@ -34,8 +34,7 @@ namespace TGC.Group.Model.MeshBuilders
             Meshes.Add(MeshType.silverOreCommon, new SilverOreCommon(MediaDir, TGCVector3.Empty, "silver-n"));
             Meshes.Add(MeshType.goldOreCommon, new GoldOreCommon(MediaDir, TGCVector3.Empty, "gold-n"));
             Meshes.Add(MeshType.rock, new Rock(MediaDir, TGCVector3.Empty, "rock-n"));
-            Meshes.Add(MeshType.alga, new Alga(MediaDir, TGCVector3.Empty, "alga"));
-            Meshes.Add(MeshType.plant_1, new Plant(MediaDir, TGCVector3.Empty, "Arbusto"));            
+            Meshes.Add(MeshType.alga, new Alga(MediaDir, TGCVector3.Empty, "alga"));           
         }
 
         public static TgcMesh GetDuplicateMesh(MeshType meshType)

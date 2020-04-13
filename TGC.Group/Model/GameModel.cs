@@ -113,11 +113,9 @@ namespace TGC.Group.Model
             meshBuilder.LocateMeshesInTerrain(ref ironOreCommon, positionRangeX, positionRangeZ, terrain.world);
             var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 30, 8);
             meshBuilder.LocateMeshesInTerrain(ref rock, positionRangeX, positionRangeZ, terrain.world);
-            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 100, 5);
+            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 200, 5);
             meshBuilder.LocateMeshesInTerrain(ref alga, positionRangeX, positionRangeZ, terrain.world);
-            var plant_1 = meshBuilder.CreateNewScaledMeshes(MeshType.plant_1, 60, 5);
-            meshBuilder.LocateMeshesInTerrain(ref plant_1, positionRangeX, positionRangeZ, terrain.world);
-
+           
             corales.AddRange(treeCorals);
             corales.AddRange(spiralCorals);
             minerals.AddRange(goldOre);
@@ -128,7 +126,6 @@ namespace TGC.Group.Model
             minerals.AddRange(ironOreCommon);
             minerals.AddRange(rock);
             vegetation.AddRange(alga);
-            vegetation.AddRange(plant_1);
         }
 
         public override void Update()
@@ -165,16 +162,13 @@ namespace TGC.Group.Model
 
             #endregion
 
-            // TODO: Habilito la habitacion para que se muestre en un rango de tiempo
-            if (time <= 30 && time >= 20)
-                room.Render();
-
             #region Renderizado
 
             terrain.Render();
             water.Render();
             skyBox.Render();
             ship.Render();
+            room.Render();
 
             corales.ForEach(coral =>
             {
@@ -227,66 +221,5 @@ namespace TGC.Group.Model
 
             #endregion
         }
-
-
-        #region Codigo inutil
-
-        // TODO: Habria que ver que tan util es esto.. porque me baja mucho los FPS..
-        //var rangeXZ = terrain.world.getPositionRangeXZGivenY(500);
-        //
-        //foreach (var range in rangeXZ)
-        //{
-        //    positionRangeX = new Tuple<float, float>(range.X - 100, range.X + 100);
-        //    positionRangeZ = new Tuple<float, float>(range.Y - 100, range.Y + 100);
-        //
-        //    var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 20, 4);
-        //    meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
-        //    corales.AddRange(normalCorals);
-        //}
-        //
-        //rangeXZ = terrain.world.getPositionRangeXZGivenY(1700);
-        //
-        //foreach (var range in rangeXZ)
-        //{
-        //    positionRangeX = new Tuple<float, float>(range.X - 100, range.X + 100);
-        //    positionRangeZ = new Tuple<float, float>(range.Y - 100, range.Y + 100);
-        //
-        //    var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 10, 4);
-        //    meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
-        //    corales.AddRange(normalCorals);
-        //}
-        //
-        //rangeXZ = terrain.world.getPositionRangeXZGivenY(200);
-        //
-        //foreach (var range in rangeXZ)
-        //{
-        //    positionRangeX = new Tuple<float, float>(range.X - 100, range.X + 100);
-        //    positionRangeZ = new Tuple<float, float>(range.Y - 100, range.Y + 100);
-        //
-        //    var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 10, 4);
-        //    meshBuilder.LocateMeshesInTerrain(ref normalCorals, positionRangeX, positionRangeZ, terrain.world);
-        //    corales.AddRange(normalCorals);
-        //}
-
-        //private float ObtenerMaximaAlturaTerreno()
-        //{
-        //    var maximo = 0f;
-        //    for (int x = 0; x < terrain.world.HeightmapData.GetLength(0); x++)
-        //    {
-        //        for (int z = 0; z < terrain.world.HeightmapData.GetLength(0); z++)
-        //        {
-        //            var posibleMaximo = terrain.world.HeightmapData[x, z];
-        //            if (maximo < terrain.world.HeightmapData[x, z])
-        //            {
-        //                maximo = posibleMaximo;
-        //            }
-        //        }
-        //    }
-        //    return maximo;
-        //}
-
-        #endregion
-
-
     }
 }

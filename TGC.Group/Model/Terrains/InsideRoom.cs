@@ -31,7 +31,7 @@ namespace TGC.Group.Model.Terrains
             Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME, MediaDir + "\\");
             Mesh.Meshes.ForEach(paredes => {
                 paredes.Scale = new TGCVector3(10.5f, 10.5f, 10.5f);
-                paredes.Position = new TGCVector3(350, 4500, -45);
+                paredes.Position = new TGCVector3(350, -2500, -45);
             });
 
         }

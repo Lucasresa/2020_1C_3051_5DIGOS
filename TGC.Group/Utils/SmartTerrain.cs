@@ -528,13 +528,6 @@ namespace TGC.Group.Utils
 
         }
         
-        //public TGCVector2 getRandomXZ(List<TGCVector2> listXZPosition)
-        //{
-        //    Random random = new Random();
-        //    var index = random.Next(0, listXZPosition.Count);            
-        //    return listXZPosition[index];
-        //}
-
         /// <summary>
         ///     Coloca el objeto a la altura correspondiente segun su posicion en el terreno.
         ///     Retorna false si esta fuera del terreno.
@@ -549,8 +542,7 @@ namespace TGC.Group.Utils
             return true;
         }
 
-        //TODO: Este codigo deberia ir en otro lado 
-        public TGCVector3 NormalEnPunto(float X, float Z)
+        public TGCVector3 NormalVectorGivenXZ(float X, float Z)
         {
             float delta = 0.3f;
 
@@ -565,25 +557,9 @@ namespace TGC.Group.Utils
             return TGCVector3.Cross(vectorNS, vectorEO);
         }
 
-        //TODO: Este codigo deberia ir en otro lado
-        public void RotarObjetoEnFuncionDelTerreno(ITransformObject o)
-        {
-            TGCVector3 normalObjeto = NormalEnPunto(o.Position.X, o.Position.Z);
-
-            var moduloNormalObjeto = TGCVector3.Length(normalObjeto);
-
-            var anguloRotZ = FastMath.Acos(normalObjeto.Y / moduloNormalObjeto);
-            var anguloRotX = FastMath.Acos(normalObjeto.Z / moduloNormalObjeto);
-            var anguloRotY = FastMath.Acos(normalObjeto.X / moduloNormalObjeto);
-
-            o.RotateZ(anguloRotZ);
-            o.RotateX(anguloRotX);
-            o.RotateX(anguloRotY);
-        }
-        //TODO: Esto habria que ver si lo dejamos porque anda masomenos y no se entiende bien
         public void AdaptToSurface(ITransformObject o)
         {
-            var normalObjeto = NormalEnPunto(o.Position.X, o.Position.Z);
+            var normalObjeto = NormalVectorGivenXZ(o.Position.X, o.Position.Z);
 
             var objectInclinationX = FastMath.Atan2(normalObjeto.X, normalObjeto.Y) * -FastMath.Sin(0);
             var objectInclinationZ = FastMath.Atan2(normalObjeto.X, normalObjeto.Y) * FastMath.Cos(0);
