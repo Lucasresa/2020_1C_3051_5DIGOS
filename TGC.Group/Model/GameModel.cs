@@ -30,7 +30,6 @@ namespace TGC.Group.Model
         private List<TgcMesh> vegetation = new List<TgcMesh>();
         private List<Fish> fishes;
         private Sky skyBox;
-        private InsideRoom room;
         private Dictionary<string, Perimeter> area;
         private Ship ship;
         private Tuple<float, float> positionRangeX = new Tuple<float, float>(-2900, 2900);
@@ -56,7 +55,7 @@ namespace TGC.Group.Model
         public override void Init()
         {
             #region Camara
-            Camara = new CameraFPS(Input, new TGCVector3(335, -1585, -560));
+            Camara = new CameraFPS(Input, new TGCVector3(515, -2338, -40));
             #endregion
 
             #region Mundo            
@@ -69,16 +68,10 @@ namespace TGC.Group.Model
             skyBox.LoadSkyBox();
             #endregion
 
-            area = terrain.getArea(Camara.Position.X, Camara.Position.Z);
-            
+                      
             #region Nave
             ship = new Ship(MediaDir, ShadersDir);
             ship.LoadShip();
-            #endregion
-
-            #region Interior de la Nave            
-            room = new InsideRoom(MediaDir, ShadersDir);
-            room.LoadRoom();
             #endregion
 
             #region Enemigo
@@ -137,12 +130,26 @@ namespace TGC.Group.Model
         {
             PreUpdate();
 
+            area = terrain.getArea(Camara.Position.X, Camara.Position.Z);
+
             if (Input.keyPressed(Key.F))
                 showDebugInfo = !showDebugInfo;
 
-            area = terrain.getArea(Camara.Position.X, Camara.Position.Z);
+            if (Input.keyPressed(Key.E) && camaraInRoom())
+            {
+                var position = new TGCVector3(1300, 3505, 20);
+                Camara = new CameraFPS(Input, position);
+            }
 
             PostUpdate();
+        }
+
+        private bool camaraInRoom()
+        {
+            // TODO: Cambiar el delta cuando podamos construir el -BoundingBox-
+            float delta = 300;
+            return ship.InsideMesh.Position.Y - delta < Camara.Position.Y &&
+                   Camara.Position.Y < ship.InsideMesh.Position.Y + delta;
         }
 
         public override void Render()
@@ -203,7 +210,6 @@ namespace TGC.Group.Model
             water.Render();
             skyBox.Render();
             ship.Render();
-            room.Render();
 
             corales.ForEach(coral =>
             {
@@ -244,7 +250,6 @@ namespace TGC.Group.Model
             #region Liberacion de recursos
 
             ship.Dispose();
-            room.Dispose();
             terrain.Dispose();
             water.Dispose();
             skyBox.Dispose();

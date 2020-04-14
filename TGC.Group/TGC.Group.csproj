@@ -121,7 +121,6 @@
     <Compile Include="Model\Minerals\SilverOre.cs" />
     <Compile Include="Model\Minerals\IronOre.cs" />
     <Compile Include="Model\Fishes\Shark.cs" />
-    <Compile Include="Model\Terrains\InsideRoom.cs" />
     <Compile Include="Model\Terrains\Sky.cs" />
     <Compile Include="Model\Terrains\Terrain.cs" />
     <Compile Include="Model\Terrains\Water.cs" />

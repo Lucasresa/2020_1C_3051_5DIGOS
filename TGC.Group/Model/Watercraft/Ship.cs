@@ -16,6 +16,7 @@ namespace TGC.Group.Model.Watercraft
         private string ShadersDir;
 
         public TgcMesh Mesh;
+        public TgcMesh InsideMesh;
 
         public Ship(string mediaDir, string shadersDir)
         {
@@ -26,12 +27,16 @@ namespace TGC.Group.Model.Watercraft
 
         public virtual void Render()
         {
+            Mesh.UpdateMeshTransform();
             Mesh.Render();
+            InsideMesh.UpdateMeshTransform();
+            InsideMesh.Render();
         }
 
         public virtual void Dispose()
         {
             Mesh.Dispose();
+            InsideMesh.Dispose();
         }
 
         public void LoadShip()
@@ -40,6 +45,12 @@ namespace TGC.Group.Model.Watercraft
             Mesh.Scale = new TGCVector3(10, 10, 10);
             Mesh.Position = new TGCVector3(530, 3630, 100);
             Mesh.Rotation = new TGCVector3(-13, 1, 270);
+
+            InsideMesh = Mesh.createMeshInstance("InsideRoom");
+            InsideMesh.Position = new TGCVector3(350, -2500, -45);
+            InsideMesh.Scale = new TGCVector3(10, 10, 10);
+            InsideMesh.RotateY(FastMath.PI_HALF);
+            
         }
     }
 }
