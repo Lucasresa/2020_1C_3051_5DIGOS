@@ -68,7 +68,7 @@ namespace TGC.Group.Model
             skyBox.LoadSkyBox();
             #endregion
 
-                      
+
             #region Nave
             ship = new Ship(MediaDir, ShadersDir);
             ship.LoadShip();
@@ -86,9 +86,123 @@ namespace TGC.Group.Model
 
             MeshDuplicator.InitOriginalMeshes();
             meshInitializer();
-            
+
             #endregion
 
+        }
+
+        public override void Update()
+        {
+            PreUpdate();
+
+            area = terrain.getArea(Camara.Position.X, Camara.Position.Z);
+
+            if (Input.keyPressed(Key.F))
+                showDebugInfo = !showDebugInfo;
+
+            if (Input.keyPressed(Key.E) && camaraInRoom())
+            {
+                var position = new TGCVector3(1300, 3505, 20);
+                Camara = new CameraFPS(Input, position);
+            }
+
+            PostUpdate();
+        }
+
+        public override void Render()
+        {
+            PreRender();
+
+            #region Texto en pantalla
+
+            time += ElapsedTime;
+
+            if (showDebugInfo)
+            {
+                DrawText.drawText("DATOS DE LA CAMARA: ", 0, 30, Color.Red);
+                DrawText.drawText("Posicion: [" + Camara.Position.X.ToString() + "; "
+                                              + Camara.Position.Y.ToString() + "; "
+                                              + Camara.Position.Z.ToString() + "] ",
+                                  0, 60, Color.DarkRed);
+                DrawText.drawText("Objetivo: [" + Camara.LookAt.X.ToString() + "; "
+                                              + Camara.LookAt.Y.ToString() + "; "
+                                              + Camara.LookAt.Z.ToString() + "] ",
+                                  0, 80, Color.DarkRed);
+                DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.DarkRed);
+
+                foreach (var item in area)
+                {
+                    DrawText.drawText("DATOS DEL AREA: " + item.Key.ToString(), 0, 130, Color.Red);
+
+                    DrawText.drawText("RANGO DE X: " +
+                                        "\nMinimo " + item.Value.xMin.ToString() +
+                                        "\nMaximo " + item.Value.xMax.ToString() + "\n\n" +
+
+                                      "RANGO DE Z: " +
+                                        "\nMinimo " + item.Value.zMin.ToString() +
+                                        "\nMaximo " + item.Value.zMax.ToString(),
+                                 0, 160, Color.DarkRed);
+                }
+            }
+
+            #endregion
+
+            #region Renderizado
+
+            terrain.Render();
+            water.Render();
+            skyBox.Render();
+            ship.Render();
+
+            corales.ForEach(coral =>
+            {
+                coral.UpdateMeshTransform();
+                coral.Render();
+            });
+
+            minerals.ForEach(ore =>
+            {
+                ore.UpdateMeshTransform();
+                ore.Render();
+
+            });
+
+            vegetation.ForEach(vegetation =>
+            {
+                vegetation.AlphaBlendEnable = true;
+                vegetation.UpdateMeshTransform();
+                vegetation.Render();
+
+            });
+
+            shark.Render();
+            fishes.ForEach(fish =>
+            {
+                fish.Mesh.UpdateMeshTransform();
+                fish.Render();
+
+            });
+
+            #endregion
+
+            PostRender();
+        }
+
+        public override void Dispose()
+        {
+            #region Liberacion de recursos
+
+            ship.Dispose();
+            terrain.Dispose();
+            water.Dispose();
+            skyBox.Dispose();
+            shark.Dispose();
+            fishes.ForEach(fish => fish.Dispose());
+            corales.ForEach(coral => coral.Dispose());
+            minerals.ForEach(ore => ore.Dispose());
+            vegetation.ForEach(vegetation => vegetation.Dispose());
+
+            #endregion
         }
 
         private void meshInitializer()
@@ -113,7 +227,7 @@ namespace TGC.Group.Model
             meshBuilder.LocateMeshesInTerrain(ref rock, positionRangeX, positionRangeZ, terrain.world);
             var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 200, 5);
             meshBuilder.LocateMeshesInTerrain(ref alga, positionRangeX, positionRangeZ, terrain.world);
-           
+
             corales.AddRange(treeCorals);
             corales.AddRange(spiralCorals);
             minerals.AddRange(goldOre);
@@ -126,140 +240,12 @@ namespace TGC.Group.Model
             vegetation.AddRange(alga);
         }
 
-        public override void Update()
-        {
-            PreUpdate();
-
-            area = terrain.getArea(Camara.Position.X, Camara.Position.Z);
-
-            if (Input.keyPressed(Key.F))
-                showDebugInfo = !showDebugInfo;
-
-            if (Input.keyPressed(Key.E) && camaraInRoom())
-            {
-                var position = new TGCVector3(1300, 3505, 20);
-                Camara = new CameraFPS(Input, position);
-            }
-
-            PostUpdate();
-        }
-
         private bool camaraInRoom()
         {
             // TODO: Cambiar el delta cuando podamos construir el -BoundingBox-
             float delta = 300;
             return ship.InsideMesh.Position.Y - delta < Camara.Position.Y &&
                    Camara.Position.Y < ship.InsideMesh.Position.Y + delta;
-        }
-
-        public override void Render()
-        {
-            PreRender();
-
-            #region Texto en pantalla
-
-            time += ElapsedTime;
-
-            if (showDebugInfo)
-            {
-                DrawText.drawText("DATOS DE LA CAMARA: ", 0, 30, Color.Red);
-                DrawText.drawText("Posicion: [" + Camara.Position.X.ToString() + "; "
-                                              + Camara.Position.Y.ToString() + "; "
-                                              + Camara.Position.Z.ToString() + "] ",
-                                  0, 60, Color.DarkRed);
-                DrawText.drawText("Objetivo: [" + Camara.LookAt.X.ToString() + "; "
-                                              + Camara.LookAt.Y.ToString() + "; "
-                                              + Camara.LookAt.Z.ToString() + "] ",
-                                  0, 80, Color.DarkRed);
-                DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.DarkRed);
-
-                
-
-                foreach (var item in area)
-                {
-                    DrawText.drawText("DATOS DEL AREA: " + item.Key.ToString(), 0, 130, Color.Red);
-
-                    DrawText.drawText("RANGO DE X: " +
-                                        "\nMinimo " + item.Value.xMin.ToString() +
-                                        "\nMaximo " + item.Value.xMax.ToString() + "\n\n" +
-                                                      
-                                      "RANGO DE Z: " +
-                                        "\nMinimo " + item.Value.zMin.ToString() +
-                                        "\nMaximo " + item.Value.zMax.ToString(),
-                                 0, 160, Color.DarkRed);
-                }
-
-
-                
-
-                //DrawText.drawText("RANGO DE X: " +
-                //                    "\nMinimo " + area.xMin.ToString() +
-                //                    "\nMaximo " + area.xMax.ToString() +
-                //                  "\n\n" +
-                //                  "RANGO DE Z: " +
-                //                    "\nMinimo " + area.zMin.ToString() +
-                //                    "\nMaximo " + area.zMax.ToString(),
-                //                 0, 160, Color.DarkRed);
-            }
-
-            #endregion
-
-            #region Renderizado
-
-            terrain.Render();
-            water.Render();
-            skyBox.Render();
-            ship.Render();
-
-            corales.ForEach(coral =>
-            {
-                coral.UpdateMeshTransform();
-                coral.Render();
-            });
-
-            minerals.ForEach(ore =>
-            {
-                ore.UpdateMeshTransform();
-                ore.Render();
-            
-            });
-            
-            vegetation.ForEach(vegetation =>
-            {
-                vegetation.AlphaBlendEnable = true;
-                vegetation.UpdateMeshTransform();
-                vegetation.Render();
-            
-            });
-
-            shark.Render();
-            fishes.ForEach(fish =>
-            {
-                fish.Mesh.UpdateMeshTransform();
-                fish.Render();
-            
-            });
-
-            #endregion
-
-            PostRender();
-        }
-
-        public override void Dispose()
-        {
-            #region Liberacion de recursos
-
-            ship.Dispose();
-            terrain.Dispose();
-            water.Dispose();
-            skyBox.Dispose();
-            shark.Dispose();
-            fishes.ForEach(fish => fish.Dispose());
-            corales.ForEach(coral => coral.Dispose());
-            minerals.ForEach(ore => ore.Dispose());
-            vegetation.ForEach(vegetation => vegetation.Dispose());            
-
-            #endregion
         }
     }
 }
