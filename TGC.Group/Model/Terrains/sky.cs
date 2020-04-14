@@ -21,7 +21,7 @@ namespace TGC.Group.Model.Terrains
         {
             sky = new TgcSkyBox
             {
-                Size = new TGCVector3(7000, 7000, 7000),
+                Size = new TGCVector3(15000, 15000, 15000),
                 Center = new TGCVector3(0, 1500, 0)
             };
 

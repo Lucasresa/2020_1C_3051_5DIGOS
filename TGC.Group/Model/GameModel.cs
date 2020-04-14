@@ -50,12 +50,13 @@ namespace TGC.Group.Model
             fishBuilder = new FishBuilder(mediaDir);
             meshBuilder = new MeshBuilder();
             MeshDuplicator.MediaDir = mediaDir;
+            D3DDevice.Instance.ZFarPlaneDistance = 16000f;
         }
 
         public override void Init()
-        {
-            #region Camara
-            Camara = new CameraFPS(Input, new TGCVector3(515, -2338, -40));
+        {            
+            #region Camara            
+            Camara = new CameraFPS(Input, new TGCVector3(515, -2338, -40));   
             #endregion
 
             #region Mundo            
@@ -67,8 +68,7 @@ namespace TGC.Group.Model
             skyBox = new Sky(MediaDir, ShadersDir);
             skyBox.LoadSkyBox();
             #endregion
-
-
+                        
             #region Nave
             ship = new Ship(MediaDir, ShadersDir);
             ship.LoadShip();
