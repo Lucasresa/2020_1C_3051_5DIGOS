@@ -17,6 +17,7 @@ using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Fishes;
 using TGC.Group.Model.MeshBuilders;
 using TGC.Group.Model.Watercraft;
+using static TGC.Group.Model.Terrains.Terrain;
 
 namespace TGC.Group.Model
 {
@@ -30,6 +31,7 @@ namespace TGC.Group.Model
         private List<Fish> fishes;
         private Sky skyBox;
         private InsideRoom room;
+        private Perimeter area;
         private Ship ship;
         private Tuple<float, float> positionRangeX = new Tuple<float, float>(-2900, 2900);
         private Tuple<float, float> positionRangeZ = new Tuple<float, float>(-2900, 2900);
@@ -54,18 +56,21 @@ namespace TGC.Group.Model
         public override void Init()
         {
             #region Camara
-            Camara = new CameraFPS(Input);
+            Camara = new CameraFPS(Input, new TGCVector3(335, -1585, -560));
             #endregion
 
             #region Mundo            
             terrain = new Terrain(MediaDir, ShadersDir);
             terrain.LoadWorld(TGCVector3.Empty);
+            terrain.splitToArea();
             water = new Water(MediaDir, ShadersDir);
             water.LoadWorld(new TGCVector3(0, 3500, 0));
             skyBox = new Sky(MediaDir, ShadersDir);
             skyBox.LoadSkyBox();
             #endregion
 
+            area = terrain.getArea(2, 3);            
+            
             #region Nave
             ship = new Ship(MediaDir, ShadersDir);
             ship.LoadShip();
@@ -83,7 +88,6 @@ namespace TGC.Group.Model
 
             #region Vegetacion del mundo
 
-            // TODO: La creacion del fish hay que agregarlo a meshbuilders
             fishes = fishBuilder.CreateRandomFishes(30, positionRangeX, positionRangeZ);
             fishBuilder.LocateFishesInTerrain(terrain.world, fishes, water.world.Center.Y - 300);
 
@@ -91,6 +95,7 @@ namespace TGC.Group.Model
             meshInitializer();
             
             #endregion
+
         }
 
         private void meshInitializer()
@@ -148,7 +153,7 @@ namespace TGC.Group.Model
 
             if (showDebugInfo)
             {
-                DrawText.drawText("DATOS DE LA CAMARA: ", 0, 20, Color.Red);
+                DrawText.drawText("DATOS DE LA CAMARA: ", 0, 30, Color.Red);
                 DrawText.drawText("Posicion: [" + Camara.Position.X.ToString() + "; "
                                               + Camara.Position.Y.ToString() + "; "
                                               + Camara.Position.Z.ToString() + "] ",
@@ -158,6 +163,17 @@ namespace TGC.Group.Model
                                               + Camara.LookAt.Z.ToString() + "] ",
                                   0, 80, Color.DarkRed);
                 DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.DarkRed);
+
+                DrawText.drawText("DATOS DEL AREA: ", 0, 130, Color.Red);
+
+                DrawText.drawText("RANGO DE X: " +
+                                    "\nMinimo " + area.xMin.ToString() +
+                                    "\nMaximo " + area.xMax.ToString() +
+                                  "\n\n" +
+                                  "RANGO DE Z: " +
+                                    "\nMinimo " + area.zMin.ToString() +
+                                    "\nMaximo " + area.zMax.ToString(),
+                                 0, 160, Color.DarkRed);
             }
 
             #endregion

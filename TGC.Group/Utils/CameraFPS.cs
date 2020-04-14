@@ -40,6 +40,8 @@ namespace TGC.Group.Utils
         
         #endregion
 
+        // TODO: Agregar un metodo o encontrar la forma de girar el punto de vista de la camara
+
         #region Constructores
         public CameraFPS(TgcD3dInput input)
         {
@@ -49,7 +51,7 @@ namespace TGC.Group.Utils
 
         public CameraFPS(TgcD3dInput input, TGCVector3 pos) : this(input)
         {
-            position = pos;            
+            position = pos;
             cameraRotation = TGCMatrix.RotationX(latitude) * TGCMatrix.RotationY(longitude);
         }
         #endregion

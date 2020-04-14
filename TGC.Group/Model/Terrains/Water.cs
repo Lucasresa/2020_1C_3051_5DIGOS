@@ -1,4 +1,5 @@
 ﻿using TGC.Core.Mathematica;
+using static TGC.Group.Model.Terrains.Terrain;
 
 namespace TGC.Group.Model.Terrains
 {
@@ -15,5 +16,16 @@ namespace TGC.Group.Model.Terrains
             SCALEY = 1;
             base.LoadWorld(position);
         }
+
+        public override Perimeter getArea(float fila, float columna)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void splitToArea()
+        {
+            throw new System.NotImplementedException();
+        }
+
     }
 }

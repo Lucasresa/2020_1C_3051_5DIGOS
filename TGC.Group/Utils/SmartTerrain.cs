@@ -513,7 +513,7 @@ namespace TGC.Group.Utils
             return coords;
         }    
 
-        private TGCVector2 xzWorldToHeightmap(float x, float z)
+        public TGCVector2 xzWorldToHeightmap(float x, float z)
         {
             var WorldPosX = (x + traslation.X) * ScaleXZ;
             var WorldPosZ = (z + traslation.Z) * ScaleXZ;
@@ -527,7 +527,12 @@ namespace TGC.Group.Utils
             return new TGCVector2(WorldPosX, WorldPosZ);
 
         }
-        
+
+        public float convertToWorld(float pos)
+        {
+            return (pos + traslation.X) * ScaleXZ;
+        }
+
         /// <summary>
         ///     Coloca el objeto a la altura correspondiente segun su posicion en el terreno.
         ///     Retorna false si esta fuera del terreno.

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.Mathematica;
 using TGC.Group.Utils;
+using static TGC.Group.Model.Terrains.Terrain;
 
 namespace TGC.Group.Model.Terrains
 {
@@ -32,11 +33,6 @@ namespace TGC.Group.Model.Terrains
             world.render();
         }
 
-        public virtual void Update()
-        {
-
-        }
-
         public virtual void Dispose()
         {
             world.dispose();
@@ -55,5 +51,9 @@ namespace TGC.Group.Model.Terrains
 
             return new Tuple<float, float>(sizeX, sizeZ);
         }
+
+        public abstract Perimeter getArea(float fila, float columna);
+        public abstract void splitToArea();
+      
     }
 }
