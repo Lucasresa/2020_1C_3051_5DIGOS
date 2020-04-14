@@ -1,4 +1,5 @@
-﻿using TGC.Core.Mathematica;
+﻿using System.Collections.Generic;
+using TGC.Core.Mathematica;
 using static TGC.Group.Model.Terrains.Terrain;
 
 namespace TGC.Group.Model.Terrains
@@ -17,7 +18,7 @@ namespace TGC.Group.Model.Terrains
             base.LoadWorld(position);
         }
 
-        public override Perimeter getArea(float fila, float columna)
+        public override Dictionary<string, Perimeter> getArea(float fila, float columna)
         {
             throw new System.NotImplementedException();
         }

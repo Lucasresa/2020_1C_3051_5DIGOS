@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace TGC.Group.Model.Terrains
 {
@@ -25,11 +26,14 @@ namespace TGC.Group.Model.Terrains
             FILE_TEXTURES = "Textures\\sandy.png";            
         }
 
-        // TODO: Hay que modificar el metodo getArea para que le pase la posicion de la camara y este me devuelva el area al que pertenece
-
-        public override Perimeter getArea(float posX, float posZ)
+        public override Dictionary<string, Perimeter> getArea(float posX, float posZ)
         {
-            return areas["Area" + posX.ToString() + posZ.ToString()];
+            IEnumerable<KeyValuePair<string, Perimeter>> area = 
+            areas.Where(pair => pair.Value.xMin < posX && posX < pair.Value.xMax &&
+                                pair.Value.zMin < posZ && posZ < pair.Value.zMax
+                       );
+
+            return area.ToDictionary(x => x.Key, x => x.Value);            
         }
 
         public override void splitToArea()

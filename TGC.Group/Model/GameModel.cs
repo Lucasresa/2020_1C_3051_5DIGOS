@@ -31,7 +31,7 @@ namespace TGC.Group.Model
         private List<Fish> fishes;
         private Sky skyBox;
         private InsideRoom room;
-        private Perimeter area;
+        private Dictionary<string, Perimeter> area;
         private Ship ship;
         private Tuple<float, float> positionRangeX = new Tuple<float, float>(-2900, 2900);
         private Tuple<float, float> positionRangeZ = new Tuple<float, float>(-2900, 2900);
@@ -69,7 +69,7 @@ namespace TGC.Group.Model
             skyBox.LoadSkyBox();
             #endregion
 
-            area = terrain.getArea(2, 3);            
+            area = terrain.getArea(Camara.Position.X, Camara.Position.Z);
             
             #region Nave
             ship = new Ship(MediaDir, ShadersDir);
@@ -139,7 +139,9 @@ namespace TGC.Group.Model
 
             if (Input.keyPressed(Key.F))
                 showDebugInfo = !showDebugInfo;
-            
+
+            area = terrain.getArea(Camara.Position.X, Camara.Position.Z);
+
             PostUpdate();
         }
 
@@ -164,16 +166,33 @@ namespace TGC.Group.Model
                                   0, 80, Color.DarkRed);
                 DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.DarkRed);
 
-                DrawText.drawText("DATOS DEL AREA: ", 0, 130, Color.Red);
+                
 
-                DrawText.drawText("RANGO DE X: " +
-                                    "\nMinimo " + area.xMin.ToString() +
-                                    "\nMaximo " + area.xMax.ToString() +
-                                  "\n\n" +
-                                  "RANGO DE Z: " +
-                                    "\nMinimo " + area.zMin.ToString() +
-                                    "\nMaximo " + area.zMax.ToString(),
+                foreach (var item in area)
+                {
+                    DrawText.drawText("DATOS DEL AREA: " + item.Key.ToString(), 0, 130, Color.Red);
+
+                    DrawText.drawText("RANGO DE X: " +
+                                        "\nMinimo " + item.Value.xMin.ToString() +
+                                        "\nMaximo " + item.Value.xMax.ToString() + "\n\n" +
+                                                      
+                                      "RANGO DE Z: " +
+                                        "\nMinimo " + item.Value.zMin.ToString() +
+                                        "\nMaximo " + item.Value.zMax.ToString(),
                                  0, 160, Color.DarkRed);
+                }
+
+
+                
+
+                //DrawText.drawText("RANGO DE X: " +
+                //                    "\nMinimo " + area.xMin.ToString() +
+                //                    "\nMaximo " + area.xMax.ToString() +
+                //                  "\n\n" +
+                //                  "RANGO DE Z: " +
+                //                    "\nMinimo " + area.zMin.ToString() +
+                //                    "\nMaximo " + area.zMax.ToString(),
+                //                 0, 160, Color.DarkRed);
             }
 
             #endregion

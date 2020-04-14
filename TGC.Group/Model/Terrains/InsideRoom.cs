@@ -33,7 +33,6 @@ namespace TGC.Group.Model.Terrains
                 paredes.Scale = new TGCVector3(10.5f, 10.5f, 10.5f);
                 paredes.Position = new TGCVector3(350, -2500, -45);
             });
-
         }
 
         public virtual void Render()
