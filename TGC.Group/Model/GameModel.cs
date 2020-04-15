@@ -69,7 +69,7 @@ namespace TGC.Group.Model
             skyBox = new Sky(MediaDir, ShadersDir);
             skyBox.LoadSkyBox();
             #endregion
-                        
+
             #region Nave
             ship = new Ship(MediaDir, ShadersDir);
             ship.LoadShip();
@@ -104,7 +104,8 @@ namespace TGC.Group.Model
             if (Input.keyPressed(Key.E) && camaraInRoom())
             {
                 var position = new TGCVector3(1300, 3505, 20);
-                Camara = new CameraFPS(Input, position);
+                //Camara = new CameraFPS(Input, position);
+                ((CameraFPS)Camara).TeleportCamera(position);
             }
 
             PostUpdate();
