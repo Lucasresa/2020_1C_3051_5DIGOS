@@ -14,8 +14,8 @@ namespace TGC.Group.Model.Terrains
         protected string FILE_HEIGHTMAPS;
         protected string FILE_TEXTURES;
 
-        protected float SCALEXZ = 60f; // Antes era 20
-        protected float SCALEY = 8.4f; // Antes era 8.4
+        protected float SCALEXZ = 60f;
+        protected float SCALEY = 8.4f;
 
         public SmartTerrain world = new SmartTerrain();
 
@@ -52,7 +52,7 @@ namespace TGC.Group.Model.Terrains
             return new Tuple<float, float>(sizeX, sizeZ);
         }
 
-        public abstract Dictionary<string, Perimeter> getArea(float fila, float columna);
+        public abstract Perimeter getArea(float fila, float columna);
         public abstract void splitToArea();
       
     }

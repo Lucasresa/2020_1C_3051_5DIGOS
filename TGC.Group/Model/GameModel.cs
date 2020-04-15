@@ -30,7 +30,7 @@ namespace TGC.Group.Model
         private List<TgcMesh> vegetation = new List<TgcMesh>();
         private List<Fish> fishes;
         private Sky skyBox;
-        private Dictionary<string, Perimeter> area;
+        private Perimeter currentCameraArea;
         private Ship ship;
         private Tuple<float, float> positionRangeX = new Tuple<float, float>(-2900, 2900);
         private Tuple<float, float> positionRangeZ = new Tuple<float, float>(-2900, 2900);
@@ -55,7 +55,8 @@ namespace TGC.Group.Model
 
         public override void Init()
         {            
-            #region Camara            
+            #region Camara 
+            //TODO: Mover estas posiciones fijas a constantes y posteriormente a un archivo de config
             Camara = new CameraFPS(Input, new TGCVector3(515, -2338, -40));   
             #endregion
 
@@ -95,7 +96,7 @@ namespace TGC.Group.Model
         {
             PreUpdate();
 
-            area = terrain.getArea(Camara.Position.X, Camara.Position.Z);
+            currentCameraArea = terrain.getArea(Camara.Position.X, Camara.Position.Z);
 
             if (Input.keyPressed(Key.F))
                 showDebugInfo = !showDebugInfo;
@@ -130,19 +131,17 @@ namespace TGC.Group.Model
                                   0, 80, Color.DarkRed);
                 DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.DarkRed);
 
-                foreach (var item in area)
-                {
-                    DrawText.drawText("DATOS DEL AREA: " + item.Key.ToString(), 0, 130, Color.Red);
 
-                    DrawText.drawText("RANGO DE X: " +
-                                        "\nMinimo " + item.Value.xMin.ToString() +
-                                        "\nMaximo " + item.Value.xMax.ToString() + "\n\n" +
+                DrawText.drawText("DATOS DEL AREA ACTUAL: ", 0, 130, Color.Red);
 
-                                      "RANGO DE Z: " +
-                                        "\nMinimo " + item.Value.zMin.ToString() +
-                                        "\nMaximo " + item.Value.zMax.ToString(),
-                                 0, 160, Color.DarkRed);
-                }
+                DrawText.drawText("RANGO DE X: " +
+                                    "\nMinimo " + currentCameraArea.xMin.ToString() +
+                                    "\nMaximo " + currentCameraArea.xMax.ToString() + "\n\n" +
+
+                                  "RANGO DE Z: " +
+                                    "\nMinimo " + currentCameraArea.zMin.ToString() +
+                                    "\nMaximo " + currentCameraArea.zMax.ToString(),
+                             0, 160, Color.DarkRed);
             }
 
             #endregion
