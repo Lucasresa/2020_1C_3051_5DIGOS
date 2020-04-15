@@ -5,13 +5,10 @@ using TGC.Core.Example;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
-using TGC.Core.Terrain;
 using TGC.Group.Utils;
 using System.Collections.Generic;
 using System.Windows.Forms;
-using TGC.Group.Model.Corales;
 using System;
-using TGC.Group.Model.Minerals;
 using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Fishes;
@@ -35,8 +32,8 @@ namespace TGC.Group.Model
         private Tuple<float, float> positionRangeX = new Tuple<float, float>(-2900, 2900);
         private Tuple<float, float> positionRangeZ = new Tuple<float, float>(-2900, 2900);
         private FishBuilder fishBuilder;
-        private World terrain;
-        private World water;
+        private Terrain terrain;
+        private Water water;
         private Shark shark;
         private MeshBuilder meshBuilder;
         private bool showDebugInfo { get; set; }
@@ -88,7 +85,6 @@ namespace TGC.Group.Model
             meshInitializer();
 
             #endregion
-
         }
 
         public override void Update()

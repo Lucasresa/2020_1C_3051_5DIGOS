@@ -17,16 +17,5 @@ namespace TGC.Group.Model.Terrains
             SCALEY = 1;
             base.LoadWorld(position);
         }
-
-        public override Dictionary<string, Perimeter> getArea(float fila, float columna)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void splitToArea()
-        {
-            throw new System.NotImplementedException();
-        }
-
     }
 }

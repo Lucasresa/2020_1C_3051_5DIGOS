@@ -26,7 +26,7 @@ namespace TGC.Group.Model.Terrains
             FILE_TEXTURES = "Textures\\sandy.png";            
         }
 
-        public override Dictionary<string, Perimeter> getArea(float posX, float posZ)
+        public Dictionary<string, Perimeter> getArea(float posX, float posZ)
         {
             IEnumerable<KeyValuePair<string, Perimeter>> area = 
             areas.Where(pair => pair.Value.xMin < posX && posX < pair.Value.xMax &&
@@ -36,7 +36,7 @@ namespace TGC.Group.Model.Terrains
             return area.ToDictionary(x => x.Key, x => x.Value);            
         }
 
-        public override void splitToArea()
+        public void splitToArea()
         {
             int sideX = world.HeightmapData.GetLength(0);
             int sideZ = world.HeightmapData.GetLength(0);
