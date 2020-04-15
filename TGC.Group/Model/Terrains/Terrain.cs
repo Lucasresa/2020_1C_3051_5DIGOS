@@ -13,10 +13,10 @@ namespace TGC.Group.Model.Terrains
             public float zMax;
         }
 
-        Perimeter quadrate = new Perimeter();
+        Perimeter square = new Perimeter();
 
-        private readonly float rows = 3;
-        private readonly float columns = 3;
+        private readonly float ROWS = 4;
+        private readonly float COLUMNS = 4;
 
         public Dictionary<string, Perimeter> areas = new Dictionary<string, Perimeter>();
 
@@ -26,31 +26,29 @@ namespace TGC.Group.Model.Terrains
             FILE_TEXTURES = "Textures\\sandy.png";            
         }
 
-        public Dictionary<string, Perimeter> getArea(float posX, float posZ)
-        {
-            IEnumerable<KeyValuePair<string, Perimeter>> area = 
-            areas.Where(pair => pair.Value.xMin < posX && posX < pair.Value.xMax &&
-                                pair.Value.zMin < posZ && posZ < pair.Value.zMax
-                       );
 
-            return area.ToDictionary(x => x.Key, x => x.Value);            
+        public Perimeter getArea(float posX, float posZ)
+        {
+            return areas.FirstOrDefault(pair => posX > pair.Value.xMin && posX < pair.Value.xMax &&
+                                                posZ > pair.Value.zMin && posZ < pair.Value.zMax)
+                                        .Value;           
         }
 
         public void splitToArea()
         {
             int sideX = world.HeightmapData.GetLength(0);
-            int sideZ = world.HeightmapData.GetLength(0);
+            int sideZ = world.HeightmapData.GetLength(1);
 
-            for (int row = 1; row <= rows; row++)
+            for (int row = 1; row <= ROWS; row++)
             {
-                quadrate.xMin = world.convertToWorld((row - 1) * sideX / rows);
-                quadrate.xMax = world.convertToWorld(row * sideX / rows);
+                square.xMin = world.convertToWorld((row - 1) * sideX / ROWS);
+                square.xMax = world.convertToWorld(row * sideX / ROWS);
 
-                for (int column = 1; column <= columns; column++)
+                for (int column = 1; column <= COLUMNS; column++)
                 {
-                    quadrate.zMin = world.convertToWorld((column - 1) * sideZ / columns);
-                    quadrate.zMax = world.convertToWorld(column * sideZ / columns);
-                    areas.Add("Area" + row.ToString() + column.ToString(), quadrate);
+                    square.zMin = world.convertToWorld((column - 1) * sideZ / COLUMNS);
+                    square.zMax = world.convertToWorld(column * sideZ / COLUMNS);
+                    areas.Add("Area" + row.ToString() + column.ToString(), square);
                 }
             }
         }

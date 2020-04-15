@@ -105,5 +105,16 @@ namespace TGC.Group.Utils
             Cursor.Position = mouseCenter;
             base.SetCamera(position, targetPosition, rotacionVectorUP);            
         }
+
+        public void TeleportCamera(TGCVector3 translatePosition)
+        {
+            position = translatePosition;
+
+            var target = TGCVector3.TransformNormal(directionView, cameraRotation);
+            var targetPosition = position + target;
+
+            base.SetCamera(position, targetPosition);
+        }
+
     }
 }
