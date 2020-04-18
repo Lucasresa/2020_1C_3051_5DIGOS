@@ -18,8 +18,7 @@ namespace TGC.Group.Model.Sharky
         public TgcMesh Mesh;
 
         private TGCVector3 scale = new TGCVector3(3, 3, 3);
-        private TGCVector3 position = new TGCVector3(-2185, 420 , -525);
-
+        private TGCVector3 position = new TGCVector3(-2185, 1220 , -525);
 
         public Shark(string mediaDir, string shadersDir)
         {
@@ -28,19 +27,9 @@ namespace TGC.Group.Model.Sharky
             ShadersDir = shadersDir;
         }
 
-        public virtual void Init()
-        {
-           
-        }
-
         public virtual void Render()
         {
             Mesh.Render();
-        }
-
-        public virtual void Update()
-        {
-
         }
 
         public virtual void Dispose()

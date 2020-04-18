@@ -26,14 +26,15 @@ namespace TGC.Group.Model.Terrains
             FILE_TEXTURES = "Textures\\sandy.png";            
         }
 
-        public override Perimeter getArea(float posX, float posZ)
+
+        public Perimeter getArea(float posX, float posZ)
         {
             return areas.FirstOrDefault(pair => posX > pair.Value.xMin && posX < pair.Value.xMax &&
                                                 posZ > pair.Value.zMin && posZ < pair.Value.zMax)
                                         .Value;           
         }
 
-        public override void splitToArea()
+        public void splitToArea()
         {
             int sideX = world.HeightmapData.GetLength(0);
             int sideZ = world.HeightmapData.GetLength(1);

@@ -51,9 +51,5 @@ namespace TGC.Group.Model.Terrains
 
             return new Tuple<float, float>(sizeX, sizeZ);
         }
-
-        public abstract Perimeter getArea(float fila, float columna);
-        public abstract void splitToArea();
-      
     }
 }

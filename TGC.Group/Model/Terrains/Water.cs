@@ -20,16 +20,5 @@ namespace TGC.Group.Model.Terrains
             SCALEXZ *= FACTOR;
             base.LoadWorld(position);
         }
-
-        public override Perimeter getArea(float fila, float columna)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public override void splitToArea()
-        {
-            throw new System.NotImplementedException();
-        }
-
     }
 }
