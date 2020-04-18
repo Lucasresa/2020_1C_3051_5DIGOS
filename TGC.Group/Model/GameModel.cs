@@ -35,8 +35,8 @@ namespace TGC.Group.Model
         private Tuple<float, float> positionRangeX = new Tuple<float, float>(-2900, 2900);
         private Tuple<float, float> positionRangeZ = new Tuple<float, float>(-2900, 2900);
         private FishBuilder fishBuilder;
-        private World terrain;
-        private World water;
+        private Terrain terrain;
+        private Water water;
         private Shark shark;
         private MeshBuilder meshBuilder;
         private bool showDebugInfo { get; set; }
