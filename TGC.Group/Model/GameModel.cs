@@ -29,8 +29,8 @@ namespace TGC.Group.Model
         private Sky skyBox;
         private Perimeter currentCameraArea;
         private Ship ship;
-        private Tuple<float, float> positionRangeX = new Tuple<float, float>(-2900, 2900);
-        private Tuple<float, float> positionRangeZ = new Tuple<float, float>(-2900, 2900);
+        private Tuple<float, float> positionRangeX = new Tuple<float, float>(-4000, 4000);
+        private Tuple<float, float> positionRangeZ = new Tuple<float, float>(-4000, 4000);
         private FishBuilder fishBuilder;
         private Terrain terrain;
         private Water water;
@@ -47,7 +47,7 @@ namespace TGC.Group.Model
             fishBuilder = new FishBuilder(mediaDir);
             meshBuilder = new MeshBuilder();
             MeshDuplicator.MediaDir = mediaDir;
-            D3DDevice.Instance.ZFarPlaneDistance = 16000f;
+            D3DDevice.Instance.ZFarPlaneDistance = 8000f;
         }
 
         public override void Init()
@@ -63,7 +63,7 @@ namespace TGC.Group.Model
             terrain.splitToArea();
             water = new Water(MediaDir, ShadersDir);
             water.LoadWorld(new TGCVector3(0, 3500, 0));
-            skyBox = new Sky(MediaDir, ShadersDir);
+            skyBox = new Sky(MediaDir, ShadersDir, Camara);
             skyBox.LoadSkyBox();
             #endregion
 
@@ -100,7 +100,6 @@ namespace TGC.Group.Model
             if (Input.keyPressed(Key.E) && camaraInRoom())
             {
                 var position = new TGCVector3(1300, 3505, 20);
-                //Camara = new CameraFPS(Input, position);
                 ((CameraFPS)Camara).TeleportCamera(position);
             }
 
@@ -203,9 +202,9 @@ namespace TGC.Group.Model
 
         private void meshInitializer()
         {
-            var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 33, 10);
+            var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 15, 10);
             meshBuilder.LocateMeshesInTerrain(ref treeCorals, positionRangeX, positionRangeZ, terrain.world);
-            var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 33, 10);
+            var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 15, 10);
             meshBuilder.LocateMeshesInTerrain(ref spiralCorals, positionRangeX, positionRangeZ, terrain.world);
             var goldOre = meshBuilder.CreateNewScaledMeshes(MeshType.goldOre, 15, 5);
             meshBuilder.LocateMeshesInTerrain(ref goldOre, positionRangeX, positionRangeZ, terrain.world);
@@ -219,9 +218,9 @@ namespace TGC.Group.Model
             meshBuilder.LocateMeshesInTerrain(ref ironOre, positionRangeX, positionRangeZ, terrain.world);
             var ironOreCommon = meshBuilder.CreateNewScaledMeshes(MeshType.ironOreCommon, 15, 5);
             meshBuilder.LocateMeshesInTerrain(ref ironOreCommon, positionRangeX, positionRangeZ, terrain.world);
-            var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 30, 8);
+            var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 15, 8);
             meshBuilder.LocateMeshesInTerrain(ref rock, positionRangeX, positionRangeZ, terrain.world);
-            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 200, 5);
+            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 365, 5);
             meshBuilder.LocateMeshesInTerrain(ref alga, positionRangeX, positionRangeZ, terrain.world);
 
             corales.AddRange(treeCorals);

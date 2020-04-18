@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TGC.Core.Camara;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.Terrain;
@@ -17,16 +18,19 @@ namespace TGC.Group.Model.Terrains
         private string MediaDir;
         private string ShadersDir;
 
-        public Sky(string mediaDir, string shadersDir)
+        private CameraFPS Camera;
+
+        public Sky(string mediaDir, string shadersDir, TgcCamera camera)
         {
             sky = new TgcSkyBox
             {
-                Size = new TGCVector3(15000, 15000, 15000),
-                Center = new TGCVector3(0, 1500, 0)
+                Size = new TGCVector3(9000, 9000, 9000),
+                Center = new TGCVector3(0, 1800, 0)
             };
 
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
+            Camera = (CameraFPS)camera;
         }
 
         public void LoadSkyBox()
@@ -47,6 +51,7 @@ namespace TGC.Group.Model.Terrains
 
         public virtual void Render()
         {
+            sky.Center = new TGCVector3(Camera.Position.X, sky.Center.Y, Camera.Position.Z);
             sky.Render();
         }
 
