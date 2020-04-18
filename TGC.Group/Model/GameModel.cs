@@ -104,8 +104,7 @@ namespace TGC.Group.Model
             if (Input.keyPressed(Key.E) && camaraInRoom())
             {
                 var position = new TGCVector3(1300, 3505, 20);
-                //Camara = new CameraFPS(Input, position);
-                ((CameraFPS)Camara).TeleportCamera(position);
+                ((CameraFPS) Camara).TeleportCamera(position);
             }
 
             PostUpdate();
@@ -205,6 +204,7 @@ namespace TGC.Group.Model
             #endregion
         }
 
+        #region Metodos Privados
         private void meshInitializer()
         {
             var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 33, 10);
@@ -247,5 +247,6 @@ namespace TGC.Group.Model
             return ship.InsideMesh.Position.Y - delta < Camara.Position.Y &&
                    Camara.Position.Y < ship.InsideMesh.Position.Y + delta;
         }
+        #endregion
     }
 }
