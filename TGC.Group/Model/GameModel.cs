@@ -35,8 +35,6 @@ namespace TGC.Group.Model
         private Sky skyBox;
         private Perimeter currentCameraArea;
         private Ship ship;
-        private Tuple<float, float> positionRangeX = new Tuple<float, float>(-2900, 2900);
-        private Tuple<float, float> positionRangeZ = new Tuple<float, float>(-2900, 2900);
         private Terrain terrain;
         private Water water;
         private Shark shark;
@@ -202,29 +200,29 @@ namespace TGC.Group.Model
         private void meshInitializer()
         {
             var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 15, 10);
-            meshBuilder.LocateMeshesInTerrain(ref treeCorals, positionRangeX, positionRangeZ, terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref treeCorals, terrain.getTotalPerimeter(), terrain.world);
             var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 15, 10);
-            meshBuilder.LocateMeshesInTerrain(ref spiralCorals, positionRangeX, positionRangeZ, terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref spiralCorals, terrain.getTotalPerimeter(), terrain.world);
             var goldOre = meshBuilder.CreateNewScaledMeshes(MeshType.goldOre, 15, 5);
-            meshBuilder.LocateMeshesInTerrain(ref goldOre, positionRangeX, positionRangeZ, terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref goldOre, terrain.getTotalPerimeter(), terrain.world);
             var goldOreCommon = meshBuilder.CreateNewScaledMeshes(MeshType.goldOreCommon, 15, 5);
-            meshBuilder.LocateMeshesInTerrain(ref goldOreCommon, positionRangeX, positionRangeZ, terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref goldOreCommon, terrain.getTotalPerimeter(), terrain.world);
             var silverOre = meshBuilder.CreateNewScaledMeshes(MeshType.silverOre, 15, 5);
-            meshBuilder.LocateMeshesInTerrain(ref silverOre, positionRangeX, positionRangeZ, terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref silverOre, terrain.getTotalPerimeter(), terrain.world);
             var silverOreCommon = meshBuilder.CreateNewScaledMeshes(MeshType.silverOreCommon, 15, 5);
-            meshBuilder.LocateMeshesInTerrain(ref silverOreCommon, positionRangeX, positionRangeZ, terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref silverOreCommon, terrain.getTotalPerimeter(), terrain.world);
             var ironOre = meshBuilder.CreateNewScaledMeshes(MeshType.ironOre, 15, 5);
-            meshBuilder.LocateMeshesInTerrain(ref ironOre, positionRangeX, positionRangeZ, terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref ironOre, terrain.getTotalPerimeter(), terrain.world);
             var ironOreCommon = meshBuilder.CreateNewScaledMeshes(MeshType.ironOreCommon, 15, 5);
-            meshBuilder.LocateMeshesInTerrain(ref ironOreCommon, positionRangeX, positionRangeZ, terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref ironOreCommon, terrain.getTotalPerimeter(), terrain.world);
             var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 15, 8);
-            meshBuilder.LocateMeshesInTerrain(ref rock, positionRangeX, positionRangeZ, terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref rock, terrain.getTotalPerimeter(), terrain.world);
             var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 365, 5);
-            meshBuilder.LocateMeshesInTerrain(ref alga, positionRangeX, positionRangeZ, terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref alga, terrain.getTotalPerimeter(), terrain.world);
             var normalFish = meshBuilder.CreateNewScaledMeshes(MeshType.normalFish, 15, 5);
-            meshBuilder.LocateMeshesUpToTerrain(ref normalFish, positionRangeX, positionRangeZ, terrain.world, water.world.Center.Y - 200);
+            meshBuilder.LocateMeshesUpToTerrain(ref normalFish, terrain.getTotalPerimeter(), terrain.world, water.world.Center.Y - 200);
             var yellowFish = meshBuilder.CreateNewScaledMeshes(MeshType.yellowFish, 15, 5);
-            meshBuilder.LocateMeshesUpToTerrain(ref yellowFish, positionRangeX, positionRangeZ, terrain.world, water.world.Center.Y - 200);
+            meshBuilder.LocateMeshesUpToTerrain(ref yellowFish, terrain.getTotalPerimeter(), terrain.world, water.world.Center.Y - 200);
 
             corales.AddRange(treeCorals);
             corales.AddRange(spiralCorals);

@@ -4,6 +4,7 @@ using System.Linq;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Utils;
+using static TGC.Group.Model.Terrains.Terrain;
 
 namespace TGC.Group.Model.MeshBuilders
 {
@@ -43,10 +44,10 @@ namespace TGC.Group.Model.MeshBuilders
         #endregion
 
         #region Location
-        public bool LocateMeshInTerrain(ref TgcMesh mesh, Tuple<float, float> positionRangeX, Tuple<float, float> positionRangeZ,
+        public bool LocateMeshInTerrain(ref TgcMesh mesh, Perimeter terrainArea,
                                  SmartTerrain terrain)
         {
-            var XZPosition = getXZPositionByRange(positionRangeX, positionRangeZ);
+            var XZPosition = getXZPositionByPerimeter(terrainArea);
             var XPosition = XZPosition.Item1;
             var ZPosition = XZPosition.Item2;
             if (!terrain.interpoledHeight(XPosition, ZPosition, out float YPosition))
@@ -57,10 +58,10 @@ namespace TGC.Group.Model.MeshBuilders
             return true;
         }
 
-        public bool LocateMeshUpToTerrain(ref TgcMesh mesh, Tuple<float, float> positionRangeX, Tuple<float, float> positionRangeZ,
+        public bool LocateMeshUpToTerrain(ref TgcMesh mesh, Perimeter terrainArea,
                                  SmartTerrain terrain, float maxYPosition)
         {
-            var XZPosition = getXZPositionByRange(positionRangeX, positionRangeZ);
+            var XZPosition = getXZPositionByPerimeter(terrainArea);
             var XPosition = XZPosition.Item1;
             var ZPosition = XZPosition.Item2;
             if (!terrain.interpoledHeight(XPosition, ZPosition, out float YPosition))
@@ -71,28 +72,27 @@ namespace TGC.Group.Model.MeshBuilders
             return true;
         }
 
-        public void LocateMeshesInTerrain(ref List<TgcMesh> meshes, Tuple<float, float> positionRangeX, Tuple<float, float> positionRangeZ,
+        public void LocateMeshesInTerrain(ref List<TgcMesh> meshes, Perimeter terrainArea,
                                              SmartTerrain terrain)
         {
-            meshes.ForEach(mesh => LocateMeshInTerrain(ref mesh, positionRangeX, positionRangeZ, terrain));
+            meshes.ForEach(mesh => LocateMeshInTerrain(ref mesh, terrainArea, terrain));
         }
 
-        public void LocateMeshesUpToTerrain(ref List<TgcMesh> meshes, Tuple<float, float> positionRangeX, Tuple<float, float> positionRangeZ,
+        public void LocateMeshesUpToTerrain(ref List<TgcMesh> meshes, Perimeter terrainArea,
                                              SmartTerrain terrain, float maxYPosition)
         {
-            meshes.ForEach(mesh => LocateMeshUpToTerrain(ref mesh, positionRangeX, positionRangeZ, terrain, maxYPosition));
+            meshes.ForEach(mesh => LocateMeshUpToTerrain(ref mesh, terrainArea, terrain, maxYPosition));
         }
         #endregion
 
         #region Utils
         // Retorna una tupla con el valor de X y Z (X, Z)
-        private Tuple<float, float> getXZPositionByRange(Tuple<float, float> positionRangeX,
-                                                        Tuple<float, float> positionRangeZ)
+        private Tuple<float, float> getXZPositionByPerimeter(Perimeter perimeter)
         {
-            var XMin = (int)positionRangeX.Item1;
-            var XMax = (int)positionRangeX.Item2;
-            var ZMin = (int)positionRangeZ.Item1;
-            var ZMax = (int)positionRangeZ.Item2;
+            var XMin = (int)perimeter.xMin;
+            var XMax = (int)perimeter.xMax;
+            var ZMin = (int)perimeter.zMin;
+            var ZMax = (int)perimeter.zMax;
 
             return new Tuple<float, float>(random.Next(XMin, XMax), random.Next(ZMin, ZMax));
         }
