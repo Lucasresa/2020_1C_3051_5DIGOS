@@ -2,19 +2,13 @@ using Microsoft.DirectX.DirectInput;
 using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
-using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
-using TGC.Core.Terrain;
 using TGC.Group.Utils;
 using System.Collections.Generic;
-using System.Windows.Forms;
-using TGC.Group.Model.Corales;
 using System;
-using TGC.Group.Model.Minerals;
 using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Sharky;
-using TGC.Group.Model.Fishes;
 using TGC.Group.Model.MeshBuilders;
 using TGC.Group.Model.Watercraft;
 using static TGC.Group.Model.Terrains.Terrain;
@@ -23,18 +17,26 @@ namespace TGC.Group.Model
 {
     public class GameModel : TgcExample
     {
+        #region Constantes
+        private struct Constants
+        {
+            public static float WATER_HEIGHT = 3500;
+            public static TGCVector3 OUTSIDE_SHIP_POSITION = new TGCVector3(1300, 3505, 20);
+            public static TGCVector3 INSIDE_SHIP_POSITION = new TGCVector3(515, -2338, -40);
+        }
+        #endregion
+
         #region Atributos
         private float time;
         private List<TgcMesh> corales = new List<TgcMesh>();
         private List<TgcMesh> minerals = new List<TgcMesh>();
         private List<TgcMesh> vegetation = new List<TgcMesh>();
-        private List<Fish> fishes;
+        private List<TgcMesh> fishes = new List<TgcMesh>();
         private Sky skyBox;
         private Perimeter currentCameraArea;
         private Ship ship;
         private Tuple<float, float> positionRangeX = new Tuple<float, float>(-2900, 2900);
         private Tuple<float, float> positionRangeZ = new Tuple<float, float>(-2900, 2900);
-        private FishBuilder fishBuilder;
         private Terrain terrain;
         private Water water;
         private Shark shark;
@@ -47,7 +49,6 @@ namespace TGC.Group.Model
             Category = Game.Default.Category;
             Name = Game.Default.Name;
             Description = Game.Default.Description;
-            fishBuilder = new FishBuilder(mediaDir);
             meshBuilder = new MeshBuilder();
             MeshDuplicator.MediaDir = mediaDir;
             D3DDevice.Instance.ZFarPlaneDistance = 8000f;
@@ -56,8 +57,7 @@ namespace TGC.Group.Model
         public override void Init()
         {            
             #region Camara 
-            //TODO: Mover estas posiciones fijas a constantes y posteriormente a un archivo de config
-            Camara = new CameraFPS(Input, new TGCVector3(515, -2338, -40));   
+            Camara = new CameraFPS(Input, Constants.INSIDE_SHIP_POSITION);   
             #endregion
 
             #region Mundo            
@@ -65,7 +65,7 @@ namespace TGC.Group.Model
             terrain.LoadWorld(TGCVector3.Empty);
             terrain.splitToArea();
             water = new Water(MediaDir, ShadersDir);
-            water.LoadWorld(new TGCVector3(0, 3500, 0));
+            water.LoadWorld(new TGCVector3(0, Constants.WATER_HEIGHT, 0));
             skyBox = new Sky(MediaDir, ShadersDir, Camara);
             skyBox.LoadSkyBox();
             #endregion
@@ -81,9 +81,6 @@ namespace TGC.Group.Model
             #endregion
 
             #region Vegetacion del mundo
-
-            fishes = fishBuilder.CreateRandomFishes(30, positionRangeX, positionRangeZ);
-            fishBuilder.LocateFishesInTerrain(terrain.world, fishes, water.world.Center.Y - 300);
 
             MeshDuplicator.InitOriginalMeshes();
             meshInitializer();
@@ -102,10 +99,7 @@ namespace TGC.Group.Model
                 showDebugInfo = !showDebugInfo;
 
             if (Input.keyPressed(Key.E) && camaraInRoom())
-            {
-                var position = new TGCVector3(1300, 3505, 20);
-                ((CameraFPS)Camara).TeleportCamera(position);
-            }
+                ((CameraFPS)Camara).TeleportCamera(Constants.OUTSIDE_SHIP_POSITION);
 
             PostUpdate();
         }
@@ -177,7 +171,7 @@ namespace TGC.Group.Model
             shark.Render();
             fishes.ForEach(fish =>
             {
-                fish.Mesh.UpdateMeshTransform();
+                fish.UpdateMeshTransform();
                 fish.Render();
 
             });
@@ -200,7 +194,7 @@ namespace TGC.Group.Model
             corales.ForEach(coral => coral.Dispose());
             minerals.ForEach(ore => ore.Dispose());
             vegetation.ForEach(vegetation => vegetation.Dispose());
-
+            MeshDuplicator.DisposeOriginalMeshes();
             #endregion
         }
 
@@ -227,6 +221,10 @@ namespace TGC.Group.Model
             meshBuilder.LocateMeshesInTerrain(ref rock, positionRangeX, positionRangeZ, terrain.world);
             var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 365, 5);
             meshBuilder.LocateMeshesInTerrain(ref alga, positionRangeX, positionRangeZ, terrain.world);
+            var normalFish = meshBuilder.CreateNewScaledMeshes(MeshType.normalFish, 15, 5);
+            meshBuilder.LocateMeshesUpToTerrain(ref normalFish, positionRangeX, positionRangeZ, terrain.world, water.world.Center.Y - 200);
+            var yellowFish = meshBuilder.CreateNewScaledMeshes(MeshType.yellowFish, 15, 5);
+            meshBuilder.LocateMeshesUpToTerrain(ref yellowFish, positionRangeX, positionRangeZ, terrain.world, water.world.Center.Y - 200);
 
             corales.AddRange(treeCorals);
             corales.AddRange(spiralCorals);
@@ -238,6 +236,8 @@ namespace TGC.Group.Model
             minerals.AddRange(ironOreCommon);
             minerals.AddRange(rock);
             vegetation.AddRange(alga);
+            fishes.AddRange(normalFish);
+            fishes.AddRange(yellowFish);
         }
 
         private bool camaraInRoom()

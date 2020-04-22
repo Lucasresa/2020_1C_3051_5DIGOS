@@ -6,22 +6,23 @@ using System.Threading.Tasks;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 
-namespace TGC.Group.Model.Fishes
+namespace TGC.Group.Model
 {
-    class Fish
+    class CommonMesh
     {
-        protected string FishName;
-        private readonly string MediaDir;
+        protected string MeshName;
+        protected readonly string MediaDir;
         protected TGCVector3 Center;
-        private TGCVector3 scale = new TGCVector3(10, 10, 10);
+        private TGCVector3 scale = new TGCVector3(1, 1, 1);
 
         public TgcMesh Mesh { get; set; }
 
-        public Fish(string mediaDir, TGCVector3? center, string meshName)
+        public CommonMesh(string mediaDir, TGCVector3 center, string meshName)
         {
             MediaDir = mediaDir;
-            Center = center ?? new TGCVector3(0f, 3550f, 0f);
-            FishName = meshName;
+            Center = center;
+            MeshName = meshName;
+            LoadMesh();
         }
 
         public virtual void Init()
@@ -45,9 +46,10 @@ namespace TGC.Group.Model.Fishes
             Mesh.Dispose();
         }
 
-        public void LoadMesh()
+        private void LoadMesh()
         {
-            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FishName + "-TgcScene.xml").Meshes[0];
+            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + MeshName + "-TgcScene.xml").Meshes[0];
         }
     }
+
 }

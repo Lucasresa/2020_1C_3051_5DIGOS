@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
-using TGC.Group.Model.Corales;
 using TGC.Group.Utils;
 
 namespace TGC.Group.Model.MeshBuilders
@@ -13,6 +10,10 @@ namespace TGC.Group.Model.MeshBuilders
     class MeshBuilder
     {
         private Random random;
+        private int meshTerrainOffset = 300;
+
+        public int MeshTerrainOffset { set { meshTerrainOffset = value; } }
+
         public MeshBuilder()
         {
             random = new Random();
@@ -50,9 +51,23 @@ namespace TGC.Group.Model.MeshBuilders
             var ZPosition = XZPosition.Item2;
             if (!terrain.interpoledHeight(XPosition, ZPosition, out float YPosition))
                 throw new Exception("The Mesh: " + mesh.Name + " calculated position was outside of terrain");
-            var MeshPosition = new TGCVector3(XPosition, YPosition, ZPosition);
-            mesh.Position = MeshPosition;
+
+            mesh.Position = new TGCVector3(XPosition, YPosition, ZPosition);
             terrain.AdaptToSurface(mesh);
+            return true;
+        }
+
+        public bool LocateMeshUpToTerrain(ref TgcMesh mesh, Tuple<float, float> positionRangeX, Tuple<float, float> positionRangeZ,
+                                 SmartTerrain terrain, float maxYPosition)
+        {
+            var XZPosition = getXZPositionByRange(positionRangeX, positionRangeZ);
+            var XPosition = XZPosition.Item1;
+            var ZPosition = XZPosition.Item2;
+            if (!terrain.interpoledHeight(XPosition, ZPosition, out float YPosition))
+                throw new Exception("The Mesh: " + mesh.Name + " calculated position was outside of terrain");
+
+            YPosition = random.Next((int)YPosition + meshTerrainOffset, (int)maxYPosition);
+            mesh.Position = new TGCVector3(XPosition, YPosition, ZPosition);
             return true;
         }
 
@@ -62,8 +77,14 @@ namespace TGC.Group.Model.MeshBuilders
             meshes.ForEach(mesh => LocateMeshInTerrain(ref mesh, positionRangeX, positionRangeZ, terrain));
         }
 
+        public void LocateMeshesUpToTerrain(ref List<TgcMesh> meshes, Tuple<float, float> positionRangeX, Tuple<float, float> positionRangeZ,
+                                             SmartTerrain terrain, float maxYPosition)
+        {
+            meshes.ForEach(mesh => LocateMeshUpToTerrain(ref mesh, positionRangeX, positionRangeZ, terrain, maxYPosition));
+        }
         #endregion
 
+        #region Utils
         // Retorna una tupla con el valor de X y Z (X, Z)
         private Tuple<float, float> getXZPositionByRange(Tuple<float, float> positionRangeX,
                                                         Tuple<float, float> positionRangeZ)
@@ -76,5 +97,8 @@ namespace TGC.Group.Model.MeshBuilders
             return new Tuple<float, float>(random.Next(XMin, XMax), random.Next(ZMin, ZMax));
         }
 
+        
+
+        #endregion
     }
 }

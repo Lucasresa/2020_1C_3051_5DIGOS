@@ -15,7 +15,7 @@ namespace TGC.Group.Model.Terrains
         protected string FILE_TEXTURES;
 
         protected float SCALEXZ = 20f;
-        protected float SCALEY = 8.4f;
+        protected float SCALEY = 10f;
 
         public SmartTerrain world = new SmartTerrain();
 
