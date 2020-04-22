@@ -59,19 +59,5 @@ namespace TGC.Group.Model.Terrains
                 }
             }
         }
-
-        public Perimeter getTotalPerimeter()
-        {
-            var worldXMax = world.HeightmapData.GetLength(0);
-            var worldZMax = world.HeightmapData.GetLength(1);
-
-            var xMin = world.xzWorldToHeightmap(0, 0);
-            var xMax = world.xzWorldToHeightmap(worldXMax, 0);
-            var zMin = world.xzWorldToHeightmap(0, 0);
-            var zMax = world.xzWorldToHeightmap(0, worldZMax);
-
-            return new Perimeter(xMin.X, xMax.X, zMin.Y, zMax.Y);
-        }
-
     }
 }

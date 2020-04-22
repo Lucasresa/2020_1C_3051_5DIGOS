@@ -12,6 +12,7 @@ using TGC.Group.Model.Sharky;
 using TGC.Group.Model.MeshBuilders;
 using TGC.Group.Model.Watercraft;
 using static TGC.Group.Model.Terrains.Terrain;
+using System.Runtime.CompilerServices;
 
 namespace TGC.Group.Model
 {
@@ -79,10 +80,8 @@ namespace TGC.Group.Model
             #endregion
 
             #region Vegetacion del mundo
-
             MeshDuplicator.InitOriginalMeshes();
             meshInitializer();
-
             #endregion
 
         }
@@ -93,11 +92,15 @@ namespace TGC.Group.Model
 
             currentCameraArea = terrain.getArea(Camara.Position.X, Camara.Position.Z);
 
+            #region Teclas
+
             if (Input.keyPressed(Key.F))
                 showDebugInfo = !showDebugInfo;
 
             if (Input.keyPressed(Key.E) && camaraInRoom())
                 ((CameraFPS)Camara).TeleportCamera(Constants.OUTSIDE_SHIP_POSITION);
+
+            #endregion
 
             PostUpdate();
         }
@@ -139,40 +142,44 @@ namespace TGC.Group.Model
             #endregion
 
             #region Renderizado
-
-            terrain.Render();
-            water.Render();
-            skyBox.Render();
+            
             ship.Render();
 
-            corales.ForEach(coral =>
+            if (Camara.Position.Y > 0)
             {
-                coral.UpdateMeshTransform();
-                coral.Render();
-            });
+                terrain.Render();
+                water.Render();
+                skyBox.Render();
 
-            minerals.ForEach(ore =>
-            {
-                ore.UpdateMeshTransform();
-                ore.Render();
+                corales.ForEach(coral =>
+                {
+                    coral.UpdateMeshTransform();
+                    coral.Render();
+                });
 
-            });
+                minerals.ForEach(ore =>
+                {
+                    ore.UpdateMeshTransform();
+                    ore.Render();
 
-            vegetation.ForEach(vegetation =>
-            {
-                vegetation.AlphaBlendEnable = true;
-                vegetation.UpdateMeshTransform();
-                vegetation.Render();
+                });
 
-            });
+                vegetation.ForEach(vegetation =>
+                {
+                    vegetation.AlphaBlendEnable = true;
+                    vegetation.UpdateMeshTransform();
+                    vegetation.Render();
 
-            shark.Render();
-            fishes.ForEach(fish =>
-            {
-                fish.UpdateMeshTransform();
-                fish.Render();
+                });
 
-            });
+                shark.Render();
+                fishes.ForEach(fish =>
+                {
+                    fish.UpdateMeshTransform();
+                    fish.Render();
+
+                });
+            }
 
             #endregion
 
@@ -200,29 +207,29 @@ namespace TGC.Group.Model
         private void meshInitializer()
         {
             var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 15, 10);
-            meshBuilder.LocateMeshesInTerrain(ref treeCorals, terrain.getTotalPerimeter(), terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref treeCorals, terrain.SizeWorld(), terrain.world);
             var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 15, 10);
-            meshBuilder.LocateMeshesInTerrain(ref spiralCorals, terrain.getTotalPerimeter(), terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref spiralCorals, terrain.SizeWorld(), terrain.world);
             var goldOre = meshBuilder.CreateNewScaledMeshes(MeshType.goldOre, 15, 5);
-            meshBuilder.LocateMeshesInTerrain(ref goldOre, terrain.getTotalPerimeter(), terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref goldOre, terrain.SizeWorld(), terrain.world);
             var goldOreCommon = meshBuilder.CreateNewScaledMeshes(MeshType.goldOreCommon, 15, 5);
-            meshBuilder.LocateMeshesInTerrain(ref goldOreCommon, terrain.getTotalPerimeter(), terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref goldOreCommon, terrain.SizeWorld(), terrain.world);
             var silverOre = meshBuilder.CreateNewScaledMeshes(MeshType.silverOre, 15, 5);
-            meshBuilder.LocateMeshesInTerrain(ref silverOre, terrain.getTotalPerimeter(), terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref silverOre, terrain.SizeWorld(), terrain.world);
             var silverOreCommon = meshBuilder.CreateNewScaledMeshes(MeshType.silverOreCommon, 15, 5);
-            meshBuilder.LocateMeshesInTerrain(ref silverOreCommon, terrain.getTotalPerimeter(), terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref silverOreCommon, terrain.SizeWorld(), terrain.world);
             var ironOre = meshBuilder.CreateNewScaledMeshes(MeshType.ironOre, 15, 5);
-            meshBuilder.LocateMeshesInTerrain(ref ironOre, terrain.getTotalPerimeter(), terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref ironOre, terrain.SizeWorld(), terrain.world);
             var ironOreCommon = meshBuilder.CreateNewScaledMeshes(MeshType.ironOreCommon, 15, 5);
-            meshBuilder.LocateMeshesInTerrain(ref ironOreCommon, terrain.getTotalPerimeter(), terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref ironOreCommon, terrain.SizeWorld(), terrain.world);
             var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 15, 8);
-            meshBuilder.LocateMeshesInTerrain(ref rock, terrain.getTotalPerimeter(), terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref rock, terrain.SizeWorld(), terrain.world);
             var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 365, 5);
-            meshBuilder.LocateMeshesInTerrain(ref alga, terrain.getTotalPerimeter(), terrain.world);
+            meshBuilder.LocateMeshesInTerrain(ref alga, terrain.SizeWorld(), terrain.world);
             var normalFish = meshBuilder.CreateNewScaledMeshes(MeshType.normalFish, 15, 5);
-            meshBuilder.LocateMeshesUpToTerrain(ref normalFish, terrain.getTotalPerimeter(), terrain.world, water.world.Center.Y - 200);
+            meshBuilder.LocateMeshesUpToTerrain(ref normalFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
             var yellowFish = meshBuilder.CreateNewScaledMeshes(MeshType.yellowFish, 15, 5);
-            meshBuilder.LocateMeshesUpToTerrain(ref yellowFish, terrain.getTotalPerimeter(), terrain.world, water.world.Center.Y - 200);
+            meshBuilder.LocateMeshesUpToTerrain(ref yellowFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
 
             corales.AddRange(treeCorals);
             corales.AddRange(spiralCorals);
@@ -240,7 +247,7 @@ namespace TGC.Group.Model
 
         private bool camaraInRoom()
         {
-            // TODO: Cambiar el delta cuando podamos construir el -BoundingBox-
+            // TODO: Cambiar el delta cuando podamos construir el -BoundingBox- o el cuerpo rigido
             float delta = 300;
             return ship.InsideMesh.Position.Y - delta < Camara.Position.Y &&
                    Camara.Position.Y < ship.InsideMesh.Position.Y + delta;
