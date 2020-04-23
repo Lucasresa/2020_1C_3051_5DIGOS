@@ -161,43 +161,55 @@ namespace TGC.Group.Model
 
             if (camera.position.Y > 0)
             {
-                terrain.Render();
-                water.Render();
                 skyBox.Render();
 
-                corales.ForEach(coral =>
+                if (inSkyBox())
                 {
-                    coral.UpdateMeshTransform();
-                    coral.Render();
-                });
+                    terrain.Render();
+                    water.Render();
 
-                minerals.ForEach(ore =>
-                {
-                    ore.UpdateMeshTransform();
-                    ore.Render();
+                    corales.ForEach(coral =>
+                    {
+                        coral.UpdateMeshTransform();
+                        coral.Render();
+                    });
 
-                });
+                    minerals.ForEach(ore =>
+                    {
+                        ore.UpdateMeshTransform();
+                        ore.Render();
 
-                vegetation.ForEach(vegetation =>
-                {
-                    vegetation.AlphaBlendEnable = true;
-                    vegetation.UpdateMeshTransform();
-                    vegetation.Render();
+                    });
 
-                });
+                    vegetation.ForEach(vegetation =>
+                    {
+                        vegetation.AlphaBlendEnable = true;
+                        vegetation.UpdateMeshTransform();
+                        vegetation.Render();
 
-                shark.Render();
-                fishes.ForEach(fish =>
-                {
-                    fish.UpdateMeshTransform();
-                    fish.Render();
+                    });
 
-                });
+                    shark.Render();
+                    fishes.ForEach(fish =>
+                    {
+                        fish.UpdateMeshTransform();
+                        fish.Render();
+
+                    });
+                }
             }
 
             #endregion
 
             PostRender();
+        }
+
+        private bool inSkyBox()
+        {
+            return camera.position.X < skyBox.perimeter.xMax &&
+                   camera.position.X > skyBox.perimeter.xMin &&
+                   camera.position.Z < skyBox.perimeter.zMax &&
+                   camera.position.Z > skyBox.perimeter.zMin;
         }
 
         public override void Dispose()

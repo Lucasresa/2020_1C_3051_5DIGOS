@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.Terrain;
 using TGC.Group.Utils;
+using static TGC.Group.Model.Terrains.Terrain;
 
 namespace TGC.Group.Model.Terrains
 {
@@ -18,6 +20,8 @@ namespace TGC.Group.Model.Terrains
         private string MediaDir;
         private string ShadersDir;
 
+        public Perimeter perimeter;           
+
         private CameraFPS Camera;
 
         public Sky(string mediaDir, string shadersDir, CameraFPS camera)
@@ -25,7 +29,7 @@ namespace TGC.Group.Model.Terrains
             sky = new TgcSkyBox
             {
                 Size = new TGCVector3(9000, 9000, 9000),
-                Center = new TGCVector3(0, 1800, 0)
+                Center = new TGCVector3(0, 1800, 0)              
             };
 
             MediaDir = mediaDir;
@@ -45,13 +49,20 @@ namespace TGC.Group.Model.Terrains
             sky.setFaceTexture(TgcSkyBox.SkyFaces.Back, texturesPath + "post.jpg");
 
             sky.SkyEpsilon = 30f;
-            
+
             sky.Init();            
         }
 
         public virtual void Render()
         {
-            sky.Center = new TGCVector3(Camera.Position.X, sky.Center.Y, Camera.Position.Z);
+            var size = sky.Size.X / 2;
+            sky.Center = new TGCVector3(Camera.position.X, sky.Center.Y, Camera.position.Z);
+
+            perimeter.xMin = sky.Center.X - size;
+            perimeter.xMax = sky.Center.X + size;
+            perimeter.zMin = sky.Center.Z - size;
+            perimeter.zMax = sky.Center.Z + size;
+
             sky.Render();
         }
 
