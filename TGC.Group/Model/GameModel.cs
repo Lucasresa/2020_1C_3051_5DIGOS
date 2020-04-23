@@ -28,7 +28,7 @@ namespace TGC.Group.Model
         #endregion
 
         #region Atributos
-        private float time;
+        //private float time;
         private List<TgcMesh> corales = new List<TgcMesh>();
         private List<TgcMesh> minerals = new List<TgcMesh>();
         private List<TgcMesh> vegetation = new List<TgcMesh>();
@@ -105,12 +105,12 @@ namespace TGC.Group.Model
                 camera.TeleportCamera(Constants.OUTSIDE_SHIP_POSITION);
             }
 
-            //if (Input.keyPressed(Key.E) && CameraOutRoom())
-            //{
-            //    camera.movementSpeed = 6;
-            //    camera.jumpSpeed = 6;
-            //    camera.TeleportCamera(Constants.OUTSIDE_SHIP_POSITION);
-            //}
+            if (Input.keyPressed(Key.E) && CameraOutRoom())
+            {
+                camera.movementSpeed = 1;
+                camera.jumpSpeed = 1;
+                camera.TeleportCamera(Constants.INSIDE_SHIP_POSITION);
+            }
 
             #endregion
 
@@ -250,19 +250,22 @@ namespace TGC.Group.Model
             fishes.AddRange(yellowFish);
         }
 
+        // TODO: Estos dos menos hay que cambiarlos para calcular distancias con un TGCRay
+
         private bool CameraInRoom()
         {
-            // TODO: Cambiar el delta cuando podamos construir el -BoundingBox- o el cuerpo rigido
             float delta = 300;
-            return ship.InsideMesh.Position.Y - delta < camera.Position.Y &&
-                   camera.Position.Y < ship.InsideMesh.Position.Y + delta;
+            return ship.InsideMesh.Position.Y - delta < camera.position.Y &&
+                   camera.position.Y < ship.InsideMesh.Position.Y + delta;
         }
 
-      //  private bool CameraOutRoom()
-      //  {
-      //      return 
-      //          
-      //  }
+        private bool CameraOutRoom()
+        {
+            var delta = 50;
+            return ship.Mesh.Position.Y - delta < camera.position.Y &&
+                 camera.position.Y < ship.Mesh.Position.Y + delta;
+                
+        }
 
         #endregion
     }
