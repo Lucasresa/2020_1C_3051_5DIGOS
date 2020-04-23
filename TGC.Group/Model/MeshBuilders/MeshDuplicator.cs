@@ -27,9 +27,6 @@ namespace TGC.Group.Model.MeshBuilders
             Meshes.Add(MeshType.ironOre, new CommonMesh(MediaDir, TGCVector3.Empty, "iron"));
             Meshes.Add(MeshType.silverOre, new CommonMesh(MediaDir, TGCVector3.Empty, "silver"));
             Meshes.Add(MeshType.goldOre, new CommonMesh(MediaDir, TGCVector3.Empty, "gold"));
-            Meshes.Add(MeshType.ironOreCommon, new CommonMesh(MediaDir, TGCVector3.Empty, "iron-n"));
-            Meshes.Add(MeshType.silverOreCommon, new CommonMesh(MediaDir, TGCVector3.Empty, "silver-n"));
-            Meshes.Add(MeshType.goldOreCommon, new CommonMesh(MediaDir, TGCVector3.Empty, "gold-n"));
             Meshes.Add(MeshType.rock, new CommonMesh(MediaDir, TGCVector3.Empty, "rock-n"));
             Meshes.Add(MeshType.alga, new CommonMesh(MediaDir, TGCVector3.Empty, "alga"));           
             Meshes.Add(MeshType.normalFish, new CommonMesh(MediaDir, TGCVector3.Empty, "fish"));           

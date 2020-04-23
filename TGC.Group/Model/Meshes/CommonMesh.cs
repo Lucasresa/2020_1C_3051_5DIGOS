@@ -33,6 +33,7 @@ namespace TGC.Group.Model
 
         public virtual void Render()
         {
+            Mesh.UpdateMeshTransform();
             Mesh.Render();
         }
 

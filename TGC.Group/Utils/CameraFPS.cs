@@ -12,11 +12,12 @@ namespace TGC.Group.Utils
     class CameraFPS : TgcCamera
     {
         #region Variables
-        
+
         #region Publicas
         public float rotationSpeed { get; set; } = 0.1f;
         public float movementSpeed { get; set; } = 1f;
         public float jumpSpeed { get; set; } = 1f;
+        public TGCVector3 position { get; set; } = new TGCVector3(1300, 3505, 20);
         #endregion
         
         #region Privadas
@@ -25,7 +26,6 @@ namespace TGC.Group.Utils
         private TGCMatrix cameraRotation;
         private float latitude { get; set; } = FastMath.PI_HALF;
         private float longitude { get; set; } = -FastMath.PI / 10.0f;
-        private TGCVector3 position { get; set; } = new TGCVector3(1300, 3505, 20);
         private TGCVector3 directionView { get; set; } = new TGCVector3(0, 0.1f, -1);
         private TGCVector3 translation { get; set; } = TGCVector3.Empty;
         #endregion
@@ -39,8 +39,6 @@ namespace TGC.Group.Utils
         #endregion
         
         #endregion
-
-        // TODO: Agregar un metodo o encontrar la forma de girar el punto de vista de la camara
 
         #region Constructores
         public CameraFPS(TgcD3dInput input)

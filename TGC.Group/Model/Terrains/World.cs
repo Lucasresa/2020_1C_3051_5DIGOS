@@ -9,7 +9,7 @@ namespace TGC.Group.Model.Terrains
         protected string FILE_HEIGHTMAPS;
         protected string FILE_TEXTURES;
 
-        protected float SCALEXZ = 60f;
+        protected float SCALEXZ = 100f;
         protected float SCALEY = 10f;
 
         public SmartTerrain world = new SmartTerrain();

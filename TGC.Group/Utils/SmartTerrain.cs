@@ -1,10 +1,5 @@
 ﻿using Microsoft.DirectX.Direct3D;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using TGC.Core.BoundingVolumes;
-using TGC.Core.Collision;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
@@ -176,18 +171,15 @@ namespace TGC.Group.Utils
             var d3dDevice = D3DDevice.Instance.Device;
             var texturesManager = TexturesManager.Instance;
             var shader = TGCShaders.Instance;
-            // TODO 0 : var transform = TGCMatrix.Translation(traslation) * TGCMatrix.Scaling(ScaleXZ, ScaleY, ScaleXZ);
 
             effect.SetValue("texDiffuseMap", terrainTexture);
             texturesManager.clear(1);
-            // TODO 1 : shader.SetShaderMatrix(effect, transform);
             shader.SetShaderMatrix(effect, TGCMatrix.Identity);
             d3dDevice.VertexDeclaration = shader.VdecPositionTextured;
             effect.Technique = technique;
             d3dDevice.SetStreamSource(0, vbTerrain, 0);
 
-            // TODO 2 : effect.Begin(0)
-            /* var p = effect.Begin(0);
+            var p = effect.Begin(0);
             for (var i = 0; i < p; i++)
             {
                 effect.BeginPass(i);
@@ -195,14 +187,6 @@ namespace TGC.Group.Utils
                 effect.EndPass();
             }
             effect.End();           
-            */
-
-            effect.Begin(0);
-            effect.BeginPass(0);
-            d3dDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, TotalVertices / 3);
-            effect.EndPass();
-            effect.End();
-
         }
 
         public void Dispose()

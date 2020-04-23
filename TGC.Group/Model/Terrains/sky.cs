@@ -20,7 +20,7 @@ namespace TGC.Group.Model.Terrains
 
         private CameraFPS Camera;
 
-        public Sky(string mediaDir, string shadersDir, TgcCamera camera)
+        public Sky(string mediaDir, string shadersDir, CameraFPS camera)
         {
             sky = new TgcSkyBox
             {
@@ -30,7 +30,7 @@ namespace TGC.Group.Model.Terrains
 
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
-            Camera = (CameraFPS)camera;
+            Camera = camera;
         }
 
         public void LoadSkyBox()
