@@ -16,7 +16,7 @@ using System.Runtime.CompilerServices;
 
 namespace TGC.Group.Model
 {
-    public class GameModel : TgcExample
+    public class GameModel : TGCExample
     {
         #region Constantes
         private struct Constants
@@ -55,8 +55,8 @@ namespace TGC.Group.Model
 
         public override void Init()
         {            
-            #region Camara 
-            Camara = new CameraFPS(Input, Constants.INSIDE_SHIP_POSITION);   
+            #region Camera 
+            Camera = new CameraFPS(Input, Constants.INSIDE_SHIP_POSITION);   
             #endregion
 
             #region Mundo            
@@ -65,7 +65,7 @@ namespace TGC.Group.Model
             terrain.splitToArea();
             water = new Water(MediaDir, ShadersDir);
             water.LoadWorld(new TGCVector3(0, Constants.WATER_HEIGHT, 0));
-            skyBox = new Sky(MediaDir, ShadersDir, Camara);
+            skyBox = new Sky(MediaDir, ShadersDir, Camera);
             skyBox.LoadSkyBox();
             #endregion
 
@@ -90,15 +90,18 @@ namespace TGC.Group.Model
         {
             PreUpdate();
 
-            currentCameraArea = terrain.getArea(Camara.Position.X, Camara.Position.Z);
+            currentCameraArea = terrain.getArea(Camera.Position.X, Camera.Position.Z);
 
             #region Teclas
 
             if (Input.keyPressed(Key.F))
                 showDebugInfo = !showDebugInfo;
 
-            if (Input.keyPressed(Key.E) && camaraInRoom())
-                ((CameraFPS)Camara).TeleportCamera(Constants.OUTSIDE_SHIP_POSITION);
+            if (Input.keyPressed(Key.E) && CameraInRoom())
+            {
+                ((CameraFPS)Camera).movementSpeed = 4;
+                ((CameraFPS)Camera).TeleportCamera(Constants.OUTSIDE_SHIP_POSITION);
+            }
 
             #endregion
 
@@ -115,14 +118,14 @@ namespace TGC.Group.Model
 
             if (showDebugInfo)
             {
-                DrawText.drawText("DATOS DE LA CAMARA: ", 0, 30, Color.Red);
-                DrawText.drawText("Posicion: [" + Camara.Position.X.ToString() + "; "
-                                              + Camara.Position.Y.ToString() + "; "
-                                              + Camara.Position.Z.ToString() + "] ",
+                DrawText.drawText("DATOS DE LA Camera: ", 0, 30, Color.Red);
+                DrawText.drawText("Posicion: [" + Camera.Position.X.ToString() + "; "
+                                              + Camera.Position.Y.ToString() + "; "
+                                              + Camera.Position.Z.ToString() + "] ",
                                   0, 60, Color.DarkRed);
-                DrawText.drawText("Objetivo: [" + Camara.LookAt.X.ToString() + "; "
-                                              + Camara.LookAt.Y.ToString() + "; "
-                                              + Camara.LookAt.Z.ToString() + "] ",
+                DrawText.drawText("Objetivo: [" + Camera.LookAt.X.ToString() + "; "
+                                              + Camera.LookAt.Y.ToString() + "; "
+                                              + Camera.LookAt.Z.ToString() + "] ",
                                   0, 80, Color.DarkRed);
                 DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.DarkRed);
 
@@ -145,7 +148,7 @@ namespace TGC.Group.Model
             
             ship.Render();
 
-            if (Camara.Position.Y > 0)
+            if (Camera.Position.Y > 0)
             {
                 terrain.Render();
                 water.Render();
@@ -245,12 +248,12 @@ namespace TGC.Group.Model
             fishes.AddRange(yellowFish);
         }
 
-        private bool camaraInRoom()
+        private bool CameraInRoom()
         {
             // TODO: Cambiar el delta cuando podamos construir el -BoundingBox- o el cuerpo rigido
             float delta = 300;
-            return ship.InsideMesh.Position.Y - delta < Camara.Position.Y &&
-                   Camara.Position.Y < ship.InsideMesh.Position.Y + delta;
+            return ship.InsideMesh.Position.Y - delta < Camera.Position.Y &&
+                   Camera.Position.Y < ship.InsideMesh.Position.Y + delta;
         }
         #endregion
     }
