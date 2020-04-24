@@ -12,11 +12,12 @@ namespace TGC.Group.Utils
     class CameraFPS : TgcCamera
     {
         #region Variables
-        
+
         #region Publicas
         public float rotationSpeed { get; set; } = 0.1f;
-        public float movementSpeed { get; set; } = 200f;
-        public float jumpSpeed { get; set; } = 200f;
+        public float movementSpeed { get; set; } = 1f;
+        public float jumpSpeed { get; set; } = 1f;
+        public TGCVector3 position { get; set; } = new TGCVector3(1300, 3505, 20);
         #endregion
         
         #region Privadas
@@ -25,7 +26,6 @@ namespace TGC.Group.Utils
         private TGCMatrix cameraRotation;
         private float latitude { get; set; } = FastMath.PI_HALF;
         private float longitude { get; set; } = -FastMath.PI / 10.0f;
-        private TGCVector3 position { get; set; } = new TGCVector3(1300, 3505, 20);
         private TGCVector3 directionView { get; set; } = new TGCVector3(0, 0.1f, -1);
         private TGCVector3 translation { get; set; } = TGCVector3.Empty;
         #endregion
@@ -49,7 +49,7 @@ namespace TGC.Group.Utils
 
         public CameraFPS(TgcD3dInput input, TGCVector3 pos) : this(input)
         {
-            position = pos;            
+            position = pos;
             cameraRotation = TGCMatrix.RotationX(latitude) * TGCMatrix.RotationY(longitude);
         }
         #endregion
@@ -57,17 +57,17 @@ namespace TGC.Group.Utils
         #region Desplazamiento de la Camara
         private void CameraTranslate()
         {
-            if (input.keyDown(Key.W)) translation += moveZ * -movementSpeed;
+            if (input.keyDown(Key.W)) translation += moveZ * movementSpeed;
                        
-            if (input.keyDown(Key.S)) translation += moveZ * movementSpeed;
+            if (input.keyDown(Key.S)) translation += moveZ * -movementSpeed;
                       
-            if (input.keyDown(Key.D)) translation += moveX * -movementSpeed;
+            if (input.keyDown(Key.D)) translation += moveX * movementSpeed;
                        
-            if (input.keyDown(Key.A)) translation += moveX * movementSpeed;
+            if (input.keyDown(Key.A)) translation += moveX * -movementSpeed;
                       
-            if (input.keyDown(Key.Space)) translation += moveY * jumpSpeed;
+            if (input.keyDown(Key.Space)) translation += moveY * -jumpSpeed;
                       
-            if (input.keyDown(Key.LeftControl)) translation += moveY * -jumpSpeed;
+            if (input.keyDown(Key.LeftControl)) translation += moveY * jumpSpeed;
 
         }
         #endregion
@@ -103,5 +103,16 @@ namespace TGC.Group.Utils
             Cursor.Position = mouseCenter;
             base.SetCamera(position, targetPosition, rotacionVectorUP);            
         }
+
+        public void TeleportCamera(TGCVector3 translatePosition)
+        {
+            position = translatePosition;
+
+            var target = TGCVector3.TransformNormal(directionView, cameraRotation);
+            var targetPosition = position + target;
+
+            base.SetCamera(position, targetPosition);
+        }
+
     }
 }

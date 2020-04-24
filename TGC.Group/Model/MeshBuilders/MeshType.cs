@@ -8,7 +8,15 @@ namespace TGC.Group.Model.MeshBuilders
 {
     enum MeshType
     {
-        normalCoral, treeCoral, spiralCoral, ironOre, silverOre, goldOre, ironOreCommon,
-        silverOreCommon, goldOreCommon, rock, alga, plant_1
+        normalCoral, 
+        treeCoral, 
+        spiralCoral, 
+        ironOre,
+        silverOre,
+        goldOre,
+        rock, 
+        alga, 
+        normalFish, 
+        yellowFish
     }
 }

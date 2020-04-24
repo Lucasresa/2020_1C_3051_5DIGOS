@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TGC.Core.Mathematica;
+﻿using TGC.Core.Mathematica;
 using TGC.Group.Utils;
+using static TGC.Group.Model.Terrains.Terrain;
 
 namespace TGC.Group.Model.Terrains
 {
@@ -13,8 +9,8 @@ namespace TGC.Group.Model.Terrains
         protected string FILE_HEIGHTMAPS;
         protected string FILE_TEXTURES;
 
-        protected float SCALEXZ = 20f;
-        protected float SCALEY = 8.4f;
+        protected float SCALEXZ = 100f;
+        protected float SCALEY = 10f;
 
         public SmartTerrain world = new SmartTerrain();
 
@@ -29,17 +25,12 @@ namespace TGC.Group.Model.Terrains
 
         public virtual void Render()
         {
-            world.render();
-        }
-
-        public virtual void Update()
-        {
-
+            world.Render();
         }
 
         public virtual void Dispose()
         {
-            world.dispose();
+            world.Dispose();
         }
 
         public virtual void LoadWorld(TGCVector3 position)
@@ -48,12 +39,19 @@ namespace TGC.Group.Model.Terrains
             world.loadTexture(MediaDir + FILE_TEXTURES);
         }
 
-        public virtual Tuple<float,float> SizeWorld()
+        public virtual Perimeter SizeWorld()
         {
+            Perimeter perimeter = new Perimeter();
+            
             var sizeX = world.HeightmapData.GetLength(0) * SCALEXZ / 2;
             var sizeZ = world.HeightmapData.GetLength(1) * SCALEXZ / 2;
+            
+            perimeter.xMax = sizeX;
+            perimeter.xMin = -sizeX;
+            perimeter.zMax = sizeZ;
+            perimeter.zMin = -sizeZ;
 
-            return new Tuple<float, float>(sizeX, sizeZ);
+            return perimeter;
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using TGC.Core.Mathematica;
+﻿using System.Collections.Generic;
+using TGC.Core.Mathematica;
+using static TGC.Group.Model.Terrains.Terrain;
 
 namespace TGC.Group.Model.Terrains
 {
