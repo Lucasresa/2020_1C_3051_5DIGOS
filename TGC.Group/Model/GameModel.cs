@@ -24,6 +24,7 @@ namespace TGC.Group.Model
             public static float WATER_HEIGHT = 3500;
             public static TGCVector3 OUTSIDE_SHIP_POSITION = new TGCVector3(1300, 3505, 20);
             public static TGCVector3 INSIDE_SHIP_POSITION = new TGCVector3(515, -2338, -40);
+            public static float GRAVITY = 200; // TODO: Probablemente en el juego no tengamos gravedad.. habria que definirlo entre todos.
         }
         #endregion
 
@@ -42,6 +43,7 @@ namespace TGC.Group.Model
         private MeshBuilder meshBuilder;
         private bool showDebugInfo { get; set; }
         private CameraFPS camera;
+        private PhysicalWorld physicalworld;
         #endregion
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
@@ -57,7 +59,8 @@ namespace TGC.Group.Model
         public override void Init()
         {            
             #region Camera 
-            Camera = new CameraFPS(Input, Constants.INSIDE_SHIP_POSITION);
+            // TODO: Setie la camara para que aparezca fuera de la nave, hay que realizar la creacion de un segundo cuerpo rigido de la camara para lo que es el exterior 
+            Camera = new CameraFPS(Input, Constants.OUTSIDE_SHIP_POSITION);
             camera = (CameraFPS)Camera;
             #endregion
 
@@ -85,6 +88,10 @@ namespace TGC.Group.Model
             MeshDuplicator.InitOriginalMeshes();
             meshInitializer();
             #endregion
+
+            #region Mundo fisico
+            physicalworld = new PhysicalWorld(camera, terrain, Constants.GRAVITY);
+            #endregion
         }
 
         public override void Update()
@@ -92,6 +99,8 @@ namespace TGC.Group.Model
             PreUpdate();
 
             currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
+
+            physicalworld.Update(Input);
 
             #region Teclas
 
@@ -215,7 +224,7 @@ namespace TGC.Group.Model
         public override void Dispose()
         {
             #region Liberacion de recursos
-
+            physicalworld.Dispose();
             ship.Dispose();
             terrain.Dispose();
             water.Dispose();
