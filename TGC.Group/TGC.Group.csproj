@@ -232,7 +232,9 @@
     <Content Include="Media\tree_coral-TgcScene.xml" />
     <Content Include="Media\yellow_fish-TgcScene.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Model\Bullet\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

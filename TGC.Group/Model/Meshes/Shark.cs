@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Sharky
 {

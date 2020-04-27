@@ -4,6 +4,7 @@ using Microsoft.DirectX.DirectInput;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
+using TGC.Core.SceneLoader;
 using TGC.Group.Model.Terrains;
 
 namespace TGC.Group.Utils
@@ -16,7 +17,6 @@ namespace TGC.Group.Utils
         private DefaultCollisionConfiguration collisionConfiguration;
         private SequentialImpulseConstraintSolver constraintSolver;
         private BroadphaseInterface overlappingPairCache;
-        private CustomVertex.PositionTextured[] triangleDataVB;
         private RigidBody rigidBody;
         private TGCVector3 director = new TGCVector3(1, 0, 0);
         private CameraFPS Camera;
@@ -45,22 +45,21 @@ namespace TGC.Group.Utils
             changeGravityInY(gravity);
         }
         
-        private void SetTriangleDataVB(CustomVertex.PositionTextured[] newTriangleData)
-        {
-            triangleDataVB = newTriangleData;
-        }
-
         private void createRigidBodyFromTerrain(Terrain terrain)
         {
-            SetTriangleDataVB(terrain.world.getVertices());
-            var meshRigidBody = rigidBodyFactory.CreateSurfaceFromHeighMap(triangleDataVB);
+            var meshRigidBody = rigidBodyFactory.CreateSurfaceFromHeighMap(terrain.world.getVertices());
             dynamicsWorld.AddRigidBody(meshRigidBody);
         }
         
-        // TODO: Verificar que la posicion del centro de masa del rigido este bien con la de la camara
         private void createRigidCamera()
         {
             rigidBody = rigidBodyFactory.CreateBall(30f, 0.75f, Camera.position);
+            dynamicsWorld.AddRigidBody(rigidBody);
+        }
+
+        public void addNewRigidBody(TgcMesh mesh)
+        {
+            var rigidBody = rigidBodyFactory.CreateRigidBodyFromTgcMesh(mesh);
             dynamicsWorld.AddRigidBody(rigidBody);
         }
 
@@ -70,50 +69,45 @@ namespace TGC.Group.Utils
             dynamicsWorld.Gravity = new TGCVector3(0, Gravity, 0).ToBulletVector3();
         }
 
-        public void Update(TgcD3dInput input)
+        public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
         {
-            dynamicsWorld.StepSimulation(1 / 60f, 100);
-
-            var strength = 1.50f;
-            var angle = 5;
-
-            rigidBody.ActivationState = ActivationState.ActiveTag;
-
-            if (input.keyDown(Key.W))
-            {
-                rigidBody.ApplyCentralImpulse(strength * director.ToBulletVector3());
-            }
-
-            if (input.keyDown(Key.S))
-            {
-                rigidBody.ApplyCentralImpulse(-strength * director.ToBulletVector3());
-            }
-
-            if (input.keyDown(Key.A))
-            {
-                director.TransformCoordinate(TGCMatrix.RotationY(-angle * 0.001f));
-            }
-
-            if (input.keyDown(Key.D))
-            {
-                director.TransformCoordinate(TGCMatrix.RotationY(angle * 0.001f));
-            }
-
-            if (input.keyPressed(Key.Space))
-            {
-                rigidBody.ActivationState = ActivationState.ActiveTag;
-                rigidBody.ApplyCentralImpulse(TGCVector3.Up.ToBulletVector3() * 150);
-            }
-
+            dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
+                                   
+            //var strength = 1.50f;
+            //var angle = 5;
+            //
+            //rigidBody.ActivationState = ActivationState.ActiveTag;
+            //
+            //if (input.keyDown(Key.W))
+            //{
+            //    rigidBody.ApplyCentralImpulse(strength * director.ToBulletVector3());
+            //}
+            //
+            //if (input.keyDown(Key.S))
+            //{
+            //    rigidBody.ApplyCentralImpulse(-strength * director.ToBulletVector3());
+            //}
+            //
+            //if (input.keyDown(Key.A))
+            //{
+            //    director.TransformCoordinate(TGCMatrix.RotationY(-angle * 0.001f));
+            //}
+            //
+            //if (input.keyDown(Key.D))
+            //{
+            //    director.TransformCoordinate(TGCMatrix.RotationY(angle * 0.001f));
+            //}
+            //
+            //if (input.keyPressed(Key.Space))
+            //{
+            //    rigidBody.ActivationState = ActivationState.ActiveTag;
+            //    rigidBody.ApplyCentralImpulse(TGCVector3.Up.ToBulletVector3() * 150);
+            //}
+            
             Camera.position = new TGCVector3(rigidBody.CenterOfMassPosition.X,
                                              rigidBody.CenterOfMassPosition.Y,
                                              rigidBody.CenterOfMassPosition.Z);
             
-        }
-
-        public void Render()
-        {
-                        
         }
 
         public void Dispose()

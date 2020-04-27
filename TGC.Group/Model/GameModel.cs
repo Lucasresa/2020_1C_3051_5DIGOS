@@ -13,6 +13,7 @@ using TGC.Group.Model.MeshBuilders;
 using TGC.Group.Model.Watercraft;
 using static TGC.Group.Model.Terrains.Terrain;
 using System.Runtime.CompilerServices;
+using BulletSharp;
 
 namespace TGC.Group.Model
 {
@@ -29,7 +30,7 @@ namespace TGC.Group.Model
         #endregion
 
         #region Atributos
-        //private float time;
+        private float time;
         private List<TgcMesh> corales = new List<TgcMesh>();
         private List<TgcMesh> minerals = new List<TgcMesh>();
         private List<TgcMesh> vegetation = new List<TgcMesh>();
@@ -53,13 +54,17 @@ namespace TGC.Group.Model
             Description = Game.Default.Description;
             meshBuilder = new MeshBuilder();
             MeshDuplicator.MediaDir = mediaDir;
-            D3DDevice.Instance.ZFarPlaneDistance = 8000f;
+            D3DDevice.Instance.ZFarPlaneDistance = 8000f;            
+            FixedTickEnable = true;
         }
 
         public override void Init()
-        {            
+        {
+            #region Fix
+            Tick();
+            #endregion
+
             #region Camera 
-            // TODO: Setie la camara para que aparezca fuera de la nave, hay que realizar la creacion de un segundo cuerpo rigido de la camara para lo que es el exterior 
             Camera = new CameraFPS(Input, Constants.OUTSIDE_SHIP_POSITION);
             camera = (CameraFPS)Camera;
             #endregion
@@ -72,6 +77,10 @@ namespace TGC.Group.Model
             water.LoadWorld(new TGCVector3(0, Constants.WATER_HEIGHT, 0));
             skyBox = new Sky(MediaDir, ShadersDir, camera);
             skyBox.LoadSkyBox();
+            #endregion
+            
+            #region Mundo fisico
+            physicalworld = new PhysicalWorld(camera, terrain, Constants.GRAVITY);
             #endregion
 
             #region Nave
@@ -89,18 +98,15 @@ namespace TGC.Group.Model
             meshInitializer();
             #endregion
 
-            #region Mundo fisico
-            physicalworld = new PhysicalWorld(camera, terrain, Constants.GRAVITY);
-            #endregion
         }
 
         public override void Update()
         {
             PreUpdate();
 
-            currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
+            physicalworld.Update(Input, ElapsedTime, TimeBetweenUpdates);
 
-            physicalworld.Update(Input);
+            currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
 
             #region Teclas
 
@@ -124,16 +130,15 @@ namespace TGC.Group.Model
             #endregion
 
             PostUpdate();
-        }        
+        }
 
         public override void Render()
         {
             // INFO: Con el nuevo Core los fps no se muestran mas
             PreRender();
-
             #region Texto en pantalla
 
-            //time += ElapsedTime;
+            time += ElapsedTime;
 
             if (showDebugInfo)
             {
@@ -148,7 +153,7 @@ namespace TGC.Group.Model
                                   0, 80, Color.Red);
 
                 // INFO: Con este nuevo core el elapsedTime hace cualquiera y por ende el TIME no sirve.
-                //DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
+                DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
 
                 DrawText.drawText("DATOS DEL AREA ACTUAL: ", 0, 130, Color.Red);
 

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Watercraft
 {
@@ -49,7 +50,7 @@ namespace TGC.Group.Model.Watercraft
             InsideMesh = Mesh.createMeshInstance("InsideRoom");
             InsideMesh.Position = new TGCVector3(350, -2500, -45);
             InsideMesh.Scale = new TGCVector3(10, 10, 10);
-            InsideMesh.RotateY(FastMath.PI_HALF);            
+            InsideMesh.Rotation = new TGCVector3(0, FastMath.PI_HALF, 0);
         }
     }
 }
