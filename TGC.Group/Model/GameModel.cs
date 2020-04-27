@@ -65,8 +65,9 @@ namespace TGC.Group.Model
             #endregion
 
             #region Camera 
-            Camera = new CameraFPS(Input, Constants.OUTSIDE_SHIP_POSITION);
+            Camera = new CameraFPS(Input, Constants.INSIDE_SHIP_POSITION);
             camera = (CameraFPS)Camera;
+            camera.setShipPosition(Constants.INSIDE_SHIP_POSITION, Constants.OUTSIDE_SHIP_POSITION);
             #endregion
 
             #region Mundo            
@@ -80,7 +81,7 @@ namespace TGC.Group.Model
             #endregion
             
             #region Mundo fisico
-            physicalworld = new PhysicalWorld(camera, terrain, Constants.GRAVITY);
+            physicalworld = new PhysicalWorld(camera, terrain.world.getVertices());
             #endregion
 
             #region Nave
@@ -136,6 +137,7 @@ namespace TGC.Group.Model
         {
             // INFO: Con el nuevo Core los fps no se muestran mas
             PreRender();
+
             #region Texto en pantalla
 
             time += ElapsedTime;

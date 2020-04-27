@@ -28,8 +28,11 @@ namespace TGC.Group.Utils
         private float longitude { get; set; } = -FastMath.PI / 10.0f;
         private TGCVector3 directionView { get; set; } = new TGCVector3(0, 0.1f, -1);
         private TGCVector3 translation { get; set; } = TGCVector3.Empty;
+
+        private TGCVector3 positionInsideShip;
+        private TGCVector3 positionOutsideShip;
         #endregion
-        
+
         #region Protegidas
         protected TGCVector3 moveX = new TGCVector3(1, 0, 0);
         protected TGCVector3 moveY = new TGCVector3(0, 1, 0);
@@ -53,7 +56,23 @@ namespace TGC.Group.Utils
             cameraRotation = TGCMatrix.RotationX(latitude) * TGCMatrix.RotationY(longitude);
         }
         #endregion
-        
+
+        public void setShipPosition(TGCVector3 inside, TGCVector3 outside)
+        {
+            positionInsideShip = inside;
+            positionOutsideShip = outside;
+        }
+
+        public TGCVector3 getShipInsidePosition()
+        {
+            return positionInsideShip;
+        }
+
+        public TGCVector3 getShipOutsidePosition()
+        {
+            return positionOutsideShip;
+        }
+
         #region Desplazamiento de la Camara
         private void CameraTranslate()
         {
