@@ -28,7 +28,7 @@ namespace TGC.Group.Model
         #endregion
 
         #region Atributos
-        //private float time;
+        private float time;
         private List<TgcMesh> corales = new List<TgcMesh>();
         private List<TgcMesh> minerals = new List<TgcMesh>();
         private List<TgcMesh> vegetation = new List<TgcMesh>();
@@ -51,11 +51,16 @@ namespace TGC.Group.Model
             Description = Game.Default.Description;
             meshBuilder = new MeshBuilder();
             MeshDuplicator.MediaDir = mediaDir;
-            D3DDevice.Instance.ZFarPlaneDistance = 8000f;
+            D3DDevice.Instance.ZFarPlaneDistance = 8000f;           
         }
 
         public override void Init()
-        {            
+        {
+            #region Fix
+            FixedTickEnable = true;
+            Tick();
+            #endregion
+
             #region Camera 
             Camera = new CameraFPS(Input, Constants.INSIDE_SHIP_POSITION);
             camera = (CameraFPS)Camera;
@@ -90,7 +95,7 @@ namespace TGC.Group.Model
         public override void Update()
         {
             PreUpdate();
-
+            
             currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
 
             #region Teclas
@@ -100,22 +105,18 @@ namespace TGC.Group.Model
 
             if (Input.keyPressed(Key.E) && CameraInRoom())
             {
-                camera.movementSpeed = 6;
-                camera.jumpSpeed = 6;
                 camera.TeleportCamera(Constants.OUTSIDE_SHIP_POSITION);
             }
 
             if (Input.keyPressed(Key.E) && CameraOutRoom())
             {
-                camera.movementSpeed = 1;
-                camera.jumpSpeed = 1;
                 camera.TeleportCamera(Constants.INSIDE_SHIP_POSITION);
             }
 
             #endregion
 
             PostUpdate();
-        }        
+        }
 
         public override void Render()
         {
@@ -124,7 +125,7 @@ namespace TGC.Group.Model
 
             #region Texto en pantalla
 
-            //time += ElapsedTime;
+            time += ElapsedTime;
 
             if (showDebugInfo)
             {
@@ -139,7 +140,7 @@ namespace TGC.Group.Model
                                   0, 80, Color.Red);
 
                 // INFO: Con este nuevo core el elapsedTime hace cualquiera y por ende el TIME no sirve.
-                //DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
+                DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
 
                 DrawText.drawText("DATOS DEL AREA ACTUAL: ", 0, 130, Color.Red);
 
@@ -214,8 +215,7 @@ namespace TGC.Group.Model
 
         public override void Dispose()
         {
-            #region Liberacion de recursos
-
+            #region Liberacion de recursos            
             ship.Dispose();
             terrain.Dispose();
             water.Dispose();
