@@ -14,6 +14,7 @@ using TGC.Group.Model.Watercraft;
 using static TGC.Group.Model.Terrains.Terrain;
 using System.Runtime.CompilerServices;
 using BulletSharp;
+using TGC.Group.Model.Bullet;
 
 namespace TGC.Group.Model
 {
@@ -44,7 +45,8 @@ namespace TGC.Group.Model
         private MeshBuilder meshBuilder;
         private bool showDebugInfo { get; set; }
         private CameraFPS camera;
-        private PhysicalWorld physicalworld;
+        private readonly PhysicalWorld physicalworld = PhysicalWorld.Instance;
+        private RigidBodies rigidBodies = new RigidBodies();
         #endregion
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
@@ -54,13 +56,13 @@ namespace TGC.Group.Model
             Description = Game.Default.Description;
             meshBuilder = new MeshBuilder();
             MeshDuplicator.MediaDir = mediaDir;
-            D3DDevice.Instance.ZFarPlaneDistance = 8000f;            
-            FixedTickEnable = true;
+            D3DDevice.Instance.ZFarPlaneDistance = 8000f;           
         }
 
         public override void Init()
         {
             #region Fix
+            FixedTickEnable = true;
             Tick();
             #endregion
 
@@ -79,9 +81,13 @@ namespace TGC.Group.Model
             skyBox = new Sky(MediaDir, ShadersDir, camera);
             skyBox.LoadSkyBox();
             #endregion
-            
+
             #region Mundo fisico
-            physicalworld = new PhysicalWorld(camera, terrain.world.getVertices());
+            
+            rigidBodies.Initializer(terrain);
+            physicalworld.addInitialRigidBodies(rigidBodies.rigidBodies);
+            physicalworld.addAllDynamicsWorld();
+
             #endregion
 
             #region Nave
@@ -116,15 +122,11 @@ namespace TGC.Group.Model
 
             if (Input.keyPressed(Key.E) && CameraInRoom())
             {
-                camera.movementSpeed = 6;
-                camera.jumpSpeed = 6;
                 camera.TeleportCamera(Constants.OUTSIDE_SHIP_POSITION);
             }
 
             if (Input.keyPressed(Key.E) && CameraOutRoom())
             {
-                camera.movementSpeed = 1;
-                camera.jumpSpeed = 1;
                 camera.TeleportCamera(Constants.INSIDE_SHIP_POSITION);
             }
 

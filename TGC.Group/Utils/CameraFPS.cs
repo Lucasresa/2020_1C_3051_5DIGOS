@@ -15,8 +15,8 @@ namespace TGC.Group.Utils
 
         #region Publicas
         public float rotationSpeed { get; set; } = 0.1f;
-        public float movementSpeed { get; set; } = 1f;
-        public float jumpSpeed { get; set; } = 1f;
+        public float movementSpeed { get; set; } = 200f;
+        public float jumpSpeed { get; set; } = 200f;
         public TGCVector3 position { get; set; } = new TGCVector3(1300, 3505, 20);
         #endregion
         
@@ -76,17 +76,17 @@ namespace TGC.Group.Utils
         #region Desplazamiento de la Camara
         private void CameraTranslate()
         {
-            if (input.keyDown(Key.W)) translation += moveZ * movementSpeed;
+            if (input.keyDown(Key.W)) translation += moveZ * -movementSpeed;
                        
-            if (input.keyDown(Key.S)) translation += moveZ * -movementSpeed;
+            if (input.keyDown(Key.S)) translation += moveZ * movementSpeed;
                       
-            if (input.keyDown(Key.D)) translation += moveX * movementSpeed;
+            if (input.keyDown(Key.D)) translation += moveX * -movementSpeed;
                        
-            if (input.keyDown(Key.A)) translation += moveX * -movementSpeed;
+            if (input.keyDown(Key.A)) translation += moveX * movementSpeed;
                       
-            if (input.keyDown(Key.Space)) translation += moveY * -jumpSpeed;
+            if (input.keyDown(Key.Space)) translation += moveY * jumpSpeed;
                       
-            if (input.keyDown(Key.LeftControl)) translation += moveY * jumpSpeed;
+            if (input.keyDown(Key.LeftControl)) translation += moveY * -jumpSpeed;
 
         }
         #endregion
