@@ -84,7 +84,7 @@ namespace TGC.Group.Model
 
             #region Mundo fisico
             
-            rigidBodies.Initializer(terrain);
+            rigidBodies.Initializer(terrain, camera);
             physicalworld.addInitialRigidBodies(rigidBodies.rigidBodies);
             physicalworld.addAllDynamicsWorld();
 

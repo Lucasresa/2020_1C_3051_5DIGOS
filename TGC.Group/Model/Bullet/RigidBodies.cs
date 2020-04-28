@@ -23,10 +23,10 @@ namespace TGC.Group.Model.Bullet
         protected BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
         public Dictionary<RigidBodyType, RigidBodies> rigidBodies = new Dictionary<RigidBodyType, RigidBodies>();
 
-        protected RigidBodyType type;
+        protected RigidBodyType Type;
         protected TgcMesh Mesh;
-        protected Vector3 position;
-        protected Vector3 gravity;
+        protected TGCVector3 Position;
+        protected TGCVector3 Gravity;
         public RigidBody RigidBody;
 
         #endregion
@@ -36,14 +36,14 @@ namespace TGC.Group.Model.Bullet
         #endregion
 
         #region Metodos
-        public void Initializer(Terrain terrain)
+        public void Initializer(Terrain terrain, CameraFPS camera)
         {
             rigidBodies.Add(RigidBodyType.terrain, new TerrainRigidBody(terrain));
+            rigidBodies.Add(RigidBodyType.outsideCharacter, new CharacterRigidBody(RigidBodyType.outsideCharacter, camera));
+            //rigidBodies.Add(RigidBodyType.insideCharacter, new CharacterRigidBody());
             //rigidBodies.Add(RigidBodyType.shark, new SharkRigidBody());
             //rigidBodies.Add(RigidBodyType.insideShip, new ShipRigidBody());
             //rigidBodies.Add(RigidBodyType.outsideShip, new ShipRigidBody());
-            //rigidBodies.Add(RigidBodyType.insideCharacter, new CharacterRigidBody());
-            //rigidBodies.Add(RigidBodyType.outsideCharacter, new CharacterRigidBody());
 
             rigidBodies.Values.ToList().ForEach(rigidBody => rigidBody.Init());
         }
