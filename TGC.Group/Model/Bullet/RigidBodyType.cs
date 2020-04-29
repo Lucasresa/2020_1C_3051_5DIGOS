@@ -13,8 +13,7 @@ namespace TGC.Group.Model.Bullet
         shark,
         insideShip,
         outsideShip,
-        insideCharacter,
-        outsideCharacter
+        character        
     }
     #endregion
 

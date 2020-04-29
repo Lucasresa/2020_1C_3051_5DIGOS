@@ -19,6 +19,7 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public override void Dispose()
         {
+            Terrain.Dispose();
             RigidBody.Dispose();
         }
     }

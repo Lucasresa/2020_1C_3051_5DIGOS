@@ -62,6 +62,11 @@ namespace TGC.Group.Utils
             rigidBodies.Values.ToList().ForEach(rigidBody => rigidBody.Update(input));
         }
 
+        public void Render()
+        {
+            rigidBodies.Values.ToList().ForEach(rigidBody => rigidBody.Render());
+        }
+
         public void Dispose()
         {
             dynamicsWorld.Dispose();

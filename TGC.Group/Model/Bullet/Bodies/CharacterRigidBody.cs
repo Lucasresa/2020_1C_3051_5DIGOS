@@ -16,58 +16,54 @@ namespace TGC.Group.Model.Bullet.Bodies
     class CharacterRigidBody : RigidBodies
     {
         private CameraFPS Camera;
-        private TGCVector3 director = new TGCVector3(0, 0, 1);
+        private TGCVector3 directorz = new TGCVector3(1, 0, 0); 
+        private TGCVector3 directorx = new TGCVector3(0, 0, 1); 
 
-        public CharacterRigidBody(RigidBodyType type, CameraFPS camera)
+        public CharacterRigidBody(CameraFPS camera)
         {
-            Type = type;
             Camera = camera;
+            Camera.isOutside = true; // INFO: Lo modifico ahora para tener la camara fuera de la nave, despues hay que quitar esto.
         }
 
         public override void Init()
-        {
-            switch (Type)
-            {
-                case RigidBodyType.insideCharacter:
-                    Position = Camera.getShipInsidePosition();
-                    break;
-                case RigidBodyType.outsideCharacter:
-                    Position = Camera.getShipOutsidePosition();
-                    break;
-                default:
-                    throw new Exception("Type not found");
-            }
+        {            
+            if (Camera.isOutside)
+                Position = Camera.getShipOutsidePosition();
+            else
+                Position = Camera.getShipInsidePosition();
             
-            RigidBody = rigidBodyFactory.CreateBall(30f, 0.75f, Position);            
+            RigidBody = rigidBodyFactory.CreateBall(30f, 0.75f, Position);
         }
 
         public override void Update(TgcD3dInput input)
         {
-            var strength = 10.30f;
+            var strength = 2f;
             var angle = 5;
 
             RigidBody.ActivationState = ActivationState.ActiveTag;
 
+            // TODO: Corregir el movimiento ya que ahora hace cualquiera
+            #region Movimiento 
+            RigidBody.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
+
             if (input.keyDown(Key.W))
             {
-                RigidBody.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
-                RigidBody.ApplyCentralImpulse(-strength * director.ToBulletVector3());
+                RigidBody.ApplyCentralImpulse(-strength * directorz.ToBulletVector3());
             }
 
             if (input.keyDown(Key.S))
             {
-                RigidBody.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
-                RigidBody.ApplyCentralImpulse(strength * director.ToBulletVector3());
+                RigidBody.ApplyCentralImpulse(strength * directorz.ToBulletVector3());
             }
 
             if (input.keyDown(Key.A))
             {
-                director.TransformCoordinate(TGCMatrix.RotationY(-angle * 0.01f));
+                RigidBody.ApplyCentralImpulse(-strength * directorx.ToBulletVector3());
             }
 
             if (input.keyDown(Key.D))
             {
-                director.TransformCoordinate(TGCMatrix.RotationY(angle * 0.01f));
+                RigidBody.ApplyCentralImpulse(strength * directorx.ToBulletVector3());
             }
 
             if (input.keyPressed(Key.Space))
@@ -75,7 +71,13 @@ namespace TGC.Group.Model.Bullet.Bodies
                 RigidBody.ApplyCentralImpulse(new TGCVector3(0, 80 * strength, 0).ToBulletVector3());
             }
 
-            RigidBody.Gravity = new Vector3(0, -100, 0);
+            #endregion
+
+            if (Camera.isOutside)
+                RigidBody.Gravity = new Vector3(0, -100, 0);
+                //RigidBody.Gravity = new Vector3(0, 0, 0);
+            else
+                RigidBody.Gravity = new Vector3(0, 0, 0);
 
             Camera.position = new TGCVector3(RigidBody.CenterOfMassPosition.X,
                                              RigidBody.CenterOfMassPosition.Y,

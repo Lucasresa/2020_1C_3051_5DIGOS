@@ -82,14 +82,6 @@ namespace TGC.Group.Model
             skyBox.LoadSkyBox();
             #endregion
 
-            #region Mundo fisico
-            
-            rigidBodies.Initializer(terrain, camera);
-            physicalworld.addInitialRigidBodies(rigidBodies.rigidBodies);
-            physicalworld.addAllDynamicsWorld();
-
-            #endregion
-
             #region Nave
             ship = new Ship(MediaDir, ShadersDir);
             ship.LoadShip();
@@ -98,6 +90,14 @@ namespace TGC.Group.Model
             #region Enemigo
             shark = new Shark(MediaDir, ShadersDir);
             shark.LoadShark();
+            #endregion
+
+            #region Mundo fisico
+            
+            rigidBodies.Initializer(terrain, camera, ship);
+            physicalworld.addInitialRigidBodies(rigidBodies.rigidBodies);
+            physicalworld.addAllDynamicsWorld();
+
             #endregion
 
             #region Vegetacion del mundo
@@ -121,14 +121,10 @@ namespace TGC.Group.Model
                 showDebugInfo = !showDebugInfo;
 
             if (Input.keyPressed(Key.E) && CameraInRoom())
-            {
                 camera.TeleportCamera(Constants.OUTSIDE_SHIP_POSITION);
-            }
 
             if (Input.keyPressed(Key.E) && CameraOutRoom())
-            {
                 camera.TeleportCamera(Constants.INSIDE_SHIP_POSITION);
-            }
 
             #endregion
 
@@ -174,8 +170,8 @@ namespace TGC.Group.Model
             #endregion
 
             #region Renderizado
-            
-            ship.Render();
+
+            physicalworld.Render();
 
             if (camera.position.Y > 0)
             {
@@ -234,8 +230,6 @@ namespace TGC.Group.Model
         {
             #region Liberacion de recursos
             physicalworld.Dispose();
-            ship.Dispose();
-            terrain.Dispose();
             water.Dispose();
             skyBox.Dispose();
             shark.Dispose();

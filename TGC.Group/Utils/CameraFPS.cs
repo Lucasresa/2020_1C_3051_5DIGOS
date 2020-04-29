@@ -18,8 +18,9 @@ namespace TGC.Group.Utils
         public float movementSpeed { get; set; } = 200f;
         public float jumpSpeed { get; set; } = 200f;
         public TGCVector3 position { get; set; } = new TGCVector3(1300, 3505, 20);
+        public bool isOutside = false;
         #endregion
-        
+
         #region Privadas
         private TgcD3dInput input { get; }
         private Point mouseCenter = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
@@ -105,6 +106,11 @@ namespace TGC.Group.Utils
 
         public override void UpdateCamera(float elapsedTime)
         {
+            if (position.Y < 0)
+                isOutside = false;
+            else
+                isOutside = true;
+            
             Cursor.Hide();
             CameraTranslate();
             CameraRotation();
