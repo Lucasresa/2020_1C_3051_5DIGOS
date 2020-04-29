@@ -17,7 +17,9 @@ namespace TGC.Group.Model.Bullet.Bodies
     {
         private CameraFPS Camera;
         private TGCVector3 directorz = new TGCVector3(1, 0, 0); 
-        private TGCVector3 directorx = new TGCVector3(0, 0, 1); 
+        private TGCVector3 directorx = new TGCVector3(0, 0, 1);
+
+        public TGCVector3 Position { get; private set; }
 
         public CharacterRigidBody(CameraFPS camera)
         {
@@ -74,8 +76,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             #endregion
 
             if (Camera.isOutside)
-                RigidBody.Gravity = new Vector3(0, -100, 0);
-                //RigidBody.Gravity = new Vector3(0, 0, 0);
+                RigidBody.Gravity = new Vector3(0, -100, 0); // INFO: Cambiar a 0 cuando se deje de probar afuera
             else
                 RigidBody.Gravity = new Vector3(0, 0, 0);
 

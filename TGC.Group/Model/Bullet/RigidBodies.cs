@@ -25,8 +25,6 @@ namespace TGC.Group.Model.Bullet
         protected BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
         public Dictionary<RigidBodyType, RigidBodies> rigidBodies = new Dictionary<RigidBodyType, RigidBodies>();
 
-        protected RigidBodyType Type;
-        protected TGCVector3 Position;        
         public RigidBody RigidBody;
 
         #endregion
@@ -40,8 +38,9 @@ namespace TGC.Group.Model.Bullet
         {
             rigidBodies.Add(RigidBodyType.terrain, new TerrainRigidBody(terrain));
             rigidBodies.Add(RigidBodyType.character, new CharacterRigidBody(camera));
-            rigidBodies.Add(RigidBodyType.outsideShip, new ShipRigidBody(RigidBodyType.outsideShip, ship));
-            
+            rigidBodies.Add(RigidBodyType.outsideShip, new MeshPrueba(camera));
+
+            //rigidBodies.Add(RigidBodyType.outsideShip, new ShipRigidBody(RigidBodyType.outsideShip, ship));            
             //rigidBodies.Add(RigidBodyType.shark, new SharkRigidBody());
             //rigidBodies.Add(RigidBodyType.outsideShip, new ShipRigidBody());
 
@@ -50,6 +49,7 @@ namespace TGC.Group.Model.Bullet
 
         public virtual void Init() { }
         public virtual void Update(TgcD3dInput input) { }
+
         public virtual void Render()
         {
             rigidBodies.Values.ToList().ForEach(rigidBody => rigidBody.Render());
@@ -60,14 +60,10 @@ namespace TGC.Group.Model.Bullet
             rigidBodies.Values.ToList().ForEach(rigidBody => rigidBody.Dispose());
         }        
 
-        //public void setGravity(RigidBody rigidBody, float gravity)
-        //{
-        //    rigidBody.Gravity = new Vector3(0, -gravity, 0);
-        //}
-        
-        //rigidBody = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
-        //
-        //rigidBody = rigidBodyFactory.CreateBall(30f, 0.75f, position);
+        public void setGravity(RigidBody rigidBody, float gravity)
+        {
+            rigidBody.Gravity = new Vector3(0, -gravity, 0);
+        }
         
         #endregion
     }
