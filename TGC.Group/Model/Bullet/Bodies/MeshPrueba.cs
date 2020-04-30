@@ -1,5 +1,6 @@
 ﻿using BulletSharp;
 using BulletSharp.Math;
+using BulletSharp.SoftBody;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,19 +33,19 @@ namespace TGC.Group.Model.Bullet.Bodies
         }
         
         public override void Init()
-        {            
+        {
             RigidBody = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Sharky.Mesh);
-            RigidBody.Translate(posicion.ToBulletVector3());        
+            RigidBody.Translate(posicion.ToBulletVector3());
+            RigidBody.CollisionShape.LocalScaling = new Vector3(10, 10, 10);
         }
 
         public override void Render()
         {
             Sharky.Mesh.Position = new TGCVector3(RigidBody.CenterOfMassPosition.X, RigidBody.CenterOfMassPosition.Y + 0, RigidBody.CenterOfMassPosition.Z);
-            Sharky.Mesh.Transform = TGCMatrix.Translation(RigidBody.CenterOfMassPosition.X, RigidBody.CenterOfMassPosition.Y, RigidBody.CenterOfMassPosition.Z);
+            Sharky.Mesh.Transform = TGCMatrix.Scaling(10, 10, 10) * TGCMatrix.Translation(RigidBody.CenterOfMassPosition.X, RigidBody.CenterOfMassPosition.Y, RigidBody.CenterOfMassPosition.Z);
             Sharky.Mesh.Render();
         }
 
-        // INFO: ESTAN OK
         #region Metodos
         public override void Update(TgcD3dInput input)
         {

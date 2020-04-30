@@ -46,20 +46,26 @@ namespace TGC.Group.Utils
         private void initDynamicsWorld()
         {
             #region Configuracion del mundo fisico
+            
             collisionConfiguration = new DefaultCollisionConfiguration();
             dispatcher = new CollisionDispatcher(collisionConfiguration);
             GImpactCollisionAlgorithm.RegisterAlgorithm(dispatcher);
             constraintSolver = new SequentialImpulseConstraintSolver();
             overlappingPairCache = new DbvtBroadphase();
             dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, overlappingPairCache, constraintSolver, collisionConfiguration);
+            
             dynamicsWorld.Gravity = gravityZero;
             #endregion            
         }
 
         public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
-        {
+        {          
             dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
-            rigidBodies.Values.ToList().ForEach(rigidBody => rigidBody.Update(input));
+            rigidBodies.Values.ToList().ForEach(rigidBody =>
+            {
+                dynamicsWorld.UpdateSingleAabb(rigidBody.RigidBody);
+                rigidBody.Update(input);
+            });
         }
 
         public void Render()
