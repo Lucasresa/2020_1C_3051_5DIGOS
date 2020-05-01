@@ -1,5 +1,6 @@
 ﻿using BulletSharp;
 using BulletSharp.Math;
+using Microsoft.DirectX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,12 +27,18 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             rigidBody = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Sharky.Mesh);
             rigidBody.Translate(Sharky.Mesh.Position.ToBulletVector3());
-            rigidBody.CollisionShape.LocalScaling = new Vector3(3, 3, 3);
+            rigidBody.CollisionShape.LocalScaling = new Vector3(5, 5, 5);
+            rigidBody.CenterOfMassTransform = TGCMatrix.Translation(Sharky.Mesh.Position).ToBulletMatrix();
         }
 
         public override void Update(TgcD3dInput input)
         {
-            Sharky.Mesh.Transform = TGCMatrix.Scaling(3, 3, 3) * TGCMatrix.Translation(rigidBody.CenterOfMassPosition.X, rigidBody.CenterOfMassPosition.Y, rigidBody.CenterOfMassPosition.Z);
+            if (input.keyPressed(Key.Z))
+            {
+                rigidBody.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(-300,1500,360)).ToBulletMatrix();
+            }
+
+            Sharky.Mesh.Transform = TGCMatrix.Scaling(5, 5, 5) * new TGCMatrix(rigidBody.InterpolationWorldTransform);
         }
 
         public override void Render()
