@@ -3,7 +3,7 @@ using TGC.Group.Model.Terrains;
 
 namespace TGC.Group.Model.Bullet.Bodies
 {
-    class TerrainRigidBody : RigidBodies
+    class TerrainRigidBody : RigidBody
     {
         private Terrain Terrain;
 
@@ -14,13 +14,13 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public override void Init()
         {
-            RigidBody = rigidBodyFactory.CreateSurfaceFromHeighMap(Terrain.world.getVertices());
+            rigidBody = rigidBodyFactory.CreateSurfaceFromHeighMap(Terrain.world.getVertices());
         }
 
         public override void Dispose()
         {
             Terrain.Dispose();
-            RigidBody.Dispose();
+            rigidBody.Dispose();
         }
     }
 }

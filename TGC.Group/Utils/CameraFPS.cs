@@ -15,8 +15,8 @@ namespace TGC.Group.Utils
 
         #region Publicas
         public float rotationSpeed { get; set; } = 0.1f;
-        public float movementSpeed { get; set; } = 200f;
-        public float jumpSpeed { get; set; } = 200f;
+        public float movementSpeed { get; set; } = 500f;
+        public float jumpSpeed { get; set; } = 500f;
         public TGCVector3 position { get; set; } = new TGCVector3(1300, 3505, 20);
         public bool isOutside = false;
         #endregion

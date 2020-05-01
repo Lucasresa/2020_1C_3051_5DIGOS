@@ -13,7 +13,7 @@ using TGC.Group.Utils;
 namespace TGC.Group.Model.Bullet.Bodies
 {
     // INFO: Por ahora voy a diseñar el personaje como una sphere que represente a la camara, pero estaba viendo que hay que utilizar una capsula para el personaje.. despues modificare
-    class CharacterRigidBody : RigidBodies
+    class CharacterRigidBody : RigidBody
     {
         private CameraFPS Camera;
         private TGCVector3 directorz = new TGCVector3(1, 0, 0); 
@@ -24,6 +24,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         public CharacterRigidBody(CameraFPS camera)
         {
             Camera = camera;
+            Camera.isOutside = true;
         }
 
         public override void Init()
@@ -33,64 +34,59 @@ namespace TGC.Group.Model.Bullet.Bodies
             else
                 Position = Camera.getShipInsidePosition();
 
-            RigidBody = rigidBodyFactory.CreateCapsule(15, 30, Position, 10, false);
+            rigidBody = rigidBodyFactory.CreateBall(30f, 0.75f, Position);
         }
 
         public override void Update(TgcD3dInput input)
         {
             var strength = 2f;
 
-            RigidBody.ActivationState = ActivationState.ActiveTag;
+            rigidBody.ActivationState = ActivationState.ActiveTag;
 
             // TODO: Corregir el movimiento ya que ahora hace cualquiera
             #region Movimiento 
-            RigidBody.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
+            rigidBody.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
 
             if (input.keyDown(Key.W))
             {
-                RigidBody.ApplyCentralImpulse(-strength * directorz.ToBulletVector3());
+                rigidBody.ApplyCentralImpulse(-strength * directorz.ToBulletVector3());
             }
 
             if (input.keyDown(Key.S))
             {
-                RigidBody.ApplyCentralImpulse(strength * directorz.ToBulletVector3());
+                rigidBody.ApplyCentralImpulse(strength * directorz.ToBulletVector3());
             }
 
             if (input.keyDown(Key.A))
             {
-                RigidBody.ApplyCentralImpulse(-strength * directorx.ToBulletVector3());
+                rigidBody.ApplyCentralImpulse(-strength * directorx.ToBulletVector3());
             }
 
             if (input.keyDown(Key.D))
             {
-                RigidBody.ApplyCentralImpulse(strength * directorx.ToBulletVector3());
+                rigidBody.ApplyCentralImpulse(strength * directorx.ToBulletVector3());
             }
 
             if (input.keyPressed(Key.Space))
-            {                
-                RigidBody.ApplyCentralImpulse(new TGCVector3(0, 80 * strength, 0).ToBulletVector3());
+            {
+                rigidBody.ApplyCentralImpulse(new TGCVector3(0, 80 * strength, 0).ToBulletVector3());
             }
 
             #endregion
 
             if (Camera.isOutside)
-                RigidBody.Gravity = new Vector3(0, -10, 0); // INFO: Cambiar a 0 cuando se deje de probar afuera
+                rigidBody.Gravity = new Vector3(0, -100, 0); // INFO: Cambiar a 0 cuando se deje de probar afuera
             else
-                RigidBody.Gravity = new Vector3(0, 0, 0);
+                rigidBody.Gravity = new Vector3(0, 0, 0);
 
-            Camera.position = new TGCVector3(RigidBody.CenterOfMassPosition.X,
-                                             RigidBody.CenterOfMassPosition.Y,
-                                             RigidBody.CenterOfMassPosition.Z);
-        }
-
-        public override void Render()
-        {
-            
+            Camera.position = new TGCVector3(rigidBody.CenterOfMassPosition.X,
+                                             rigidBody.CenterOfMassPosition.Y,
+                                             rigidBody.CenterOfMassPosition.Z);
         }
 
         public override void Dispose()
         {
-            RigidBody.Dispose();
+            rigidBody.Dispose();
         }
     }
 }

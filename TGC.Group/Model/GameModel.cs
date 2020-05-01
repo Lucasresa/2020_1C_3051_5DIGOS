@@ -46,7 +46,7 @@ namespace TGC.Group.Model
         private bool showDebugInfo { get; set; }
         private CameraFPS camera;
         private readonly PhysicalWorld physicalworld = PhysicalWorld.Instance;
-        private RigidBodies rigidBodies = new RigidBodies();
+        private Bullet.RigidBody rigidBodies = new Bullet.RigidBody();
         #endregion
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)

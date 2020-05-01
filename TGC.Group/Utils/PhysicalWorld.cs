@@ -9,8 +9,8 @@ using TGC.Core.BulletPhysics;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
-using TGC.Group.Model.Bullet;
 using TGC.Group.Model.Terrains;
+using TGC.Group.Model.Bullet;
 
 namespace TGC.Group.Utils
 {
@@ -29,7 +29,7 @@ namespace TGC.Group.Utils
         private BroadphaseInterface overlappingPairCache;
         #endregion
 
-        private Dictionary<RigidBodyType, RigidBodies> rigidBodies;
+        private List<Model.Bullet.RigidBody> rigidBodies;
 
         #endregion
 
@@ -61,16 +61,16 @@ namespace TGC.Group.Utils
         public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
         {          
             dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
-            rigidBodies.Values.ToList().ForEach(rigidBody =>
+            rigidBodies.ForEach(rigidBody =>
             {
-                dynamicsWorld.UpdateSingleAabb(rigidBody.RigidBody);
+                dynamicsWorld.UpdateSingleAabb(rigidBody.rigidBody);
                 rigidBody.Update(input);
             });
         }
 
         public void Render()
         {
-            rigidBodies.Values.ToList().ForEach(rigidBody => rigidBody.Render());
+            rigidBodies.ForEach(rigidBody => rigidBody.Render());
         }
 
         public void Dispose()
@@ -82,24 +82,20 @@ namespace TGC.Group.Utils
             overlappingPairCache.Dispose();
         }        
 
-        public void addInitialRigidBodies(Dictionary<RigidBodyType, RigidBodies> bodies)
+        public void addInitialRigidBodies(List<Model.Bullet.RigidBody> bodies)
         {
             rigidBodies = bodies;
         }
 
-        public void addNewRigidBody(RigidBodyType type, RigidBodies rigidBody)
+        public void addRigidBodyToWorld(Model.Bullet.RigidBody rigidBody)
         {
-            rigidBodies.Add(type, rigidBody);
+            rigidBodies.Add(rigidBody);
+            dynamicsWorld.AddRigidBody(rigidBody.rigidBody);
         }
 
         public void addAllDynamicsWorld()
         {
-            rigidBodies.Values.ToList().ForEach(rigidBody => dynamicsWorld.AddRigidBody(rigidBody.RigidBody));
-        }
-
-        public void addDynamicsWorld(RigidBody rigidBody)
-        {
-            dynamicsWorld.AddRigidBody(rigidBody);
+            rigidBodies.ForEach(rigidBody => dynamicsWorld.AddRigidBody(rigidBody.rigidBody));
         }
 
         #endregion

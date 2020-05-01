@@ -102,9 +102,9 @@
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
     <Compile Include="Model\Bullet\Bodies\CharacterRigidBody.cs" />
-    <Compile Include="Model\Bullet\Bodies\ShipRigidBody.cs" />
-    <Compile Include="Model\Bullet\RigidBodies.cs" />
-    <Compile Include="Model\Bullet\RigidBodyType.cs" />
+    <Compile Include="Model\Bullet\Bodies\IndoorShipRigidBody.cs" />
+    <Compile Include="Model\Bullet\Bodies\OutdoorShipRigidBody.cs" />
+    <Compile Include="Model\Bullet\RigidBody.cs" />
     <Compile Include="Model\Bullet\Bodies\SharkRigidBody.cs" />
     <Compile Include="Model\Bullet\Bodies\TerrainRigidBody.cs" />
     <Compile Include="Model\Meshes\CommonMesh.cs" />

@@ -12,7 +12,7 @@ using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Bullet.Bodies
 {
-    class SharkRigidBody : RigidBodies
+    class SharkRigidBody : RigidBody
     {
         private Shark Sharky;
 
@@ -24,25 +24,25 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public override void Init()
         {
-            RigidBody = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Sharky.Mesh);
-            RigidBody.Translate(Sharky.Mesh.Position.ToBulletVector3());
-            RigidBody.CollisionShape.LocalScaling = new Vector3(3, 3, 3);
+            rigidBody = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Sharky.Mesh);
+            rigidBody.Translate(Sharky.Mesh.Position.ToBulletVector3());
+            rigidBody.CollisionShape.LocalScaling = new Vector3(3, 3, 3);
         }
 
         public override void Update(TgcD3dInput input)
         {
-            //RigidBody.ActivationState = ActivationState.ActiveTag;
+            
         }
 
         public override void Render()
         {
-            Sharky.Mesh.Transform = TGCMatrix.Scaling(3, 3, 3) * TGCMatrix.Translation(RigidBody.CenterOfMassPosition.X, RigidBody.CenterOfMassPosition.Y, RigidBody.CenterOfMassPosition.Z);
+            Sharky.Mesh.Transform = TGCMatrix.Scaling(3, 3, 3) * TGCMatrix.Translation(rigidBody.CenterOfMassPosition.X, rigidBody.CenterOfMassPosition.Y, rigidBody.CenterOfMassPosition.Z);
             Sharky.Render();
         }
 
         public override void Dispose()
         {
-            RigidBody.Dispose();
+            rigidBody.Dispose();
             Sharky.Dispose();
         }
     }
