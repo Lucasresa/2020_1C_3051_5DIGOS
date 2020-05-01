@@ -46,7 +46,8 @@ namespace TGC.Group.Model.Bullet.Bodies
         public override void Update(TgcD3dInput input)
         {
             rigidBody.ActivationState = ActivationState.ActiveTag;
-            Ship.IndoorMesh.Transform = TGCMatrix.Scaling(10, 10, 10) * TGCMatrix.Translation(rigidBody.CenterOfMassPosition.X, rigidBody.CenterOfMassPosition.Y, rigidBody.CenterOfMassPosition.Z);
+            Ship.IndoorMesh.Transform = TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Scaling(10, 10, 10) * TGCMatrix.Translation(rigidBody.CenterOfMassPosition.X, rigidBody.CenterOfMassPosition.Y, rigidBody.CenterOfMassPosition.Z);
+            rigidBody.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(Ship.OutdoorMesh.Position)).ToBulletMatrix();
         }
 
         public override void Dispose()

@@ -31,12 +31,11 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public override void Update(TgcD3dInput input)
         {
-            
+            Sharky.Mesh.Transform = TGCMatrix.Scaling(3, 3, 3) * TGCMatrix.Translation(rigidBody.CenterOfMassPosition.X, rigidBody.CenterOfMassPosition.Y, rigidBody.CenterOfMassPosition.Z);
         }
 
         public override void Render()
         {
-            Sharky.Mesh.Transform = TGCMatrix.Scaling(3, 3, 3) * TGCMatrix.Translation(rigidBody.CenterOfMassPosition.X, rigidBody.CenterOfMassPosition.Y, rigidBody.CenterOfMassPosition.Z);
             Sharky.Render();
         }
 

@@ -72,6 +72,11 @@ namespace TGC.Group.Model.Bullet.Bodies
                 rigidBody.ApplyCentralImpulse(new TGCVector3(0, 80 * strength, 0).ToBulletVector3());
             }
 
+            if (input.keyPressed(Key.LeftControl))
+            {
+                rigidBody.ApplyCentralImpulse(new TGCVector3(0, 80 * -strength, 0).ToBulletVector3());
+            }
+
             #endregion
 
             if (Camera.isOutside)
