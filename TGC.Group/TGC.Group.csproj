@@ -102,7 +102,6 @@
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
     <Compile Include="Model\Bullet\Bodies\CharacterRigidBody.cs" />
-    <Compile Include="Model\Bullet\Bodies\MeshPrueba.cs" />
     <Compile Include="Model\Bullet\Bodies\ShipRigidBody.cs" />
     <Compile Include="Model\Bullet\RigidBodies.cs" />
     <Compile Include="Model\Bullet\RigidBodyType.cs" />

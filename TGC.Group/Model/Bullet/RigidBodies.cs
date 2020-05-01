@@ -12,6 +12,7 @@ using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Bullet.Bodies;
+using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Watercraft;
 using TGC.Group.Utils;
@@ -34,15 +35,13 @@ namespace TGC.Group.Model.Bullet
         #endregion
 
         #region Metodos
-        public void Initializer(Terrain terrain, CameraFPS camera, Ship ship)
+        public void Initializer(Terrain terrain, CameraFPS camera, Shark shark, Ship ship)
         {
             rigidBodies.Add(RigidBodyType.terrain, new TerrainRigidBody(terrain));
             rigidBodies.Add(RigidBodyType.character, new CharacterRigidBody(camera));
-            rigidBodies.Add(RigidBodyType.outsideShip, new MeshPrueba(camera));
-
-            //rigidBodies.Add(RigidBodyType.outsideShip, new ShipRigidBody(RigidBodyType.outsideShip, ship));            
-            //rigidBodies.Add(RigidBodyType.shark, new SharkRigidBody());
-            //rigidBodies.Add(RigidBodyType.outsideShip, new ShipRigidBody());
+            rigidBodies.Add(RigidBodyType.shark, new SharkRigidBody(shark));
+            rigidBodies.Add(RigidBodyType.outdoor, new ShipRigidBody(RigidBodyType.outdoor, ship));
+            rigidBodies.Add(RigidBodyType.indoor, new ShipRigidBody(RigidBodyType.indoor, ship));
 
             rigidBodies.Values.ToList().ForEach(rigidBody => rigidBody.Init());
         }

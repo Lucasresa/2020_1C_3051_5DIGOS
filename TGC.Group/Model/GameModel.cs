@@ -94,7 +94,7 @@ namespace TGC.Group.Model
 
             #region Mundo fisico
             
-            rigidBodies.Initializer(terrain, camera, ship);
+            rigidBodies.Initializer(terrain, camera, shark, ship);
             physicalworld.addInitialRigidBodies(rigidBodies.rigidBodies);
             physicalworld.addAllDynamicsWorld();
 
@@ -279,15 +279,15 @@ namespace TGC.Group.Model
         private bool CameraInRoom()
         {
             float delta = 300;
-            return ship.InsideMesh.Position.Y - delta < camera.position.Y &&
-                   camera.position.Y < ship.InsideMesh.Position.Y + delta;
+            return ship.IndoorMesh.Position.Y - delta < camera.position.Y &&
+                   camera.position.Y < ship.IndoorMesh.Position.Y + delta;
         }
 
         private bool CameraOutRoom()
         {
             var delta = 50;
-            return ship.Mesh.Position.Y - delta < camera.position.Y &&
-                 camera.position.Y < ship.Mesh.Position.Y + delta;
+            return ship.OutdoorMesh.Position.Y - delta < camera.position.Y &&
+                 camera.position.Y < ship.OutdoorMesh.Position.Y + delta;
                 
         }
 

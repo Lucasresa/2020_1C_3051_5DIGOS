@@ -16,8 +16,8 @@ namespace TGC.Group.Model.Watercraft
         private string MediaDir;
         private string ShadersDir;
 
-        public TgcMesh Mesh;
-        public TgcMesh InsideMesh;
+        public TgcMesh OutdoorMesh;
+        public TgcMesh IndoorMesh;
 
         public Ship(string mediaDir, string shadersDir)
         {
@@ -28,29 +28,31 @@ namespace TGC.Group.Model.Watercraft
 
         public virtual void Render()
         {
-            Mesh.UpdateMeshTransform();
-            Mesh.Render();
-            InsideMesh.UpdateMeshTransform();
-            InsideMesh.Render();
+            OutdoorMesh.UpdateMeshTransform();
+            OutdoorMesh.Render();
+            IndoorMesh.Render();
         }
 
         public virtual void Dispose()
         {
-            Mesh.Dispose();
-            InsideMesh.Dispose();
+            OutdoorMesh.Dispose();
+            IndoorMesh.Dispose();
         }
 
         public void LoadShip()
         {
-            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
-            Mesh.Scale = new TGCVector3(10, 10, 10);
-            Mesh.Position = new TGCVector3(530, 3630, 100);
-            Mesh.Rotation = new TGCVector3(-13, 1, 270);
+            OutdoorMesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
+            //Mesh.Transform = TGCMatrix.RotationYawPitchRoll(FastMath.ToRad(-13), FastMath.ToRad(1), FastMath.ToRad(270)) *
+            //                 TGCMatrix.Scaling(10, 10, 10) *
+            //                 TGCMatrix.Translation(530, 3630, 100);
+            OutdoorMesh.Scale = new TGCVector3(10, 10, 10);
+            OutdoorMesh.Position = new TGCVector3(530, 3630, 100);
+            OutdoorMesh.Rotation = new TGCVector3(-13, 1, 270);
 
-            InsideMesh = Mesh.createMeshInstance("InsideRoom");
-            InsideMesh.Position = new TGCVector3(350, -2500, -45);
-            InsideMesh.Scale = new TGCVector3(10, 10, 10);
-            InsideMesh.Rotation = new TGCVector3(0, FastMath.PI_HALF, 0);
+            IndoorMesh = OutdoorMesh.createMeshInstance("InsideRoom");
+            IndoorMesh.Position = new TGCVector3(350, -2500, -45);
+            IndoorMesh.Scale = new TGCVector3(10, 10, 10);
+            IndoorMesh.Rotation = new TGCVector3(0, FastMath.PI_HALF, 0);
         }
     }
 }

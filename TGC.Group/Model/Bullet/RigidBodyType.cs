@@ -8,11 +8,11 @@ namespace TGC.Group.Model.Bullet
 {
     #region Enum
     enum RigidBodyType
-    {   // INFO: Despues habria que agregar los corales, minerales, personaje, etc.. 
+    {   // INFO: Despues habria que agregar los corales, minerales, etc.. 
         terrain,
         shark,
-        insideShip,
-        outsideShip,
+        indoor,
+        outdoor,
         character        
     }
     #endregion

@@ -24,7 +24,6 @@ namespace TGC.Group.Model.Bullet.Bodies
         public CharacterRigidBody(CameraFPS camera)
         {
             Camera = camera;
-            Camera.isOutside = true; // INFO: Lo modifico ahora para tener la camara fuera de la nave, despues hay que quitar esto.
         }
 
         public override void Init()
@@ -33,14 +32,13 @@ namespace TGC.Group.Model.Bullet.Bodies
                 Position = Camera.getShipOutsidePosition();
             else
                 Position = Camera.getShipInsidePosition();
-            
-            RigidBody = rigidBodyFactory.CreateBall(30f, 0.75f, Position);
+
+            RigidBody = rigidBodyFactory.CreateCapsule(15, 30, Position, 10, false);
         }
 
         public override void Update(TgcD3dInput input)
         {
             var strength = 2f;
-            var angle = 5;
 
             RigidBody.ActivationState = ActivationState.ActiveTag;
 
@@ -76,7 +74,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             #endregion
 
             if (Camera.isOutside)
-                RigidBody.Gravity = new Vector3(0, -100, 0); // INFO: Cambiar a 0 cuando se deje de probar afuera
+                RigidBody.Gravity = new Vector3(0, -10, 0); // INFO: Cambiar a 0 cuando se deje de probar afuera
             else
                 RigidBody.Gravity = new Vector3(0, 0, 0);
 

@@ -30,7 +30,6 @@ namespace TGC.Group.Model.Sharky
 
         public virtual void Render()
         {
-            Mesh.UpdateMeshTransform();
             Mesh.Render();
         }
 
