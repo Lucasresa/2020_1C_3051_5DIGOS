@@ -26,6 +26,9 @@ namespace TGC.Group.Model.Bullet.Bodies
         public override void Init()
         {
             rigidBody = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Sharky.Mesh);
+
+            rigidBody.SetMassProps(1, new Vector3(1, 1, 1));
+
             rigidBody.Translate(Sharky.Mesh.Position.ToBulletVector3());
             rigidBody.CollisionShape.LocalScaling = new Vector3(5, 5, 5);
             rigidBody.CenterOfMassTransform = TGCMatrix.Translation(Sharky.Mesh.Position).ToBulletMatrix();
@@ -38,6 +41,10 @@ namespace TGC.Group.Model.Bullet.Bodies
                 rigidBody.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(-300,1500,360)).ToBulletMatrix();
             }
 
+            if (input.keyPressed(Key.M))
+            {
+                rigidBody.ApplyCentralImpulse(new Vector3(10, 0, 0));
+            }
             Sharky.Mesh.Transform = TGCMatrix.Scaling(5, 5, 5) * new TGCMatrix(rigidBody.InterpolationWorldTransform);
         }
 
