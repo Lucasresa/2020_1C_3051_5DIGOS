@@ -17,6 +17,11 @@ namespace TGC.Group.Model.Bullet.Bodies
             rigidBody = rigidBodyFactory.CreateSurfaceFromHeighMap(Terrain.world.getVertices());
         }
 
+        public override void Render()
+        {
+            Terrain.Render();
+        }
+
         public override void Dispose()
         {
             Terrain.Dispose();

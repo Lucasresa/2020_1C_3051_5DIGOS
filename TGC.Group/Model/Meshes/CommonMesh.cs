@@ -10,47 +10,40 @@ namespace TGC.Group.Model
 {
     class CommonMesh
     {
+        #region Atributos
         protected string MeshName;
         protected readonly string MediaDir;
-        protected TGCVector3 Center;
+        protected TGCVector3 position;
         private TGCVector3 scale = new TGCVector3(1, 1, 1);
 
         public TgcMesh Mesh { get; set; }
+        #endregion
 
+        #region Constructor
         public CommonMesh(string mediaDir, TGCVector3 center, string meshName)
         {
             MediaDir = mediaDir;
-            Center = center;
+            position = center;
             MeshName = meshName;
             LoadMesh();
         }
+        #endregion
 
-        public virtual void Init()
+        #region Metodos
+        private void LoadMesh()
         {
-            Mesh.Position = Center;
-            Mesh.Scale = scale;
+            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + MeshName + "-TgcScene.xml").Meshes[0];
         }
 
         public virtual void Render()
         {
-            Mesh.UpdateMeshTransform();
             Mesh.Render();
-        }
-
-        public virtual void Update()
-        {
-
         }
 
         public virtual void Dispose()
         {
             Mesh.Dispose();
         }
-
-        private void LoadMesh()
-        {
-            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + MeshName + "-TgcScene.xml").Meshes[0];
-        }
+        #endregion
     }
-
 }

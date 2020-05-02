@@ -299,7 +299,7 @@ namespace TGC.Group.Utils
             float rotationZ = -objectInclinationZ;
 
             o.RotateX(rotationX);
-            o.RotateZ(rotationZ);            
+            o.RotateZ(rotationZ);         
         }
 
         public bool setObjectPosition(ITransformObject o)

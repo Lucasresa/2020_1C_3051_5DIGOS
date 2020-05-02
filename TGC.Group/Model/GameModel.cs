@@ -104,8 +104,6 @@ namespace TGC.Group.Model
 
         public override void Update()
         {
-            PreUpdate();
-
             physicalworld.Update(Input, ElapsedTime, TimeBetweenUpdates);
 
             currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
@@ -122,8 +120,6 @@ namespace TGC.Group.Model
                 camera.TeleportCamera(Constants.INSIDE_SHIP_POSITION);
 
             #endregion
-
-            PostUpdate();
         }
 
         public override void Render()
@@ -174,7 +170,6 @@ namespace TGC.Group.Model
 
                 if (inSkyBox())
                 {
-                    terrain.Render();
                     water.Render();
 
                     corales.ForEach(coral =>
@@ -197,8 +192,7 @@ namespace TGC.Group.Model
                         vegetation.Render();
 
                     });
-
-                    shark.Render();
+                                      
                     fishes.ForEach(fish =>
                     {
                         fish.UpdateMeshTransform();

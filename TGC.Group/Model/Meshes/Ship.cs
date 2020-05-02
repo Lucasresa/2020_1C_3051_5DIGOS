@@ -1,4 +1,5 @@
-﻿using TGC.Core.Mathematica;
+﻿using System;
+using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model.Watercraft
@@ -20,13 +21,13 @@ namespace TGC.Group.Model.Watercraft
             ShadersDir = shadersDir;
         }
 
-        public virtual void Render()
+        public void Render()
         {
             OutdoorMesh.Render();
             IndoorMesh.Render();
         }
 
-        public virtual void Dispose()
+        public void Dispose()
         {
             OutdoorMesh.Dispose();
             IndoorMesh.Dispose();
@@ -35,10 +36,7 @@ namespace TGC.Group.Model.Watercraft
         public void LoadShip()
         {
             OutdoorMesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
-            OutdoorMesh.Position = new TGCVector3(530, 3630, 100);
-
             IndoorMesh = OutdoorMesh.createMeshInstance("InsideRoom");
-            IndoorMesh.Position = new TGCVector3(350, -2500, -45);
         }
     }
 }

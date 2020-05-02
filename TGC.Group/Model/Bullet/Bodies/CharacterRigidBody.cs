@@ -80,7 +80,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             #endregion
 
             if (Camera.isOutside)
-                rigidBody.Gravity = new Vector3(0, -100, 0); // INFO: Cambiar a 0 cuando se deje de probar afuera
+                rigidBody.Gravity = new Vector3(0, -10, 0); // INFO: Cambiar a 0 cuando se deje de probar afuera
             else
                 rigidBody.Gravity = new Vector3(0, 0, 0);
 

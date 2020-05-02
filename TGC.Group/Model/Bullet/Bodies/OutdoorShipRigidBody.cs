@@ -21,6 +21,8 @@ namespace TGC.Group.Model.Bullet.Bodies
     {
         #region Atributos
         public Ship Ship;
+        private TGCVector3 scale = new TGCVector3(10, 10, 10);
+        private TGCVector3 position = new TGCVector3(530, 3630, 100);
         #endregion
 
         #region Constructor
@@ -33,21 +35,20 @@ namespace TGC.Group.Model.Bullet.Bodies
         #region Metodos
         public override void Init()
         {
+            Ship.OutdoorMesh.Transform = TGCMatrix.Scaling(scale) * TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position);
             rigidBody = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Ship.OutdoorMesh);
-            rigidBody.Translate(Ship.OutdoorMesh.Position.ToBulletVector3());
-            rigidBody.CollisionShape.LocalScaling = new Vector3(10, 10, 10);
+            rigidBody.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position)).ToBulletMatrix();
+            rigidBody.CollisionShape.LocalScaling = scale.ToBulletVector3();
+        }
+
+        public override void Update(TgcD3dInput input)
+        {
+            Ship.OutdoorMesh.Transform = TGCMatrix.Scaling(scale) * new TGCMatrix(rigidBody.InterpolationWorldTransform);
         }
 
         public override void Render()
         {
             Ship.Render();
-        }
-
-        public override void Update(TgcD3dInput input)
-        {
-            rigidBody.ActivationState = ActivationState.ActiveTag;
-            Ship.OutdoorMesh.Transform = TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Scaling(10, 10, 10) * TGCMatrix.Translation(rigidBody.CenterOfMassPosition.X, rigidBody.CenterOfMassPosition.Y, rigidBody.CenterOfMassPosition.Z);
-            rigidBody.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(Ship.OutdoorMesh.Position)).ToBulletMatrix();
         }
 
         public override void Dispose()

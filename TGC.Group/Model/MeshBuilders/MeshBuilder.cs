@@ -96,9 +96,6 @@ namespace TGC.Group.Model.MeshBuilders
 
             return new Tuple<float, float>(random.Next(XMin, XMax), random.Next(ZMin, ZMax));
         }
-
-        
-
         #endregion
     }
 }

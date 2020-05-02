@@ -15,37 +15,44 @@ namespace TGC.Group.Model.Bullet.Bodies
 {
     class SharkRigidBody : RigidBody
     {
+        #region Atributos
         private Shark Sharky;
+        private TGCVector3 scale = new TGCVector3(5, 5, 5);
+        private TGCVector3 position = new TGCVector3(-2885, 1220, -525);
+        #endregion
+
+        #region Constructor
 
         public SharkRigidBody(Shark shark)
         {
             Sharky = shark;
-            Sharky.LoadShark();
         }
+
+        #endregion
+
+        #region Metodos
 
         public override void Init()
         {
+            Sharky.Mesh.Transform = TGCMatrix.Scaling(scale) * TGCMatrix.RotationYawPitchRoll(-FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position);
             rigidBody = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Sharky.Mesh);
-
-            rigidBody.SetMassProps(1, new Vector3(1, 1, 1));
-
-            rigidBody.Translate(Sharky.Mesh.Position.ToBulletVector3());
-            rigidBody.CollisionShape.LocalScaling = new Vector3(5, 5, 5);
-            rigidBody.CenterOfMassTransform = TGCMatrix.Translation(Sharky.Mesh.Position).ToBulletMatrix();
+            rigidBody.SetMassProps(1, new Vector3(1, 1, 1));                   
+            rigidBody.CollisionShape.LocalScaling = scale.ToBulletVector3();
+            rigidBody.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(-FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position)).ToBulletMatrix();
         }
 
         public override void Update(TgcD3dInput input)
         {
             if (input.keyPressed(Key.Z))
             {
-                rigidBody.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(-300,1500,360)).ToBulletMatrix();
+                rigidBody.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(-300, 1500, 360)).ToBulletMatrix();
             }
 
             if (input.keyPressed(Key.M))
             {
                 rigidBody.ApplyCentralImpulse(new Vector3(10, 0, 0));
             }
-            Sharky.Mesh.Transform = TGCMatrix.Scaling(5, 5, 5) * new TGCMatrix(rigidBody.InterpolationWorldTransform);
+            Sharky.Mesh.Transform = TGCMatrix.Scaling(scale) * new TGCMatrix(rigidBody.InterpolationWorldTransform);
         }
 
         public override void Render()
@@ -58,5 +65,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             rigidBody.Dispose();
             Sharky.Dispose();
         }
+
+        #endregion
     }
 }
