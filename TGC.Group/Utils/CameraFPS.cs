@@ -10,36 +10,30 @@ namespace TGC.Group.Utils
 {
     class CameraFPS : TgcCamera
     {
-        #region Variables
+        #region Atributos
 
-        #region Publicas
-        public float rotationSpeed { get; set; } = 0.1f;
-        public float movementSpeed { get; set; } = 500f;
-        public float jumpSpeed { get; set; } = 500f;
-        public TGCVector3 position { get; set; } = new TGCVector3(1300, 3505, 20);
+        public float rotationSpeed = 0.1f;
+        public float movementSpeed = 500f;
+        public float jumpSpeed = 500f;
+        public TGCVector3 position = new TGCVector3(1300, 3505, 20);
         public bool isOutside = false;
-        #endregion
 
-        #region Privadas
         private TgcD3dInput input { get; }
         private Point mouseCenter = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
         private TGCMatrix cameraRotation;
-        private float latitude { get; set; } = FastMath.PI_HALF;
-        private float longitude { get; set; } = -FastMath.PI / 10.0f;
-        private TGCVector3 directionView { get; set; } = new TGCVector3(0, 0.1f, -1);
-        private TGCVector3 translation { get; set; } = TGCVector3.Empty;
+        private float latitude = FastMath.PI_HALF;
+        private float longitude = -FastMath.PI / 10.0f;
+        private TGCVector3 directionView = new TGCVector3(0, 0.1f, -1);
+        private TGCVector3 translation = TGCVector3.Empty;
 
         private TGCVector3 positionInsideShip;
         private TGCVector3 positionOutsideShip;
-        #endregion
-
-        #region Protegidas
+        
         protected TGCVector3 moveX = new TGCVector3(1, 0, 0);
         protected TGCVector3 moveY = new TGCVector3(0, 1, 0);
         protected TGCVector3 moveZ = new TGCVector3(0, 0, 1);
         protected float limitMax = FastMath.ToRad(90);
         protected float limitMin = FastMath.ToRad(-60);
-        #endregion
 
         #endregion
 
@@ -48,6 +42,7 @@ namespace TGC.Group.Utils
         {
             this.input = input;
             cameraRotation = TGCMatrix.RotationX(latitude) * TGCMatrix.RotationY(longitude);
+            Position = position;
         }
 
         public CameraFPS(TgcD3dInput input, TGCVector3 pos) : this(input)

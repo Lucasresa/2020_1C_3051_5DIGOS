@@ -12,23 +12,21 @@ namespace TGC.Group.Model.Bullet.Bodies
         private CameraFPS Camera;
         private TGCVector3 directorz = new TGCVector3(1, 0, 0);
         private TGCVector3 directorx = new TGCVector3(0, 0, 1);
-
-        public TGCVector3 Position { get; private set; }
+        private TGCVector3 position;
 
         public CharacterRigidBody(CameraFPS camera)
         {
             Camera = camera;
-        //  Camera.isOutside = true;
+            Camera.isOutside = true; // TODO: Descomentar para salir afuera
         }
 
         public override void Init()
         {
-            if (Camera.isOutside)
-                Position = Camera.getShipOutsidePosition();
-            else
-                Position = Camera.getShipInsidePosition();
+            if (Camera.isOutside) position = Camera.getShipOutsidePosition();
+            else position = Camera.getShipInsidePosition();
 
-            rigidBody = rigidBodyFactory.CreateBall(30f, 0.75f, Position);
+            rigidBody = rigidBodyFactory.CreateBall(30f, 0.75f, position);
+            rigidBody.CenterOfMassTransform = TGCMatrix.Translation(position).ToBulletMatrix();
         }
 
         public override void Update(TgcD3dInput input)
@@ -76,9 +74,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             else
                 rigidBody.Gravity = new Vector3(0, 0, 0);
 
-            Camera.position = new TGCVector3(rigidBody.CenterOfMassPosition.X,
-                                             rigidBody.CenterOfMassPosition.Y,
-                                             rigidBody.CenterOfMassPosition.Z);
+            Camera.position = new TGCVector3(rigidBody.CenterOfMassPosition);
         }
 
         public override void Dispose()

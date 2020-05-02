@@ -1,5 +1,4 @@
-﻿using TGC.Core.Input;
-using TGC.Core.Mathematica;
+﻿using TGC.Core.Mathematica;
 using TGC.Group.Model.Watercraft;
 
 namespace TGC.Group.Model.Bullet.Bodies

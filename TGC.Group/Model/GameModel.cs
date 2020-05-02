@@ -1,4 +1,5 @@
 using Microsoft.DirectX.DirectInput;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using TGC.Core.Direct3D;
@@ -31,6 +32,7 @@ namespace TGC.Group.Model
         private List<TgcMesh> minerals = new List<TgcMesh>();
         private List<TgcMesh> vegetation = new List<TgcMesh>();
         private List<TgcMesh> fishes = new List<TgcMesh>();
+        private List<TgcMesh> Meshes = new List<TgcMesh>();
         private Sky skyBox;
         private Perimeter currentCameraArea;
         private Ship ship;
@@ -83,17 +85,17 @@ namespace TGC.Group.Model
             shark.LoadShark();
             #endregion
 
-            #region Mundo fisico
-
-            rigidBodies.Initializer(terrain, camera, shark, ship);
-            physicalworld.addInitialRigidBodies(rigidBodies.rigidBodies);
-            physicalworld.addAllDynamicsWorld();
-
-            #endregion
-
             #region Vegetacion del mundo
             MeshDuplicator.InitOriginalMeshes();
             meshInitializer();
+            #endregion
+
+            #region Mundo fisico
+
+            rigidBodies.Initializer(terrain, camera, shark, ship, Meshes);
+            physicalworld.addInitialRigidBodies(rigidBodies.rigidBodies);
+            physicalworld.addAllDynamicsWorld();
+
             #endregion
         }
 
@@ -161,21 +163,18 @@ namespace TGC.Group.Model
             if (camera.position.Y > 0)
             {
                 skyBox.Render();
-
-                if (inSkyBox())
-                {
-                    water.Render();
-                    corales.ForEach(coral => coral.Render());
-                    minerals.ForEach(ore => ore.Render());
-                    fishes.ForEach(fish => fish.Render());
-                    vegetation.ForEach(vegetation => vegetation.Render());
-                }
+                water.Render();
+                //corales.ForEach(coral => coral.Render());
+                //minerals.ForEach(ore => ore.Render());
+                //fishes.ForEach(fish => fish.Render());
+                //vegetation.ForEach(vegetation => vegetation.Render());
             }
             #endregion
 
             PostRender();
         }
 
+        [Obsolete] // TODO: Volver a ver este tema.. Ya que no sirve de nada este metodo.. porque cuando renderiza, se renderizan los meshes que ya tienen posiciones asignadas fuera del skybox.. 
         private bool inSkyBox()
         {
             return camera.position.X < skyBox.perimeter.xMax && camera.position.X > skyBox.perimeter.xMin &&
@@ -228,6 +227,10 @@ namespace TGC.Group.Model
             vegetation.AddRange(alga);
             fishes.AddRange(normalFish);
             fishes.AddRange(yellowFish);
+            Meshes.AddRange(corales);
+            Meshes.AddRange(minerals);
+            Meshes.AddRange(vegetation);
+            Meshes.AddRange(fishes);
         }
 
         // TODO: Estos dos metodos hay que cambiarlos para calcular distancias con un TGCRay

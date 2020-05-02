@@ -103,6 +103,7 @@
     </Compile>
     <Compile Include="Model\Bullet\Bodies\CharacterRigidBody.cs" />
     <Compile Include="Model\Bullet\Bodies\IndoorShipRigidBody.cs" />
+    <Compile Include="Model\Bullet\Bodies\CommonRigidBody.cs" />
     <Compile Include="Model\Bullet\Bodies\OutdoorShipRigidBody.cs" />
     <Compile Include="Model\Bullet\RigidBody.cs" />
     <Compile Include="Model\Bullet\Bodies\SharkRigidBody.cs" />
