@@ -1,5 +1,4 @@
-﻿using BulletSharp;
-using TGC.Group.Model.Terrains;
+﻿using TGC.Group.Model.Terrains;
 
 namespace TGC.Group.Model.Bullet.Bodies
 {

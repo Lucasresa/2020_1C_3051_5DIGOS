@@ -1,11 +1,6 @@
 ﻿using BulletSharp;
 using BulletSharp.Math;
 using Microsoft.DirectX.DirectInput;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Group.Utils;
@@ -16,7 +11,7 @@ namespace TGC.Group.Model.Bullet.Bodies
     class CharacterRigidBody : RigidBody
     {
         private CameraFPS Camera;
-        private TGCVector3 directorz = new TGCVector3(1, 0, 0); 
+        private TGCVector3 directorz = new TGCVector3(1, 0, 0);
         private TGCVector3 directorx = new TGCVector3(0, 0, 1);
 
         public TGCVector3 Position { get; private set; }
@@ -28,7 +23,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         }
 
         public override void Init()
-        {            
+        {
             if (Camera.isOutside)
                 Position = Camera.getShipOutsidePosition();
             else

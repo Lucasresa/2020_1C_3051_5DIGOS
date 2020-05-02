@@ -1,6 +1,4 @@
-﻿using System;
-using TGC.Core.Mathematica;
-using TGC.Core.SceneLoader;
+﻿using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model.Watercraft
 {

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 
@@ -28,9 +25,9 @@ namespace TGC.Group.Model.MeshBuilders
             Meshes.Add(MeshType.silverOre, new CommonMesh(MediaDir, TGCVector3.Empty, "silver"));
             Meshes.Add(MeshType.goldOre, new CommonMesh(MediaDir, TGCVector3.Empty, "gold"));
             Meshes.Add(MeshType.rock, new CommonMesh(MediaDir, TGCVector3.Empty, "rock-n"));
-            Meshes.Add(MeshType.alga, new CommonMesh(MediaDir, TGCVector3.Empty, "alga"));           
-            Meshes.Add(MeshType.normalFish, new CommonMesh(MediaDir, TGCVector3.Empty, "fish"));           
-            Meshes.Add(MeshType.yellowFish, new CommonMesh(MediaDir, TGCVector3.Empty, "yellow_fish"));           
+            Meshes.Add(MeshType.alga, new CommonMesh(MediaDir, TGCVector3.Empty, "alga"));
+            Meshes.Add(MeshType.normalFish, new CommonMesh(MediaDir, TGCVector3.Empty, "fish"));
+            Meshes.Add(MeshType.yellowFish, new CommonMesh(MediaDir, TGCVector3.Empty, "yellow_fish"));
         }
 
         public static TgcMesh GetDuplicateMesh(MeshType meshType)

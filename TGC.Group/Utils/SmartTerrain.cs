@@ -186,7 +186,7 @@ namespace TGC.Group.Utils
                 d3dDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, TotalVertices / 3);
                 effect.EndPass();
             }
-            effect.End();           
+            effect.End();
         }
 
         public void Dispose()
@@ -210,7 +210,7 @@ namespace TGC.Group.Utils
                 return false;
             return true;
         }
-        
+
         public TGCVector2 xzWorldToHeightmap(float x, float z)
         {
             var WorldPosX = (x + traslation.X) * ScaleXZ;
@@ -225,7 +225,7 @@ namespace TGC.Group.Utils
             return new TGCVector2(WorldPosX, WorldPosZ);
 
         }
-        
+
         public float convertToWorld(float pos)
         {
             return (pos + traslation.X) * ScaleXZ;
@@ -286,20 +286,6 @@ namespace TGC.Group.Utils
             TGCVector3 vectorNS = new TGCVector3(0, alturaN - alturaS, delta * 2);
 
             return TGCVector3.Cross(vectorNS, vectorEO);
-        }
-
-        public void AdaptToSurface(ITransformObject o)
-        {
-            var normalObjeto = NormalVectorGivenXZ(o.Position.X, o.Position.Z);
-
-            var objectInclinationX = FastMath.Atan2(normalObjeto.X, normalObjeto.Y) * -FastMath.Sin(0);
-            var objectInclinationZ = FastMath.Atan2(normalObjeto.X, normalObjeto.Y) * FastMath.Cos(0);
-
-            float rotationX = -objectInclinationX;
-            float rotationZ = -objectInclinationZ;
-
-            o.RotateX(rotationX);
-            o.RotateZ(rotationZ);         
         }
 
         public bool setObjectPosition(ITransformObject o)

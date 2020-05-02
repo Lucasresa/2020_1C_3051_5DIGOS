@@ -16,7 +16,7 @@ namespace TGC.Group.Model.Terrains
 
         private string MediaDir;
         private string ShadersDir;
-        
+
         public World(string mediaDir, string shadersDir)
         {
             MediaDir = mediaDir;
@@ -42,10 +42,10 @@ namespace TGC.Group.Model.Terrains
         public virtual Perimeter SizeWorld()
         {
             Perimeter perimeter = new Perimeter();
-            
+
             var sizeX = world.HeightmapData.GetLength(0) * SCALEXZ / 2;
             var sizeZ = world.HeightmapData.GetLength(1) * SCALEXZ / 2;
-            
+
             perimeter.xMax = sizeX;
             perimeter.xMin = -sizeX;
             perimeter.zMax = sizeZ;

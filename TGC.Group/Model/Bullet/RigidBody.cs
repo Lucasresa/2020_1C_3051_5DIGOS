@@ -1,6 +1,5 @@
 ﻿using BulletSharp.Math;
 using System.Collections.Generic;
-using System.Linq;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Input;
 using TGC.Group.Model.Bullet.Bodies;
@@ -16,7 +15,7 @@ namespace TGC.Group.Model.Bullet
     {
         #region Atributos
 
-        protected BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;        
+        protected BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
         public BTRigidBody rigidBody;
         public List<RigidBody> rigidBodies = new List<RigidBody>();
 
@@ -49,13 +48,13 @@ namespace TGC.Group.Model.Bullet
         public virtual void Dispose()
         {
             rigidBodies.ForEach(rigidBody => rigidBody.Dispose());
-        }        
+        }
 
         public void setGravity(BTRigidBody rigidBody, float gravity)
         {
             rigidBody.Gravity = new Vector3(0, -gravity, 0);
         }
-        
+
         #endregion
     }
 }

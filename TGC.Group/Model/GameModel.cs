@@ -1,20 +1,16 @@
 using Microsoft.DirectX.DirectInput;
+using System.Collections.Generic;
 using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
-using TGC.Group.Utils;
-using System.Collections.Generic;
-using System;
-using TGC.Group.Model.Terrains;
-using TGC.Group.Model.Sharky;
 using TGC.Group.Model.MeshBuilders;
+using TGC.Group.Model.Sharky;
+using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Watercraft;
+using TGC.Group.Utils;
 using static TGC.Group.Model.Terrains.Terrain;
-using System.Runtime.CompilerServices;
-using BulletSharp;
-using TGC.Group.Model.Bullet;
 
 namespace TGC.Group.Model
 {
@@ -57,7 +53,7 @@ namespace TGC.Group.Model
             Description = Game.Default.Description;
             meshBuilder = new MeshBuilder();
             MeshDuplicator.MediaDir = mediaDir;
-            D3DDevice.Instance.ZFarPlaneDistance = 8000f;           
+            D3DDevice.Instance.ZFarPlaneDistance = 8000f;
         }
 
         public override void Init()
@@ -89,7 +85,7 @@ namespace TGC.Group.Model
             #endregion
 
             #region Mundo fisico
-            
+
             rigidBodies.Initializer(terrain, camera, shark, ship);
             physicalworld.addInitialRigidBodies(rigidBodies.rigidBodies);
             physicalworld.addAllDynamicsWorld();
@@ -124,7 +120,6 @@ namespace TGC.Group.Model
 
         public override void Render()
         {
-            // INFO: Con el nuevo Core los fps no se muestran mas
             PreRender();
 
             #region Texto en pantalla
@@ -137,7 +132,7 @@ namespace TGC.Group.Model
                 DrawText.drawText("Posicion: [" + camera.Position.X.ToString() + "; "
                                                 + camera.Position.Y.ToString() + "; "
                                                 + camera.Position.Z.ToString() + "] ",
-                                  0, 60, Color.Red);     
+                                  0, 60, Color.Red);
                 DrawText.drawText("Objetivo: [" + camera.LookAt.X.ToString() + "; "
                                                 + camera.LookAt.Y.ToString() + "; "
                                                 + camera.LookAt.Z.ToString() + "] ",
@@ -171,37 +166,12 @@ namespace TGC.Group.Model
                 if (inSkyBox())
                 {
                     water.Render();
-
-                    corales.ForEach(coral =>
-                    {
-                        coral.UpdateMeshTransform();
-                        coral.Render();
-                    });
-
-                    minerals.ForEach(ore =>
-                    {
-                        ore.UpdateMeshTransform();
-                        ore.Render();
-
-                    });
-
-                    vegetation.ForEach(vegetation =>
-                    {
-                        vegetation.AlphaBlendEnable = true;
-                        vegetation.UpdateMeshTransform();
-                        vegetation.Render();
-
-                    });
-                                      
-                    fishes.ForEach(fish =>
-                    {
-                        fish.UpdateMeshTransform();
-                        fish.Render();
-
-                    });
+                    corales.ForEach(coral => coral.Render());
+                    minerals.ForEach(ore => ore.Render());
+                    fishes.ForEach(fish => fish.Render());
+                    vegetation.ForEach(vegetation => vegetation.Render());
                 }
             }
-
             #endregion
 
             PostRender();
@@ -209,10 +179,8 @@ namespace TGC.Group.Model
 
         private bool inSkyBox()
         {
-            return camera.position.X < skyBox.perimeter.xMax &&
-                   camera.position.X > skyBox.perimeter.xMin &&
-                   camera.position.Z < skyBox.perimeter.zMax &&
-                   camera.position.Z > skyBox.perimeter.zMin;
+            return camera.position.X < skyBox.perimeter.xMax && camera.position.X > skyBox.perimeter.xMin &&
+                   camera.position.Z < skyBox.perimeter.zMax && camera.position.Z > skyBox.perimeter.zMin;
         }
 
         public override void Dispose()
@@ -263,7 +231,7 @@ namespace TGC.Group.Model
             fishes.AddRange(yellowFish);
         }
 
-        // TODO: Estos dos menos hay que cambiarlos para calcular distancias con un TGCRay
+        // TODO: Estos dos metodos hay que cambiarlos para calcular distancias con un TGCRay
 
         private bool CameraInRoom()
         {
@@ -277,7 +245,7 @@ namespace TGC.Group.Model
             var delta = 50;
             return ship.OutdoorMesh.Position.Y - delta < camera.position.Y &&
                  camera.position.Y < ship.OutdoorMesh.Position.Y + delta;
-                
+
         }
 
         #endregion

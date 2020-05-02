@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TGC.Core.Camara;
-using TGC.Core.Direct3D;
-using TGC.Core.Mathematica;
+﻿using TGC.Core.Mathematica;
 using TGC.Core.Terrain;
 using TGC.Group.Utils;
 using static TGC.Group.Model.Terrains.Terrain;
@@ -20,7 +12,7 @@ namespace TGC.Group.Model.Terrains
         private string MediaDir;
         private string ShadersDir;
 
-        public Perimeter perimeter;           
+        public Perimeter perimeter;
 
         private CameraFPS Camera;
 
@@ -29,7 +21,7 @@ namespace TGC.Group.Model.Terrains
             sky = new TgcSkyBox
             {
                 Size = new TGCVector3(9000, 9000, 9000),
-                Center = new TGCVector3(0, 1800, 0)              
+                Center = new TGCVector3(0, 1800, 0)
             };
 
             MediaDir = mediaDir;
@@ -38,19 +30,19 @@ namespace TGC.Group.Model.Terrains
         }
 
         public void LoadSkyBox()
-        {         
+        {
             var texturesPath = MediaDir + "SkyBox\\";
             // TODO: Habria que encontrar imagenes con mayor resolucion para el SkyBox
             sky.setFaceTexture(TgcSkyBox.SkyFaces.Up, texturesPath + "sup.jpg");
             sky.setFaceTexture(TgcSkyBox.SkyFaces.Down, texturesPath + "inf.jpg");
             sky.setFaceTexture(TgcSkyBox.SkyFaces.Left, texturesPath + "izq.jpg");
-            sky.setFaceTexture(TgcSkyBox.SkyFaces.Right, texturesPath + "der.jpg");                        
+            sky.setFaceTexture(TgcSkyBox.SkyFaces.Right, texturesPath + "der.jpg");
             sky.setFaceTexture(TgcSkyBox.SkyFaces.Front, texturesPath + "front.jpg");
             sky.setFaceTexture(TgcSkyBox.SkyFaces.Back, texturesPath + "post.jpg");
 
             sky.SkyEpsilon = 30f;
 
-            sky.Init();            
+            sky.Init();
         }
 
         public virtual void Render()

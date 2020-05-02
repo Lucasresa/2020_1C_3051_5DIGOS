@@ -29,7 +29,8 @@ namespace TGC.Group.Model.MeshBuilders
         public TgcMesh CreateNewScaledMesh(MeshType meshType, float scale)
         {
             var scaledMesh = CreateNewMeshCopy(meshType);
-            scaledMesh.Scale = new TGCVector3(scale, scale, scale);
+            if (meshType == MeshType.alga) scaledMesh.AlphaBlendEnable = true;
+            scaledMesh.Transform = TGCMatrix.Scaling(scale, scale, scale);
             return scaledMesh;
         }
 
@@ -37,7 +38,7 @@ namespace TGC.Group.Model.MeshBuilders
         {
             var meshes = new List<TgcMesh>();
             foreach (int _ in Enumerable.Range(1, quantity))
-                meshes.Add( CreateNewScaledMesh(meshType, scale) );
+                meshes.Add(CreateNewScaledMesh(meshType, scale));
             return meshes;
         }
 
@@ -50,11 +51,16 @@ namespace TGC.Group.Model.MeshBuilders
             var XZPosition = getXZPositionByPerimeter(terrainArea);
             var XPosition = XZPosition.Item1;
             var ZPosition = XZPosition.Item2;
+
             if (!terrain.interpoledHeight(XPosition, ZPosition, out float YPosition))
                 throw new Exception("The Mesh: " + mesh.Name + " calculated position was outside of terrain");
 
-            mesh.Position = new TGCVector3(XPosition, YPosition, ZPosition);
-            terrain.AdaptToSurface(mesh);
+            var position = new TGCVector3(XPosition, YPosition, ZPosition);
+            var normalObjeto = terrain.NormalVectorGivenXZ(position.X, position.Z);
+            var rotation = calculatedRotation(normalObjeto);
+
+            mesh.Transform *= TGCMatrix.RotationYawPitchRoll(rotation.Y, rotation.X, rotation.Z) * TGCMatrix.Translation(position);
+
             return true;
         }
 
@@ -64,11 +70,12 @@ namespace TGC.Group.Model.MeshBuilders
             var XZPosition = getXZPositionByPerimeter(terrainArea);
             var XPosition = XZPosition.Item1;
             var ZPosition = XZPosition.Item2;
+
             if (!terrain.interpoledHeight(XPosition, ZPosition, out float YPosition))
                 throw new Exception("The Mesh: " + mesh.Name + " calculated position was outside of terrain");
 
             YPosition = random.Next((int)YPosition + meshTerrainOffset, (int)maxYPosition);
-            mesh.Position = new TGCVector3(XPosition, YPosition, ZPosition);
+            mesh.Transform *= TGCMatrix.Translation(XPosition, YPosition, ZPosition);
             return true;
         }
 
@@ -95,6 +102,17 @@ namespace TGC.Group.Model.MeshBuilders
             var ZMax = (int)perimeter.zMax;
 
             return new Tuple<float, float>(random.Next(XMin, XMax), random.Next(ZMin, ZMax));
+        }
+
+        private TGCVector3 calculatedRotation(TGCVector3 normalObjeto)
+        {
+            var objectInclinationX = FastMath.Atan2(normalObjeto.X, normalObjeto.Y);
+            var objectInclinationZ = FastMath.Atan2(normalObjeto.X, normalObjeto.Y);
+
+            float rotationX = -objectInclinationX;
+            float rotationZ = -objectInclinationZ;
+
+            return new TGCVector3(rotationX, 0, rotationZ);
         }
         #endregion
     }

@@ -1,5 +1,4 @@
-﻿using Microsoft.DirectX.Direct3D;
-using Microsoft.DirectX.DirectInput;
+﻿using Microsoft.DirectX.DirectInput;
 using System.Drawing;
 using System.Windows.Forms;
 using TGC.Core.Camara;
@@ -41,7 +40,7 @@ namespace TGC.Group.Utils
         protected float limitMax = FastMath.ToRad(90);
         protected float limitMin = FastMath.ToRad(-60);
         #endregion
-        
+
         #endregion
 
         #region Constructores
@@ -78,15 +77,15 @@ namespace TGC.Group.Utils
         private void CameraTranslate()
         {
             if (input.keyDown(Key.W)) translation += moveZ * -movementSpeed;
-                       
+
             if (input.keyDown(Key.S)) translation += moveZ * movementSpeed;
-                      
+
             if (input.keyDown(Key.D)) translation += moveX * -movementSpeed;
-                       
+
             if (input.keyDown(Key.A)) translation += moveX * movementSpeed;
-                      
+
             if (input.keyDown(Key.Space)) translation += moveY * jumpSpeed;
-                      
+
             if (input.keyDown(Key.LeftControl)) translation += moveY * -jumpSpeed;
 
         }
@@ -110,11 +109,11 @@ namespace TGC.Group.Utils
                 isOutside = false;
             else
                 isOutside = true;
-            
+
             Cursor.Hide();
             CameraTranslate();
             CameraRotation();
-            
+
             var newPosition = TGCVector3.TransformNormal(translation * elapsedTime, cameraRotation);
             position += newPosition;
 
@@ -126,7 +125,7 @@ namespace TGC.Group.Utils
             var rotacionVectorUP = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
 
             Cursor.Position = mouseCenter;
-            base.SetCamera(position, targetPosition, rotacionVectorUP);            
+            base.SetCamera(position, targetPosition, rotacionVectorUP);
         }
 
         public void TeleportCamera(TGCVector3 translatePosition)

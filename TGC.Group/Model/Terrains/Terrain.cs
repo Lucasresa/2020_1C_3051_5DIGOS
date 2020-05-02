@@ -29,7 +29,7 @@ namespace TGC.Group.Model.Terrains
         public Terrain(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
             FILE_HEIGHTMAPS = "Heightmaps\\suelo.jpg";
-            FILE_TEXTURES = "Textures\\sandy.png";            
+            FILE_TEXTURES = "Textures\\sandy.png";
         }
 
 
@@ -37,7 +37,7 @@ namespace TGC.Group.Model.Terrains
         {
             return areas.FirstOrDefault(pair => posX > pair.Value.xMin && posX < pair.Value.xMax &&
                                                 posZ > pair.Value.zMin && posZ < pair.Value.zMax)
-                                        .Value;           
+                                        .Value;
         }
 
         public void splitToArea()

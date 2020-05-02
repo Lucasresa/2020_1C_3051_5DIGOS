@@ -1,16 +1,8 @@
 ﻿using BulletSharp;
 using BulletSharp.Math;
-using Microsoft.DirectX.Direct3D;
-using Microsoft.DirectX.DirectInput;
 using System.Collections.Generic;
-using System.Drawing.Text;
-using System.Linq;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Input;
-using TGC.Core.Mathematica;
-using TGC.Core.SceneLoader;
-using TGC.Group.Model.Terrains;
-using TGC.Group.Model.Bullet;
 
 namespace TGC.Group.Utils
 {
@@ -46,20 +38,20 @@ namespace TGC.Group.Utils
         private void initDynamicsWorld()
         {
             #region Configuracion del mundo fisico
-            
+
             collisionConfiguration = new DefaultCollisionConfiguration();
             dispatcher = new CollisionDispatcher(collisionConfiguration);
             GImpactCollisionAlgorithm.RegisterAlgorithm(dispatcher);
             constraintSolver = new SequentialImpulseConstraintSolver();
             overlappingPairCache = new DbvtBroadphase();
             dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, overlappingPairCache, constraintSolver, collisionConfiguration);
-            
+
             dynamicsWorld.Gravity = gravityZero;
             #endregion            
         }
 
         public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
-        {          
+        {
             dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
             rigidBodies.ForEach(rigidBody =>
             {
@@ -80,7 +72,7 @@ namespace TGC.Group.Utils
             collisionConfiguration.Dispose();
             constraintSolver.Dispose();
             overlappingPairCache.Dispose();
-        }        
+        }
 
         public void addInitialRigidBodies(List<Model.Bullet.RigidBody> bodies)
         {
