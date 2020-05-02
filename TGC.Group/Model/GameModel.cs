@@ -51,6 +51,7 @@ namespace TGC.Group.Model
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
+            FixedTickEnable = true;
             Category = Game.Default.Category;
             Name = Game.Default.Name;
             Description = Game.Default.Description;
@@ -61,11 +62,6 @@ namespace TGC.Group.Model
 
         public override void Init()
         {
-            #region Fix
-            FixedTickEnable = true;
-            Tick();
-            #endregion
-
             #region Camera 
             Camera = new CameraFPS(Input, Constants.INSIDE_SHIP_POSITION);
             camera = (CameraFPS)Camera;
@@ -104,7 +100,6 @@ namespace TGC.Group.Model
             MeshDuplicator.InitOriginalMeshes();
             meshInitializer();
             #endregion
-
         }
 
         public override void Update()

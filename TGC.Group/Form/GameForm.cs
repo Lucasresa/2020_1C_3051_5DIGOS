@@ -93,8 +93,15 @@ namespace TGC.Group.Form
             Input.Initialize(this, panel3D);
 
             //Inicio sonido
-            DirectSound = new TgcDirectSound();
-            DirectSound.InitializeD3DDevice(panel3D);
+            DirectSound = new TgcDirectSound(); 
+            try 
+            {
+                DirectSound.InitializeD3DDevice(panel3D); 
+            }
+            catch (ApplicationException ex)
+            {
+                throw new Exception("No se pudo inicializar el sonido", ex);
+            }
 
             //Directorio actual de ejecución
             var currentDirectory = Environment.CurrentDirectory + "\\";
@@ -123,8 +130,9 @@ namespace TGC.Group.Form
                     //Solo renderizamos si la aplicacion tiene foco, para no consumir recursos innecesarios.
                     if (ApplicationActive())
                     {
-                        Modelo.Update();
-                        Modelo.Render();
+                        Modelo.Tick();
+                        //Modelo.Update();
+                        //Modelo.Render();
                         if (Input.keyDown(Key.Escape)) Close(); // TODO Cambiar cuando haya inventario y menu
                     }
                     else
