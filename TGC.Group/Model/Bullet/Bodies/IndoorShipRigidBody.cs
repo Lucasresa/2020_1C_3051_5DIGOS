@@ -24,13 +24,8 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             Ship.IndoorMesh.Transform = TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Scaling(scale) * TGCMatrix.Translation(position);
             rigidBody = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Ship.IndoorMesh);
-            rigidBody.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position)).ToBulletMatrix();
             rigidBody.CollisionShape.LocalScaling = scale.ToBulletVector3();
-        }
-
-        public override void Update(TgcD3dInput input)
-        {
-            Ship.IndoorMesh.Transform = TGCMatrix.Scaling(scale) * new TGCMatrix(rigidBody.InterpolationWorldTransform);
+            rigidBody.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position)).ToBulletMatrix();
         }
 
         public override void Render()

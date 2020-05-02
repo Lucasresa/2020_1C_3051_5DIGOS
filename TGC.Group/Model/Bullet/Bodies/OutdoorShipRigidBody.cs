@@ -28,11 +28,6 @@ namespace TGC.Group.Model.Bullet.Bodies
             rigidBody.CollisionShape.LocalScaling = scale.ToBulletVector3();
         }
 
-        public override void Update(TgcD3dInput input)
-        {
-            Ship.OutdoorMesh.Transform = TGCMatrix.Scaling(scale) * new TGCMatrix(rigidBody.InterpolationWorldTransform);
-        }
-
         public override void Render()
         {
             Ship.Render();

@@ -7,7 +7,6 @@ using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Bullet.Bodies
 {
-    // INFO: Por ahora voy a diseñar el personaje como una sphere que represente a la camara, pero estaba viendo que hay que utilizar una capsula para el personaje.. despues modificare
     class CharacterRigidBody : RigidBody
     {
         private CameraFPS Camera;
@@ -19,7 +18,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         public CharacterRigidBody(CameraFPS camera)
         {
             Camera = camera;
-            Camera.isOutside = true;
+        //  Camera.isOutside = true;
         }
 
         public override void Init()
@@ -34,10 +33,8 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public override void Update(TgcD3dInput input)
         {
-            var strength = 2f;
-
+            var strength = 5f;
             rigidBody.ActivationState = ActivationState.ActiveTag;
-
             // TODO: Corregir el movimiento ya que ahora hace cualquiera
             #region Movimiento 
             rigidBody.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
@@ -75,7 +72,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             #endregion
 
             if (Camera.isOutside)
-                rigidBody.Gravity = new Vector3(0, -10, 0); // INFO: Cambiar a 0 cuando se deje de probar afuera
+                rigidBody.Gravity = new Vector3(0, -10, 0); 
             else
                 rigidBody.Gravity = new Vector3(0, 0, 0);
 

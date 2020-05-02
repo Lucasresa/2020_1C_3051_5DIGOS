@@ -21,8 +21,7 @@ namespace TGC.Group.Model
         {
             public static float WATER_HEIGHT = 3500;
             public static TGCVector3 OUTSIDE_SHIP_POSITION = new TGCVector3(1300, 3505, 20);
-            public static TGCVector3 INSIDE_SHIP_POSITION = new TGCVector3(515, -2338, -40);
-            public static float GRAVITY = 200; // TODO: Probablemente en el juego no tengamos gravedad.. habria que definirlo entre todos.
+            public static TGCVector3 INSIDE_SHIP_POSITION = new TGCVector3(515, -2340, -40);
         }
         #endregion
 
