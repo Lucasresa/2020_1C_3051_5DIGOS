@@ -24,8 +24,8 @@ namespace TGC.Group.Model.Bullet.Bodies
         public override void Init()
         {
             rigidBody = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
-            rigidBody.CenterOfMassTransform = Mesh.Transform.ToBulletMatrix();
-            rigidBody.CollisionShape.LocalScaling = new Vector3(10, 10, 10);
+            rigidBody.CenterOfMassTransform = TGCMatrix.Translation(Mesh.Position).ToBulletMatrix();
+            rigidBody.CollisionShape.LocalScaling = Mesh.Scale.ToBulletVector3();
         }
         
         // TODO: Podriamos llegar a renderizar el Mesh por aca.. no me pareceria tan mala idea..

@@ -30,7 +30,9 @@ namespace TGC.Group.Model.MeshBuilders
         {
             var scaledMesh = CreateNewMeshCopy(meshType);
             if (meshType == MeshType.alga) scaledMesh.AlphaBlendEnable = true;
+            //TODO: ESTO QUE ESTOY AGREGANDO ES PARA QUE PUEDA PROBAR LOS CUERPOS RIGIDOS, SI LO DEJAMOS NOS VAN A CAGAR A PEDO
             scaledMesh.Transform = TGCMatrix.Scaling(scale, scale, scale);
+            scaledMesh.Scale = new TGCVector3(scale, scale, scale);
             return scaledMesh;
         }
 
@@ -60,7 +62,8 @@ namespace TGC.Group.Model.MeshBuilders
             var rotation = calculatedRotation(normalObjeto);
 
             mesh.Transform *= TGCMatrix.RotationYawPitchRoll(rotation.Y, rotation.X, rotation.Z) * TGCMatrix.Translation(position);
-
+            //TODO: ESTO QUE ESTOY AGREGANDO ES PARA QUE PUEDA PROBAR LOS CUERPOS RIGIDOS, SI LO DEJAMOS NOS VAN A CAGAR A PEDO
+            mesh.Position = position;
             return true;
         }
 
