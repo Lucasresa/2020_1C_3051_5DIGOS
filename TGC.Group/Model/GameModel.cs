@@ -152,10 +152,9 @@ namespace TGC.Group.Model
 
             #region Renderizado
 
-            skyBox.Render();
-
             if (camera.position.Y > 0)
             {
+                skyBox.Render();
                 water.Render();
                 vegetation.ForEach(vegetation => { if( inSkyBox(vegetation) ) vegetation.Render(); });
             }
@@ -224,7 +223,7 @@ namespace TGC.Group.Model
 
         private bool inSkyBox(Bullet.RigidBody rigidBody)
         {
-            if (rigidBody.isTerrain)
+            if (rigidBody.isTerrain || rigidBody.isIndoorShip)
                 return true;
             
             var posX = rigidBody.rigidBody.CenterOfMassPosition.X;

@@ -20,6 +20,7 @@ namespace TGC.Group.Model.Bullet
         public BTRigidBody rigidBody;
         public List<RigidBody> listRigidBody = new List<RigidBody>();
         public bool isTerrain = false;
+        public bool isIndoorShip = false;
         #endregion
 
         #region Constructor

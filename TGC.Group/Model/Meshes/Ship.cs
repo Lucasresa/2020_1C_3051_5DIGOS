@@ -19,12 +19,6 @@ namespace TGC.Group.Model.Watercraft
             ShadersDir = shadersDir;
         }
 
-        public void Render()
-        {
-            OutdoorMesh.Render();
-            IndoorMesh.Render();
-        }
-
         public void Dispose()
         {
             OutdoorMesh.Dispose();
