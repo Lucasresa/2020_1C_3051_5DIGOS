@@ -8,17 +8,13 @@ namespace TGC.Group.Model
         #region Atributos
         protected string MeshName;
         protected readonly string MediaDir;
-        protected TGCVector3 position;
-        private TGCVector3 scale = new TGCVector3(1, 1, 1);
-
         public TgcMesh Mesh { get; set; }
         #endregion
 
         #region Constructor
-        public CommonMesh(string mediaDir, TGCVector3 center, string meshName)
+        public CommonMesh(string mediaDir, string meshName)
         {
             MediaDir = mediaDir;
-            position = center;
             MeshName = meshName;
             LoadMesh();
         }

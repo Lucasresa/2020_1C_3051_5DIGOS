@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 
@@ -16,16 +17,16 @@ namespace TGC.Group.Model.MeshBuilders
             if (MediaDir == null)
                 throw new Exception("MediaDir variable is null, set a value first");
 
-            Meshes.Add(MeshType.normalCoral, new CommonMesh(MediaDir, TGCVector3.Empty, "normal_coral"));
-            Meshes.Add(MeshType.treeCoral, new CommonMesh(MediaDir, TGCVector3.Empty, "tree_coral"));
-            Meshes.Add(MeshType.spiralCoral, new CommonMesh(MediaDir, TGCVector3.Empty, "spiral_coral"));
-            Meshes.Add(MeshType.ironOre, new CommonMesh(MediaDir, TGCVector3.Empty, "iron"));
-            Meshes.Add(MeshType.silverOre, new CommonMesh(MediaDir, TGCVector3.Empty, "silver"));
-            Meshes.Add(MeshType.goldOre, new CommonMesh(MediaDir, TGCVector3.Empty, "gold"));
-            Meshes.Add(MeshType.rock, new CommonMesh(MediaDir, TGCVector3.Empty, "rock-n"));
-            Meshes.Add(MeshType.alga, new CommonMesh(MediaDir, TGCVector3.Empty, "alga"));
-            Meshes.Add(MeshType.normalFish, new CommonMesh(MediaDir, TGCVector3.Empty, "fish"));
-            Meshes.Add(MeshType.yellowFish, new CommonMesh(MediaDir, TGCVector3.Empty, "yellow_fish"));
+            Meshes.Add(MeshType.normalCoral, new CommonMesh(MediaDir,"normal_coral"));
+            Meshes.Add(MeshType.treeCoral, new CommonMesh(MediaDir,"tree_coral"));
+            Meshes.Add(MeshType.spiralCoral, new CommonMesh(MediaDir,"spiral_coral"));
+            Meshes.Add(MeshType.ironOre, new CommonMesh(MediaDir,"iron"));
+            Meshes.Add(MeshType.silverOre, new CommonMesh(MediaDir,"silver"));
+            Meshes.Add(MeshType.goldOre, new CommonMesh(MediaDir,"gold"));
+            Meshes.Add(MeshType.rock, new CommonMesh(MediaDir,"rock-n"));
+            Meshes.Add(MeshType.alga, new CommonMesh(MediaDir,"alga"));
+            Meshes.Add(MeshType.normalFish, new CommonMesh(MediaDir,"fish"));
+            Meshes.Add(MeshType.yellowFish, new CommonMesh(MediaDir,"yellow_fish"));
         }
 
         public static TgcMesh GetDuplicateMesh(MeshType meshType)
@@ -34,7 +35,9 @@ namespace TGC.Group.Model.MeshBuilders
             return originalMesh.createMeshInstance(originalMesh.Name + "_" + MeshCounter++);
         }
 
-        public static void DisposeOriginalMeshes() { foreach (CommonMesh c in Meshes.Values) c.Dispose(); }
-
+        public static void DisposeOriginalMeshes()
+        {
+            Meshes.Values.ToList().ForEach(mesh => mesh.Dispose());
+        }
     }
 }

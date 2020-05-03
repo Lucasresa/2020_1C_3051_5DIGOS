@@ -78,6 +78,8 @@ namespace TGC.Group.Model.MeshBuilders
 
             YPosition = random.Next((int)YPosition + meshTerrainOffset, (int)maxYPosition);
             mesh.Transform *= TGCMatrix.Translation(XPosition, YPosition, ZPosition);
+            var position = new TGCVector3(XPosition, YPosition, ZPosition);
+            mesh.Position = position;
             return true;
         }
 

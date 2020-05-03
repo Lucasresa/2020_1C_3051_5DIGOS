@@ -2,10 +2,13 @@ using Microsoft.DirectX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
+using System.Windows.Forms;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.Bullet.Bodies;
 using TGC.Group.Model.MeshBuilders;
 using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
@@ -106,12 +109,6 @@ namespace TGC.Group.Model
 
             if (Input.keyPressed(Key.F))
                 showDebugInfo = !showDebugInfo;
-
-            if (Input.keyPressed(Key.E) && CameraInRoom())
-                camera.TeleportCamera(Constants.OUTSIDE_SHIP_POSITION);
-
-            if (Input.keyPressed(Key.E) && CameraOutRoom())
-                camera.TeleportCamera(Constants.INSIDE_SHIP_POSITION);
 
             #endregion
         }

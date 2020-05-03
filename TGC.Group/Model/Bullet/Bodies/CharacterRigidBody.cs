@@ -13,11 +13,15 @@ namespace TGC.Group.Model.Bullet.Bodies
         private TGCVector3 directorz = new TGCVector3(1, 0, 0);
         private TGCVector3 directorx = new TGCVector3(0, 0, 1);
         private TGCVector3 position;
+        private TGCVector3 indoorPosition;
+        private TGCVector3 outdoorPosition;
 
         public CharacterRigidBody(CameraFPS camera)
         {
             Camera = camera;
-            Camera.isOutside = true; // TODO: Descomentar para salir afuera
+            // Camera.isOutside = true; // TODO: Descomentar para salir afuera
+            indoorPosition = camera.getShipInsidePosition();
+            outdoorPosition = camera.getShipOutsidePosition();
         }
 
         public override void Init()
@@ -33,7 +37,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             var strength = 5f;
             rigidBody.ActivationState = ActivationState.ActiveTag;
-            // TODO: Corregir el movimiento ya que ahora hace cualquiera
+        
             #region Movimiento 
             rigidBody.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
 
@@ -69,17 +73,30 @@ namespace TGC.Group.Model.Bullet.Bodies
 
             #endregion
 
-            if (Camera.isOutside)
-                rigidBody.Gravity = new Vector3(0, -10, 0); 
-            else
-                rigidBody.Gravity = new Vector3(0, 0, 0);
-
             Camera.position = new TGCVector3(rigidBody.CenterOfMassPosition);
+
+            #region Teclas
+
+            if (input.keyPressed(Key.E)) Teleport();
+
+            #endregion
         }
 
         public override void Dispose()
         {
             rigidBody.Dispose();
+        }
+
+        public override void Teleport()
+        {
+            if (Camera.isOutside)
+                rigidBody.CenterOfMassTransform = TGCMatrix.Translation(indoorPosition).ToBulletMatrix();
+            else 
+                rigidBody.CenterOfMassTransform = TGCMatrix.Translation(outdoorPosition).ToBulletMatrix();
+
+            Camera.position = new TGCVector3(rigidBody.CenterOfMassPosition);
+            rigidBody.LinearVelocity = Vector3.Zero;
+            rigidBody.AngularVelocity = Vector3.Zero;
         }
     }
 }
