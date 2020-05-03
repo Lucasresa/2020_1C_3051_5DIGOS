@@ -60,11 +60,6 @@ namespace TGC.Group.Utils
             });
         }
 
-        public void Render()
-        {
-            rigidBodies.ForEach(rigidBody => rigidBody.Render());
-        }
-
         public void Dispose()
         {
             dynamicsWorld.Dispose();

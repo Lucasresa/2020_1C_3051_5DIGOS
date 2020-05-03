@@ -93,7 +93,7 @@ namespace TGC.Group.Model
             #region Mundo fisico
 
             rigidBodies.Initializer(terrain, camera, shark, ship, Meshes);
-            physicalworld.addInitialRigidBodies(rigidBodies.rigidBodies);
+            physicalworld.addInitialRigidBodies(rigidBodies.listRigidBody);
             physicalworld.addAllDynamicsWorld();
 
             #endregion
@@ -152,18 +152,35 @@ namespace TGC.Group.Model
 
             #region Renderizado
 
-            physicalworld.Render();
+            skyBox.Render();
 
             if (camera.position.Y > 0)
             {
-                skyBox.Render();
                 water.Render();
-                vegetation.ForEach(vegetation => vegetation.Render());
+                vegetation.ForEach(vegetation => { if( inSkyBox(vegetation) ) vegetation.Render(); });
             }
+
+            rigidBodies.listRigidBody.ForEach( rigidBody => { if ( inSkyBox(rigidBody) ) rigidBody.Render(); });
 
             #endregion
 
             PostRender();
+        }
+
+        private bool inSkyBox(TgcMesh vegetation)
+        {
+            var posX = vegetation.Position.X;
+            var posZ = vegetation.Position.Z;
+            return ( posX < skyBox.perimeter.xMax && posX > skyBox.perimeter.xMin &&
+                     posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
+        }
+
+        private bool inSkyBox(Bullet.RigidBody rigidBody)
+        {
+            var posX = rigidBody.rigidBody.CenterOfMassPosition.X;
+            var posZ = rigidBody.rigidBody.CenterOfMassPosition.Z;
+            return ( posX < skyBox.perimeter.xMax && posX > skyBox.perimeter.xMin &&
+                     posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
         }
 
         public override void Dispose()
@@ -172,7 +189,6 @@ namespace TGC.Group.Model
             physicalworld.Dispose();
             water.Dispose();
             skyBox.Dispose();
-            shark.Dispose();
             vegetation.ForEach(vegetation => vegetation.Dispose());
             MeshDuplicator.DisposeOriginalMeshes();
             #endregion

@@ -18,7 +18,7 @@ namespace TGC.Group.Model.Bullet
 
         protected BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
         public BTRigidBody rigidBody;
-        public List<RigidBody> rigidBodies = new List<RigidBody>();
+        public List<RigidBody> listRigidBody = new List<RigidBody>();
 
         #endregion
 
@@ -29,14 +29,14 @@ namespace TGC.Group.Model.Bullet
         #region Metodos
         public void Initializer(Terrain terrain, CameraFPS camera, Shark shark, Ship ship, List<TgcMesh> meshes)
         {
-            rigidBodies.Add(new TerrainRigidBody(terrain));
-            rigidBodies.Add(new CharacterRigidBody(camera));
-            rigidBodies.Add(new SharkRigidBody(shark));
-            rigidBodies.Add(new OutdoorShipRigidBody(ship));
-            rigidBodies.Add(new IndoorShipRigidBody(ship));
-            meshes.ForEach(mesh => rigidBodies.Add(new CommonRigidBody(mesh)));
+            listRigidBody.Add(new TerrainRigidBody(terrain));
+            listRigidBody.Add(new CharacterRigidBody(camera));
+            listRigidBody.Add(new SharkRigidBody(shark));
+            listRigidBody.Add(new OutdoorShipRigidBody(ship));
+            listRigidBody.Add(new IndoorShipRigidBody(ship));
+            meshes.ForEach(mesh => listRigidBody.Add(new CommonRigidBody(mesh)));
 
-            rigidBodies.ForEach(rigidBody => rigidBody.Init());
+            listRigidBody.ForEach(rigidBody => rigidBody.Init());
         }
 
         public virtual void Init() { }
@@ -45,12 +45,12 @@ namespace TGC.Group.Model.Bullet
 
         public virtual void Render()
         {
-            rigidBodies.ForEach(rigidBody => rigidBody.Render());
+            listRigidBody.ForEach(rigidBody => rigidBody.Render());
         }
 
         public virtual void Dispose()
         {
-            rigidBodies.ForEach(rigidBody => rigidBody.Dispose());
+            listRigidBody.ForEach(rigidBody => rigidBody.Dispose());
         }
 
         public void setGravity(BTRigidBody rigidBody, float gravity)
