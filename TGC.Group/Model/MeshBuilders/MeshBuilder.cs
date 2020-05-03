@@ -13,6 +13,8 @@ namespace TGC.Group.Model.MeshBuilders
         private Random random;
         private int meshTerrainOffset = 300;
 
+        private TGCVector3 scale = new TGCVector3(10, 10, 10);
+
         public int MeshTerrainOffset { set { meshTerrainOffset = value; } }
 
         public MeshBuilder()
@@ -26,21 +28,19 @@ namespace TGC.Group.Model.MeshBuilders
             return MeshDuplicator.GetDuplicateMesh(meshType);
         }
 
-        public TgcMesh CreateNewScaledMesh(MeshType meshType, float scale)
+        public TgcMesh CreateNewScaledMesh(MeshType meshType)
         {
             var scaledMesh = CreateNewMeshCopy(meshType);
             if (meshType == MeshType.alga) scaledMesh.AlphaBlendEnable = true;
-            //TODO: ESTO QUE ESTOY AGREGANDO ES PARA QUE PUEDA PROBAR LOS CUERPOS RIGIDOS, SI LO DEJAMOS NOS VAN A CAGAR A PEDO
-            scaledMesh.Transform = TGCMatrix.Scaling(scale, scale, scale);
-            scaledMesh.Scale = new TGCVector3(scale, scale, scale);
+            scaledMesh.Transform = TGCMatrix.Scaling(scale);
             return scaledMesh;
         }
 
-        public List<TgcMesh> CreateNewScaledMeshes(MeshType meshType, int quantity, float scale = 1)
+        public List<TgcMesh> CreateNewScaledMeshes(MeshType meshType, int quantity)
         {
             var meshes = new List<TgcMesh>();
             foreach (int _ in Enumerable.Range(1, quantity))
-                meshes.Add(CreateNewScaledMesh(meshType, scale));
+                meshes.Add(CreateNewScaledMesh(meshType));
             return meshes;
         }
 
@@ -62,7 +62,6 @@ namespace TGC.Group.Model.MeshBuilders
             var rotation = calculatedRotation(normalObjeto);
 
             mesh.Transform *= TGCMatrix.RotationYawPitchRoll(rotation.Y, rotation.X, rotation.Z) * TGCMatrix.Translation(position);
-            //TODO: ESTO QUE ESTOY AGREGANDO ES PARA QUE PUEDA PROBAR LOS CUERPOS RIGIDOS, SI LO DEJAMOS NOS VAN A CAGAR A PEDO
             mesh.Position = position;
             return true;
         }

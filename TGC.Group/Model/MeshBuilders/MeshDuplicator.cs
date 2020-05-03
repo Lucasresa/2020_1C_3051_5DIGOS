@@ -14,9 +14,7 @@ namespace TGC.Group.Model.MeshBuilders
         public static void InitOriginalMeshes()
         {
             if (MediaDir == null)
-            {
                 throw new Exception("MediaDir variable is null, set a value first");
-            }
 
             Meshes.Add(MeshType.normalCoral, new CommonMesh(MediaDir, TGCVector3.Empty, "normal_coral"));
             Meshes.Add(MeshType.treeCoral, new CommonMesh(MediaDir, TGCVector3.Empty, "tree_coral"));
@@ -33,7 +31,7 @@ namespace TGC.Group.Model.MeshBuilders
         public static TgcMesh GetDuplicateMesh(MeshType meshType)
         {
             var originalMesh = Meshes[meshType].Mesh;
-            return originalMesh.createMeshInstance(originalMesh.Name + MeshCounter++);
+            return originalMesh.createMeshInstance(originalMesh.Name + "_" + MeshCounter++);
         }
 
         public static void DisposeOriginalMeshes() { foreach (CommonMesh c in Meshes.Values) c.Dispose(); }

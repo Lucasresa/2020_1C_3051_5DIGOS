@@ -28,10 +28,7 @@ namespace TGC.Group.Model
 
         #region Atributos
         private float time;
-        private List<TgcMesh> corales = new List<TgcMesh>();
-        private List<TgcMesh> minerals = new List<TgcMesh>();
         private List<TgcMesh> vegetation = new List<TgcMesh>();
-        private List<TgcMesh> fishes = new List<TgcMesh>();
         private List<TgcMesh> Meshes = new List<TgcMesh>();
         private Sky skyBox;
         private Perimeter currentCameraArea;
@@ -164,21 +161,12 @@ namespace TGC.Group.Model
             {
                 skyBox.Render();
                 water.Render();
-                //corales.ForEach(coral => coral.Render());
-                //minerals.ForEach(ore => ore.Render());
-                //fishes.ForEach(fish => fish.Render());
-                //vegetation.ForEach(vegetation => vegetation.Render());
+                vegetation.ForEach(vegetation => vegetation.Render());
             }
+
             #endregion
 
             PostRender();
-        }
-
-        [Obsolete] // TODO: Volver a ver este tema.. Ya que no sirve de nada este metodo.. porque cuando renderiza, se renderizan los meshes que ya tienen posiciones asignadas fuera del skybox.. 
-        private bool inSkyBox()
-        {
-            return camera.position.X < skyBox.perimeter.xMax && camera.position.X > skyBox.perimeter.xMin &&
-                   camera.position.Z < skyBox.perimeter.zMax && camera.position.Z > skyBox.perimeter.zMin;
         }
 
         public override void Dispose()
@@ -188,9 +176,6 @@ namespace TGC.Group.Model
             water.Dispose();
             skyBox.Dispose();
             shark.Dispose();
-            fishes.ForEach(fish => fish.Dispose());
-            corales.ForEach(coral => coral.Dispose());
-            minerals.ForEach(ore => ore.Dispose());
             vegetation.ForEach(vegetation => vegetation.Dispose());
             MeshDuplicator.DisposeOriginalMeshes();
             #endregion
@@ -199,38 +184,37 @@ namespace TGC.Group.Model
         #region Metodos Privados
         private void meshInitializer()
         {
-            var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 30, 10);
+            var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 30);
+            meshBuilder.LocateMeshesInTerrain(ref normalCorals, terrain.SizeWorld(), terrain.world);
+            var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 30);
             meshBuilder.LocateMeshesInTerrain(ref treeCorals, terrain.SizeWorld(), terrain.world);
-            var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 30, 10);
+            var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 30);
             meshBuilder.LocateMeshesInTerrain(ref spiralCorals, terrain.SizeWorld(), terrain.world);
-            var goldOre = meshBuilder.CreateNewScaledMeshes(MeshType.goldOre, 30, 5);
+            var goldOre = meshBuilder.CreateNewScaledMeshes(MeshType.goldOre, 30);
             meshBuilder.LocateMeshesInTerrain(ref goldOre, terrain.SizeWorld(), terrain.world);
-            var silverOre = meshBuilder.CreateNewScaledMeshes(MeshType.silverOre, 30, 5);
+            var silverOre = meshBuilder.CreateNewScaledMeshes(MeshType.silverOre, 30);
             meshBuilder.LocateMeshesInTerrain(ref silverOre, terrain.SizeWorld(), terrain.world);
-            var ironOre = meshBuilder.CreateNewScaledMeshes(MeshType.ironOre, 30, 5);
+            var ironOre = meshBuilder.CreateNewScaledMeshes(MeshType.ironOre, 30);
             meshBuilder.LocateMeshesInTerrain(ref ironOre, terrain.SizeWorld(), terrain.world);
-            var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 30, 8);
+            var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 30);
             meshBuilder.LocateMeshesInTerrain(ref rock, terrain.SizeWorld(), terrain.world);
-            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 460, 5);
+            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 460);
             meshBuilder.LocateMeshesInTerrain(ref alga, terrain.SizeWorld(), terrain.world);
-            var normalFish = meshBuilder.CreateNewScaledMeshes(MeshType.normalFish, 30, 5);
+            var normalFish = meshBuilder.CreateNewScaledMeshes(MeshType.normalFish, 30);
             meshBuilder.LocateMeshesUpToTerrain(ref normalFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
-            var yellowFish = meshBuilder.CreateNewScaledMeshes(MeshType.yellowFish, 30, 5);
+            var yellowFish = meshBuilder.CreateNewScaledMeshes(MeshType.yellowFish, 30);
             meshBuilder.LocateMeshesUpToTerrain(ref yellowFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
 
-            corales.AddRange(treeCorals);
-            corales.AddRange(spiralCorals);
-            minerals.AddRange(goldOre);
-            minerals.AddRange(silverOre);
-            minerals.AddRange(ironOre);
-            minerals.AddRange(rock);
             vegetation.AddRange(alga);
-            fishes.AddRange(normalFish);
-            fishes.AddRange(yellowFish);
-            Meshes.AddRange(corales);
-            Meshes.AddRange(minerals);
-            Meshes.AddRange(vegetation);
-            Meshes.AddRange(fishes);
+            Meshes.AddRange(normalCorals);
+            Meshes.AddRange(treeCorals);
+            Meshes.AddRange(spiralCorals);
+            Meshes.AddRange(goldOre);
+            Meshes.AddRange(silverOre);
+            Meshes.AddRange(ironOre);
+            Meshes.AddRange(rock);
+            Meshes.AddRange(normalFish);
+            Meshes.AddRange(yellowFish);
         }
 
         // TODO: Estos dos metodos hay que cambiarlos para calcular distancias con un TGCRay
