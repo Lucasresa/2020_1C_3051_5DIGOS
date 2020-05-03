@@ -9,6 +9,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         public TerrainRigidBody(Terrain terrain)
         {
             Terrain = terrain;
+            isTerrain = true;
         }
 
         public override void Init()

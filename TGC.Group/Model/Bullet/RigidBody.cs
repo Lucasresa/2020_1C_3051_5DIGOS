@@ -19,7 +19,7 @@ namespace TGC.Group.Model.Bullet
         protected BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
         public BTRigidBody rigidBody;
         public List<RigidBody> listRigidBody = new List<RigidBody>();
-
+        public bool isTerrain = false;
         #endregion
 
         #region Constructor

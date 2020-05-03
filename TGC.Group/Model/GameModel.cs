@@ -167,22 +167,6 @@ namespace TGC.Group.Model
             PostRender();
         }
 
-        private bool inSkyBox(TgcMesh vegetation)
-        {
-            var posX = vegetation.Position.X;
-            var posZ = vegetation.Position.Z;
-            return ( posX < skyBox.perimeter.xMax && posX > skyBox.perimeter.xMin &&
-                     posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
-        }
-
-        private bool inSkyBox(Bullet.RigidBody rigidBody)
-        {
-            var posX = rigidBody.rigidBody.CenterOfMassPosition.X;
-            var posZ = rigidBody.rigidBody.CenterOfMassPosition.Z;
-            return ( posX < skyBox.perimeter.xMax && posX > skyBox.perimeter.xMin &&
-                     posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
-        }
-
         public override void Dispose()
         {
             #region Liberacion de recursos
@@ -197,25 +181,25 @@ namespace TGC.Group.Model
         #region Metodos Privados
         private void meshInitializer()
         {
-            var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 30);
+            var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 100);
             meshBuilder.LocateMeshesInTerrain(ref normalCorals, terrain.SizeWorld(), terrain.world);
-            var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 30);
+            var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 100);
             meshBuilder.LocateMeshesInTerrain(ref treeCorals, terrain.SizeWorld(), terrain.world);
-            var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 30);
+            var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 100);
             meshBuilder.LocateMeshesInTerrain(ref spiralCorals, terrain.SizeWorld(), terrain.world);
-            var goldOre = meshBuilder.CreateNewScaledMeshes(MeshType.goldOre, 30);
+            var goldOre = meshBuilder.CreateNewScaledMeshes(MeshType.goldOre, 100);
             meshBuilder.LocateMeshesInTerrain(ref goldOre, terrain.SizeWorld(), terrain.world);
-            var silverOre = meshBuilder.CreateNewScaledMeshes(MeshType.silverOre, 30);
+            var silverOre = meshBuilder.CreateNewScaledMeshes(MeshType.silverOre, 100);
             meshBuilder.LocateMeshesInTerrain(ref silverOre, terrain.SizeWorld(), terrain.world);
-            var ironOre = meshBuilder.CreateNewScaledMeshes(MeshType.ironOre, 30);
+            var ironOre = meshBuilder.CreateNewScaledMeshes(MeshType.ironOre, 100);
             meshBuilder.LocateMeshesInTerrain(ref ironOre, terrain.SizeWorld(), terrain.world);
-            var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 30);
+            var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 100);
             meshBuilder.LocateMeshesInTerrain(ref rock, terrain.SizeWorld(), terrain.world);
-            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 460);
+            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 1000);
             meshBuilder.LocateMeshesInTerrain(ref alga, terrain.SizeWorld(), terrain.world);
-            var normalFish = meshBuilder.CreateNewScaledMeshes(MeshType.normalFish, 30);
+            var normalFish = meshBuilder.CreateNewScaledMeshes(MeshType.normalFish, 100);
             meshBuilder.LocateMeshesUpToTerrain(ref normalFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
-            var yellowFish = meshBuilder.CreateNewScaledMeshes(MeshType.yellowFish, 30);
+            var yellowFish = meshBuilder.CreateNewScaledMeshes(MeshType.yellowFish, 100);
             meshBuilder.LocateMeshesUpToTerrain(ref yellowFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
 
             vegetation.AddRange(alga);
@@ -228,6 +212,25 @@ namespace TGC.Group.Model
             Meshes.AddRange(rock);
             Meshes.AddRange(normalFish);
             Meshes.AddRange(yellowFish);
+        }
+
+        private bool inSkyBox(TgcMesh vegetation)
+        {
+            var posX = vegetation.Position.X;
+            var posZ = vegetation.Position.Z;
+            return (posX < skyBox.perimeter.xMax && posX > skyBox.perimeter.xMin &&
+                     posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
+        }
+
+        private bool inSkyBox(Bullet.RigidBody rigidBody)
+        {
+            if (rigidBody.isTerrain)
+                return true;
+            
+            var posX = rigidBody.rigidBody.CenterOfMassPosition.X;
+            var posZ = rigidBody.rigidBody.CenterOfMassPosition.Z;
+            return (posX < skyBox.perimeter.xMax && posX > skyBox.perimeter.xMin &&
+                     posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
         }
 
         // TODO: Estos dos metodos hay que cambiarlos para calcular distancias con un TGCRay
