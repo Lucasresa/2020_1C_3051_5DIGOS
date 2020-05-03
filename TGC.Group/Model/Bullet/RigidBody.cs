@@ -41,7 +41,7 @@ namespace TGC.Group.Model.Bullet
 
         public virtual void Init() { }
         public virtual void Teleport() { }
-        public virtual void Update(TgcD3dInput input) { }
+        public virtual void Update(TgcD3dInput input, float elapsedTime) { }
 
         public virtual void Render()
         {

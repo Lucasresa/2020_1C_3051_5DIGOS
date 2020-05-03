@@ -56,7 +56,7 @@ namespace TGC.Group.Utils
             rigidBodies.ForEach(rigidBody =>
             {
                 dynamicsWorld.UpdateSingleAabb(rigidBody.rigidBody);
-                rigidBody.Update(input);
+                rigidBody.Update(input, elapsedTime);
             });
         }
 

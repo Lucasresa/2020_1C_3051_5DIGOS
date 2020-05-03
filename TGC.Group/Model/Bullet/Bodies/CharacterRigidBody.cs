@@ -33,7 +33,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             rigidBody.CenterOfMassTransform = TGCMatrix.Translation(position).ToBulletMatrix();
         }
 
-        public override void Update(TgcD3dInput input)
+        public override void Update(TgcD3dInput input, float elapsedTime)
         {
             var strength = 5f;
             rigidBody.ActivationState = ActivationState.ActiveTag;

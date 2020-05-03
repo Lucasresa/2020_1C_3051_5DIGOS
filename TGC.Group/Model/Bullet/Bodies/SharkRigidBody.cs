@@ -34,7 +34,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             rigidBody.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(-FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position)).ToBulletMatrix();
         }
 
-        public override void Update(TgcD3dInput input)
+        public override void Update(TgcD3dInput input, float elapsedTime)
         {
             if (input.keyPressed(Key.Z))
             {
