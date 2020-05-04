@@ -1,4 +1,5 @@
 ﻿using BulletSharp.Math;
+using System;
 using System.Collections.Generic;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Input;
@@ -17,8 +18,8 @@ namespace TGC.Group.Model.Bullet
         #region Atributos
 
         protected BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
-        public BTRigidBody rigidBody;
-        public List<RigidBody> listRigidBody = new List<RigidBody>();
+        public BTRigidBody body;
+        private List<RigidBody> rigidBodies = new List<RigidBody>();
         public bool isTerrain = false;
         public bool isIndoorShip = false;
         #endregion
@@ -30,33 +31,26 @@ namespace TGC.Group.Model.Bullet
         #region Metodos
         public void Initializer(Terrain terrain, CameraFPS camera, Shark shark, Ship ship, List<TgcMesh> meshes)
         {
-            listRigidBody.Add(new TerrainRigidBody(terrain));
-            listRigidBody.Add(new CharacterRigidBody(camera));
-            listRigidBody.Add(new SharkRigidBody(shark));
-            listRigidBody.Add(new OutdoorShipRigidBody(ship));
-            listRigidBody.Add(new IndoorShipRigidBody(ship));
-            meshes.ForEach(mesh => listRigidBody.Add(new CommonRigidBody(mesh)));
-
-            listRigidBody.ForEach(rigidBody => rigidBody.Init());
+            rigidBodies.Add(new TerrainRigidBody(terrain));
+            rigidBodies.Add(new CharacterRigidBody(camera));
+            rigidBodies.Add(new SharkRigidBody(shark));
+            rigidBodies.Add(new OutdoorShipRigidBody(ship));
+            rigidBodies.Add(new IndoorShipRigidBody(ship));
+            meshes.ForEach(mesh => rigidBodies.Add(new CommonRigidBody(mesh)));
+            meshes.RemoveRange(0, meshes.Count);
+            rigidBodies.ForEach(rigidBody => rigidBody.Init());
         }
-
+        
         public virtual void Init() { }
         public virtual void Teleport() { }
+        public virtual void Render() { }
+        public virtual void Dispose() { }
+        public virtual void getMesh() { }
         public virtual void Update(TgcD3dInput input, float elapsedTime) { }
 
-        public virtual void Render()
+        public List<RigidBody> getListRigidBody()
         {
-            listRigidBody.ForEach(rigidBody => rigidBody.Render());
-        }
-
-        public virtual void Dispose()
-        {
-            listRigidBody.ForEach(rigidBody => rigidBody.Dispose());
-        }
-
-        public void setGravity(BTRigidBody rigidBody, float gravity)
-        {
-            rigidBody.Gravity = new Vector3(0, -gravity, 0);
+            return rigidBodies;
         }
 
         #endregion

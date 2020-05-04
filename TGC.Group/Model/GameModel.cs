@@ -8,7 +8,7 @@ using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
-using TGC.Group.Model.Bullet.Bodies;
+using TGC.Group.Model.Bullet;
 using TGC.Group.Model.MeshBuilders;
 using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
@@ -31,10 +31,10 @@ namespace TGC.Group.Model
 
         #region Atributos
         private float time;
+        private Perimeter currentCameraArea;
         private List<TgcMesh> vegetation = new List<TgcMesh>();
         private List<TgcMesh> Meshes = new List<TgcMesh>();
         private Sky skyBox;
-        private Perimeter currentCameraArea;
         private Ship ship;
         private Terrain terrain;
         private Water water;
@@ -43,7 +43,7 @@ namespace TGC.Group.Model
         private bool showDebugInfo { get; set; }
         private CameraFPS camera;
         private readonly PhysicalWorld physicalworld = PhysicalWorld.Instance;
-        private Bullet.RigidBody rigidBodies = new Bullet.RigidBody();
+        private RigidBody rigidBody = new RigidBody();
         #endregion
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
@@ -60,50 +60,35 @@ namespace TGC.Group.Model
         public override void Init()
         {
             #region Camera 
-            Camera = new CameraFPS(Input, Constants.INSIDE_SHIP_POSITION);
-            camera = (CameraFPS)Camera;
-            camera.setShipPosition(Constants.INSIDE_SHIP_POSITION, Constants.OUTSIDE_SHIP_POSITION);
+            Camera = new CameraFPS(Input, Constants.INSIDE_SHIP_POSITION, Constants.OUTSIDE_SHIP_POSITION);
+            camera = (CameraFPS)Camera;            
             #endregion
 
             #region Mundo            
-            terrain = new Terrain(MediaDir, ShadersDir);
-            terrain.LoadWorld(TGCVector3.Empty);
-            terrain.splitToArea();
-            water = new Water(MediaDir, ShadersDir);
-            water.LoadWorld(new TGCVector3(0, Constants.WATER_HEIGHT, 0));
+            terrain = new Terrain(MediaDir, ShadersDir, TGCVector3.Empty);
+            water = new Water(MediaDir, ShadersDir, new TGCVector3(0, Constants.WATER_HEIGHT, 0));
             skyBox = new Sky(MediaDir, ShadersDir, camera);
-            skyBox.LoadSkyBox();
             #endregion
 
-            #region Nave
+            #region Meshes
             ship = new Ship(MediaDir, ShadersDir);
-            ship.LoadShip();
-            #endregion
-
-            #region Enemigo
             shark = new Shark(MediaDir, ShadersDir);
-            shark.LoadShark();
-            #endregion
-
-            #region Vegetacion del mundo
+            
             MeshDuplicator.InitOriginalMeshes();
             meshInitializer();
             #endregion
 
             #region Mundo fisico
-
-            rigidBodies.Initializer(terrain, camera, shark, ship, Meshes);
-            physicalworld.addInitialRigidBodies(rigidBodies.listRigidBody);
-            physicalworld.addAllDynamicsWorld();
-
+            rigidBody.Initializer(terrain, camera, shark, ship, Meshes);
+            physicalworld.addInitialRigidBodies(rigidBody.getListRigidBody());
             #endregion
         }
 
         public override void Update()
         {
-            physicalworld.Update(Input, ElapsedTime, TimeBetweenUpdates);
-
             currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
+
+            physicalworld.Update(Input, ElapsedTime, TimeBetweenUpdates);
 
             #region Teclas
 
@@ -111,6 +96,7 @@ namespace TGC.Group.Model
                 showDebugInfo = !showDebugInfo;
 
             #endregion
+
         }
 
         public override void Render()
@@ -159,7 +145,7 @@ namespace TGC.Group.Model
                 vegetation.ForEach(vegetation => { if( inSkyBox(vegetation) ) vegetation.Render(); });
             }
 
-            rigidBodies.listRigidBody.ForEach( rigidBody => { if ( inSkyBox(rigidBody) ) rigidBody.Render(); });
+            rigidBody.getListRigidBody().ForEach( rigidBody => { if ( inSkyBox(rigidBody) ) rigidBody.Render(); });
 
             #endregion
 
@@ -173,13 +159,14 @@ namespace TGC.Group.Model
             water.Dispose();
             skyBox.Dispose();
             vegetation.ForEach(vegetation => vegetation.Dispose());
-            MeshDuplicator.DisposeOriginalMeshes();
             #endregion
         }
 
         #region Metodos Privados
+
         private void meshInitializer()
         {
+            #region Ubicar meshes
             var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 100);
             meshBuilder.LocateMeshesInTerrain(ref normalCorals, terrain.SizeWorld(), terrain.world);
             var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 100);
@@ -200,7 +187,9 @@ namespace TGC.Group.Model
             meshBuilder.LocateMeshesUpToTerrain(ref normalFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
             var yellowFish = meshBuilder.CreateNewScaledMeshes(MeshType.yellowFish, 100);
             meshBuilder.LocateMeshesUpToTerrain(ref yellowFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
+            #endregion
 
+            #region Agregar meshes
             vegetation.AddRange(alga);
             Meshes.AddRange(normalCorals);
             Meshes.AddRange(treeCorals);
@@ -211,6 +200,7 @@ namespace TGC.Group.Model
             Meshes.AddRange(rock);
             Meshes.AddRange(normalFish);
             Meshes.AddRange(yellowFish);
+            #endregion
         }
 
         private bool inSkyBox(TgcMesh vegetation)
@@ -221,32 +211,15 @@ namespace TGC.Group.Model
                      posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
         }
 
-        private bool inSkyBox(Bullet.RigidBody rigidBody)
+        private bool inSkyBox(RigidBody rigidBody)
         {
             if (rigidBody.isTerrain || rigidBody.isIndoorShip)
                 return true;
             
-            var posX = rigidBody.rigidBody.CenterOfMassPosition.X;
-            var posZ = rigidBody.rigidBody.CenterOfMassPosition.Z;
+            var posX = rigidBody.body.CenterOfMassPosition.X;
+            var posZ = rigidBody.body.CenterOfMassPosition.Z;
             return (posX < skyBox.perimeter.xMax && posX > skyBox.perimeter.xMin &&
                      posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
-        }
-
-        // TODO: Estos dos metodos hay que cambiarlos para calcular distancias con un TGCRay
-
-        private bool CameraInRoom()
-        {
-            float delta = 300;
-            return ship.IndoorMesh.Position.Y - delta < camera.position.Y &&
-                   camera.position.Y < ship.IndoorMesh.Position.Y + delta;
-        }
-
-        private bool CameraOutRoom()
-        {
-            var delta = 50;
-            return ship.OutdoorMesh.Position.Y - delta < camera.position.Y &&
-                 camera.position.Y < ship.OutdoorMesh.Position.Y + delta;
-
         }
 
         #endregion

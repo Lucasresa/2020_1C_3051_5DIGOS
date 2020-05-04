@@ -27,12 +27,12 @@ namespace TGC.Group.Model.Terrains
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
             Camera = camera;
+            LoadSkyBox();
         }
 
         public void LoadSkyBox()
         {
             var texturesPath = MediaDir + "SkyBox\\";
-            // TODO: Habria que encontrar imagenes con mayor resolucion para el SkyBox
             sky.setFaceTexture(TgcSkyBox.SkyFaces.Up, texturesPath + "sup.jpg");
             sky.setFaceTexture(TgcSkyBox.SkyFaces.Down, texturesPath + "inf.jpg");
             sky.setFaceTexture(TgcSkyBox.SkyFaces.Left, texturesPath + "izq.jpg");

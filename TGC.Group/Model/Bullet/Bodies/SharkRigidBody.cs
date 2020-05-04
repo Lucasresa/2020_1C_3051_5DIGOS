@@ -2,6 +2,7 @@
 using Microsoft.DirectX.DirectInput;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
+using TGC.Core.SceneLoader;
 using TGC.Group.Model.Sharky;
 
 namespace TGC.Group.Model.Bullet.Bodies
@@ -9,7 +10,7 @@ namespace TGC.Group.Model.Bullet.Bodies
     class SharkRigidBody : RigidBody
     {
         #region Atributos
-        private Shark Sharky;
+        private TgcMesh Mesh;
         private TGCVector3 scale = new TGCVector3(5, 5, 5);
         private TGCVector3 position = new TGCVector3(-2885, 1220, -525);
         #endregion
@@ -18,7 +19,7 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public SharkRigidBody(Shark shark)
         {
-            Sharky = shark;
+            Mesh = shark.Mesh;
         }
 
         #endregion
@@ -27,36 +28,36 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public override void Init()
         {
-            Sharky.Mesh.Transform = TGCMatrix.Scaling(scale) * TGCMatrix.RotationYawPitchRoll(-FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position);
-            rigidBody = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Sharky.Mesh);
-            rigidBody.SetMassProps(1, new Vector3(1, 1, 1));
-            rigidBody.CollisionShape.LocalScaling = scale.ToBulletVector3();
-            rigidBody.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(-FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position)).ToBulletMatrix();
+            Mesh.Transform = TGCMatrix.Scaling(scale) * TGCMatrix.RotationYawPitchRoll(-FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position);
+            body = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
+            body.SetMassProps(1, new Vector3(1, 1, 1));
+            body.CollisionShape.LocalScaling = scale.ToBulletVector3();
+            body.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(-FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position)).ToBulletMatrix();
         }
 
         public override void Update(TgcD3dInput input, float elapsedTime)
         {
             if (input.keyPressed(Key.Z))
             {
-                rigidBody.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(-300, 1500, 360)).ToBulletMatrix();
+                body.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(-300, 1500, 360)).ToBulletMatrix();
             }
 
             if (input.keyPressed(Key.M))
             {
-                rigidBody.ApplyCentralImpulse(new Vector3(10, 0, 0));
+                body.ApplyCentralImpulse(new Vector3(10, 0, 0));
             }
-            Sharky.Mesh.Transform = TGCMatrix.Scaling(scale) * new TGCMatrix(rigidBody.InterpolationWorldTransform);
+            Mesh.Transform = TGCMatrix.Scaling(scale) * new TGCMatrix(body.InterpolationWorldTransform);
         }
 
         public override void Render()
         {
-            Sharky.Render();
+            Mesh.Render();
         }
 
         public override void Dispose()
         {
-            rigidBody.Dispose();
-            Sharky.Dispose();
+            body.Dispose();
+            Mesh.Dispose();
         }
 
         #endregion

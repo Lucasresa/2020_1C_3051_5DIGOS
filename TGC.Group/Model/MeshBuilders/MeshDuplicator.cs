@@ -34,10 +34,5 @@ namespace TGC.Group.Model.MeshBuilders
             var originalMesh = Meshes[meshType].Mesh;
             return originalMesh.createMeshInstance(originalMesh.Name + "_" + MeshCounter++);
         }
-
-        public static void DisposeOriginalMeshes()
-        {
-            Meshes.Values.ToList().ForEach(mesh => mesh.Dispose());
-        }
     }
 }

@@ -17,12 +17,7 @@ namespace TGC.Group.Model.Watercraft
             FILE_NAME = "ship-TgcScene.xml";
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
-        }
-
-        public void Dispose()
-        {
-            OutdoorMesh.Dispose();
-            IndoorMesh.Dispose();
+            LoadShip();
         }
 
         public void LoadShip()

@@ -3,6 +3,8 @@ using BulletSharp.Math;
 using System.Collections.Generic;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Input;
+using btRigidBody = TGC.Group.Model.Bullet.RigidBody;
+
 
 namespace TGC.Group.Utils
 {
@@ -11,7 +13,6 @@ namespace TGC.Group.Utils
         #region Atributos
 
         private Vector3 gravityZero = Vector3.Zero;
-        private readonly BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
 
         #region De configuracion del bullet
         private DiscreteDynamicsWorld dynamicsWorld;
@@ -21,21 +22,13 @@ namespace TGC.Group.Utils
         private BroadphaseInterface overlappingPairCache;
         #endregion
 
-        private List<Model.Bullet.RigidBody> rigidBodies;
+        private List<btRigidBody> rigidBodies;
 
         #endregion
 
         #region Constructor
         public static PhysicalWorld Instance { get; } = new PhysicalWorld();
         private PhysicalWorld()
-        {
-            initDynamicsWorld();
-        }
-        #endregion
-
-        #region Metodos
-
-        private void initDynamicsWorld()
         {
             #region Configuracion del mundo fisico
 
@@ -44,24 +37,30 @@ namespace TGC.Group.Utils
             GImpactCollisionAlgorithm.RegisterAlgorithm(dispatcher);
             constraintSolver = new SequentialImpulseConstraintSolver();
             overlappingPairCache = new DbvtBroadphase();
-            dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, overlappingPairCache, constraintSolver, collisionConfiguration);
+            dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, overlappingPairCache, constraintSolver, collisionConfiguration)
+            {
+                Gravity = gravityZero
+            };
 
-            dynamicsWorld.Gravity = gravityZero;
-            #endregion            
+            #endregion   
         }
+        #endregion
+
+        #region Metodos
 
         public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
         {
             dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
             rigidBodies.ForEach(rigidBody =>
             {
-                dynamicsWorld.UpdateSingleAabb(rigidBody.rigidBody);
+                dynamicsWorld.UpdateSingleAabb(rigidBody.body);
                 rigidBody.Update(input, elapsedTime);
             });
         }
 
         public void Dispose()
         {
+            rigidBodies.ForEach(rigidBody => rigidBody.Dispose());
             dynamicsWorld.Dispose();
             dispatcher.Dispose();
             collisionConfiguration.Dispose();
@@ -69,20 +68,16 @@ namespace TGC.Group.Utils
             overlappingPairCache.Dispose();
         }
 
-        public void addInitialRigidBodies(List<Model.Bullet.RigidBody> bodies)
+        public void addInitialRigidBodies(List<btRigidBody> bodies)
         {
             rigidBodies = bodies;
+            rigidBodies.ForEach(rigidBody => dynamicsWorld.AddRigidBody(rigidBody.body));
         }
 
-        public void addRigidBodyToWorld(Model.Bullet.RigidBody rigidBody)
+        public void addRigidBodyToWorld(btRigidBody rigidBody)
         {
             rigidBodies.Add(rigidBody);
-            dynamicsWorld.AddRigidBody(rigidBody.rigidBody);
-        }
-
-        public void addAllDynamicsWorld()
-        {
-            rigidBodies.ForEach(rigidBody => dynamicsWorld.AddRigidBody(rigidBody.rigidBody));
+            dynamicsWorld.AddRigidBody(rigidBody.body);
         }
 
         #endregion

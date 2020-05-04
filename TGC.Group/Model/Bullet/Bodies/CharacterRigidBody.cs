@@ -19,61 +19,60 @@ namespace TGC.Group.Model.Bullet.Bodies
         public CharacterRigidBody(CameraFPS camera)
         {
             Camera = camera;
-            // Camera.isOutside = true; // TODO: Descomentar para salir afuera
-            indoorPosition = camera.getShipInsidePosition();
-            outdoorPosition = camera.getShipOutsidePosition();
+            indoorPosition = camera.getIndoorPosition();
+            outdoorPosition = camera.getOutdoorPosition();
         }
 
         public override void Init()
         {
-            if (Camera.isOutside) position = Camera.getShipOutsidePosition();
-            else position = Camera.getShipInsidePosition();
+            if (Camera.isOutside) position = Camera.getOutdoorPosition();
+            else position = Camera.getIndoorPosition();
 
-            rigidBody = rigidBodyFactory.CreateBall(30f, 0.75f, position);
-            rigidBody.CenterOfMassTransform = TGCMatrix.Translation(position).ToBulletMatrix();
+            body = rigidBodyFactory.CreateBall(30f, 0.75f, position);
+            body.CenterOfMassTransform = TGCMatrix.Translation(position).ToBulletMatrix();
         }
 
         public override void Update(TgcD3dInput input, float elapsedTime)
         {
             var strength = 5f;
-            rigidBody.ActivationState = ActivationState.ActiveTag;
+            body.ActivationState = ActivationState.ActiveTag;
         
             #region Movimiento 
-            rigidBody.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
+            body.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
 
             if (input.keyDown(Key.W))
             {
-                rigidBody.ApplyCentralImpulse(-strength * directorz.ToBulletVector3());
+                body.ApplyCentralImpulse(-strength * directorz.ToBulletVector3());
             }
 
             if (input.keyDown(Key.S))
             {
-                rigidBody.ApplyCentralImpulse(strength * directorz.ToBulletVector3());
+                body.ApplyCentralImpulse(strength * directorz.ToBulletVector3());
             }
 
             if (input.keyDown(Key.A))
             {
-                rigidBody.ApplyCentralImpulse(-strength * directorx.ToBulletVector3());
+                body.ApplyCentralImpulse(-strength * directorx.ToBulletVector3());
             }
 
             if (input.keyDown(Key.D))
             {
-                rigidBody.ApplyCentralImpulse(strength * directorx.ToBulletVector3());
+                body.ApplyCentralImpulse(strength * directorx.ToBulletVector3());
             }
 
             if (input.keyPressed(Key.Space))
             {
-                rigidBody.ApplyCentralImpulse(new TGCVector3(0, 80 * strength, 0).ToBulletVector3());
+                body.ApplyCentralImpulse(new TGCVector3(0, 80 * strength, 0).ToBulletVector3());
             }
 
             if (input.keyPressed(Key.LeftControl))
             {
-                rigidBody.ApplyCentralImpulse(new TGCVector3(0, 80 * -strength, 0).ToBulletVector3());
+                body.ApplyCentralImpulse(new TGCVector3(0, 80 * -strength, 0).ToBulletVector3());
             }
 
             #endregion
 
-            Camera.position = new TGCVector3(rigidBody.CenterOfMassPosition);
+            Camera.position = new TGCVector3(body.CenterOfMassPosition);
 
             #region Teclas
 
@@ -84,19 +83,19 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public override void Dispose()
         {
-            rigidBody.Dispose();
+            body.Dispose();
         }
 
         public override void Teleport()
         {
             if (Camera.isOutside)
-                rigidBody.CenterOfMassTransform = TGCMatrix.Translation(indoorPosition).ToBulletMatrix();
+                body.CenterOfMassTransform = TGCMatrix.Translation(indoorPosition).ToBulletMatrix();
             else 
-                rigidBody.CenterOfMassTransform = TGCMatrix.Translation(outdoorPosition).ToBulletMatrix();
+                body.CenterOfMassTransform = TGCMatrix.Translation(outdoorPosition).ToBulletMatrix();
 
-            Camera.position = new TGCVector3(rigidBody.CenterOfMassPosition);
-            rigidBody.LinearVelocity = Vector3.Zero;
-            rigidBody.AngularVelocity = Vector3.Zero;
+            Camera.position = new TGCVector3(body.CenterOfMassPosition);
+            body.LinearVelocity = Vector3.Zero;
+            body.AngularVelocity = Vector3.Zero;
         }
     }
 }

@@ -27,15 +27,6 @@ namespace TGC.Group.Model
             Mesh.Name = MeshName;
         }
 
-        public virtual void Render()
-        {
-            Mesh.Render();
-        }
-
-        public virtual void Dispose()
-        {
-            Mesh.Dispose();
-        }
         #endregion
     }
 }
