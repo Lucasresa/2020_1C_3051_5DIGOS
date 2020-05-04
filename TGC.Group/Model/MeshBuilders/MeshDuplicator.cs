@@ -24,9 +24,12 @@ namespace TGC.Group.Model.MeshBuilders
             Meshes.Add(MeshType.silverOre, new CommonMesh(MediaDir,"silver"));
             Meshes.Add(MeshType.goldOre, new CommonMesh(MediaDir,"gold"));
             Meshes.Add(MeshType.rock, new CommonMesh(MediaDir,"rock-n"));
-            Meshes.Add(MeshType.alga, new CommonMesh(MediaDir,"alga"));
             Meshes.Add(MeshType.normalFish, new CommonMesh(MediaDir,"fish"));
             Meshes.Add(MeshType.yellowFish, new CommonMesh(MediaDir,"yellow_fish"));
+            Meshes.Add(MeshType.alga, new CommonMesh(MediaDir,"alga"));
+            Meshes.Add(MeshType.alga_2, new CommonMesh(MediaDir,"new_alga"));
+            Meshes.Add(MeshType.alga_3, new CommonMesh(MediaDir,"alga_3"));
+            Meshes.Add(MeshType.alga_4, new CommonMesh(MediaDir,"alga_4"));
         }
 
         public static TgcMesh GetDuplicateMesh(MeshType meshType)

@@ -142,7 +142,12 @@ namespace TGC.Group.Model
             {
                 skyBox.Render();
                 water.Render();
-                vegetation.ForEach(vegetation => { if( inSkyBox(vegetation) ) vegetation.Render(); });
+                vegetation.ForEach(vegetation => {
+                    if (inSkyBox(vegetation))
+                    {
+                        vegetation.AlphaBlendEnable = true;
+                        vegetation.Render();
+                    } });
             }
 
             rigidBody.getListRigidBody().ForEach( rigidBody => { if ( inSkyBox(rigidBody) ) rigidBody.Render(); });
@@ -181,16 +186,25 @@ namespace TGC.Group.Model
             meshBuilder.LocateMeshesInTerrain(ref ironOre, terrain.SizeWorld(), terrain.world);
             var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 100);
             meshBuilder.LocateMeshesInTerrain(ref rock, terrain.SizeWorld(), terrain.world);
-            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 1000);
-            meshBuilder.LocateMeshesInTerrain(ref alga, terrain.SizeWorld(), terrain.world);
             var normalFish = meshBuilder.CreateNewScaledMeshes(MeshType.normalFish, 100);
             meshBuilder.LocateMeshesUpToTerrain(ref normalFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
             var yellowFish = meshBuilder.CreateNewScaledMeshes(MeshType.yellowFish, 100);
             meshBuilder.LocateMeshesUpToTerrain(ref yellowFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
+            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 500);
+            meshBuilder.LocateMeshesInTerrain(ref alga, terrain.SizeWorld(), terrain.world);
+            var alga_2 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_2, 500);
+            meshBuilder.LocateMeshesInTerrain(ref alga_2, terrain.SizeWorld(), terrain.world);
+            var alga_3 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_3, 500);
+            meshBuilder.LocateMeshesInTerrain(ref alga_3, terrain.SizeWorld(), terrain.world);
+            var alga_4 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_4, 500);
+            meshBuilder.LocateMeshesInTerrain(ref alga_4, terrain.SizeWorld(), terrain.world);
             #endregion
 
             #region Agregar meshes
             vegetation.AddRange(alga);
+            vegetation.AddRange(alga_2);
+            vegetation.AddRange(alga_3);
+            vegetation.AddRange(alga_4);
             Meshes.AddRange(normalCorals);
             Meshes.AddRange(treeCorals);
             Meshes.AddRange(spiralCorals);

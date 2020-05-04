@@ -28,8 +28,10 @@ namespace TGC.Group.Model.Bullet.Bodies
             if (Camera.isOutside) position = Camera.getOutdoorPosition();
             else position = Camera.getIndoorPosition();
 
+            #region Create rigidBody
             body = rigidBodyFactory.CreateBall(30f, 0.75f, position);
             body.CenterOfMassTransform = TGCMatrix.Translation(position).ToBulletMatrix();
+            #endregion
         }
 
         public override void Update(TgcD3dInput input, float elapsedTime)
@@ -90,7 +92,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             if (Camera.isOutside)
                 body.CenterOfMassTransform = TGCMatrix.Translation(indoorPosition).ToBulletMatrix();
-            else 
+            else
                 body.CenterOfMassTransform = TGCMatrix.Translation(outdoorPosition).ToBulletMatrix();
 
             Camera.position = new TGCVector3(body.CenterOfMassPosition);

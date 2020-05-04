@@ -9,6 +9,8 @@ using TGC.Core.Shaders;
 using TGC.Core.Sound;
 using TGC.Core.Textures;
 using TGC.Group.Model;
+using System.Drawing;
+using Microsoft.DirectX.Direct3D;
 
 namespace TGC.Group.Form
 {
@@ -24,7 +26,16 @@ namespace TGC.Group.Form
         public GameForm()
         {
             InitializeComponent();
+            
+            WindowState = FormWindowState.Normal;
+            FormBorderStyle = FormBorderStyle.None;
+            WindowState = FormWindowState.Maximized;
+
+            Image = new Bitmap(Game.Default.MediaDirectory + @"Imagenes\PRE_CARGA_INICIAL.jpg");
+            panel3D.BackgroundImage = Image;
         }
+
+        private Bitmap Image { get; set; }
 
         /// <summary>
         ///     Ejemplo del juego a correr
@@ -48,10 +59,7 @@ namespace TGC.Group.Form
 
         private void GameForm_Load(object sender, EventArgs e)
         {
-            //FullScreen, van en este orden para que queda oculta la barra de Windows.
-            WindowState = FormWindowState.Normal;
-            FormBorderStyle = FormBorderStyle.None;
-            WindowState = FormWindowState.Maximized;
+            
 
             //OriginalBorderStyle
             //this.FormBorderStyle = FormBorderStyle.Sizable;
@@ -81,7 +89,7 @@ namespace TGC.Group.Form
         ///     Inicio todos los objetos necesarios para cargar el ejemplo y directx.
         /// </summary>
         public void InitGraphics()
-        {
+        {         
             //Se inicio la aplicación
             ApplicationRunning = true;
 
@@ -131,8 +139,6 @@ namespace TGC.Group.Form
                     if (ApplicationActive())
                     {
                         Modelo.Tick();
-                        //Modelo.Update();
-                        //Modelo.Render();
                         if (Input.keyDown(Key.Escape)) Close(); // TODO Cambiar cuando haya inventario y menu
                     }
                     else
@@ -181,6 +187,7 @@ namespace TGC.Group.Form
                 Modelo.DirectSound = DirectSound;
                 Modelo.Input = Input;
                 Modelo.Init();
+                Image.Dispose();
                 panel3D.Focus();
             }
             catch (Exception e)
