@@ -15,6 +15,12 @@ using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Watercraft;
 using TGC.Group.Utils;
 using static TGC.Group.Model.Terrains.Terrain;
+using TGC.Core.Collision;
+using System.Dynamic;
+using TGC.Core.BoundingVolumes;
+using TGC.Core.Geometry;
+using TGC.Group.Model.Meshes;
+using TGC.Core.Input;
 
 namespace TGC.Group.Model
 {
@@ -44,6 +50,12 @@ namespace TGC.Group.Model
         private CameraFPS camera;
         private readonly PhysicalWorld physicalworld = PhysicalWorld.Instance;
         private Bullet.RigidBody rigidBodies = new Bullet.RigidBody();
+        private TgcPickingRay pickingRay;
+        private TGCVector3 collisionPoint;
+        private Weapon weapon;
+        private List<TgcMesh> inventory = new List<TgcMesh>();
+        private bool showInventory { get; set; }
+        private bool showEnterShipInfo { get; set; }
         #endregion
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
@@ -97,6 +109,16 @@ namespace TGC.Group.Model
             physicalworld.addAllDynamicsWorld();
 
             #endregion
+
+            #region PickingRay
+            pickingRay = new TgcPickingRay(Input);
+            #endregion
+
+            #region Arma
+            weapon = new Weapon(MediaDir, ShadersDir);
+            weapon.Init();
+            #endregion
+
         }
 
         public override void Update()
@@ -109,6 +131,56 @@ namespace TGC.Group.Model
 
             if (Input.keyPressed(Key.F))
                 showDebugInfo = !showDebugInfo;
+
+            if (Input.keyPressed(Key.E) && CameraInRoom())
+            {
+                camera.TeleportCamera(Constants.OUTSIDE_SHIP_POSITION);
+            }
+
+
+            if (CameraNearShip())
+            {
+                showEnterShipInfo = !showEnterShipInfo;
+
+                if (Input.keyPressed(Key.E))
+                {
+                    camera.TeleportCamera(Constants.INSIDE_SHIP_POSITION);
+                }
+            }
+            else
+            {
+                showEnterShipInfo = false;
+            }
+
+
+            if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+            {
+                bool selected;
+                pickingRay.updateRay();
+                foreach (var mineral in Meshes)
+                {
+
+                    var aabb = mineral.BoundingBox;
+
+                    //Ejecutar test, si devuelve true se carga el punto de colision collisionPoint
+                    selected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabb, out collisionPoint);
+                    if (selected && Math.Sqrt(TGCVector3.LengthSq(camera.Position, collisionPoint)) < 500)
+                    {
+                        inventory.Add(mineral);
+                        Meshes.Remove(mineral);
+                        break;
+                    }
+
+
+                }
+
+            }
+
+            if (Input.keyPressed(Key.J))
+            {
+                showInventory = !showInventory;
+            }
+
 
             #endregion
         }
@@ -148,6 +220,15 @@ namespace TGC.Group.Model
                              0, 160, Color.Red);
             }
 
+            if (showEnterShipInfo)
+            {
+                DrawText.drawText("PRESIONA E PARA ENTRAR A LA NAVE", 500, 400, Color.White);
+            }
+
+            if (showInventory)
+            {
+                DrawText.drawText("INVENTARIO:" + inventory.Count, 500, 300, Color.White);
+            }
             #endregion
 
             #region Renderizado
@@ -156,10 +237,11 @@ namespace TGC.Group.Model
             {
                 skyBox.Render();
                 water.Render();
-                vegetation.ForEach(vegetation => { if( inSkyBox(vegetation) ) vegetation.Render(); });
+                vegetation.ForEach(vegetation => { if (inSkyBox(vegetation)) vegetation.Render(); });
             }
 
-            rigidBodies.listRigidBody.ForEach( rigidBody => { if ( inSkyBox(rigidBody) ) rigidBody.Render(); });
+            rigidBodies.listRigidBody.ForEach(rigidBody => { if (inSkyBox(rigidBody)) rigidBody.Render(); });
+            weapon.Render();
 
             #endregion
 
@@ -174,6 +256,8 @@ namespace TGC.Group.Model
             skyBox.Dispose();
             vegetation.ForEach(vegetation => vegetation.Dispose());
             MeshDuplicator.DisposeOriginalMeshes();
+            weapon.Dispose();
+
             #endregion
         }
 
@@ -225,7 +309,7 @@ namespace TGC.Group.Model
         {
             if (rigidBody.isTerrain || rigidBody.isIndoorShip)
                 return true;
-            
+
             var posX = rigidBody.rigidBody.CenterOfMassPosition.X;
             var posZ = rigidBody.rigidBody.CenterOfMassPosition.Z;
             return (posX < skyBox.perimeter.xMax && posX > skyBox.perimeter.xMin &&
@@ -237,16 +321,14 @@ namespace TGC.Group.Model
         private bool CameraInRoom()
         {
             float delta = 300;
-            return ship.IndoorMesh.Position.Y - delta < camera.position.Y &&
-                   camera.position.Y < ship.IndoorMesh.Position.Y + delta;
+            return ship.OutdoorMesh.Position.Y - delta < camera.position.Y &&
+                   camera.position.Y < ship.OutdoorMesh.Position.Y + delta;
         }
 
-        private bool CameraOutRoom()
+        private bool CameraNearShip()
         {
-            var delta = 50;
-            return ship.OutdoorMesh.Position.Y - delta < camera.position.Y &&
-                 camera.position.Y < ship.OutdoorMesh.Position.Y + delta;
-
+            return TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, ship.OutdoorMesh.BoundingBox, out collisionPoint) &&
+                 Math.Sqrt(TGCVector3.LengthSq(camera.Position, collisionPoint)) < 500;
         }
 
         #endregion

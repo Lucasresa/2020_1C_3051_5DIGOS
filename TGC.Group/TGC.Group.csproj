@@ -114,6 +114,7 @@
     <Compile Include="Model\MeshBuilders\MeshDuplicator.cs" />
     <Compile Include="Model\MeshBuilders\MeshType.cs" />
     <Compile Include="Model\Meshes\Shark.cs" />
+    <Compile Include="Model\Meshes\Weapon.cs" />
     <Compile Include="Model\Terrains\Sky.cs" />
     <Compile Include="Model\Terrains\Terrain.cs" />
     <Compile Include="Model\Terrains\Water.cs" />
