@@ -187,7 +187,6 @@ namespace TGC.Group.Form
                 Modelo.DirectSound = DirectSound;
                 Modelo.Input = Input;
                 Modelo.Init();
-                Image.Dispose();
                 panel3D.Focus();
             }
             catch (Exception e)
