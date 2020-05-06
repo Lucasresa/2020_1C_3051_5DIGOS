@@ -42,24 +42,33 @@ namespace TGC.Group.Model.Bullet.Bodies
             #region Movimiento 
             body.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
 
+            var director = Camera.LookAt - Camera.position;
+            director.Normalize();
+
+            if (input.keyDown(Key.R))
+            {
+                body.LinearVelocity = Vector3.Zero;
+                body.AngularVelocity = Vector3.Zero;
+            }
+
             if (input.keyDown(Key.W))
             {
-                body.ApplyCentralImpulse(-strength * directorz.ToBulletVector3());
+                body.ApplyCentralImpulse(strength * director.ToBulletVector3());
             }
 
             if (input.keyDown(Key.S))
             {
-                body.ApplyCentralImpulse(strength * directorz.ToBulletVector3());
+                body.ApplyCentralImpulse(strength * director.ToBulletVector3());
             }
 
             if (input.keyDown(Key.A))
             {
-                body.ApplyCentralImpulse(-strength * directorx.ToBulletVector3());
+                body.ApplyCentralImpulse(strength * director.ToBulletVector3());
             }
 
             if (input.keyDown(Key.D))
             {
-                body.ApplyCentralImpulse(strength * directorx.ToBulletVector3());
+                body.ApplyCentralImpulse(strength * director.ToBulletVector3());
             }
 
             if (input.keyPressed(Key.Space))
