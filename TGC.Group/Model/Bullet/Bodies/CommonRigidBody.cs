@@ -24,9 +24,9 @@ namespace TGC.Group.Model.Bullet.Bodies
         #region Metodos
         public override void Init()
         {
-            rigidBody = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
-            rigidBody.CenterOfMassTransform = TGCMatrix.Translation(Mesh.Position).ToBulletMatrix();
-            rigidBody.CollisionShape.LocalScaling = Scale;
+            body = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
+            body.CenterOfMassTransform = TGCMatrix.Translation(Mesh.Position).ToBulletMatrix();
+            body.CollisionShape.LocalScaling = Scale;
         }
         
         public override void Render()
@@ -36,9 +36,15 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public override void Dispose()
         {
-            rigidBody.Dispose();
+            body.Dispose();
             Mesh.Dispose();
         }
+
+        public override TgcMesh getMesh()
+        {
+            return Mesh;
+        }
+
         #endregion
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.DirectX.Direct3D;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TGC.Core.Mathematica;
@@ -14,6 +15,7 @@ namespace TGC.Group.Model.MeshBuilders
         private int meshTerrainOffset = 300;
 
         private TGCVector3 scale = new TGCVector3(10, 10, 10);
+        private TGCVector3 scale_vegetation = new TGCVector3(7, 7, 7);
 
         public int MeshTerrainOffset { set { meshTerrainOffset = value; } }
 
@@ -31,9 +33,17 @@ namespace TGC.Group.Model.MeshBuilders
         public TgcMesh CreateNewScaledMesh(MeshType meshType)
         {
             var scaledMesh = CreateNewMeshCopy(meshType);
-            if (meshType == MeshType.alga) scaledMesh.AlphaBlendEnable = true;
-            scaledMesh.Transform = TGCMatrix.Scaling(scale);
+            if(isVegetation(meshType))
+                scaledMesh.Transform = TGCMatrix.Scaling(scale_vegetation);
+            else
+                scaledMesh.Transform = TGCMatrix.Scaling(scale);
             return scaledMesh;
+        }
+
+        private bool isVegetation(MeshType meshType)
+        {
+            return ( meshType == MeshType.alga || meshType == MeshType.alga_2 || 
+                     meshType == MeshType.alga_3 || meshType == MeshType.alga_4 );
         }
 
         public List<TgcMesh> CreateNewScaledMeshes(MeshType meshType, int quantity)

@@ -26,16 +26,6 @@ namespace TGC.Group.Model
             Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + MeshName + "-TgcScene.xml").Meshes[0];
             Mesh.Name = MeshName;
         }
-
-        public virtual void Render()
-        {
-            Mesh.Render();
-        }
-
-        public virtual void Dispose()
-        {
-            Mesh.Dispose();
-        }
-        #endregion
+	#endregion
     }
 }

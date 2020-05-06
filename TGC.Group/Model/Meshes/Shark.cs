@@ -18,6 +18,7 @@ namespace TGC.Group.Model.Sharky
             FILE_NAME = "shark-TgcScene.xml";
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
+            LoadShark();
         }
         #endregion
 
@@ -26,16 +27,6 @@ namespace TGC.Group.Model.Sharky
         {
             Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
         }
-
-        public virtual void Render()
-        {
-            Mesh.Render();
-        }
-
-        public virtual void Dispose()
-        {
-            Mesh.Dispose();
-        }
-        #endregion
+	#endregion
     }
 }

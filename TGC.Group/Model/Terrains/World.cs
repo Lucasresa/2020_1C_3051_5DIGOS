@@ -16,11 +16,13 @@ namespace TGC.Group.Model.Terrains
 
         private string MediaDir;
         private string ShadersDir;
+        private TGCVector3 Position;
 
-        public World(string mediaDir, string shadersDir)
+        public World(string mediaDir, string shadersDir, TGCVector3 position)
         {
             MediaDir = mediaDir;
             ShadersDir = mediaDir;
+            Position = position;
         }
 
         public virtual void Render()
@@ -33,10 +35,10 @@ namespace TGC.Group.Model.Terrains
             world.Dispose();
         }
 
-        public virtual void LoadWorld(TGCVector3 position)
+        public virtual void LoadWorld()
         {
-            world.loadHeightmap(MediaDir + FILE_HEIGHTMAPS, SCALEXZ, SCALEY, position);
-            world.loadTexture(MediaDir + FILE_TEXTURES);
+            world.loadHeightmap(MediaDir + FILE_HEIGHTMAPS, SCALEXZ, SCALEY, Position);
+            world.loadTexture(MediaDir + FILE_TEXTURES);            
         }
 
         public virtual Perimeter SizeWorld()

@@ -15,10 +15,10 @@ namespace TGC.Group.Utils
         public float rotationSpeed = 0.1f;
         public float movementSpeed = 500f;
         public float jumpSpeed = 500f;
-        public TGCVector3 position = new TGCVector3(1300, 3505, 20);
+        public TGCVector3 position;
         public bool isOutside = false;
 
-        private TgcD3dInput input { get; }
+        private TgcD3dInput Input { get; }
         private Point mouseCenter = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
         private TGCMatrix cameraRotation;
         private float latitude = FastMath.PI_HALF;
@@ -26,8 +26,8 @@ namespace TGC.Group.Utils
         private TGCVector3 directionView = new TGCVector3(0, 0.1f, -1);
         private TGCVector3 translation = TGCVector3.Empty;
 
-        private TGCVector3 positionInsideShip;
-        private TGCVector3 positionOutsideShip;
+        private TGCVector3 indoorPosition;
+        private TGCVector3 outdoorPosition;
         
         protected TGCVector3 moveX = new TGCVector3(1, 0, 0);
         protected TGCVector3 moveY = new TGCVector3(0, 1, 0);
@@ -38,50 +38,46 @@ namespace TGC.Group.Utils
         #endregion
 
         #region Constructores
-        public CameraFPS(TgcD3dInput input)
+
+        public CameraFPS(TgcD3dInput input, TGCVector3 indoorPosition, TGCVector3 outdoorPosition)
         {
-            this.input = input;
+            Input = input;
+            setShipPosition(indoorPosition, outdoorPosition);
             cameraRotation = TGCMatrix.RotationX(latitude) * TGCMatrix.RotationY(longitude);
-            Position = position;
         }
 
-        public CameraFPS(TgcD3dInput input, TGCVector3 pos) : this(input)
-        {
-            position = pos;
-            cameraRotation = TGCMatrix.RotationX(latitude) * TGCMatrix.RotationY(longitude);
-        }
         #endregion
 
         public void setShipPosition(TGCVector3 inside, TGCVector3 outside)
         {
-            positionInsideShip = inside;
-            positionOutsideShip = outside;
+            indoorPosition = inside;
+            outdoorPosition = outside;
         }
 
-        public TGCVector3 getShipInsidePosition()
+        public TGCVector3 getIndoorPosition()
         {
-            return positionInsideShip;
+            return indoorPosition;
         }
 
-        public TGCVector3 getShipOutsidePosition()
+        public TGCVector3 getOutdoorPosition()
         {
-            return positionOutsideShip;
+            return outdoorPosition;
         }
 
         #region Desplazamiento de la Camara
         private void CameraTranslate()
         {
-            if (input.keyDown(Key.W)) translation += moveZ * -movementSpeed;
+            if (Input.keyDown(Key.W)) translation += moveZ * -movementSpeed;
 
-            if (input.keyDown(Key.S)) translation += moveZ * movementSpeed;
+            if (Input.keyDown(Key.S)) translation += moveZ * movementSpeed;
 
-            if (input.keyDown(Key.D)) translation += moveX * -movementSpeed;
+            if (Input.keyDown(Key.D)) translation += moveX * -movementSpeed;
 
-            if (input.keyDown(Key.A)) translation += moveX * movementSpeed;
+            if (Input.keyDown(Key.A)) translation += moveX * movementSpeed;
 
-            if (input.keyDown(Key.Space)) translation += moveY * jumpSpeed;
+            if (Input.keyDown(Key.Space)) translation += moveY * jumpSpeed;
 
-            if (input.keyDown(Key.LeftControl)) translation += moveY * -jumpSpeed;
+            if (Input.keyDown(Key.LeftControl)) translation += moveY * -jumpSpeed;
 
         }
         #endregion
@@ -90,8 +86,8 @@ namespace TGC.Group.Utils
 
         private void CameraRotation()
         {
-            latitude -= -input.XposRelative * rotationSpeed;
-            longitude -= input.YposRelative * rotationSpeed;
+            latitude -= -Input.XposRelative * rotationSpeed;
+            longitude -= Input.YposRelative * rotationSpeed;
             longitude = FastMath.Clamp(longitude, limitMin, limitMax);
 
             cameraRotation = TGCMatrix.RotationX(longitude) * TGCMatrix.RotationY(latitude);

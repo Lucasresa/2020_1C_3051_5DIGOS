@@ -21,11 +21,11 @@ namespace TGC.Group.Model.Meshes
             FILE_NAME = "EspadaDoble-TgcScene.xml";
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
+            LoadWeapon();
         }
 
         public virtual void Render()
         {
-            Mesh.UpdateMeshTransform();
             Mesh.Render();
         }
 
@@ -34,12 +34,10 @@ namespace TGC.Group.Model.Meshes
             Mesh.Dispose();
         }
 
-        public void Init()
+        private void LoadWeapon()
         {
             Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
-            Mesh.Position = position;
-            Mesh.Scale = scale;
+            Mesh.Transform = TGCMatrix.Scaling(scale) * TGCMatrix.Translation(position);
         }
-
     }
 }

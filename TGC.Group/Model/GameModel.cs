@@ -8,19 +8,14 @@ using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
-using TGC.Group.Model.Bullet.Bodies;
+using TGC.Group.Model.Bullet;
 using TGC.Group.Model.MeshBuilders;
 using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Watercraft;
 using TGC.Group.Utils;
-using static TGC.Group.Model.Terrains.Terrain;
 using TGC.Core.Collision;
-using System.Dynamic;
-using TGC.Core.BoundingVolumes;
-using TGC.Core.Geometry;
-using TGC.Group.Model.Meshes;
-using TGC.Core.Input;
+using static TGC.Group.Model.Terrains.Terrain;
 
 namespace TGC.Group.Model
 {
@@ -37,10 +32,10 @@ namespace TGC.Group.Model
 
         #region Atributos
         private float time;
+        private Perimeter currentCameraArea;
         private List<TgcMesh> vegetation = new List<TgcMesh>();
         private List<TgcMesh> Meshes = new List<TgcMesh>();
         private Sky skyBox;
-        private Perimeter currentCameraArea;
         private Ship ship;
         private Terrain terrain;
         private Water water;
@@ -49,10 +44,9 @@ namespace TGC.Group.Model
         private bool showDebugInfo { get; set; }
         private CameraFPS camera;
         private readonly PhysicalWorld physicalworld = PhysicalWorld.Instance;
-        private Bullet.RigidBody rigidBodies = new Bullet.RigidBody();
+
+        private RigidBody rigidBody = new RigidBody();
         private TgcPickingRay pickingRay;
-        private TGCVector3 collisionPoint;
-        private Weapon weapon;
         private List<TgcMesh> inventory = new List<TgcMesh>();
         private bool showInventory { get; set; }
         private bool showEnterShipInfo { get; set; }
@@ -72,87 +66,51 @@ namespace TGC.Group.Model
         public override void Init()
         {
             #region Camera 
-            Camera = new CameraFPS(Input, Constants.INSIDE_SHIP_POSITION);
-            camera = (CameraFPS)Camera;
-            camera.setShipPosition(Constants.INSIDE_SHIP_POSITION, Constants.OUTSIDE_SHIP_POSITION);
+            Camera = new CameraFPS(Input, Constants.INSIDE_SHIP_POSITION, Constants.OUTSIDE_SHIP_POSITION);
+            camera = (CameraFPS)Camera;            
             #endregion
 
             #region Mundo            
-            terrain = new Terrain(MediaDir, ShadersDir);
-            terrain.LoadWorld(TGCVector3.Empty);
-            terrain.splitToArea();
-            water = new Water(MediaDir, ShadersDir);
-            water.LoadWorld(new TGCVector3(0, Constants.WATER_HEIGHT, 0));
+            terrain = new Terrain(MediaDir, ShadersDir, TGCVector3.Empty);
+            water = new Water(MediaDir, ShadersDir, new TGCVector3(0, Constants.WATER_HEIGHT, 0));
             skyBox = new Sky(MediaDir, ShadersDir, camera);
-            skyBox.LoadSkyBox();
             #endregion
 
-            #region Nave
+            #region Meshes
             ship = new Ship(MediaDir, ShadersDir);
-            ship.LoadShip();
-            #endregion
-
-            #region Enemigo
             shark = new Shark(MediaDir, ShadersDir);
-            shark.LoadShark();
-            #endregion
-
-            #region Vegetacion del mundo
+            
             MeshDuplicator.InitOriginalMeshes();
             meshInitializer();
             #endregion
 
             #region Mundo fisico
-
-            rigidBodies.Initializer(terrain, camera, shark, ship, Meshes);
-            physicalworld.addInitialRigidBodies(rigidBodies.listRigidBody);
-            physicalworld.addAllDynamicsWorld();
-
+            rigidBody.Initializer(terrain, camera, shark, ship, Meshes);
+            physicalworld.addInitialRigidBodies(rigidBody.getListRigidBody());
             #endregion
 
             #region PickingRay
             pickingRay = new TgcPickingRay(Input);
             #endregion
 
-            #region Arma
-            weapon = new Weapon(MediaDir, ShadersDir);
-            weapon.Init();
-            #endregion
-
         }
 
         public override void Update()
         {
-            physicalworld.Update(Input, ElapsedTime, TimeBetweenUpdates);
-
             currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
+
+            physicalworld.Update(Input, ElapsedTime, TimeBetweenUpdates);
 
             #region Teclas
 
             if (Input.keyPressed(Key.F))
                 showDebugInfo = !showDebugInfo;
-
-            if (Input.keyPressed(Key.E) && CameraInRoom())
-            {
-                camera.TeleportCamera(Constants.OUTSIDE_SHIP_POSITION);
-            }
-
-
-            if (CameraNearShip())
-            {
+            
+            if (characterNearShip())
                 showEnterShipInfo = !showEnterShipInfo;
+            
 
-                if (Input.keyPressed(Key.E))
-                {
-                    camera.TeleportCamera(Constants.INSIDE_SHIP_POSITION);
-                }
-            }
-            else
-            {
-                showEnterShipInfo = false;
-            }
-
-
+            /*
             if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
             {
                 bool selected;
@@ -174,12 +132,10 @@ namespace TGC.Group.Model
 
                 }
 
-            }
+            }*/
 
             if (Input.keyPressed(Key.J))
-            {
                 showInventory = !showInventory;
-            }
 
 
             #endregion
@@ -205,7 +161,6 @@ namespace TGC.Group.Model
                                                 + camera.LookAt.Z.ToString() + "] ",
                                   0, 80, Color.Red);
 
-                // INFO: Con este nuevo core el elapsedTime hace cualquiera y por ende el TIME no sirve.
                 DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
 
                 DrawText.drawText("DATOS DEL AREA ACTUAL: ", 0, 130, Color.Red);
@@ -221,14 +176,11 @@ namespace TGC.Group.Model
             }
 
             if (showEnterShipInfo)
-            {
                 DrawText.drawText("PRESIONA E PARA ENTRAR A LA NAVE", 500, 400, Color.White);
-            }
 
             if (showInventory)
-            {
                 DrawText.drawText("INVENTARIO:" + inventory.Count, 500, 300, Color.White);
-            }
+
             #endregion
 
             #region Renderizado
@@ -237,11 +189,15 @@ namespace TGC.Group.Model
             {
                 skyBox.Render();
                 water.Render();
-                vegetation.ForEach(vegetation => { if (inSkyBox(vegetation)) vegetation.Render(); });
+                vegetation.ForEach(vegetation => {
+                    if (inSkyBox(vegetation))
+                    {
+                        vegetation.AlphaBlendEnable = true;
+                        vegetation.Render();
+                    } });
             }
 
-            rigidBodies.listRigidBody.ForEach(rigidBody => { if (inSkyBox(rigidBody)) rigidBody.Render(); });
-            weapon.Render();
+            rigidBody.getListRigidBody().ForEach( rigidBody => { if ( inSkyBox(rigidBody) ) rigidBody.Render(); });
 
             #endregion
 
@@ -255,15 +211,13 @@ namespace TGC.Group.Model
             water.Dispose();
             skyBox.Dispose();
             vegetation.ForEach(vegetation => vegetation.Dispose());
-            MeshDuplicator.DisposeOriginalMeshes();
-            weapon.Dispose();
-
             #endregion
         }
 
         #region Metodos Privados
         private void meshInitializer()
         {
+            #region Ubicar meshes
             var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 100);
             meshBuilder.LocateMeshesInTerrain(ref normalCorals, terrain.SizeWorld(), terrain.world);
             var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 100);
@@ -278,14 +232,25 @@ namespace TGC.Group.Model
             meshBuilder.LocateMeshesInTerrain(ref ironOre, terrain.SizeWorld(), terrain.world);
             var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 100);
             meshBuilder.LocateMeshesInTerrain(ref rock, terrain.SizeWorld(), terrain.world);
-            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 1000);
-            meshBuilder.LocateMeshesInTerrain(ref alga, terrain.SizeWorld(), terrain.world);
             var normalFish = meshBuilder.CreateNewScaledMeshes(MeshType.normalFish, 100);
             meshBuilder.LocateMeshesUpToTerrain(ref normalFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
             var yellowFish = meshBuilder.CreateNewScaledMeshes(MeshType.yellowFish, 100);
             meshBuilder.LocateMeshesUpToTerrain(ref yellowFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
+            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 200);
+            meshBuilder.LocateMeshesInTerrain(ref alga, terrain.SizeWorld(), terrain.world);
+            var alga_2 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_2, 200);
+            meshBuilder.LocateMeshesInTerrain(ref alga_2, terrain.SizeWorld(), terrain.world);
+            var alga_3 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_3, 200);
+            meshBuilder.LocateMeshesInTerrain(ref alga_3, terrain.SizeWorld(), terrain.world);
+            var alga_4 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_4, 200);
+            meshBuilder.LocateMeshesInTerrain(ref alga_4, terrain.SizeWorld(), terrain.world);
+            #endregion
 
+            #region Agregar meshes
             vegetation.AddRange(alga);
+            vegetation.AddRange(alga_2);
+            vegetation.AddRange(alga_3);
+            vegetation.AddRange(alga_4);
             Meshes.AddRange(normalCorals);
             Meshes.AddRange(treeCorals);
             Meshes.AddRange(spiralCorals);
@@ -295,6 +260,7 @@ namespace TGC.Group.Model
             Meshes.AddRange(rock);
             Meshes.AddRange(normalFish);
             Meshes.AddRange(yellowFish);
+            #endregion
         }
 
         private bool inSkyBox(TgcMesh vegetation)
@@ -305,30 +271,30 @@ namespace TGC.Group.Model
                      posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
         }
 
-        private bool inSkyBox(Bullet.RigidBody rigidBody)
+        private bool inSkyBox(RigidBody rigidBody)
         {
             if (rigidBody.isTerrain || rigidBody.isIndoorShip)
                 return true;
-
-            var posX = rigidBody.rigidBody.CenterOfMassPosition.X;
-            var posZ = rigidBody.rigidBody.CenterOfMassPosition.Z;
+            
+            var posX = rigidBody.body.CenterOfMassPosition.X;
+            var posZ = rigidBody.body.CenterOfMassPosition.Z;
             return (posX < skyBox.perimeter.xMax && posX > skyBox.perimeter.xMin &&
                      posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
         }
 
-        // TODO: Estos dos metodos hay que cambiarlos para calcular distancias con un TGCRay
-
-        private bool CameraInRoom()
+        private bool characterNearShip()
         {
-            float delta = 300;
-            return ship.OutdoorMesh.Position.Y - delta < camera.position.Y &&
-                   camera.position.Y < ship.OutdoorMesh.Position.Y + delta;
-        }
+            var character = rigidBody.getListRigidBody()[1];
 
-        private bool CameraNearShip()
-        {
-            return TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, ship.OutdoorMesh.BoundingBox, out collisionPoint) &&
-                 Math.Sqrt(TGCVector3.LengthSq(camera.Position, collisionPoint)) < 500;
+            pickingRay.updateRay();
+
+            var parte1 = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, ship.OutdoorMesh.BoundingBox, out TGCVector3 collisionPoint);
+
+            pickingRay.updateRay();
+
+            var parte2 = Math.Sqrt(TGCVector3.LengthSq(new TGCVector3(character.body.CenterOfMassPosition), collisionPoint)) < 500;
+
+            return parte1 && parte2;
         }
 
         #endregion

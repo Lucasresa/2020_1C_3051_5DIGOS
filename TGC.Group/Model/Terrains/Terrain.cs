@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TGC.Core.Mathematica;
 
 namespace TGC.Group.Model.Terrains
 {
@@ -26,12 +27,13 @@ namespace TGC.Group.Model.Terrains
 
         public Dictionary<string, Perimeter> areas = new Dictionary<string, Perimeter>();
 
-        public Terrain(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
+        public Terrain(string mediaDir, string shadersDir, TGCVector3 position) : base(mediaDir, shadersDir, position)
         {
             FILE_HEIGHTMAPS = "Heightmaps\\suelo.jpg";
             FILE_TEXTURES = "Textures\\sandy.png";
+            LoadWorld();
+            splitToArea();
         }
-
 
         public Perimeter getArea(float posX, float posZ)
         {
@@ -40,7 +42,7 @@ namespace TGC.Group.Model.Terrains
                                         .Value;
         }
 
-        public void splitToArea()
+        private void splitToArea()
         {
             Perimeter square = new Perimeter();
             int sideX = world.HeightmapData.GetLength(0);

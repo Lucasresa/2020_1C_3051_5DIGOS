@@ -9,8 +9,11 @@
         silverOre,
         goldOre,
         rock,
-        alga,
         normalFish,
-        yellowFish
+        yellowFish,
+        alga,
+        alga_2,
+        alga_3,
+        alga_4
     }
 }

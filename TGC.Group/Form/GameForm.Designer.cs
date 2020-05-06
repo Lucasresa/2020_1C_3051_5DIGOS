@@ -33,18 +33,22 @@
             // 
             // panel3D
             // 
+            this.panel3D.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.panel3D.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel3D.Location = new System.Drawing.Point(0, 0);
+            this.panel3D.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.panel3D.Name = "panel3D";
-            this.panel3D.Size = new System.Drawing.Size(784, 561);
+            this.panel3D.Size = new System.Drawing.Size(1176, 863);
             this.panel3D.TabIndex = 0;
             // 
             // GameForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 561);
+            this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.ClientSize = new System.Drawing.Size(1176, 863);
             this.Controls.Add(this.panel3D);
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.Name = "GameForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form";
