@@ -16,6 +16,7 @@ using TGC.Group.Model.Watercraft;
 using TGC.Group.Utils;
 using TGC.Core.Collision;
 using static TGC.Group.Model.Terrains.Terrain;
+using TGC.Core.Input;
 
 namespace TGC.Group.Model
 {
@@ -44,7 +45,7 @@ namespace TGC.Group.Model
         private bool showDebugInfo { get; set; }
         private CameraFPS camera;
         private readonly PhysicalWorld physicalworld = PhysicalWorld.Instance;
-
+        private TGCVector3 collisionPoint = TGCVector3.Empty;
         private RigidBody rigidBody = new RigidBody();
         private TgcPickingRay pickingRay;
         private List<TgcMesh> inventory = new List<TgcMesh>();
@@ -108,31 +109,32 @@ namespace TGC.Group.Model
             
             if (characterNearShip())
                 showEnterShipInfo = !showEnterShipInfo;
-            
 
-            /*
+
+
             if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
             {
                 bool selected;
                 pickingRay.updateRay();
-                foreach (var mineral in Meshes)
+
+                List<RigidBody> aux = new List<RigidBody>();
+
+                rigidBody.getListRigidBody().ForEach(rigidBody =>
                 {
+                    var mesh = rigidBody.getMesh();
+                    var aabb = mesh.BoundingBox;
 
-                    var aabb = mineral.BoundingBox;
-
-                    //Ejecutar test, si devuelve true se carga el punto de colision collisionPoint
                     selected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabb, out collisionPoint);
+
                     if (selected && Math.Sqrt(TGCVector3.LengthSq(camera.Position, collisionPoint)) < 500)
                     {
-                        inventory.Add(mineral);
-                        Meshes.Remove(mineral);
-                        break;
+                        inventory.Add(mesh);
+                        aux.Add(rigidBody);
                     }
+                });
 
-
-                }
-
-            }*/
+                aux.ForEach( rigidBodyAux => rigidBody.getListRigidBody().Remove(rigidBodyAux) );
+            }            
 
             if (Input.keyPressed(Key.J))
                 showInventory = !showInventory;

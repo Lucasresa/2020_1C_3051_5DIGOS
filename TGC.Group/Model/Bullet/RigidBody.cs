@@ -31,12 +31,12 @@ namespace TGC.Group.Model.Bullet
         #region Metodos
         public void Initializer(Terrain terrain, CameraFPS camera, Shark shark, Ship ship, List<TgcMesh> meshes)
         {
+            meshes.ForEach(mesh => rigidBodies.Add(new CommonRigidBody(mesh)));
             rigidBodies.Add(new TerrainRigidBody(terrain));
             rigidBodies.Add(new CharacterRigidBody(camera));
             rigidBodies.Add(new SharkRigidBody(shark));
             rigidBodies.Add(new OutdoorShipRigidBody(ship));
             rigidBodies.Add(new IndoorShipRigidBody(ship));
-            meshes.ForEach(mesh => rigidBodies.Add(new CommonRigidBody(mesh)));
             meshes.RemoveRange(0, meshes.Count);
             rigidBodies.ForEach(rigidBody => rigidBody.Init());
         }
