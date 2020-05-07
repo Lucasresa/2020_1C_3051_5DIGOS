@@ -15,15 +15,20 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             public static float speed = 450f;
             public static TGCVector3 cameraHeight = new TGCVector3(0, 85, 0);
+            public static TGCVector3 planeDirector { get {
+                    var director = new TGCVector3(-1, 0, 0);
+                    director.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
+                    return director; 
+                } }
             public static float capsuleSize = 160f;
             public static float capsuleRadius = 40f;
-
         }
 
         private CameraFPS Camera;
         private TGCVector3 position;
         private TGCVector3 indoorPosition;
         private TGCVector3 outdoorPosition;
+        private float prevLatitude;
 
         public CharacterRigidBody(CameraFPS camera)
         {
@@ -36,6 +41,8 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             if (Camera.isOutside) position = Camera.getOutdoorPosition();
             else position = Camera.getIndoorPosition();
+            prevLatitude = Camera.Latitude;
+            Constants.planeDirector.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
 
             #region Create rigidBody
             body = rigidBodyFactory.CreateCapsule(Constants.capsuleRadius, Constants.capsuleSize, position, 1f, false);
@@ -55,6 +62,10 @@ namespace TGC.Group.Model.Bullet.Bodies
             var director = Camera.LookAt - Camera.position;
             director.Normalize();
 
+            var sideRotation = Camera.Latitude - prevLatitude;
+            var sideDirector = Constants.planeDirector;
+            sideDirector.TransformCoordinate(TGCMatrix.RotationY(sideRotation));
+
             if (!isOutOfWater())
             {
                 if (input.keyDown(Key.W))
@@ -69,14 +80,12 @@ namespace TGC.Group.Model.Bullet.Bodies
 
                 if (input.keyDown(Key.A))
                 {
-                    director.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
-                    body.LinearVelocity = director.ToBulletVector3() * -speed;
+                    body.LinearVelocity = sideDirector.ToBulletVector3() * -speed;
                 }
 
                 if (input.keyDown(Key.D))
                 {
-                    director.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
-                    body.LinearVelocity = director.ToBulletVector3() * speed;
+                    body.LinearVelocity = sideDirector.ToBulletVector3() * speed;
                 }
 
                 if (input.keyDown(Key.Space))
