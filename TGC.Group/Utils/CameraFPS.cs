@@ -102,7 +102,7 @@ namespace TGC.Group.Utils
                 isOutside = true;
 
             Cursor.Hide();
-            CameraTranslate();
+            //CameraTranslate();
             CameraRotation();
 
             var newPosition = TGCVector3.TransformNormal(translation * elapsedTime, cameraRotation);
