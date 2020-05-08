@@ -61,8 +61,6 @@ namespace TGC.Group.Model.Bullet.Bodies
             #region Movimiento 
             body.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
 
-            body.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
-
             var director = Camera.LookAt - Camera.position;
             director.Normalize();
 
