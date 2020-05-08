@@ -35,6 +35,8 @@ namespace TGC.Group.Utils
         protected float limitMax = FastMath.ToRad(90);
         protected float limitMin = FastMath.ToRad(-60);
 
+        public float Latitude { get { return latitude; } }
+
         #endregion
 
         #region Constructores
@@ -102,7 +104,7 @@ namespace TGC.Group.Utils
                 isOutside = true;
 
             Cursor.Hide();
-            CameraTranslate();
+            //CameraTranslate();
             CameraRotation();
 
             var newPosition = TGCVector3.TransformNormal(translation * elapsedTime, cameraRotation);

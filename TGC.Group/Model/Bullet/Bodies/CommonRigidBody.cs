@@ -39,12 +39,6 @@ namespace TGC.Group.Model.Bullet.Bodies
             body.Dispose();
             Mesh.Dispose();
         }
-
-        public override TgcMesh getMesh()
-        {
-            return Mesh;
-        }
-
         #endregion
     }
 }

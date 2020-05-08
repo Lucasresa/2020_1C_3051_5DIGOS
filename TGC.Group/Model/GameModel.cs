@@ -8,7 +8,7 @@ using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
-using TGC.Group.Model.Bullet;
+using TGC.Group.Model.Bullet.Bodies;
 using TGC.Group.Model.MeshBuilders;
 using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
@@ -33,10 +33,10 @@ namespace TGC.Group.Model
 
         #region Atributos
         private float time;
-        private Perimeter currentCameraArea;
         private List<TgcMesh> vegetation = new List<TgcMesh>();
         private List<TgcMesh> Meshes = new List<TgcMesh>();
         private Sky skyBox;
+        private Perimeter currentCameraArea;
         private Ship ship;
         private Terrain terrain;
         private Water water;
@@ -79,8 +79,13 @@ namespace TGC.Group.Model
 
             #region Meshes
             ship = new Ship(MediaDir, ShadersDir);
+            #endregion
+
+            #region Enemigo
             shark = new Shark(MediaDir, ShadersDir);
-            
+            #endregion
+
+            #region Vegetacion del mundo
             MeshDuplicator.InitOriginalMeshes();
             meshInitializer();
             #endregion
@@ -94,13 +99,14 @@ namespace TGC.Group.Model
             pickingRay = new TgcPickingRay(Input);
             #endregion
 
+
         }
 
         public override void Update()
         {
-            currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
-
             physicalworld.Update(Input, ElapsedTime, TimeBetweenUpdates);
+
+            currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
 
             #region Teclas
 
@@ -163,6 +169,7 @@ namespace TGC.Group.Model
                                                 + camera.LookAt.Z.ToString() + "] ",
                                   0, 80, Color.Red);
 
+                // INFO: Con este nuevo core el elapsedTime hace cualquiera y por ende el TIME no sirve.
                 DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
 
                 DrawText.drawText("DATOS DEL AREA ACTUAL: ", 0, 130, Color.Red);
@@ -238,13 +245,13 @@ namespace TGC.Group.Model
             meshBuilder.LocateMeshesUpToTerrain(ref normalFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
             var yellowFish = meshBuilder.CreateNewScaledMeshes(MeshType.yellowFish, 100);
             meshBuilder.LocateMeshesUpToTerrain(ref yellowFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
-            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 200);
+            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 500);
             meshBuilder.LocateMeshesInTerrain(ref alga, terrain.SizeWorld(), terrain.world);
-            var alga_2 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_2, 200);
+            var alga_2 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_2, 500);
             meshBuilder.LocateMeshesInTerrain(ref alga_2, terrain.SizeWorld(), terrain.world);
-            var alga_3 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_3, 200);
+            var alga_3 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_3, 500);
             meshBuilder.LocateMeshesInTerrain(ref alga_3, terrain.SizeWorld(), terrain.world);
-            var alga_4 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_4, 200);
+            var alga_4 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_4, 500);
             meshBuilder.LocateMeshesInTerrain(ref alga_4, terrain.SizeWorld(), terrain.world);
             #endregion
 

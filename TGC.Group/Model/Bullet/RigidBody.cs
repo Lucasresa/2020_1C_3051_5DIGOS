@@ -31,12 +31,12 @@ namespace TGC.Group.Model.Bullet
         #region Metodos
         public void Initializer(Terrain terrain, CameraFPS camera, Shark shark, Ship ship, List<TgcMesh> meshes)
         {
-            meshes.ForEach(mesh => rigidBodies.Add(new CommonRigidBody(mesh)));
             rigidBodies.Add(new TerrainRigidBody(terrain));
             rigidBodies.Add(new CharacterRigidBody(camera));
             rigidBodies.Add(new SharkRigidBody(shark));
             rigidBodies.Add(new OutdoorShipRigidBody(ship));
             rigidBodies.Add(new IndoorShipRigidBody(ship));
+            meshes.ForEach(mesh => rigidBodies.Add(new CommonRigidBody(mesh)));
             meshes.RemoveRange(0, meshes.Count);
             rigidBodies.ForEach(rigidBody => rigidBody.Init());
         }
@@ -45,8 +45,8 @@ namespace TGC.Group.Model.Bullet
         public virtual void Teleport() { }
         public virtual void Render() { }
         public virtual void Dispose() { }
+        public virtual void getMesh() { }
         public virtual void Update(TgcD3dInput input, float elapsedTime) { }
-        public virtual TgcMesh getMesh() { return null; }
 
         public List<RigidBody> getListRigidBody()
         {
