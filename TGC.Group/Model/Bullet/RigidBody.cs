@@ -22,10 +22,9 @@ namespace TGC.Group.Model.Bullet
         private List<RigidBody> rigidBodies = new List<RigidBody>();
         public bool isTerrain = false;
         public bool isIndoorShip = false;
-        #endregion
+        protected TgcMesh mesh;
 
-        #region Constructor
-        public RigidBody() { }
+        public TgcMesh Mesh { get { return mesh; } }
         #endregion
 
         #region Metodos
@@ -45,7 +44,6 @@ namespace TGC.Group.Model.Bullet
         public virtual void Teleport() { }
         public virtual void Render() { }
         public virtual void Dispose() { }
-        public virtual void getMesh() { }
         public virtual void Update(TgcD3dInput input, float elapsedTime) { }
 
         public List<RigidBody> getListRigidBody()

@@ -17,6 +17,7 @@ using TGC.Group.Utils;
 using TGC.Core.Collision;
 using static TGC.Group.Model.Terrains.Terrain;
 using TGC.Core.Input;
+using TGC.Group.Model.Bullet;
 
 namespace TGC.Group.Model
 {
@@ -127,7 +128,7 @@ namespace TGC.Group.Model
 
                 rigidBody.getListRigidBody().ForEach(rigidBody =>
                 {
-                    var mesh = rigidBody.getMesh();
+                    var mesh = rigidBody.Mesh;
                     var aabb = mesh.BoundingBox;
 
                     selected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabb, out collisionPoint);

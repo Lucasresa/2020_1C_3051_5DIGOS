@@ -10,14 +10,13 @@ namespace TGC.Group.Model.Bullet.Bodies
     class CommonRigidBody : RigidBody
     {
         #region Atributos
-        public TgcMesh Mesh;
         public Vector3 Scale = new Vector3(10, 10, 10);
         #endregion
 
         #region Constructor
         public CommonRigidBody(TgcMesh mesh)
         {
-            Mesh = mesh;
+            this.mesh = mesh;
         }
         #endregion
 
@@ -31,13 +30,13 @@ namespace TGC.Group.Model.Bullet.Bodies
         
         public override void Render()
         {
-            Mesh.Render();
+            mesh.Render();
         }
 
         public override void Dispose()
         {
             body.Dispose();
-            Mesh.Dispose();
+            mesh.Dispose();
         }
         #endregion
     }

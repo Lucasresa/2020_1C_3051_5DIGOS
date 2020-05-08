@@ -59,7 +59,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             body.ActivationState = ActivationState.ActiveTag;
 
             #region Movimiento 
-            rigidBody.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
+            body.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
 
             body.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
 

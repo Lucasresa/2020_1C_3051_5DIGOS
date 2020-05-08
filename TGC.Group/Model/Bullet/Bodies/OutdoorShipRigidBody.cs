@@ -7,7 +7,6 @@ namespace TGC.Group.Model.Bullet.Bodies
     class OutdoorShipRigidBody : RigidBody
     {
         #region Atributos
-        public TgcMesh Mesh;
         private TGCVector3 scale = new TGCVector3(10, 10, 10);
         private TGCVector3 position = new TGCVector3(530, 3630, 100);
         #endregion
@@ -15,7 +14,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         #region Constructor
         public OutdoorShipRigidBody(Ship ship)
         {
-            Mesh = ship.OutdoorMesh;
+            this.mesh = ship.OutdoorMesh;
         }
         #endregion
 
@@ -30,13 +29,13 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public override void Render()
         {
-            Mesh.Render();
+            mesh.Render();
         }
 
         public override void Dispose()
         {
             body.Dispose();
-            Mesh.Dispose();
+            mesh.Dispose();
         }
         #endregion
     }

@@ -10,7 +10,6 @@ namespace TGC.Group.Model.Bullet.Bodies
     class SharkRigidBody : RigidBody
     {
         #region Atributos
-        private TgcMesh Mesh;
         private TGCVector3 scale = new TGCVector3(5, 5, 5);
         private TGCVector3 position = new TGCVector3(-2885, 1220, -525);
         #endregion
@@ -19,7 +18,7 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public SharkRigidBody(Shark shark)
         {
-            Mesh = shark.Mesh;
+            this.mesh = shark.Mesh;
         }
 
         #endregion
@@ -51,13 +50,13 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public override void Render()
         {
-            Mesh.Render();
+            mesh.Render();
         }
 
         public override void Dispose()
         {
             body.Dispose();
-            Mesh.Dispose();
+            mesh.Dispose();
         }
 
         #endregion
