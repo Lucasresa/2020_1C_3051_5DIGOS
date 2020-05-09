@@ -32,7 +32,7 @@ namespace TGC.Group.Model.Bullet
         {
             rigidBodies.Add(new TerrainRigidBody(terrain));
             rigidBodies.Add(new CharacterRigidBody(camera));
-            rigidBodies.Add(new SharkRigidBody(shark, skybox));
+            rigidBodies.Add(new SharkRigidBody(shark, skybox, terrain));
             rigidBodies.Add(new OutdoorShipRigidBody(ship));
             rigidBodies.Add(new IndoorShipRigidBody(ship));
             meshes.ForEach(mesh => rigidBodies.Add(new CommonRigidBody(mesh)));

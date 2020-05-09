@@ -14,7 +14,7 @@ namespace TGC.Group.Model.Bullet.Bodies
     {
         struct Constants
         {
-            public static float speed = 450f;
+            public static float speed = 1000f;
             public static TGCVector3 cameraHeight = new TGCVector3(0, 85, 0);
             public static TGCVector3 planeDirector { get {
                     var director = new TGCVector3(-1, 0, 0);

@@ -261,6 +261,8 @@ namespace TGC.Group.Model
             vegetation.AddRange(alga_2);
             vegetation.AddRange(alga_3);
             vegetation.AddRange(alga_4);
+            vegetation.AddRange(normalFish);
+            vegetation.AddRange(yellowFish);
             Meshes.AddRange(normalCorals);
             Meshes.AddRange(treeCorals);
             Meshes.AddRange(spiralCorals);
@@ -268,8 +270,6 @@ namespace TGC.Group.Model
             Meshes.AddRange(silverOre);
             Meshes.AddRange(ironOre);
             Meshes.AddRange(rock);
-            Meshes.AddRange(normalFish);
-            Meshes.AddRange(yellowFish);
             #endregion
         }
 
