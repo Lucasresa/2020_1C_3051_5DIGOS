@@ -2,14 +2,9 @@
 using BulletSharp.Math;
 using Microsoft.DirectX.DirectInput;
 using System;
-using System.Drawing;
-using System.Security.Policy;
-using System.Windows.Forms;
 using TGC.Core.BoundingVolumes;
-using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
-using TGC.Core.Text;
 using TGC.Group.Model.Draw;
 using TGC.Group.Utils;
 
@@ -21,11 +16,15 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             public static float speed = 450f;
             public static TGCVector3 cameraHeight = new TGCVector3(0, 85, 0);
-            public static TGCVector3 planeDirector { get {
+            public static TGCVector3 planeDirector
+            {
+                get
+                {
                     var director = new TGCVector3(-1, 0, 0);
                     director.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
-                    return director; 
-                } }
+                    return director;
+                }
+            }
             public static float capsuleSize = 160f;
             public static float capsuleRadius = 40f;
         }
@@ -37,8 +36,9 @@ namespace TGC.Group.Model.Bullet.Bodies
         private TGCVector3 position;
         private TGCVector3 indoorPosition;
         private TGCVector3 outdoorPosition;
-        private CharacterStatus status;        
         private float prevLatitude;
+
+        private CharacterStatus status;        
 
         public CharacterRigidBody(CameraFPS camera)
         {
@@ -95,14 +95,12 @@ namespace TGC.Group.Model.Bullet.Bodies
 
                 if (input.keyDown(Key.A))
                 {
-                    director.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
-                    body.LinearVelocity = director.ToBulletVector3() * -speed;
+                    body.LinearVelocity = sideDirector.ToBulletVector3() * -speed;
                 }
 
                 if (input.keyDown(Key.D))
                 {
-                    director.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
-                    body.LinearVelocity = director.ToBulletVector3() * speed;
+                    body.LinearVelocity = sideDirector.ToBulletVector3() * speed;
                 }
 
                 if (input.keyDown(Key.Space))
@@ -118,7 +116,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             else
                 body.ApplyCentralImpulse(Vector3.UnitY * -5);
 
-            if (input.keyUp(Key.W) || input.keyUp(Key.S) || input.keyUp(Key.A) || input.keyUp(Key.D) 
+            if (input.keyUp(Key.W) || input.keyUp(Key.S) || input.keyUp(Key.A) || input.keyUp(Key.D)
                  || input.keyUp(Key.LeftControl) || input.keyUp(Key.Space))
             {
                 body.LinearVelocity = Vector3.Zero;

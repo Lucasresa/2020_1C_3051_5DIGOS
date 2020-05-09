@@ -28,7 +28,7 @@ namespace TGC.Group.Utils
 
         private TGCVector3 indoorPosition;
         private TGCVector3 outdoorPosition;
-        
+
         protected TGCVector3 moveX = new TGCVector3(1, 0, 0);
         protected TGCVector3 moveY = new TGCVector3(0, 1, 0);
         protected TGCVector3 moveZ = new TGCVector3(0, 0, 1);
@@ -65,7 +65,7 @@ namespace TGC.Group.Utils
         {
             return outdoorPosition;
         }
-
+        
         #region Desplazamiento de la Camara
         private void CameraTranslate()
         {
@@ -104,7 +104,6 @@ namespace TGC.Group.Utils
                 isOutside = true;
 
             Cursor.Hide();
-            //CameraTranslate();
             CameraRotation();
 
             var newPosition = TGCVector3.TransformNormal(translation * elapsedTime, cameraRotation);

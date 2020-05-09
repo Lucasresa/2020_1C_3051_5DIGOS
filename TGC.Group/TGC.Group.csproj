@@ -108,6 +108,8 @@
     <Compile Include="Model\Bullet\RigidBody.cs" />
     <Compile Include="Model\Bullet\Bodies\SharkRigidBody.cs" />
     <Compile Include="Model\Bullet\Bodies\TerrainRigidBody.cs" />
+    <Compile Include="Model\Draw\Bar.cs" />
+    <Compile Include="Model\Draw\CharacterStatus.cs" />
     <Compile Include="Model\Meshes\CommonMesh.cs" />
     <Compile Include="Model\GameModel.cs" />
     <Compile Include="Model\MeshBuilders\MeshBuilder.cs" />
@@ -122,6 +124,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CameraFPS.cs" />
+    <Compile Include="Utils\CustomSprite.cs" />
     <Compile Include="Utils\PhysicalWorld.cs" />
     <Compile Include="Utils\SmartTerrain.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
@@ -193,11 +196,17 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Media\alga-TgcScene.xml" />
+    <Content Include="Media\alga_3-TgcScene.xml" />
+    <Content Include="Media\alga_4-TgcScene.xml" />
     <Content Include="Media\fish-TgcScene.xml" />
     <Content Include="Media\gold-TgcScene.xml" />
     <Content Include="Media\Heightmaps\oceano.jpg" />
     <Content Include="Media\Heightmaps\suelo.jpg" />
+    <Content Include="Media\Imagenes\barra_oxigeno.png" />
+    <Content Include="Media\Imagenes\barra_vida.png" />
+    <Content Include="Media\Imagenes\PRE_CARGA_INICIAL.jpg" />
     <Content Include="Media\iron-TgcScene.xml" />
+    <Content Include="Media\new_alga-TgcScene.xml" />
     <Content Include="Media\normal_coral-TgcScene.xml" />
     <Content Include="Media\rock-n-TgcScene.xml" />
     <Content Include="Media\shark-TgcScene.xml" />
@@ -213,10 +222,11 @@
     <Content Include="Media\spiral_coral-TgcScene.xml" />
     <Content Include="Media\Textures\.png" />
     <Content Include="Media\Textures\10010_Coral_v1_Diffuse.jpg" />
-    <Content Include="Media\Textures\12960_Shark_diff_v2.jpg" />
     <Content Include="Media\Textures\20943_Spiral_Wire_Coral_v1_diff.JPG" />
     <Content Include="Media\Textures\agua.jpg" />
     <Content Include="Media\Textures\Alga.png" />
+    <Content Include="Media\Textures\alga_3.png" />
+    <Content Include="Media\Textures\alga_4.png" />
     <Content Include="Media\Textures\blue.jpg" />
     <Content Include="Media\Textures\blue_fish.jpg" />
     <Content Include="Media\Textures\bodyColor_de_la_Superficie.png" />
@@ -230,6 +240,7 @@
     <Content Include="Media\Textures\LAMPOclusión_Ambiental.jpg" />
     <Content Include="Media\Textures\LAMP_UVS.png" />
     <Content Include="Media\Textures\megalodon.png" />
+    <Content Include="Media\Textures\new_alga.png" />
     <Content Include="Media\Textures\normal_enganche.png" />
     <Content Include="Media\Textures\normal_float.png" />
     <Content Include="Media\Textures\Plata.jpg" />

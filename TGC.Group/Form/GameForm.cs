@@ -58,9 +58,7 @@ namespace TGC.Group.Form
         private TgcD3dInput Input { get; set; }
 
         private void GameForm_Load(object sender, EventArgs e)
-        {
-            
-
+        {          
             //OriginalBorderStyle
             //this.FormBorderStyle = FormBorderStyle.Sizable;
 
