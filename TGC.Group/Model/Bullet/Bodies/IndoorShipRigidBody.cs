@@ -11,7 +11,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         #region Atributos
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
         private TGCVector3 position = new TGCVector3(350, -2500, -45);
-        private TGCVector3 scale = new TGCVector3(10, 10, 10);
+        private TGCVector3 scale = new TGCVector3(20, 20, 20);
         public TgcMesh Mesh;
         public RigidBody body;
         #endregion
