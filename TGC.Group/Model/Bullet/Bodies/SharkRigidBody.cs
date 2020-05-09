@@ -1,5 +1,7 @@
-﻿using BulletSharp.Math;
+﻿using BulletSharp;
+using BulletSharp.Math;
 using Microsoft.DirectX.DirectInput;
+using TGC.Core.BulletPhysics;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
@@ -7,12 +9,14 @@ using TGC.Group.Model.Sharky;
 
 namespace TGC.Group.Model.Bullet.Bodies
 {
-    class SharkRigidBody : RigidBody
+    class SharkRigidBody
     {
         #region Atributos
         private TgcMesh Mesh;
+        public RigidBody body;
         private TGCVector3 scale = new TGCVector3(5, 5, 5);
         private TGCVector3 position = new TGCVector3(-2885, 1220, -525);
+        private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
         #endregion
 
         #region Constructor
@@ -20,13 +24,14 @@ namespace TGC.Group.Model.Bullet.Bodies
         public SharkRigidBody(Shark shark)
         {
             Mesh = shark.Mesh;
+            Init();
         }
 
         #endregion
 
         #region Metodos
 
-        public override void Init()
+        private void Init()
         {
             Mesh.Transform = TGCMatrix.Scaling(scale) * TGCMatrix.RotationYawPitchRoll(-FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position);
             body = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
@@ -35,7 +40,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             body.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(-FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position)).ToBulletMatrix();
         }
 
-        public override void Update(TgcD3dInput input, float elapsedTime)
+        public void Update(TgcD3dInput input, float elapsedTime)
         {
             if (input.keyPressed(Key.Z))
             {
@@ -49,12 +54,12 @@ namespace TGC.Group.Model.Bullet.Bodies
             Mesh.Transform = TGCMatrix.Scaling(scale) * new TGCMatrix(body.InterpolationWorldTransform);
         }
 
-        public override void Render()
+        public void Render()
         {
             Mesh.Render();
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             body.Dispose();
             Mesh.Dispose();

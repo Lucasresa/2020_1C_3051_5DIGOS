@@ -1,4 +1,6 @@
-﻿using TGC.Core.Mathematica;
+﻿using BulletSharp;
+using TGC.Core.Mathematica;
+using TGC.Core.SceneLoader;
 using TGC.Core.Terrain;
 using TGC.Group.Utils;
 using static TGC.Group.Model.Terrains.Terrain;
@@ -61,6 +63,22 @@ namespace TGC.Group.Model.Terrains
         public virtual void Dispose()
         {
             sky.Dispose();
+        }
+
+        public bool inSkyBox(TgcMesh vegetation)
+        {
+            var posX = vegetation.Position.X;
+            var posZ = vegetation.Position.Z;
+            return (posX < perimeter.xMax && posX > perimeter.xMin &&
+                     posZ < perimeter.zMax && posZ > perimeter.zMin);
+        }
+
+        public bool inSkyBox(RigidBody rigidBody)
+        {
+            var posX = rigidBody.CenterOfMassPosition.X;
+            var posZ = rigidBody.CenterOfMassPosition.Z;
+            return (posX < perimeter.xMax && posX > perimeter.xMin &&
+                     posZ < perimeter.zMax && posZ > perimeter.zMin);
         }
     }
 }

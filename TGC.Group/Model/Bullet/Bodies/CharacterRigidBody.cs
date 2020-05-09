@@ -3,6 +3,7 @@ using BulletSharp.Math;
 using Microsoft.DirectX.DirectInput;
 using System;
 using TGC.Core.BoundingVolumes;
+using TGC.Core.BulletPhysics;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Draw;
@@ -10,7 +11,7 @@ using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Bullet.Bodies
 {
-    class CharacterRigidBody : RigidBody
+    class CharacterRigidBody
     {
         struct Constants
         {
@@ -29,9 +30,11 @@ namespace TGC.Group.Model.Bullet.Bodies
             public static float capsuleRadius = 40f;
         }
 
-        private string MediaDir = Game.Default.MediaDirectory;
-        private string ShadersDir = Game.Default.ShadersDirectory;
-
+        private string MediaDir;
+        private string ShadersDir;
+        private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
+        public RigidBody body;
+        public bool isCharacter;
         private CameraFPS Camera;
         private TGCVector3 position;
         private TGCVector3 indoorPosition;
@@ -40,15 +43,18 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         private CharacterStatus status;        
 
-        public CharacterRigidBody(CameraFPS camera)
+        public CharacterRigidBody(CameraFPS camera, string mediaDir, string shadersDir)
         {
+            MediaDir = mediaDir;
+            ShadersDir = shadersDir;
             isCharacter = true;
             Camera = camera;
             indoorPosition = camera.getIndoorPosition();
             outdoorPosition = camera.getOutdoorPosition();
+            Init();
         }
 
-        public override void Init()
+        private void Init()
         {
             status = new CharacterStatus(MediaDir, ShadersDir);
 
@@ -63,7 +69,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             #endregion
         }
 
-        public override void Update(TgcD3dInput input, float elapsedTime)
+        public void Update(TgcD3dInput input)
         {
             var speed = Constants.speed;
             body.ActivationState = ActivationState.ActiveTag;
@@ -134,7 +140,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             status.Update();
         }
 
-        public override void Render()
+        public  void Render()
         {
             status.Render();
         }
@@ -154,13 +160,13 @@ namespace TGC.Group.Model.Bullet.Bodies
             return Camera.position.Y < 0;
         }
 
-        public override void Dispose()
+        public  void Dispose()
         {
             body.Dispose();
             status.Dispose();
         }
 
-        public override void Teleport()
+        public  void Teleport()
         {
             if (Camera.isOutside)
                 body.CenterOfMassTransform = TGCMatrix.Translation(indoorPosition).ToBulletMatrix();

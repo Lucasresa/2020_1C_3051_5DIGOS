@@ -1,26 +1,31 @@
-﻿using TGC.Core.Mathematica;
+﻿using BulletSharp;
+using TGC.Core.BulletPhysics;
+using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Watercraft;
 
 namespace TGC.Group.Model.Bullet.Bodies
 {
-    class OutdoorShipRigidBody : RigidBody
+    class OutdoorShipRigidBody
     {
         #region Atributos
-        public TgcMesh Mesh;
+        private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
         private TGCVector3 scale = new TGCVector3(10, 10, 10);
         private TGCVector3 position = new TGCVector3(530, 3630, 100);
+        public TgcMesh Mesh;
+        public RigidBody body;
         #endregion
 
         #region Constructor
         public OutdoorShipRigidBody(Ship ship)
         {
             Mesh = ship.OutdoorMesh;
+            Init();
         }
         #endregion
 
         #region Metodos
-        public override void Init()
+        private void Init()
         {
             Mesh.Transform = TGCMatrix.Scaling(scale) * TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position);
             body = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
@@ -28,12 +33,12 @@ namespace TGC.Group.Model.Bullet.Bodies
             body.CollisionShape.LocalScaling = scale.ToBulletVector3();
         }
 
-        public override void Render()
+        public void Render()
         {
             Mesh.Render();
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             body.Dispose();
             Mesh.Dispose();

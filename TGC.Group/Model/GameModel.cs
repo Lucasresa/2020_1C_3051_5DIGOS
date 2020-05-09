@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using TGC.Core.Collision;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
+using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Bullet;
+using TGC.Group.Model.Bullet.Bodies;
 using TGC.Group.Model.MeshBuilders;
 using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
@@ -42,8 +45,14 @@ namespace TGC.Group.Model
         private MeshBuilder meshBuilder;
         private bool showDebugInfo { get; set; }
         private CameraFPS camera;
-        private readonly PhysicalWorld physicalworld = PhysicalWorld.Instance;
-        private RigidBody rigidBody = new RigidBody();
+        
+        private TGCVector3 collisionPoint = TGCVector3.Empty;
+        private RigidBodyManager rigidBodyManager;
+        private TgcPickingRay pickingRay;
+        private List<TgcMesh> inventory = new List<TgcMesh>();
+        private bool showInventory { get; set; }
+        private bool showEnterShipInfo { get; set; }
+
         #endregion
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
@@ -77,10 +86,14 @@ namespace TGC.Group.Model
             MeshDuplicator.InitOriginalMeshes();
             meshInitializer();
             #endregion
-
+                        
             #region Mundo fisico
-            rigidBody.Initializer(terrain, camera, shark, ship, Meshes);
-            physicalworld.addInitialRigidBodies(rigidBody.getListRigidBody());
+            rigidBodyManager = new RigidBodyManager(MediaDir, ShadersDir);
+            rigidBodyManager.Init(terrain, camera, shark, ship, skyBox, Meshes);
+            #endregion
+
+            #region PickingRay
+            pickingRay = new TgcPickingRay(Input);
             #endregion
         }
 
@@ -88,12 +101,36 @@ namespace TGC.Group.Model
         {
             currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
 
-            physicalworld.Update(Input, ElapsedTime, TimeBetweenUpdates);
+            rigidBodyManager.Update(Input, ElapsedTime, TimeBetweenUpdates);
 
             #region Teclas
 
             if (Input.keyPressed(Key.F))
                 showDebugInfo = !showDebugInfo;
+
+            //if (characterNearShip())
+            //    showEnterShipInfo = !showEnterShipInfo;
+
+            // if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+            // {
+            //     bool selected;
+            //     pickingRay.updateRay();
+            // 
+            //     var match = rigidBody.getListCommonRigidBody().Find(rigidBody =>
+            //     {
+            //         var mesh = rigidBody.Mesh;
+            //         var aabb = mesh.BoundingBox;
+            // 
+            //         selected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabb, out collisionPoint);
+            // 
+            //         return (selected && Math.Sqrt(TGCVector3.LengthSq(camera.Position, collisionPoint)) < 500);
+            //     });
+            // 
+            //     rigidBody.getListCommonRigidBody().Remove(match);
+            // }
+            
+            if (Input.keyPressed(Key.J))
+                showInventory = !showInventory;
 
             #endregion
 
@@ -108,7 +145,7 @@ namespace TGC.Group.Model
             time += ElapsedTime;
             
             if (showDebugInfo)
-            { // TODO: AJUSTAR LA POSICION DONDE SE MUESTRE EN PANTALLA LA INFORMACION
+            {   // TODO: AJUSTAR LA POSICION DONDE SE MUESTRE EN PANTALLA LA INFORMACION
                 DrawText.drawText("DATOS DE LA Camera: ", 0, 30, Color.Red);
                 DrawText.drawText("Posicion: [" + camera.Position.X.ToString() + "; "
                                                 + camera.Position.Y.ToString() + "; "
@@ -119,7 +156,7 @@ namespace TGC.Group.Model
                                                 + camera.LookAt.Z.ToString() + "] ",
                                   0, 80, Color.Red);
 
-		DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
+		        DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
 
                 DrawText.drawText("DATOS DEL AREA ACTUAL: ", 0, 130, Color.Red);
 
@@ -133,6 +170,12 @@ namespace TGC.Group.Model
                              0, 160, Color.Red);
             }
 
+            if (showEnterShipInfo)
+                DrawText.drawText("PRESIONA E PARA ENTRAR A LA NAVE", 500, 400, Color.White);
+
+            if (showInventory)
+                DrawText.drawText("INVENTARIO:" + inventory.Count, 500, 300, Color.White);
+
             #endregion
 
             #region Renderizado
@@ -142,14 +185,14 @@ namespace TGC.Group.Model
                 skyBox.Render();
                 water.Render();
                 vegetation.ForEach(vegetation => {
-                    if (inSkyBox(vegetation))
+                    if (skyBox.inSkyBox(vegetation))
                     {
                         vegetation.AlphaBlendEnable = true;
                         vegetation.Render();
                     } });
             }
 
-            rigidBody.getListRigidBody().ForEach( rigidBody => { if ( inSkyBox(rigidBody) ) rigidBody.Render(); });
+            rigidBodyManager.Render();
 
             #endregion
 
@@ -159,7 +202,6 @@ namespace TGC.Group.Model
         public override void Dispose()
         {
             #region Liberacion de recursos
-            physicalworld.Dispose();
             water.Dispose();
             skyBox.Dispose();
             vegetation.ForEach(vegetation => vegetation.Dispose());
@@ -215,26 +257,21 @@ namespace TGC.Group.Model
             Meshes.AddRange(yellowFish);
             #endregion
         }
-
-        private bool inSkyBox(TgcMesh vegetation)
-        {
-            var posX = vegetation.Position.X;
-            var posZ = vegetation.Position.Z;
-            return (posX < skyBox.perimeter.xMax && posX > skyBox.perimeter.xMin &&
-                     posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
-        }
-
-        private bool inSkyBox(RigidBody rigidBody)
-        {
-            if (rigidBody.isTerrain || rigidBody.isIndoorShip || rigidBody.isCharacter)
-                return true;
-            
-            var posX = rigidBody.body.CenterOfMassPosition.X;
-            var posZ = rigidBody.body.CenterOfMassPosition.Z;
-            return (posX < skyBox.perimeter.xMax && posX > skyBox.perimeter.xMin &&
-                     posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
-        }
-
+        
+        //private bool characterNearShip()
+        //{
+        //    var character = rigidBody.getListRigidBody()[1];
+        //
+        //    pickingRay.updateRay();
+        //
+        //    var parte1 = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, ship.OutdoorMesh.BoundingBox, out TGCVector3 collisionPoint);
+        //
+        //    pickingRay.updateRay();
+        //
+        //    var parte2 = Math.Sqrt(TGCVector3.LengthSq(new TGCVector3(character.body.CenterOfMassPosition), collisionPoint)) < 500;
+        //
+        //    return parte1 && parte2;
+        //}
         #endregion
     }
 }

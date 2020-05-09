@@ -105,7 +105,7 @@
     <Compile Include="Model\Bullet\Bodies\IndoorShipRigidBody.cs" />
     <Compile Include="Model\Bullet\Bodies\CommonRigidBody.cs" />
     <Compile Include="Model\Bullet\Bodies\OutdoorShipRigidBody.cs" />
-    <Compile Include="Model\Bullet\RigidBody.cs" />
+    <Compile Include="Model\Bullet\RigidBodyManager.cs" />
     <Compile Include="Model\Bullet\Bodies\SharkRigidBody.cs" />
     <Compile Include="Model\Bullet\Bodies\TerrainRigidBody.cs" />
     <Compile Include="Model\Draw\Bar.cs" />
@@ -125,7 +125,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CameraFPS.cs" />
     <Compile Include="Utils\CustomSprite.cs" />
-    <Compile Include="Utils\PhysicalWorld.cs" />
     <Compile Include="Utils\SmartTerrain.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
       <DependentUpon>GameForm.cs</DependentUpon>
