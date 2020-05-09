@@ -1,6 +1,11 @@
-﻿using TGC.Core.Mathematica;
+﻿using System.Collections.Generic;
+using System.Linq;
+using TGC.Core.Mathematica;
+using TGC.Core.SceneLoader;
 using TGC.Core.Terrain;
+using TGC.Group.Model.Bullet;
 using TGC.Group.Utils;
+using static TGC.Core.Terrain.TgcSkyBox;
 using static TGC.Group.Model.Terrains.Terrain;
 
 namespace TGC.Group.Model.Terrains
@@ -54,7 +59,6 @@ namespace TGC.Group.Model.Terrains
             perimeter.xMax = sky.Center.X + size;
             perimeter.zMin = sky.Center.Z - size;
             perimeter.zMax = sky.Center.Z + size;
-
             sky.Render();
         }
 
@@ -62,5 +66,25 @@ namespace TGC.Group.Model.Terrains
         {
             sky.Dispose();
         }
+
+        public bool Contains(RigidBody rigidBody)
+        {
+            if (rigidBody.isTerrain || rigidBody.isIndoorShip)
+                return true;
+
+            var posX = rigidBody.body.CenterOfMassPosition.X;
+            var posZ = rigidBody.body.CenterOfMassPosition.Z;
+            return (posX < perimeter.xMax && posX > perimeter.xMin &&
+                     posZ < perimeter.zMax && posZ > perimeter.zMin);
+        }
+
+        public bool Contains(TgcMesh vegetation)
+        {
+            var posX = vegetation.Position.X;
+            var posZ = vegetation.Position.Z;
+            return (posX < perimeter.xMax && posX > perimeter.xMin &&
+                     posZ < perimeter.zMax && posZ > perimeter.zMin);
+        }
+
     }
 }

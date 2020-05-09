@@ -92,7 +92,7 @@ namespace TGC.Group.Model
             #endregion
 
             #region Mundo fisico
-            rigidBody.Initializer(terrain, camera, shark, ship, Meshes);
+            rigidBody.Initializer(terrain, camera, shark, ship, Meshes, skyBox);
             physicalworld.addInitialRigidBodies(rigidBody.getListRigidBody());
             #endregion
 
@@ -200,14 +200,14 @@ namespace TGC.Group.Model
                 skyBox.Render();
                 water.Render();
                 vegetation.ForEach(vegetation => {
-                    if (inSkyBox(vegetation))
+                    if (skyBox.Contains(vegetation))
                     {
                         vegetation.AlphaBlendEnable = true;
                         vegetation.Render();
                     } });
             }
 
-            rigidBody.getListRigidBody().ForEach( rigidBody => { if ( inSkyBox(rigidBody) ) rigidBody.Render(); });
+            rigidBody.getListRigidBody().ForEach( rigidBody => { if ( skyBox.Contains(rigidBody) ) rigidBody.Render(); });
 
             #endregion
 
@@ -271,25 +271,6 @@ namespace TGC.Group.Model
             Meshes.AddRange(normalFish);
             Meshes.AddRange(yellowFish);
             #endregion
-        }
-
-        private bool inSkyBox(TgcMesh vegetation)
-        {
-            var posX = vegetation.Position.X;
-            var posZ = vegetation.Position.Z;
-            return (posX < skyBox.perimeter.xMax && posX > skyBox.perimeter.xMin &&
-                     posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
-        }
-
-        private bool inSkyBox(RigidBody rigidBody)
-        {
-            if (rigidBody.isTerrain || rigidBody.isIndoorShip)
-                return true;
-            
-            var posX = rigidBody.body.CenterOfMassPosition.X;
-            var posZ = rigidBody.body.CenterOfMassPosition.Z;
-            return (posX < skyBox.perimeter.xMax && posX > skyBox.perimeter.xMin &&
-                     posZ < skyBox.perimeter.zMax && posZ > skyBox.perimeter.zMin);
         }
 
         private bool characterNearShip()

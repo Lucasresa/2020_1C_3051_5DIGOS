@@ -28,11 +28,11 @@ namespace TGC.Group.Model.Bullet
         #endregion
 
         #region Metodos
-        public void Initializer(Terrain terrain, CameraFPS camera, Shark shark, Ship ship, List<TgcMesh> meshes)
+        public void Initializer(Terrain terrain, CameraFPS camera, Shark shark, Ship ship, List<TgcMesh> meshes, Sky skybox)
         {
             rigidBodies.Add(new TerrainRigidBody(terrain));
             rigidBodies.Add(new CharacterRigidBody(camera));
-            rigidBodies.Add(new SharkRigidBody(shark));
+            rigidBodies.Add(new SharkRigidBody(shark, skybox));
             rigidBodies.Add(new OutdoorShipRigidBody(ship));
             rigidBodies.Add(new IndoorShipRigidBody(ship));
             meshes.ForEach(mesh => rigidBodies.Add(new CommonRigidBody(mesh)));
