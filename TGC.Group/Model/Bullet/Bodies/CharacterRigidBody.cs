@@ -2,9 +2,15 @@
 using BulletSharp.Math;
 using Microsoft.DirectX.DirectInput;
 using System;
+using System.Drawing;
+using System.Security.Policy;
+using System.Windows.Forms;
 using TGC.Core.BoundingVolumes;
+using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
+using TGC.Core.Text;
+using TGC.Group.Model.Draw;
 using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Bullet.Bodies
@@ -24,14 +30,19 @@ namespace TGC.Group.Model.Bullet.Bodies
             public static float capsuleRadius = 40f;
         }
 
+        private string MediaDir = Game.Default.MediaDirectory;
+        private string ShadersDir = Game.Default.ShadersDirectory;
+
         private CameraFPS Camera;
         private TGCVector3 position;
         private TGCVector3 indoorPosition;
         private TGCVector3 outdoorPosition;
+        private CharacterStatus status;        
         private float prevLatitude;
 
         public CharacterRigidBody(CameraFPS camera)
         {
+            isCharacter = true;
             Camera = camera;
             indoorPosition = camera.getIndoorPosition();
             outdoorPosition = camera.getOutdoorPosition();
@@ -39,6 +50,8 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public override void Init()
         {
+            status = new CharacterStatus(MediaDir, ShadersDir);
+
             if (Camera.isOutside) position = Camera.getOutdoorPosition();
             else position = Camera.getIndoorPosition();
             prevLatitude = Camera.Latitude;
@@ -54,6 +67,8 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             var speed = Constants.speed;
             body.ActivationState = ActivationState.ActiveTag;
+
+            canRecoverOxygen();
 
             #region Movimiento 
 
@@ -80,12 +95,14 @@ namespace TGC.Group.Model.Bullet.Bodies
 
                 if (input.keyDown(Key.A))
                 {
-                    body.LinearVelocity = sideDirector.ToBulletVector3() * -speed;
+                    director.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
+                    body.LinearVelocity = director.ToBulletVector3() * -speed;
                 }
 
                 if (input.keyDown(Key.D))
                 {
-                    body.LinearVelocity = sideDirector.ToBulletVector3() * speed;
+                    director.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
+                    body.LinearVelocity = director.ToBulletVector3() * speed;
                 }
 
                 if (input.keyDown(Key.Space))
@@ -115,6 +132,13 @@ namespace TGC.Group.Model.Bullet.Bodies
             Camera.position = new TGCVector3(body.CenterOfMassPosition) + Constants.cameraHeight;
 
             #endregion
+
+            status.Update();
+        }
+
+        public override void Render()
+        {
+            status.Render();
         }
 
         private float getGravity()
@@ -127,9 +151,15 @@ namespace TGC.Group.Model.Bullet.Bodies
             return Camera.position.Y > 3505;
         }
 
+        private bool isInsideShip()
+        {
+            return Camera.position.Y < 0;
+        }
+
         public override void Dispose()
         {
             body.Dispose();
+            status.Dispose();
         }
 
         public override void Teleport()
@@ -142,6 +172,11 @@ namespace TGC.Group.Model.Bullet.Bodies
             Camera.position = new TGCVector3(body.CenterOfMassPosition);
             body.LinearVelocity = Vector3.Zero;
             body.AngularVelocity = Vector3.Zero;
+        }
+
+        private void canRecoverOxygen()
+        {
+            status.canBreathe = isOutOfWater() || isInsideShip();
         }
     }
 }

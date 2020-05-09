@@ -106,9 +106,9 @@ namespace TGC.Group.Model
             #region Texto en pantalla
 
             time += ElapsedTime;
-
+            
             if (showDebugInfo)
-            {
+            { // TODO: AJUSTAR LA POSICION DONDE SE MUESTRE EN PANTALLA LA INFORMACION
                 DrawText.drawText("DATOS DE LA Camera: ", 0, 30, Color.Red);
                 DrawText.drawText("Posicion: [" + camera.Position.X.ToString() + "; "
                                                 + camera.Position.Y.ToString() + "; "
@@ -119,8 +119,7 @@ namespace TGC.Group.Model
                                                 + camera.LookAt.Z.ToString() + "] ",
                                   0, 80, Color.Red);
 
-                // INFO: Con este nuevo core el elapsedTime hace cualquiera y por ende el TIME no sirve.
-                DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
+		DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
 
                 DrawText.drawText("DATOS DEL AREA ACTUAL: ", 0, 130, Color.Red);
 
@@ -227,7 +226,7 @@ namespace TGC.Group.Model
 
         private bool inSkyBox(RigidBody rigidBody)
         {
-            if (rigidBody.isTerrain || rigidBody.isIndoorShip)
+            if (rigidBody.isTerrain || rigidBody.isIndoorShip || rigidBody.isCharacter)
                 return true;
             
             var posX = rigidBody.body.CenterOfMassPosition.X;
