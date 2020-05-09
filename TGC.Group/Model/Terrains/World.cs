@@ -16,7 +16,7 @@ namespace TGC.Group.Model.Terrains
 
         private string MediaDir;
         private string ShadersDir;
-        private TGCVector3 Position;
+        protected TGCVector3 Position;
 
         public World(string mediaDir, string shadersDir, TGCVector3 position)
         {

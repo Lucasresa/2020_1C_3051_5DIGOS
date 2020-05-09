@@ -3,11 +3,13 @@ using BulletSharp.Math;
 using Microsoft.DirectX.DirectInput;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Collision;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
+using TGC.Core.Text;
 using TGC.Group.Model.Draw;
 using TGC.Group.Model.Inventory;
 using TGC.Group.Utils;
@@ -35,6 +37,7 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         private string MediaDir;
         private string ShadersDir;
+        private TgcText2D DrawText = new TgcText2D();
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
         public RigidBody body;
         private CameraFPS Camera;
@@ -61,11 +64,14 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         private void Init()
         {
+            if(isInsideShip())
+                position = indoorPosition;
+            else
+                position = outdoorPosition;
+
             status = new CharacterStatus(MediaDir, ShadersDir);
             inventory = new InventoryManagement(input, MediaDir, ShadersDir);
 
-            if (Camera.isOutside) position = Camera.getOutdoorPosition();
-            else position = Camera.getIndoorPosition();
             prevLatitude = Camera.Latitude;
             Constants.planeDirector.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
 
@@ -140,8 +146,6 @@ namespace TGC.Group.Model.Bullet.Bodies
                 body.AngularVelocity = Vector3.Zero;
             }
 
-            if (input.keyPressed(Key.E)) Teleport();
-
             body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * getGravity();
 
             Camera.position = new TGCVector3(body.CenterOfMassPosition) + Constants.cameraHeight;
@@ -151,13 +155,43 @@ namespace TGC.Group.Model.Bullet.Bodies
             status.Update();
             movePositionToInventory();
             inventory.Update(input, dynamicsWorld, ref commonRigidBody);
-            characterNearShip();
+
+            Teleport();
         }
 
-        public  void Render()
+        public void Render()
         {
             status.Render();
             inventory.Render();
+
+            if(distanceBetweenCharacterAndShip())
+                DrawText.drawText("PRESIONA E PARA ENTRAR A LA NAVE", 500, 400, Color.White);
+        }
+
+        public void Dispose()
+        {
+            body.Dispose();
+            status.Dispose();
+            inventory.Dispose();
+        }
+
+        public void Teleport()
+        {
+            if (input.keyPressed(Key.E))
+            {
+                if(isInsideShip())
+                    changePosition(outdoorPosition);
+                if (isNearShip())
+                    changePosition(indoorPosition);
+            }
+        }
+
+        private void changePosition(TGCVector3 newPosition)
+        {
+            body.CenterOfMassTransform = TGCMatrix.Translation(newPosition).ToBulletMatrix();
+            Camera.position = new TGCVector3(body.CenterOfMassPosition);
+            body.LinearVelocity = Vector3.Zero;
+            body.AngularVelocity = Vector3.Zero;
         }
 
         private float getGravity()
@@ -180,25 +214,6 @@ namespace TGC.Group.Model.Bullet.Bodies
             inventory.pickingRay = pickingRay;
         }
 
-        public  void Dispose()
-        {
-            body.Dispose();
-            status.Dispose();
-            inventory.Dispose();
-        }
-
-        public  void Teleport()
-        {
-            if (Camera.isOutside)
-                body.CenterOfMassTransform = TGCMatrix.Translation(indoorPosition).ToBulletMatrix();
-            else
-                body.CenterOfMassTransform = TGCMatrix.Translation(outdoorPosition).ToBulletMatrix();
-
-            Camera.position = new TGCVector3(body.CenterOfMassPosition);
-            body.LinearVelocity = Vector3.Zero;
-            body.AngularVelocity = Vector3.Zero;
-        }
-
         private void canRecoverOxygen()
         {
             status.canBreathe = isOutOfWater() || isInsideShip();
@@ -209,14 +224,27 @@ namespace TGC.Group.Model.Bullet.Bodies
             inventory.characterPosition = Camera.position;
         }
 
-        private bool characterNearShip()
+        private bool isNearShip()
         {
             pickingRay.updateRay();
-        
-            var intersected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabbShip, out TGCVector3 collisionPoint);
-            var inSight = Math.Sqrt(TGCVector3.LengthSq(new TGCVector3(body.CenterOfMassPosition), collisionPoint)) < 500;
-        
+
+            var intersected = intersectBetweenCharacterAndShip();
+            var inSight = distanceBetweenCharacterAndShip();
+
             return intersected && inSight;
+        }
+
+        private bool intersectBetweenCharacterAndShip()
+        {// TODO: Despues podriamos considerar la idea de si esta mirando el techo
+            if (isInsideShip())
+                return true;
+            else
+                return TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabbShip, out _);
+        }
+
+        private bool distanceBetweenCharacterAndShip()
+        {
+            return Math.Sqrt(TGCVector3.LengthSq(Camera.position, Camera.getOutdoorPosition())) < 500 || isInsideShip();
         }
     }
 }

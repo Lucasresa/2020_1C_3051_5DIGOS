@@ -1,13 +1,8 @@
 using Microsoft.DirectX.DirectInput;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using TGC.Core.Collision;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
-using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Bullet;
@@ -21,21 +16,11 @@ using static TGC.Group.Model.Terrains.Terrain;
 namespace TGC.Group.Model
 {
     public class GameModel : TGCExample
-    {
-        #region Constantes
-        private struct Constants
-        {
-            public static float WATER_HEIGHT = 3500;
-            public static TGCVector3 OUTSIDE_SHIP_POSITION = new TGCVector3(1300, 3505, 20);
-            public static TGCVector3 INSIDE_SHIP_POSITION = new TGCVector3(515, -2340, -40);
-        }
-        #endregion
-
+    { 
         #region Atributos
         private float time;
         private Perimeter currentCameraArea;
         private List<TgcMesh> vegetation = new List<TgcMesh>();
-        private List<TgcMesh> inventory = new List<TgcMesh>();
         private CameraFPS camera;
         private Terrain terrain;
         private Water water;
@@ -63,13 +48,13 @@ namespace TGC.Group.Model
         public override void Init()
         {
             #region Camera 
-            Camera = new CameraFPS(Input, Constants.INSIDE_SHIP_POSITION, Constants.OUTSIDE_SHIP_POSITION);
+            Camera = new CameraFPS(Input);
             camera = (CameraFPS)Camera;            
             #endregion
-
+            
             #region Mundo            
             terrain = new Terrain(MediaDir, ShadersDir, TGCVector3.Empty);
-            water = new Water(MediaDir, ShadersDir, new TGCVector3(0, Constants.WATER_HEIGHT, 0));
+            water = new Water(MediaDir, ShadersDir, TGCVector3.Empty);
             skyBox = new Sky(MediaDir, ShadersDir, camera);
             #endregion
 
@@ -87,9 +72,10 @@ namespace TGC.Group.Model
 
         public override void Update()
         {
-            currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
-
+            #region Update
             rigidBodyManager.Update(Input, ElapsedTime, TimeBetweenUpdates);
+            currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
+            #endregion
 
             #region Teclas
 
@@ -97,15 +83,13 @@ namespace TGC.Group.Model
                 showDebugInfo = !showDebugInfo;
 
             #endregion
-
         }
 
         public override void Render()
         {
             PreRender();
-
+            
             #region Texto en pantalla
-
             time += ElapsedTime;
             
             if (showDebugInfo)
@@ -136,7 +120,6 @@ namespace TGC.Group.Model
             #endregion
 
             #region Renderizado
-
             if (isOutside())
             {
                 skyBox.Render();
@@ -145,15 +128,9 @@ namespace TGC.Group.Model
             }
 
             rigidBodyManager.Render();
-
             #endregion
 
             PostRender();
-        }
-
-        private bool isOutside()
-        {
-            return camera.position.Y > 0;
         }
 
         public override void Dispose()
@@ -219,7 +196,12 @@ namespace TGC.Group.Model
             return Meshes;
             #endregion
         }
-   
+
+        private bool isOutside()
+        {
+            return camera.position.Y > 0;
+        }
+
         #endregion
     }
 }
