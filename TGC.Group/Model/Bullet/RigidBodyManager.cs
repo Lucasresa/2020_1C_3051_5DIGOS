@@ -57,11 +57,11 @@ namespace TGC.Group.Model.Bullet
 
         #region Metodos
 
-        public void Init(Terrain terrain, CameraFPS camera, Shark shark, Ship ship, Sky skyBox, List<TgcMesh> meshes)
+        public void Init(TgcD3dInput input, Terrain terrain, CameraFPS camera, Shark shark, Ship ship, Sky skyBox, ref List<TgcMesh> meshes)
         {
             skybox = skyBox;
             terrainRigidBody = new TerrainRigidBody(terrain);
-            characterRigidBody = new CharacterRigidBody(camera, MediaDir, ShadersDir);
+            characterRigidBody = new CharacterRigidBody(input, camera, MediaDir, ShadersDir);
             sharkRigidBody = new SharkRigidBody(shark);
             outdoorShipRigidBody = new OutdoorShipRigidBody(ship);
             indoorShipRigidBody = new IndoorShipRigidBody(ship);
@@ -76,6 +76,8 @@ namespace TGC.Group.Model.Bullet
             dynamicsWorld.AddRigidBody(indoorShipRigidBody.body);
 
             commonRigidBody.ForEach(rigidBody => dynamicsWorld.AddRigidBody(rigidBody.body));
+
+            characterRigidBody.aabbShip = outdoorShipRigidBody.getAABB();
         }
 
         public void Render()
@@ -94,7 +96,7 @@ namespace TGC.Group.Model.Bullet
 
         public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
         {
-            characterRigidBody.Update(input);
+            characterRigidBody.Update(dynamicsWorld, ref commonRigidBody);
             sharkRigidBody.Update(input, elapsedTime);
 
             dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);

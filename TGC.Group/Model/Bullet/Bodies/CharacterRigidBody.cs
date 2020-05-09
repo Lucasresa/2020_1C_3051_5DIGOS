@@ -2,11 +2,14 @@
 using BulletSharp.Math;
 using Microsoft.DirectX.DirectInput;
 using System;
+using System.Collections.Generic;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.BulletPhysics;
+using TGC.Core.Collision;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Draw;
+using TGC.Group.Model.Inventory;
 using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Bullet.Bodies
@@ -34,29 +37,32 @@ namespace TGC.Group.Model.Bullet.Bodies
         private string ShadersDir;
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
         public RigidBody body;
-        public bool isCharacter;
         private CameraFPS Camera;
         private TGCVector3 position;
         private TGCVector3 indoorPosition;
         private TGCVector3 outdoorPosition;
         private float prevLatitude;
+        private TgcD3dInput input;
+        private TgcPickingRay pickingRay;
+        private CharacterStatus status;
+        private InventoryManagement inventory;
+        public TgcBoundingAxisAlignBox aabbShip { get; set; }
 
-        private CharacterStatus status;        
-
-        public CharacterRigidBody(CameraFPS camera, string mediaDir, string shadersDir)
+        public CharacterRigidBody(TgcD3dInput Input, CameraFPS camera, string mediaDir, string shadersDir)
         {
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
-            isCharacter = true;
             Camera = camera;
             indoorPosition = camera.getIndoorPosition();
             outdoorPosition = camera.getOutdoorPosition();
+            input = Input;
             Init();
         }
 
         private void Init()
         {
             status = new CharacterStatus(MediaDir, ShadersDir);
+            inventory = new InventoryManagement(input, MediaDir, ShadersDir);
 
             if (Camera.isOutside) position = Camera.getOutdoorPosition();
             else position = Camera.getIndoorPosition();
@@ -67,9 +73,14 @@ namespace TGC.Group.Model.Bullet.Bodies
             body = rigidBodyFactory.CreateCapsule(Constants.capsuleRadius, Constants.capsuleSize, position, 1f, false);
             body.CenterOfMassTransform = TGCMatrix.Translation(position).ToBulletMatrix();
             #endregion
+
+            #region PickingRay
+            pickingRay = new TgcPickingRay(input);
+            setPickingRay();
+            #endregion
         }
 
-        public void Update(TgcD3dInput input)
+        public void Update(DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody)
         {
             var speed = Constants.speed;
             body.ActivationState = ActivationState.ActiveTag;
@@ -138,11 +149,15 @@ namespace TGC.Group.Model.Bullet.Bodies
             #endregion
 
             status.Update();
+            movePositionToInventory();
+            inventory.Update(input, dynamicsWorld, ref commonRigidBody);
+            characterNearShip();
         }
 
         public  void Render()
         {
             status.Render();
+            inventory.Render();
         }
 
         private float getGravity()
@@ -160,10 +175,16 @@ namespace TGC.Group.Model.Bullet.Bodies
             return Camera.position.Y < 0;
         }
 
+        private void setPickingRay()
+        {
+            inventory.pickingRay = pickingRay;
+        }
+
         public  void Dispose()
         {
             body.Dispose();
             status.Dispose();
+            inventory.Dispose();
         }
 
         public  void Teleport()
@@ -181,6 +202,21 @@ namespace TGC.Group.Model.Bullet.Bodies
         private void canRecoverOxygen()
         {
             status.canBreathe = isOutOfWater() || isInsideShip();
+        }
+
+        private void movePositionToInventory()
+        {
+            inventory.characterPosition = Camera.position;
+        }
+
+        private bool characterNearShip()
+        {
+            pickingRay.updateRay();
+        
+            var intersected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabbShip, out TGCVector3 collisionPoint);
+            var inSight = Math.Sqrt(TGCVector3.LengthSq(new TGCVector3(body.CenterOfMassPosition), collisionPoint)) < 500;
+        
+            return intersected && inSight;
         }
     }
 }

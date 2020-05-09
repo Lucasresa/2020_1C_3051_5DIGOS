@@ -1,4 +1,5 @@
 ﻿using BulletSharp;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
@@ -31,17 +32,26 @@ namespace TGC.Group.Model.Bullet.Bodies
             body = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
             body.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position)).ToBulletMatrix();
             body.CollisionShape.LocalScaling = scale.ToBulletVector3();
+            Mesh.Scale = scale;
+            Mesh.Position = position;
         }
 
         public void Render()
         {
             Mesh.Render();
+            Mesh.updateBoundingBox();
+            Mesh.BoundingBox.Render();
         }
 
         public void Dispose()
         {
             body.Dispose();
             Mesh.Dispose();
+        }
+
+        public TgcBoundingAxisAlignBox getAABB()
+        {
+            return Mesh.BoundingBox;
         }
         #endregion
     }

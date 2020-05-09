@@ -44,18 +44,12 @@ namespace TGC.Group.Model
         private Shark shark;
         private MeshBuilder meshBuilder;
         private RigidBodyManager rigidBodyManager;
-        
         private bool showDebugInfo { get; set; }
-        private bool showInventory { get; set; }
-        private bool showEnterShipInfo { get; set; }
-
-        private TgcPickingRay pickingRay;
-        private TGCVector3 collisionPoint = TGCVector3.Empty;
-
         #endregion
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
+            #region Configuracion
             FixedTickEnable = true;
             Category = Game.Default.Category;
             Name = Game.Default.Name;
@@ -63,6 +57,7 @@ namespace TGC.Group.Model
             meshBuilder = new MeshBuilder();
             MeshDuplicator.MediaDir = mediaDir;
             D3DDevice.Instance.ZFarPlaneDistance = 8000f;
+            #endregion
         }
 
         public override void Init()
@@ -86,11 +81,7 @@ namespace TGC.Group.Model
                         
             #region Mundo fisico
             rigidBodyManager = new RigidBodyManager(MediaDir, ShadersDir);
-            rigidBodyManager.Init(terrain, camera, shark, ship, skyBox, Meshes);
-            #endregion
-
-            #region PickingRay
-            pickingRay = new TgcPickingRay(Input);
+            rigidBodyManager.Init(Input,terrain, camera, shark, ship, skyBox, ref Meshes);
             #endregion
         }
 
@@ -104,30 +95,6 @@ namespace TGC.Group.Model
 
             if (Input.keyPressed(Key.F))
                 showDebugInfo = !showDebugInfo;
-
-            //if (characterNearShip())
-            //    showEnterShipInfo = !showEnterShipInfo;
-
-            // if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
-            // {
-            //     bool selected;
-            //     pickingRay.updateRay();
-            // 
-            //     var match = rigidBody.getListCommonRigidBody().Find(rigidBody =>
-            //     {
-            //         var mesh = rigidBody.Mesh;
-            //         var aabb = mesh.BoundingBox;
-            // 
-            //         selected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabb, out collisionPoint);
-            // 
-            //         return (selected && Math.Sqrt(TGCVector3.LengthSq(camera.Position, collisionPoint)) < 500);
-            //     });
-            // 
-            //     rigidBody.getListCommonRigidBody().Remove(match);
-            // }
-            
-            if (Input.keyPressed(Key.J))
-                showInventory = !showInventory;
 
             #endregion
 
@@ -166,13 +133,6 @@ namespace TGC.Group.Model
                                     "\nMaximo " + currentCameraArea.zMax.ToString(),
                              0, 160, Color.Red);
             }
-
-            if (showEnterShipInfo)
-                DrawText.drawText("PRESIONA E PARA ENTRAR A LA NAVE", 500, 400, Color.White);
-
-            if (showInventory)
-                DrawText.drawText("INVENTARIO:" + inventory.Count, 500, 300, Color.White);
-
             #endregion
 
             #region Renderizado
@@ -259,21 +219,7 @@ namespace TGC.Group.Model
             return Meshes;
             #endregion
         }
-        
-        //private bool characterNearShip()
-        //{
-        //    var character = rigidBody.getListRigidBody()[1];
-        //
-        //    pickingRay.updateRay();
-        //
-        //    var parte1 = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, ship.OutdoorMesh.BoundingBox, out TGCVector3 collisionPoint);
-        //
-        //    pickingRay.updateRay();
-        //
-        //    var parte2 = Math.Sqrt(TGCVector3.LengthSq(new TGCVector3(character.body.CenterOfMassPosition), collisionPoint)) < 500;
-        //
-        //    return parte1 && parte2;
-        //}
+   
         #endregion
     }
 }
