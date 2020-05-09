@@ -69,6 +69,7 @@ namespace TGC.Group.Model.Terrains
         {
             var posX = vegetation.Position.X;
             var posZ = vegetation.Position.Z;
+            vegetation.AlphaBlendEnable = true;
             return (posX < perimeter.xMax && posX > perimeter.xMin &&
                      posZ < perimeter.zMax && posZ > perimeter.zMin);
         }

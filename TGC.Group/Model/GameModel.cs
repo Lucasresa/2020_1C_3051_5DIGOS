@@ -11,7 +11,6 @@ using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Bullet;
-using TGC.Group.Model.Bullet.Bodies;
 using TGC.Group.Model.MeshBuilders;
 using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
@@ -36,22 +35,22 @@ namespace TGC.Group.Model
         private float time;
         private Perimeter currentCameraArea;
         private List<TgcMesh> vegetation = new List<TgcMesh>();
-        private List<TgcMesh> Meshes = new List<TgcMesh>();
-        private Sky skyBox;
-        private Ship ship;
+        private List<TgcMesh> inventory = new List<TgcMesh>();
+        private CameraFPS camera;
         private Terrain terrain;
         private Water water;
+        private Sky skyBox;
+        private Ship ship;
         private Shark shark;
         private MeshBuilder meshBuilder;
-        private bool showDebugInfo { get; set; }
-        private CameraFPS camera;
-        
-        private TGCVector3 collisionPoint = TGCVector3.Empty;
         private RigidBodyManager rigidBodyManager;
-        private TgcPickingRay pickingRay;
-        private List<TgcMesh> inventory = new List<TgcMesh>();
+        
+        private bool showDebugInfo { get; set; }
         private bool showInventory { get; set; }
         private bool showEnterShipInfo { get; set; }
+
+        private TgcPickingRay pickingRay;
+        private TGCVector3 collisionPoint = TGCVector3.Empty;
 
         #endregion
 
@@ -81,10 +80,8 @@ namespace TGC.Group.Model
 
             #region Meshes
             ship = new Ship(MediaDir, ShadersDir);
-            shark = new Shark(MediaDir, ShadersDir);
-            
-            MeshDuplicator.InitOriginalMeshes();
-            meshInitializer();
+            shark = new Shark(MediaDir, ShadersDir);                      
+            var Meshes = meshInitializer();
             #endregion
                         
             #region Mundo fisico
@@ -180,16 +177,11 @@ namespace TGC.Group.Model
 
             #region Renderizado
 
-            if (camera.position.Y > 0)
+            if (isOutside())
             {
                 skyBox.Render();
                 water.Render();
-                vegetation.ForEach(vegetation => {
-                    if (skyBox.inSkyBox(vegetation))
-                    {
-                        vegetation.AlphaBlendEnable = true;
-                        vegetation.Render();
-                    } });
+                vegetation.ForEach(vegetation => { if (skyBox.inSkyBox(vegetation)) vegetation.Render(); } );
             }
 
             rigidBodyManager.Render();
@@ -197,6 +189,11 @@ namespace TGC.Group.Model
             #endregion
 
             PostRender();
+        }
+
+        private bool isOutside()
+        {
+            return camera.position.Y > 0;
         }
 
         public override void Dispose()
@@ -210,8 +207,11 @@ namespace TGC.Group.Model
 
         #region Metodos Privados
 
-        private void meshInitializer()
+        private List<TgcMesh> meshInitializer()
         {
+            MeshDuplicator.InitOriginalMeshes();
+            List<TgcMesh> Meshes = new List<TgcMesh>();
+
             #region Ubicar meshes
             var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 100);
             meshBuilder.LocateMeshesInTerrain(ref normalCorals, terrain.SizeWorld(), terrain.world);
@@ -255,6 +255,8 @@ namespace TGC.Group.Model
             Meshes.AddRange(rock);
             Meshes.AddRange(normalFish);
             Meshes.AddRange(yellowFish);
+
+            return Meshes;
             #endregion
         }
         
