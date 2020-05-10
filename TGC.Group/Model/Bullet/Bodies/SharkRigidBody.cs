@@ -15,7 +15,7 @@ namespace TGC.Group.Model.Bullet.Bodies
     class SharkRigidBody : RigidBody
     {
         #region Atributos
-        private float SHARK_HEIGHT = 300; 
+        private float SHARK_HEIGHT = 600; 
 
         private TGCVector3 scale = new TGCVector3(5, 5, 5);
         private TGCVector3 position = new TGCVector3(-2885, 1420, -525);
@@ -27,9 +27,9 @@ namespace TGC.Group.Model.Bullet.Bodies
         private Terrain terrain;
         private bool activateMove = false;
         private float MaxYRotation = FastMath.PI;
-        private float MaxAxisRotation = FastMath.PI;
+        private float MaxAxisRotation = FastMath.PI_HALF;
         private float acumulatedYRotation = 0;
-        private float acumulatedAxisRotation = 0;
+        private float acumulatedXRotation = 0;
         #endregion
 
         #region Constructor
@@ -62,9 +62,7 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public override void Update(TgcD3dInput input, float elapsedTime)
         {
-            var YRotation = FastMath.PI * 0.7f * elapsedTime;
-            var axisStepRotation = FastMath.PI_HALF * 0.7f * elapsedTime;
-            var speed = 400;
+            var speed = 1200;
 
             /***
              * Hacer que el tiburon se mueva y que detecte si tiene obstaculos delante de el
@@ -74,81 +72,48 @@ namespace TGC.Group.Model.Bullet.Bodies
              * 
              * 
              */
-            
-            if(activateMove)
+            var XRotation = 0f;
+            var YRotation = 0f;
+
+            if (activateMove)
             {
                 var headOffsetPosition = director * -1000; 
                 terrain.world.interpoledHeight(body.CenterOfMassPosition.X + headOffsetPosition.X, body.CenterOfMassPosition.Z + headOffsetPosition.Z, out float Y);
+            
+                if (body.CenterOfMassPosition.Y - Y < SHARK_HEIGHT - 50 && acumulatedXRotation < MaxAxisRotation)
+                    XRotation = FastMath.PI * 0.1f * elapsedTime;                   
+                else if (body.CenterOfMassPosition.Y - Y >= SHARK_HEIGHT + 50 && acumulatedXRotation > 0) 
+                    XRotation = -FastMath.PI * 0.1f * elapsedTime;
+                if (!skybox.Contains(this) && MaxYRotation - acumulatedYRotation > 0)
+                    YRotation = FastMath.PI * 0.5f * elapsedTime;
+                else 
+                    acumulatedYRotation = 0;
 
-                /*if (body.CenterOfMassPosition.Y - Y < SHARK_HEIGHT - 50)
-                {
-                    acumulatedAxisRotation += axisStepRotation;
-                    if (MaxAxisRotation - acumulatedAxisRotation > 0)
-                    {
-                        TGCVector3 rotationAxis = TGCVector3.Cross(TGCVector3.Up, director);
-                        director.TransformCoordinate(TGCMatrix.RotationAxis(rotationAxis, axisStepRotation));
-                        mesh.Transform = TGCMatrix.Translation(TGCVector3.Empty) * TGCMatrix.RotationAxis(rotationAxis, axisStepRotation) * new TGCMatrix(body.InterpolationWorldTransform);
-                        body.WorldTransform = mesh.Transform.ToBulletMatrix();
-                    }
-                }
-                else if (body.CenterOfMassPosition.Y - Y >= SHARK_HEIGHT && acumulatedAxisRotation != 0) 
-                {
-                    var rotationAxis = TGCVector3.Cross(TGCVector3.Up, director);
-                    director.TransformCoordinate(TGCMatrix.RotationAxis(rotationAxis, -acumulatedAxisRotation));
-                    mesh.Transform = TGCMatrix.Translation(TGCVector3.Empty) * TGCMatrix.RotationAxis(rotationAxis, -acumulatedAxisRotation) * new TGCMatrix(body.InterpolationWorldTransform);
-                    body.WorldTransform = mesh.Transform.ToBulletMatrix();
-                    acumulatedAxisRotation = 0;
-
-                }
-                */
-                if (!skybox.Contains(this))
-                {
-                    acumulatedYRotation += YRotation;
-                    if (MaxYRotation - acumulatedYRotation > 0)
-                    {
-                        director.TransformCoordinate(TGCMatrix.RotationY(YRotation));
-                        mesh.Transform = TGCMatrix.Translation(TGCVector3.Empty) * TGCMatrix.RotationY(YRotation) * new TGCMatrix(body.InterpolationWorldTransform);
-                        body.WorldTransform = mesh.Transform.ToBulletMatrix();
-                    } else
-                        acumulatedYRotation = 0;
-                }
+                acumulatedXRotation += XRotation;
+                acumulatedYRotation += YRotation;
 
                 body.ActivationState = ActivationState.ActiveTag;
                 body.LinearVelocity = director.ToBulletVector3() * -speed;
                 ray.Origin = new TGCVector3(body.CenterOfMassPosition);
+
+                director.TransformCoordinate(TGCMatrix.RotationY(YRotation));
+                var rotationAxis = TGCVector3.Cross(TGCVector3.Up, director);
+                director.TransformCoordinate(TGCMatrix.RotationAxis(rotationAxis, XRotation));
+
+                TGCQuaternion rotationX = TGCQuaternion.RotationAxis(new TGCVector3(1.0f, 0.0f, 0.0f), XRotation);
+                TGCQuaternion rotationY = TGCQuaternion.RotationAxis(new TGCVector3(0.0f, 1.0f, 0.0f), YRotation);
+                TGCQuaternion rotationZ = TGCQuaternion.RotationAxis(new TGCVector3(0.0f, 0.0f, 1.0f), 0);
+                TGCQuaternion rotation = rotationX * rotationY * rotationZ;
+                if (XRotation != 0 || YRotation != 0)
+                {
+                    mesh.Transform = TGCMatrix.Translation(TGCVector3.Empty) *
+                                     TGCMatrix.RotationTGCQuaternion(rotation) * 
+                                     new TGCMatrix(body.InterpolationWorldTransform);
+                    body.WorldTransform = mesh.Transform.ToBulletMatrix();
+                }
             }
 
             if (input.keyPressed(Key.T)) activateMove = !activateMove;
-
-            if (input.keyDown(Key.UpArrow))
-            {
-                //Activa el comportamiento de la simulacion fisica para la capsula
-                body.ActivationState = ActivationState.ActiveTag;
-                body.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
-                body.ApplyCentralImpulse(-100 * director.ToBulletVector3());
-            }
-
-            if (input.keyDown(Key.DownArrow))
-            {
-                //Activa el comportamiento de la simulacion fisica para la capsula
-                body.ActivationState = ActivationState.ActiveTag;
-                body.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
-                body.ApplyCentralImpulse(100 * director.ToBulletVector3());
-            }
-
-            if (input.keyDown(Key.LeftArrow))
-            {
-                director.TransformCoordinate(TGCMatrix.RotationY(-YRotation * 0.01f));
-                mesh.Transform = TGCMatrix.Translation(TGCVector3.Empty) * TGCMatrix.RotationY(-YRotation * 0.01f) * new TGCMatrix(body.InterpolationWorldTransform);
-                body.WorldTransform = mesh.Transform.ToBulletMatrix();
-            }
-
-            if (input.keyDown(Key.RightArrow))
-            {
-                director.TransformCoordinate(TGCMatrix.RotationY(YRotation * 0.01f));
-                mesh.Transform = TGCMatrix.Translation(TGCVector3.Empty) * TGCMatrix.RotationY(YRotation * 0.01f) * new TGCMatrix(body.InterpolationWorldTransform);
-                body.WorldTransform = mesh.Transform.ToBulletMatrix();
-            }
 
             if (input.keyDown(Key.P))
             {
@@ -157,7 +122,6 @@ namespace TGC.Group.Model.Bullet.Bodies
                 director = new TGCVector3(0, 0, 1);
                 activateMove = false;
             }
-
         }
 
         public override void Render()
