@@ -51,7 +51,6 @@ namespace TGC.Group.Model.Inventory
             var lookAtRigidBody = commonRigidBody.Find(rigidBody =>
             {
                 var mesh = rigidBody.Mesh;
-                mesh.Scale = new TGCVector3(10, 10, 10);
                 var aabb = mesh.BoundingBox;
 
                 intersected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabb, out TGCVector3 collisionPoint);

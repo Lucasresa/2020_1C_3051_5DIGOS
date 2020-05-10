@@ -12,7 +12,7 @@ namespace TGC.Group.Model.Bullet.Bodies
     class CommonRigidBody
     {
         #region Atributos
-        public Vector3 Scale = new Vector3(10, 10, 10);
+        public TGCVector3 Scale = new TGCVector3(10, 10, 10);
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
 
         public TgcMesh Mesh;
@@ -32,7 +32,8 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             body = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
             body.CenterOfMassTransform = TGCMatrix.Translation(Mesh.Position).ToBulletMatrix();
-            body.CollisionShape.LocalScaling = Scale;
+            body.CollisionShape.LocalScaling = Scale.ToBulletVector3();
+            Mesh.BoundingBox.scaleTranslate(Mesh.Position, Scale);
         }
         
         public void Render()

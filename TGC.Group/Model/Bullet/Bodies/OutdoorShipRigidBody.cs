@@ -32,15 +32,12 @@ namespace TGC.Group.Model.Bullet.Bodies
             body = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
             body.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position)).ToBulletMatrix();
             body.CollisionShape.LocalScaling = scale.ToBulletVector3();
-            Mesh.Scale = scale;
-            Mesh.Position = position;
+            Mesh.BoundingBox.scaleTranslate(position, scale);
         }
 
         public void Render()
         {
             Mesh.Render();
-            Mesh.updateBoundingBox();
-            Mesh.BoundingBox.Render();
         }
 
         public void Dispose()
