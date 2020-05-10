@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.DirectX.DirectInput;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TGC.Core.Direct3D;
+using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
 
@@ -31,13 +33,14 @@ namespace TGC.Group.Model.Draw
 
         private float oxygenPercentage = 100;
         private float lifePercentage = 100;
-
+        public TgcD3dInput input;
         private TgcText2D DrawText = new TgcText2D();
 
-        public CharacterStatus(string mediaDir, string shadersDir)
+        public CharacterStatus(string mediaDir, string shadersDir, TgcD3dInput input)
         {
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
+            this.input = input;
             initializer();
         }
 
@@ -58,7 +61,11 @@ namespace TGC.Group.Model.Draw
 
         public void Update()
         {
-            UpdateOxygen();
+            if (!isDead())
+            {
+                UpdateOxygen();
+                UpdateLife();
+            }
         }
 
         private void UpdateOxygen()
@@ -72,6 +79,30 @@ namespace TGC.Group.Model.Draw
             var initialScale = oxygen.initialScaleSprite;
             var newScale = new TGCVector2((oxygenPercentage / Constants.oxygen.max) * initialScale.X, initialScale.Y);
             oxygen.sprite.Scaling = newScale;
+        }
+
+        private void UpdateLife()
+        {
+            var damage = 5f; // TODO: ver como contamos el daño, si recibe un daño fijo o depende de algo
+            if (receivedAnAttack())
+            {
+                lifePercentage -= damage;
+                lifePercentage = FastMath.Clamp(lifePercentage, Constants.life.min, Constants.life.max);
+
+                var initialScale = life.initialScaleSprite;
+                var newScale = new TGCVector2((lifePercentage / Constants.life.max) * initialScale.X, initialScale.Y);
+                life.sprite.Scaling = newScale;
+            }
+        }
+
+        private bool receivedAnAttack()
+        {
+            // TODO: Podriamos decir que recibio un ataque si el tiburon colisiono o se acerco a cierta distancia al personaje
+            if (input.keyPressed(Key.Q))
+                return true;
+            else
+                return false;
+
         }
 
         private bool canRecoverOxygen()
@@ -98,8 +129,8 @@ namespace TGC.Group.Model.Draw
         }
 
         private bool isDead()
-        {
-            return oxygenPercentage == 0;
+        {            
+            return oxygenPercentage == 0 || lifePercentage == 0;
         }
     }
 }

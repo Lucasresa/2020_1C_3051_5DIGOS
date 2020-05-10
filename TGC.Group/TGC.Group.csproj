@@ -108,9 +108,8 @@
     <Compile Include="Model\Bullet\RigidBodyManager.cs" />
     <Compile Include="Model\Bullet\Bodies\SharkRigidBody.cs" />
     <Compile Include="Model\Bullet\Bodies\TerrainRigidBody.cs" />
-    <Compile Include="Model\Draw\LookAt.cs" />
-    <Compile Include="Model\Draw\Bar.cs" />
     <Compile Include="Model\Draw\CharacterStatus.cs" />
+    <Compile Include="Model\Draw\Sprite.cs" />
     <Compile Include="Model\Inventory\InventoryManagement.cs" />
     <Compile Include="Model\Meshes\CommonMesh.cs" />
     <Compile Include="Model\GameModel.cs" />

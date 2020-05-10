@@ -69,7 +69,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             else
                 position = outdoorPosition;
 
-            status = new CharacterStatus(MediaDir, ShadersDir);
+            status = new CharacterStatus(MediaDir, ShadersDir, input);
             inventory = new InventoryManagement(input, MediaDir, ShadersDir);
 
             prevLatitude = Camera.Latitude;
