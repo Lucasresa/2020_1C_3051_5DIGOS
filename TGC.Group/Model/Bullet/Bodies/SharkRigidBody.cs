@@ -53,10 +53,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         public override void Init()
         {
             Mesh.Transform = TGCMatrix.Scaling(scale) * TGCMatrix.Translation(position);
-            //            body = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
-            //            body.SetMassProps(1, new Vector3(1, 1, 1));
             body = rigidBodyFactory.CreateBox(new TGCVector3(88, 77, 280) * 2, 1000, position, 0, 0, 0, 0, false);
-//            body.CollisionShape.LocalScaling = scale.ToBulletVector3();
             body.CenterOfMassTransform = TGCMatrix.Translation(position).ToBulletMatrix();
         }
 
@@ -65,8 +62,8 @@ namespace TGC.Group.Model.Bullet.Bodies
             var speed = 1200;
 
             /***
-             * Hacer que el tiburon se mueva y que detecte si tiene obstaculos delante de el
-             * Hacer que solo se mueva dentro del skybox para que este dentro del rango del jugador (personaje)
+             * Hacer que el tiburon se mueva y que detecte si tiene obstaculos delante de el -- Falta que detecte a los peces como obstaculos
+             * DONE Hacer que solo se mueva dentro del skybox para que este dentro del rango del jugador (personaje)
              * Hacer que el tiburon persiga al jugador y busque colisionar con este
              * Una vez que haga la colision el tiburon debera volver a su movimiento normal de "asechar" por un tiempo y luego volver a atacar
              * 
@@ -96,18 +93,14 @@ namespace TGC.Group.Model.Bullet.Bodies
                 body.LinearVelocity = director.ToBulletVector3() * -speed;
                 ray.Origin = new TGCVector3(body.CenterOfMassPosition);
 
-                director.TransformCoordinate(TGCMatrix.RotationY(YRotation));
-                var rotationAxis = TGCVector3.Cross(TGCVector3.Up, director);
-                director.TransformCoordinate(TGCMatrix.RotationAxis(rotationAxis, XRotation));
-
-                TGCQuaternion rotationX = TGCQuaternion.RotationAxis(new TGCVector3(1.0f, 0.0f, 0.0f), XRotation);
-                TGCQuaternion rotationY = TGCQuaternion.RotationAxis(new TGCVector3(0.0f, 1.0f, 0.0f), YRotation);
-                TGCQuaternion rotationZ = TGCQuaternion.RotationAxis(new TGCVector3(0.0f, 0.0f, 1.0f), 0);
-                TGCQuaternion rotation = rotationX * rotationY * rotationZ;
                 if (XRotation != 0 || YRotation != 0)
                 {
+                    director.TransformCoordinate(TGCMatrix.RotationY(YRotation));
+                    var rotationAxis = TGCVector3.Cross(TGCVector3.Up, director);
+                    director.TransformCoordinate(TGCMatrix.RotationAxis(rotationAxis, XRotation));
+
                     mesh.Transform = TGCMatrix.Translation(TGCVector3.Empty) *
-                                     TGCMatrix.RotationTGCQuaternion(rotation) * 
+                                     TGCMatrix.RotationYawPitchRoll(YRotation, XRotation, 0) * 
                                      new TGCMatrix(body.InterpolationWorldTransform);
                     body.WorldTransform = mesh.Transform.ToBulletMatrix();
                 }
