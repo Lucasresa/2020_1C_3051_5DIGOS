@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
@@ -19,8 +20,9 @@ namespace TGC.Group.Model.Draw
             public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
         }
 
-        private Bar life;
-        private Bar oxygen;
+        private Sprite life;
+        private Sprite oxygen;
+        private Sprite lookAt;
 
         public bool canBreathe { get; set; }
 
@@ -41,11 +43,17 @@ namespace TGC.Group.Model.Draw
 
         private void initializer()
         {
-            life = new Bar(MediaDir, ShadersDir);
-            life.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 0), "barra_vida.png");
+            life = new Sprite(MediaDir, ShadersDir);
+            life.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 0), "barra_vida");
 
-            oxygen = new Bar(MediaDir, ShadersDir);
-            oxygen.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 30), "barra_oxigeno.png");
+            oxygen = new Sprite(MediaDir, ShadersDir);
+            oxygen.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 30), "barra_oxigeno");
+            
+            lookAt = new Sprite(MediaDir, ShadersDir);
+            lookAt.setInitialSprite(new TGCVector2(1, 1), "mira");
+            var positionX = (Constants.screen.width - lookAt.sprite.texture.Size.Width) / 2;
+            var positionY = (Constants.screen.height - lookAt.sprite.texture.Size.Height) / 2;
+            lookAt.sprite.Position = new TGCVector2(positionX, positionY);
         }
 
         public void Update()
@@ -75,7 +83,7 @@ namespace TGC.Group.Model.Draw
         {
             life.Render();
             oxygen.Render();
-
+            lookAt.Render();
             life.drawText("LIFE", Color.MediumVioletRed, new Point(10, 20), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
             oxygen.drawText("OXYGEN", Color.DeepSkyBlue, new Point(10, 50), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
 
@@ -86,6 +94,7 @@ namespace TGC.Group.Model.Draw
         {
             life.Dispose();
             oxygen.Dispose();
+            lookAt.Dispose();
         }
 
         private bool isDead()
