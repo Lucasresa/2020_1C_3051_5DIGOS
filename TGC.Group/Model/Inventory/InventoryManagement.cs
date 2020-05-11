@@ -23,13 +23,39 @@ namespace TGC.Group.Model.Inventory
         private bool showInventory { get; set; }
         private TgcText2D DrawText = new TgcText2D();
         public TGCVector3 characterPosition { get; set; }
-        private List<CommonRigidBody> inventory = new List<CommonRigidBody>();
+
+        private Dictionary<string, List<CommonRigidBody>> inventory;
+        private List<CommonRigidBody> gold = new List<CommonRigidBody>();
+        private List<CommonRigidBody> iron = new List<CommonRigidBody>();
+        private List<CommonRigidBody> fish = new List<CommonRigidBody>();
+        private List<CommonRigidBody> normalCoral = new List<CommonRigidBody>();
+        private List<CommonRigidBody> rock = new List<CommonRigidBody>();
+        private List<CommonRigidBody> silver = new List<CommonRigidBody>();
+        private List<CommonRigidBody> spiralCoral = new List<CommonRigidBody>();
+        private List<CommonRigidBody> treeCoral = new List<CommonRigidBody>();
+        private List<CommonRigidBody> yellowFish = new List<CommonRigidBody>();
+
 
         public InventoryManagement(TgcD3dInput input, string mediaDir, string shadersDir)
         {
             Input = input;
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
+            initializer();
+        }
+
+        private void initializer()
+        {
+            inventory = new Dictionary<string, List<CommonRigidBody>>();
+            inventory.Add("gold", gold);
+            inventory.Add("silver", silver);
+            inventory.Add("rock-n", rock);
+            inventory.Add("iron", iron);
+            inventory.Add("fish", fish);
+            inventory.Add("yellowFish", yellowFish);
+            inventory.Add("spiralCoral", spiralCoral);
+            inventory.Add("normalCoral", normalCoral);
+            inventory.Add("treeCoral", treeCoral);
         }
 
         public void Update(TgcD3dInput input, DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody)
@@ -62,10 +88,17 @@ namespace TGC.Group.Model.Inventory
 
             if (isMatch)
             {
-                inventory.Add(lookAtRigidBody);
+                splitItems(lookAtRigidBody);
                 dynamicsWorld.RemoveRigidBody(lookAtRigidBody.body);
                 commonRigidBody.Remove(lookAtRigidBody);
             }
+        }
+
+        private void splitItems(CommonRigidBody lookAtRigidBody)
+        {
+            var name = lookAtRigidBody.Mesh.Name;
+            var key = name.Substring(0, name.IndexOf("_"));
+            inventory[key].Add(lookAtRigidBody);
         }
 
         public void Render()
@@ -76,7 +109,21 @@ namespace TGC.Group.Model.Inventory
 
         public void Dispose()
         {
-            inventory.RemoveRange(0, inventory.Count);
+            DisposeAll(gold);
+            DisposeAll(silver);
+            DisposeAll(rock);
+            DisposeAll(iron);
+            DisposeAll(fish);
+            DisposeAll(yellowFish);
+            DisposeAll(spiralCoral);
+            DisposeAll(normalCoral);
+            DisposeAll(treeCoral);
+        }
+
+        private void DisposeAll(List<CommonRigidBody> list)
+        {
+            list.ForEach(rigidBody => rigidBody.Dispose());
+            list.RemoveRange(0, list.Count);
         }
     }
 }
