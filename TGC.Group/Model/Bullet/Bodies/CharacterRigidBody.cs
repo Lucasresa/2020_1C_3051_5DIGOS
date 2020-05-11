@@ -49,6 +49,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         private TgcPickingRay pickingRay;
         private CharacterStatus status;
         private InventoryManagement inventory;
+        private bool showEnterShipInfo = false;
         public TgcBoundingAxisAlignBox aabbShip { get; set; }
 
         public CharacterRigidBody(TgcD3dInput Input, CameraFPS camera, string mediaDir, string shadersDir)
@@ -164,7 +165,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             status.Render();
             inventory.Render();
 
-            if(distanceBetweenCharacterAndShip())
+            if(showEnterShipInfo)
                 DrawText.drawText("PRESIONA E PARA ENTRAR A LA NAVE", 500, 400, Color.White);
         }
 
@@ -177,6 +178,11 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public void Teleport()
         {
+            if (isInsideShip() || isNearShip())
+                showEnterShipInfo = true;
+            else
+                showEnterShipInfo = false;
+
             if (input.keyPressed(Key.E))
             {
                 if(isInsideShip())
@@ -228,23 +234,24 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             pickingRay.updateRay();
 
-            var intersected = intersectBetweenCharacterAndShip();
-            var inSight = distanceBetweenCharacterAndShip();
-
+            var intersected = intersectBetweenCharacterAndShip(out TGCVector3 collisionPoint);
+            var inSight = distanceBetweenCharacterAndShip(collisionPoint);
+           
             return intersected && inSight;
         }
 
-        private bool intersectBetweenCharacterAndShip()
+        private bool intersectBetweenCharacterAndShip( out TGCVector3 collisionPoint )
         {// TODO: Despues podriamos considerar la idea de si esta mirando el techo
+            collisionPoint = TGCVector3.Empty;
             if (isInsideShip())
                 return true;
             else
-                return TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabbShip, out _);
+                return TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabbShip, out collisionPoint);
         }
 
-        private bool distanceBetweenCharacterAndShip()
+        private bool distanceBetweenCharacterAndShip(TGCVector3 collisionPoint)
         {
-            return Math.Sqrt(TGCVector3.LengthSq(Camera.position, Camera.getOutdoorPosition())) < 500 || isInsideShip();
+            return Math.Sqrt(TGCVector3.LengthSq(Camera.position, collisionPoint)) < 500 || isInsideShip();
         }
     }
 }
