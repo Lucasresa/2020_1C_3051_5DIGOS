@@ -4,6 +4,7 @@ using Microsoft.DirectX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Windows.Forms;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Collision;
@@ -90,6 +91,12 @@ namespace TGC.Group.Model.Bullet.Bodies
         public void Update(DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody)
         {
             var speed = Constants.speed;
+            
+            inventory.Update(input, dynamicsWorld, ref commonRigidBody, Camera.lockCam);
+
+            if (Camera.lockCam)
+                return;
+
             body.ActivationState = ActivationState.ActiveTag;
 
             canRecoverOxygen();
@@ -141,7 +148,7 @@ namespace TGC.Group.Model.Bullet.Bodies
                 body.ApplyCentralImpulse(Vector3.UnitY * -5);
 
             if (input.keyUp(Key.W) || input.keyUp(Key.S) || input.keyUp(Key.A) || input.keyUp(Key.D)
-                 || input.keyUp(Key.LeftControl) || input.keyUp(Key.Space))
+                    || input.keyUp(Key.LeftControl) || input.keyUp(Key.Space))
             {
                 body.LinearVelocity = Vector3.Zero;
                 body.AngularVelocity = Vector3.Zero;
@@ -153,9 +160,9 @@ namespace TGC.Group.Model.Bullet.Bodies
 
             #endregion
 
-            status.Update();
             movePositionToInventory();
-            inventory.Update(input, dynamicsWorld, ref commonRigidBody);
+
+            status.Update();
 
             Teleport();
         }

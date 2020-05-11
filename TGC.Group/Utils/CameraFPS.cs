@@ -23,7 +23,7 @@ namespace TGC.Group.Utils
         public float movementSpeed = 500f;
         public float jumpSpeed = 500f;
         public TGCVector3 position;
-
+        public bool lockCam = false;
         private TgcD3dInput Input { get; }
         private Point mouseCenter = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
         private TGCMatrix cameraRotation;
@@ -33,8 +33,8 @@ namespace TGC.Group.Utils
                 
         private float limitMax = FastMath.ToRad(90);
         private float limitMin = FastMath.ToRad(-60);
-        
-        #endregion
+
+         #endregion
 
         #region Constructores
 
@@ -61,8 +61,15 @@ namespace TGC.Group.Utils
         #endregion
 
         public override void UpdateCamera(float elapsedTime)
-        {            
-            CameraRotation();           
+        {
+            if (Input.keyPressed(Key.I))
+                lockCam = !lockCam;
+
+            if (lockCam)
+                return;
+
+            Cursor.Hide();
+            CameraRotation();
             var target = TGCVector3.TransformNormal(directionView, cameraRotation);
             var targetPosition = position + target;
             var rotacionVectorUP = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
