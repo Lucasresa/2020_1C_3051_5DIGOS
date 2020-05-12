@@ -110,9 +110,9 @@
     <Compile Include="Model\Bullet\Bodies\TerrainRigidBody.cs" />
     <Compile Include="Model\Draw\CharacterStatus.cs" />
     <Compile Include="Model\Draw\Sprite.cs" />
+    <Compile Include="Model\GameModel.cs" />
     <Compile Include="Model\Inventory\InventoryManagement.cs" />
     <Compile Include="Model\Meshes\CommonMesh.cs" />
-    <Compile Include="Model\GameModel.cs" />
     <Compile Include="Model\MeshBuilders\MeshBuilder.cs" />
     <Compile Include="Model\MeshBuilders\MeshDuplicator.cs" />
     <Compile Include="Model\MeshBuilders\MeshType.cs" />

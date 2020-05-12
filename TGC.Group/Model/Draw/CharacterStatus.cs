@@ -10,6 +10,7 @@ using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
+using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Draw
 {
@@ -24,7 +25,6 @@ namespace TGC.Group.Model.Draw
 
         private Sprite life;
         private Sprite oxygen;
-        private Sprite lookAt;
 
         public bool canBreathe { get; set; }
 
@@ -50,13 +50,7 @@ namespace TGC.Group.Model.Draw
             life.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 0), "barra_vida");
 
             oxygen = new Sprite(MediaDir, ShadersDir);
-            oxygen.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 30), "barra_oxigeno");
-            
-            lookAt = new Sprite(MediaDir, ShadersDir);
-            lookAt.setInitialSprite(new TGCVector2(1, 1), "mira");
-            var positionX = (Constants.screen.width - lookAt.sprite.texture.Size.Width) / 2;
-            var positionY = (Constants.screen.height - lookAt.sprite.texture.Size.Height) / 2;
-            lookAt.sprite.Position = new TGCVector2(positionX, positionY);
+            oxygen.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 30), "barra_oxigeno");   
         }
 
         public void Update()
@@ -102,7 +96,6 @@ namespace TGC.Group.Model.Draw
                 return true;
             else
                 return false;
-
         }
 
         private bool canRecoverOxygen()
@@ -114,7 +107,6 @@ namespace TGC.Group.Model.Draw
         {
             life.Render();
             oxygen.Render();
-            lookAt.Render();
             life.drawText("LIFE", Color.MediumVioletRed, new Point(10, 20), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
             oxygen.drawText("OXYGEN", Color.DeepSkyBlue, new Point(10, 50), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
 
@@ -125,7 +117,6 @@ namespace TGC.Group.Model.Draw
         {
             life.Dispose();
             oxygen.Dispose();
-            lookAt.Dispose();
         }
 
         private bool isDead()

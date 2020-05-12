@@ -4,14 +4,12 @@ namespace TGC.Group.Model.Watercraft
 {
     class Ship
     {
-        protected string FILE_NAME;
+        #region Atributos
+        private string FILE_NAME, MediaDir, ShadersDir;
+        public TgcMesh OutdoorMesh, IndoorMesh;
+        #endregion
 
-        private string MediaDir;
-        private string ShadersDir;
-
-        public TgcMesh OutdoorMesh;
-        public TgcMesh IndoorMesh;
-
+        #region Constructor
         public Ship(string mediaDir, string shadersDir)
         {
             FILE_NAME = "ship-TgcScene.xml";
@@ -19,11 +17,14 @@ namespace TGC.Group.Model.Watercraft
             ShadersDir = shadersDir;
             LoadShip();
         }
+        #endregion
 
-        public void LoadShip()
+        #region Metodos
+        private void LoadShip()
         {
             OutdoorMesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
             IndoorMesh = OutdoorMesh.createMeshInstance("InsideRoom");
         }
+        #endregion
     }
 }

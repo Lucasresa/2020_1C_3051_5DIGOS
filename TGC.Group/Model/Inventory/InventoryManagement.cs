@@ -6,16 +6,24 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using TGC.Core.Collision;
+using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
 using TGC.Group.Model.Bullet.Bodies;
+using TGC.Group.Model.Draw;
 
 namespace TGC.Group.Model.Inventory
 {
     class InventoryManagement
     {
+        struct Constants
+        {
+            public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
+        }
+
         private string MediaDir;
         private string ShadersDir;
         private TgcD3dInput Input;
@@ -23,6 +31,8 @@ namespace TGC.Group.Model.Inventory
         private bool showInventory { get; set; }
         private TgcText2D DrawText = new TgcText2D();
         public TGCVector3 characterPosition { get; set; }
+        private Sprite lookAt;
+        private (int posX, int posY) mouseCenter;
 
         private Dictionary<string, List<CommonRigidBody>> inventory;
         private List<CommonRigidBody> gold = new List<CommonRigidBody>();
@@ -34,7 +44,6 @@ namespace TGC.Group.Model.Inventory
         private List<CommonRigidBody> spiralCoral = new List<CommonRigidBody>();
         private List<CommonRigidBody> treeCoral = new List<CommonRigidBody>();
         private List<CommonRigidBody> yellowFish = new List<CommonRigidBody>();
-
 
         public InventoryManagement(TgcD3dInput input, string mediaDir, string shadersDir)
         {
@@ -56,12 +65,22 @@ namespace TGC.Group.Model.Inventory
             inventory.Add("spiralCoral", spiralCoral);
             inventory.Add("normalCoral", normalCoral);
             inventory.Add("treeCoral", treeCoral);
+
+            lookAt = new Sprite(MediaDir, ShadersDir);
+            lookAt.setInitialSprite(new TGCVector2(1, 1), "mira");
+            mouseCenter.posX = (Constants.screen.width - lookAt.sprite.texture.Size.Width) / 2;
+            mouseCenter.posY = (Constants.screen.height - lookAt.sprite.texture.Size.Height) / 2;
+            lookAt.sprite.Position = new TGCVector2(mouseCenter.posX, mouseCenter.posY);
         }
 
-        public void Update(TgcD3dInput input, DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody)
+        public void Update(TgcD3dInput input, DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody, bool lockCam)
         {
-            if (Input.keyPressed(Key.J))
-                showInventory = !showInventory;
+            if (lockCam)
+                lookAt.sprite.Position = new TGCVector2 (Cursor.Position.X, Cursor.Position.Y);
+            else
+                lookAt.sprite.Position = new TGCVector2(mouseCenter.posX, mouseCenter.posY);
+
+            showInventory = lockCam;
 
             if (input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
                 addInventory(dynamicsWorld, ref commonRigidBody);
@@ -103,6 +122,7 @@ namespace TGC.Group.Model.Inventory
 
         public void Render()
         {
+            lookAt.Render();
             if (showInventory)
                 DrawText.drawText("Rocas " + rock.Count + 
                     "\nSilver: " + silver.Count , 500, 300, Color.White);
@@ -119,6 +139,7 @@ namespace TGC.Group.Model.Inventory
             DisposeAll(spiralCoral);
             DisposeAll(normalCoral);
             DisposeAll(treeCoral);
+            lookAt.Dispose();
         }
 
         private void DisposeAll(List<CommonRigidBody> list)
