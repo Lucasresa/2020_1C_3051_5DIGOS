@@ -104,7 +104,8 @@ namespace TGC.Group.Model.Inventory
         public void Render()
         {
             if (showInventory)
-                DrawText.drawText("Inventario:" + inventory.Count, 500, 300, Color.White);
+                DrawText.drawText("Rocas " + rock.Count + 
+                    "\nSilver: " + silver.Count , 500, 300, Color.White);
         }
 
         public void Dispose()
@@ -125,5 +126,18 @@ namespace TGC.Group.Model.Inventory
             list.ForEach(rigidBody => rigidBody.Dispose());
             list.RemoveRange(0, list.Count);
         }
+
+        public void craftWeapon()
+        {
+            if (rock.Count() >= 4 && silver.Count() >= 4)
+            {
+                rock.RemoveRange(0, 4);
+                silver.RemoveRange(0, 4);
+
+
+
+            }
+        }
+
     }
 }

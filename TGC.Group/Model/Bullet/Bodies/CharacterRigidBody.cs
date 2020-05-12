@@ -158,6 +158,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             inventory.Update(input, dynamicsWorld, ref commonRigidBody);
 
             Teleport();
+            crafting();
         }
 
         public void Render()
@@ -253,5 +254,14 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             return Math.Sqrt(TGCVector3.LengthSq(Camera.position, collisionPoint)) < 500 || isInsideShip();
         }
+
+        private void crafting()
+        {
+            if (input.keyDown(Key.M) && isInsideShip())
+            {
+                inventory.craftWeapon();
+            }
+        }
+
     }
 }
