@@ -74,7 +74,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             status = new CharacterStatus(MediaDir, ShadersDir, input);
             inventory = new InventoryManagement(input, MediaDir, ShadersDir);
 
-            prevLatitude = Camera.Latitude;
+            prevLatitude = Camera.latitude;
             Constants.planeDirector.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
 
             #region Create rigidBody
@@ -108,7 +108,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             var director = Camera.LookAt - Camera.position;
             director.Normalize();
 
-            var sideRotation = Camera.Latitude - prevLatitude;
+            var sideRotation = Camera.latitude - prevLatitude;
             var sideDirector = Constants.planeDirector;
             sideDirector.TransformCoordinate(TGCMatrix.RotationY(sideRotation));
 
@@ -217,7 +217,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             return Camera.position.Y > 3505;
         }
 
-        private bool isInsideShip()
+        public bool isInsideShip()
         {
             return Camera.position.Y < 0;
         }

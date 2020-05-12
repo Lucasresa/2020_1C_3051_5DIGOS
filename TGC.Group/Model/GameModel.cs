@@ -1,9 +1,9 @@
 using Microsoft.DirectX.DirectInput;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
-using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Bullet;
 using TGC.Group.Model.MeshBuilders;
@@ -11,15 +11,13 @@ using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Watercraft;
 using TGC.Group.Utils;
-using static TGC.Group.Model.Terrains.Terrain;
 
 namespace TGC.Group.Model
 {
     public class GameModel : TGCExample
-    { 
+    {
         #region Atributos
         private float time;
-        private Perimeter currentCameraArea;
         private List<TgcMesh> vegetation = new List<TgcMesh>();
         private CameraFPS camera;
         private Terrain terrain;
@@ -30,6 +28,18 @@ namespace TGC.Group.Model
         private MeshBuilder meshBuilder;
         private RigidBodyManager rigidBodyManager;
         private bool showDebugInfo { get; set; }
+        public struct Perimeter
+        {
+            public float xMin, xMax, zMin, zMax;
+
+            public Perimeter(float xMin, float xMax, float zMin, float zMax)
+            {
+                this.xMin = xMin;
+                this.xMax = xMax;
+                this.zMin = zMin;
+                this.zMax = zMax;
+            }
+        }
         #endregion
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
@@ -47,23 +57,23 @@ namespace TGC.Group.Model
 
         public override void Init()
         {
-            #region Camera 
+            #region Camera
             Camera = new CameraFPS(Input);
-            camera = (CameraFPS)Camera;            
+            camera = (CameraFPS)Camera;
             #endregion
             
             #region Mundo            
-            terrain = new Terrain(MediaDir, ShadersDir, TGCVector3.Empty);
-            water = new Water(MediaDir, ShadersDir, TGCVector3.Empty);
+            terrain = new Terrain(MediaDir, ShadersDir);
+            water = new Water(MediaDir, ShadersDir);
             skyBox = new Sky(MediaDir, ShadersDir, camera);
             #endregion
 
             #region Meshes
             ship = new Ship(MediaDir, ShadersDir);
-            shark = new Shark(MediaDir, ShadersDir);                      
-            var Meshes = meshInitializer();
+            shark = new Shark(MediaDir, ShadersDir);
+            var Meshes = meshInitializer(skyBox.currentPerimeter); // TODO: Ya que disminui la cantidad, hago que coloque los meshes dentro del skybox asi los vemos, luego cambiar por terrain.SizeWorld().
             #endregion
-                        
+
             #region Mundo fisico
             rigidBodyManager = new RigidBodyManager(MediaDir, ShadersDir);
             rigidBodyManager.Init(Input,terrain, camera, shark, ship, skyBox, ref Meshes);
@@ -74,14 +84,12 @@ namespace TGC.Group.Model
         {
             #region Update
             rigidBodyManager.Update(Input, ElapsedTime, TimeBetweenUpdates);
-            currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
+            skyBox.Update();
             #endregion
 
             #region Teclas
-
             if (Input.keyPressed(Key.F))
                 showDebugInfo = !showDebugInfo;
-
             #endregion
         }
 
@@ -105,22 +113,11 @@ namespace TGC.Group.Model
                                   0, 80, Color.Red);
 
 		        DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
-
-                DrawText.drawText("DATOS DEL AREA ACTUAL: ", 0, 130, Color.Red);
-
-                DrawText.drawText("RANGO DE X: " +
-                                    "\nMinimo " + currentCameraArea.xMin.ToString() +
-                                    "\nMaximo " + currentCameraArea.xMax.ToString() + "\n\n" +
-
-                                  "RANGO DE Z: " +
-                                    "\nMinimo " + currentCameraArea.zMin.ToString() +
-                                    "\nMaximo " + currentCameraArea.zMax.ToString(),
-                             0, 160, Color.Red);
             }
             #endregion
 
             #region Renderizado
-            if (isOutside())
+            if (camera.isOutside())
             {
                 skyBox.Render();
                 water.Render();
@@ -144,62 +141,35 @@ namespace TGC.Group.Model
 
         #region Metodos Privados
 
-        private List<TgcMesh> meshInitializer()
+        private List<TgcMesh> meshInitializer(Perimeter perimeter)
         {
-            MeshDuplicator.InitOriginalMeshes();
-            List<TgcMesh> Meshes = new List<TgcMesh>();
-
             #region Ubicar meshes
-            var normalCorals = meshBuilder.CreateNewScaledMeshes(MeshType.normalCoral, 100);
-            meshBuilder.LocateMeshesInTerrain(ref normalCorals, terrain.SizeWorld(), terrain.world);
-            var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 100);
-            meshBuilder.LocateMeshesInTerrain(ref treeCorals, terrain.SizeWorld(), terrain.world);
-            var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 100);
-            meshBuilder.LocateMeshesInTerrain(ref spiralCorals, terrain.SizeWorld(), terrain.world);
-            var goldOre = meshBuilder.CreateNewScaledMeshes(MeshType.goldOre, 100);
-            meshBuilder.LocateMeshesInTerrain(ref goldOre, terrain.SizeWorld(), terrain.world);
-            var silverOre = meshBuilder.CreateNewScaledMeshes(MeshType.silverOre, 100);
-            meshBuilder.LocateMeshesInTerrain(ref silverOre, terrain.SizeWorld(), terrain.world);
-            var ironOre = meshBuilder.CreateNewScaledMeshes(MeshType.ironOre, 100);
-            meshBuilder.LocateMeshesInTerrain(ref ironOre, terrain.SizeWorld(), terrain.world);
-            var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 100);
-            meshBuilder.LocateMeshesInTerrain(ref rock, terrain.SizeWorld(), terrain.world);
-            var normalFish = meshBuilder.CreateNewScaledMeshes(MeshType.normalFish, 100);
-            meshBuilder.LocateMeshesUpToTerrain(ref normalFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
-            var yellowFish = meshBuilder.CreateNewScaledMeshes(MeshType.yellowFish, 100);
-            meshBuilder.LocateMeshesUpToTerrain(ref yellowFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
-            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 500);
-            meshBuilder.LocateMeshesInTerrain(ref alga, terrain.SizeWorld(), terrain.world);
-            var alga_2 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_2, 500);
-            meshBuilder.LocateMeshesInTerrain(ref alga_2, terrain.SizeWorld(), terrain.world);
-            var alga_3 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_3, 500);
-            meshBuilder.LocateMeshesInTerrain(ref alga_3, terrain.SizeWorld(), terrain.world);
-            var alga_4 = meshBuilder.CreateNewScaledMeshes(MeshType.alga_4, 500);
-            meshBuilder.LocateMeshesInTerrain(ref alga_4, terrain.SizeWorld(), terrain.world);
-            #endregion
+            var Meshes = new List<TgcMesh>();
+            MeshDuplicator.InitOriginalMeshes();
 
-            #region Agregar meshes
-            vegetation.AddRange(alga);
-            vegetation.AddRange(alga_2);
-            vegetation.AddRange(alga_3);
-            vegetation.AddRange(alga_4);
-            Meshes.AddRange(normalCorals);
-            Meshes.AddRange(treeCorals);
-            Meshes.AddRange(spiralCorals);
-            Meshes.AddRange(goldOre);
-            Meshes.AddRange(silverOre);
-            Meshes.AddRange(ironOre);
-            Meshes.AddRange(rock);
-            Meshes.AddRange(normalFish);
-            Meshes.AddRange(yellowFish);
-
+            Meshes.AddRange(createMesh(MeshType.normalCoral, 5, perimeter));
+            Meshes.AddRange(createMesh(MeshType.treeCoral, 5, perimeter));
+            Meshes.AddRange(createMesh(MeshType.spiralCoral, 5, perimeter));
+            Meshes.AddRange(createMesh(MeshType.goldOre, 5, perimeter));
+            Meshes.AddRange(createMesh(MeshType.silverOre, 5, perimeter));
+            Meshes.AddRange(createMesh(MeshType.ironOre, 5, perimeter));
+            Meshes.AddRange(createMesh(MeshType.rock, 5, perimeter));
+            Meshes.AddRange(createMesh(MeshType.normalFish, 5, perimeter));
+            Meshes.AddRange(createMesh(MeshType.yellowFish, 5, perimeter));
+            vegetation.AddRange(createMesh(MeshType.alga, 5, perimeter));
+            vegetation.AddRange(createMesh(MeshType.alga_2, 5, perimeter));
+            vegetation.AddRange(createMesh(MeshType.alga_3, 5, perimeter));
+            vegetation.AddRange(createMesh(MeshType.alga_4, 5, perimeter));
+            #endregion 
+            
             return Meshes;
-            #endregion
         }
 
-        private bool isOutside()
+        private List<TgcMesh> createMesh(MeshType type, int quantity, Perimeter perimeter)
         {
-            return camera.position.Y > 0;
+            var meshes = meshBuilder.CreateNewScaledMeshes(type, quantity);
+            meshBuilder.LocateMeshesInWorld(type, ref meshes, perimeter, terrain.world, water.world);
+            return meshes;
         }
 
         #endregion

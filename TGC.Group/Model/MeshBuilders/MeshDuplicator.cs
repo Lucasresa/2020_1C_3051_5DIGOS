@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model.MeshBuilders
 {
     static class MeshDuplicator
     {
-
-        private static Dictionary<MeshType, CommonMesh> Meshes = new Dictionary<MeshType, CommonMesh>();
+        #region Atributos
         public static string MediaDir;
+        private static Dictionary<MeshType, CommonMesh> Meshes = new Dictionary<MeshType, CommonMesh>();
         private static int MeshCounter = 0;
+        #endregion
+
+        #region Metodos
         public static void InitOriginalMeshes()
         {
             if (MediaDir == null)
@@ -37,5 +39,6 @@ namespace TGC.Group.Model.MeshBuilders
             var originalMesh = Meshes[meshType].Mesh;
             return originalMesh.createMeshInstance(originalMesh.Name + "_" + MeshCounter++);
         }
+        #endregion
     }
 }

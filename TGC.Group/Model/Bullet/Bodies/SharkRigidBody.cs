@@ -12,8 +12,8 @@ namespace TGC.Group.Model.Bullet.Bodies
     class SharkRigidBody
     {
         #region Atributos
-        private TgcMesh Mesh;
         public RigidBody body;
+        private TgcMesh Mesh;
         private TGCVector3 scale = new TGCVector3(5, 5, 5);
         private TGCVector3 position = new TGCVector3(-2885, 1220, -525);
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;

@@ -7,8 +7,8 @@ namespace TGC.Group.Model.Bullet.Bodies
     class TerrainRigidBody
     {
         private Terrain Terrain;
-        public RigidBody body;
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
+        public RigidBody body;
 
         public TerrainRigidBody(Terrain terrain)
         {
