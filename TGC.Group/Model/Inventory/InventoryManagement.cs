@@ -150,13 +150,10 @@ namespace TGC.Group.Model.Inventory
 
         public void craftWeapon()
         {
-            if (rock.Count() >= 4 && silver.Count() >= 4)
+            if (rock.Count() >= 2 && silver.Count() >= 2)
             {
-                rock.RemoveRange(0, 4);
-                silver.RemoveRange(0, 4);
-
-
-
+                rock.RemoveRange(0, 2);
+                silver.RemoveRange(0, 2);
             }
         }
 
