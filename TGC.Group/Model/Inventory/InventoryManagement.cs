@@ -19,20 +19,20 @@ namespace TGC.Group.Model.Inventory
 {
     class InventoryManagement
     {
+        #region Atributos
         struct Constants
         {
             public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
         }
 
-        private string MediaDir;
-        private string ShadersDir;
+        private string MediaDir, ShadersDir;
         private TgcD3dInput Input;
-        public TgcPickingRay pickingRay { get; set; }
         private bool showInventory { get; set; }
         private TgcText2D DrawText = new TgcText2D();
-        public TGCVector3 characterPosition { get; set; }
         private Sprite lookAt;
         private (int posX, int posY) mouseCenter;
+        public TgcPickingRay pickingRay;
+        public TGCVector3 characterPosition;
 
         private Dictionary<string, List<CommonRigidBody>> inventory;
         private List<CommonRigidBody> gold = new List<CommonRigidBody>();
@@ -44,15 +44,19 @@ namespace TGC.Group.Model.Inventory
         private List<CommonRigidBody> spiralCoral = new List<CommonRigidBody>();
         private List<CommonRigidBody> treeCoral = new List<CommonRigidBody>();
         private List<CommonRigidBody> yellowFish = new List<CommonRigidBody>();
+        #endregion
 
-        public InventoryManagement(TgcD3dInput input, string mediaDir, string shadersDir)
+        #region Constructor
+        public InventoryManagement(string mediaDir, string shadersDir, TgcD3dInput input)
         {
             Input = input;
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
             initializer();
         }
+        #endregion
 
+        #region Metodos
         private void initializer()
         {
             inventory = new Dictionary<string, List<CommonRigidBody>>();
@@ -84,6 +88,8 @@ namespace TGC.Group.Model.Inventory
 
             if (input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
                 addInventory(dynamicsWorld, ref commonRigidBody);
+
+            crafting();
         }
 
         private void addInventory(DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody)
@@ -95,8 +101,7 @@ namespace TGC.Group.Model.Inventory
 
             var lookAtRigidBody = commonRigidBody.Find(rigidBody =>
             {
-                var mesh = rigidBody.Mesh;
-                var aabb = mesh.BoundingBox;
+                var aabb = rigidBody.getAABB();
 
                 intersected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabb, out TGCVector3 collisionPoint);
                 inSight = Math.Sqrt(TGCVector3.LengthSq(characterPosition, collisionPoint)) < 500;
@@ -115,7 +120,7 @@ namespace TGC.Group.Model.Inventory
 
         private void splitItems(CommonRigidBody lookAtRigidBody)
         {
-            var name = lookAtRigidBody.Mesh.Name;
+            var name = lookAtRigidBody.getName();
             var key = name.Substring(0, name.IndexOf("_"));
             inventory[key].Add(lookAtRigidBody);
         }
@@ -162,6 +167,7 @@ namespace TGC.Group.Model.Inventory
             {
                 rock.RemoveRange(0, 2);
                 silver.RemoveRange(0, 2);
+                MessageBox.Show("Se crafteo una arma exitosamente.");
             }
         }
 
@@ -173,8 +179,27 @@ namespace TGC.Group.Model.Inventory
                 normalCoral.RemoveRange(0, 1);
                 treeCoral.RemoveRange(0, 1);
                 iron.RemoveRange(0, 1);
+                MessageBox.Show("Se crafteo una caña exitorsamente.");
             }
         }
 
+        private void crafting()
+        {
+            if (isInsideShip())
+            {
+                if (Input.keyDown(Key.M))
+                    craftWeapon();
+
+                if (Input.keyDown(Key.N))
+                    craftRod();
+            }
+        }
+
+        private bool isInsideShip()
+        {
+            return characterPosition.Y < 0;
+        }
+
+        #endregion
     }
 }

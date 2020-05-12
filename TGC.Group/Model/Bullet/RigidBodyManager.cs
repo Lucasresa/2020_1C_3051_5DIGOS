@@ -55,6 +55,8 @@ namespace TGC.Group.Model.Bullet
         public void Init(TgcD3dInput input, Terrain terrain, CameraFPS camera, Shark shark, Ship ship, Sky skyBox, ref List<TgcMesh> meshes)
         {
             skybox = skyBox;
+
+            #region Agregar rigidos al mundo fisico
             terrainRigidBody = new TerrainRigidBody(terrain);
             characterRigidBody = new CharacterRigidBody(input, camera, MediaDir, ShadersDir);
             sharkRigidBody = new SharkRigidBody(shark);
@@ -68,12 +70,16 @@ namespace TGC.Group.Model.Bullet
             dynamicsWorld.AddRigidBody(indoorShipRigidBody.body);
 
             addNewRigidBody(ref meshes);
+            #endregion
 
             characterRigidBody.aabbShip = outdoorShipRigidBody.getAABB();
         }
 
         public void Render()
         {
+            #region Renderizar deacuerdo a la posicion del personaje
+            characterRigidBody.Render();
+
             if (characterRigidBody.isInsideShip())
                 indoorShipRigidBody.Render();
             else
@@ -92,31 +98,15 @@ namespace TGC.Group.Model.Bullet
                         rigidBody.Render();
                 });
             }
-            
-            characterRigidBody.Render();
+            #endregion
         }
 
         public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
         {
-            characterRigidBody.Update(dynamicsWorld, ref commonRigidBody);
-
-            if (!characterRigidBody.isInsideShip())
-            {
-                sharkRigidBody.Update(input, elapsedTime);
-                UpdatePhysicalWorld(elapsedTime, timeBetweenFrames);
-            }
-            
-        }
-
-        private void UpdatePhysicalWorld(float elapsedTime, float timeBetweenFrames)
-        {
             dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
-            dynamicsWorld.UpdateSingleAabb(terrainRigidBody.body);
-            dynamicsWorld.UpdateSingleAabb(characterRigidBody.body);
-            dynamicsWorld.UpdateSingleAabb(sharkRigidBody.body);
-            dynamicsWorld.UpdateSingleAabb(outdoorShipRigidBody.body);
-            dynamicsWorld.UpdateSingleAabb(indoorShipRigidBody.body);
-            commonRigidBody.ForEach(rigidBody => dynamicsWorld.UpdateSingleAabb(rigidBody.body));
+            characterRigidBody.Update(dynamicsWorld, ref commonRigidBody);
+            if (!characterRigidBody.isInsideShip())
+                sharkRigidBody.Update(input, elapsedTime);
         }
 
         public void Dispose()
@@ -140,7 +130,6 @@ namespace TGC.Group.Model.Bullet
             meshes.RemoveRange(0, meshes.Count);
             commonRigidBody.ForEach(rigidBody => dynamicsWorld.AddRigidBody(rigidBody.body));
         }
-
         #endregion
     }
 }

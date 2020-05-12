@@ -12,11 +12,17 @@ namespace TGC.Group.Model.Bullet.Bodies
     class SharkRigidBody
     {
         #region Atributos
-        public RigidBody body;
-        private TgcMesh Mesh;
-        private TGCVector3 scale = new TGCVector3(5, 5, 5);
-        private TGCVector3 position = new TGCVector3(-2885, 1220, -525);
+        struct Constants
+        {
+            public static TGCVector3 scale = new TGCVector3(5, 5, 5);
+            public static TGCVector3 position = new TGCVector3(-2885, 1220, -525);
+        }
+        
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
+
+        public RigidBody body;
+        public TgcMesh Mesh;
+        
         #endregion
 
         #region Constructor
@@ -33,11 +39,11 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         private void Init()
         {
-            Mesh.Transform = TGCMatrix.Scaling(scale) * TGCMatrix.RotationYawPitchRoll(-FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position);
+            Mesh.Transform = TGCMatrix.Scaling(Constants.scale) * TGCMatrix.RotationYawPitchRoll(-FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(Constants.position);
             body = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
             body.SetMassProps(1, new Vector3(1, 1, 1));
-            body.CollisionShape.LocalScaling = scale.ToBulletVector3();
-            body.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(-FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position)).ToBulletMatrix();
+            body.CollisionShape.LocalScaling = Constants.scale.ToBulletVector3();
+            body.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(-FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(Constants.position)).ToBulletMatrix();
         }
 
         public void Update(TgcD3dInput input, float elapsedTime)
@@ -51,7 +57,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             {
                 body.ApplyCentralImpulse(new Vector3(10, 0, 0));
             }
-            Mesh.Transform = TGCMatrix.Scaling(scale) * new TGCMatrix(body.InterpolationWorldTransform);
+            Mesh.Transform = TGCMatrix.Scaling(Constants.scale) * new TGCMatrix(body.InterpolationWorldTransform);
         }
 
         public void Render()

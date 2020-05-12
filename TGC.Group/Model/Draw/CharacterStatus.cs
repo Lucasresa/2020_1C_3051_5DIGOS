@@ -1,21 +1,15 @@
 ﻿using Microsoft.DirectX.DirectInput;
-using System;
-using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
-using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Draw
 {
     class CharacterStatus
     {
+        #region Atributos
         struct Constants
         {
             public static (float min, float max) oxygen = (min: 0, max: 100);
@@ -23,19 +17,16 @@ namespace TGC.Group.Model.Draw
             public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
         }
 
-        private Sprite life;
-        private Sprite oxygen;
-
-        public bool canBreathe { get; set; }
-
-        private string MediaDir;
-        private string ShadersDir;
-
-        private float oxygenPercentage = 100;
-        private float lifePercentage = 100;
-        public TgcD3dInput input;
         private TgcText2D DrawText = new TgcText2D();
+        private Sprite life, oxygen;
+        private string MediaDir, ShadersDir;
+        private float oxygenPercentage = 100, lifePercentage = 100;
 
+        public TgcD3dInput input;
+        public bool canBreathe;
+        #endregion
+
+        #region Constructor
         public CharacterStatus(string mediaDir, string shadersDir, TgcD3dInput input)
         {
             MediaDir = mediaDir;
@@ -43,14 +34,16 @@ namespace TGC.Group.Model.Draw
             this.input = input;
             initializer();
         }
+        #endregion
 
+        #region Metodos
         private void initializer()
         {
             life = new Sprite(MediaDir, ShadersDir);
             life.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 0), "barra_vida");
 
             oxygen = new Sprite(MediaDir, ShadersDir);
-            oxygen.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 30), "barra_oxigeno");   
+            oxygen.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 30), "barra_oxigeno");
         }
 
         public void Update()
@@ -120,8 +113,9 @@ namespace TGC.Group.Model.Draw
         }
 
         private bool isDead()
-        {            
+        {
             return oxygenPercentage == 0 || lifePercentage == 0;
         }
+        #endregion
     }
 }

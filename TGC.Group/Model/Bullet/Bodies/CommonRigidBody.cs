@@ -2,6 +2,7 @@
 using BulletSharp.Math;
 using System;
 using System.Collections.Generic;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
@@ -12,10 +13,13 @@ namespace TGC.Group.Model.Bullet.Bodies
     class CommonRigidBody
     {
         #region Atributos
-        public TGCVector3 Scale = new TGCVector3(10, 10, 10);
+        struct Constants
+        {
+            public static TGCVector3 Scale = new TGCVector3(10, 10, 10);
+        }
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
 
-        public TgcMesh Mesh;
+        private TgcMesh Mesh;
         public RigidBody body;
         #endregion
 
@@ -32,8 +36,8 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             body = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
             body.CenterOfMassTransform = TGCMatrix.Translation(Mesh.Position).ToBulletMatrix();
-            body.CollisionShape.LocalScaling = Scale.ToBulletVector3();
-            Mesh.BoundingBox.scaleTranslate(Mesh.Position, Scale);
+            body.CollisionShape.LocalScaling = Constants.Scale.ToBulletVector3();
+            Mesh.BoundingBox.scaleTranslate(Mesh.Position, Constants.Scale);
         }
         
         public void Render()
@@ -47,6 +51,15 @@ namespace TGC.Group.Model.Bullet.Bodies
             Mesh.Dispose();
         }
 
+        public TgcBoundingAxisAlignBox getAABB()
+        {
+            return Mesh.BoundingBox;
+        }
+
+        public string getName()
+        {
+            return Mesh.Name;
+        }
         #endregion
     }
 }
