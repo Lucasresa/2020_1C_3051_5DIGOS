@@ -124,8 +124,16 @@ namespace TGC.Group.Model.Inventory
         {
             lookAt.Render();
             if (showInventory)
-                DrawText.drawText("Rocas " + rock.Count + 
-                    "\nSilver: " + silver.Count , 500, 300, Color.White);
+                DrawText.drawText( "Gold: " + gold.Count + 
+                                   "\nSilver: " + silver.Count +
+                                   "\nRocas: " + rock.Count + 
+                                   "\niron: " + iron.Count +
+                                   "\nFish: " + fish.Count + 
+                                   "\nYellow Fish: " + yellowFish.Count +
+                                   "\nSpiral Coral: " + spiralCoral.Count +
+                                   "\nNormal Coral: " + normalCoral.Count +
+                                   "\nTree Coral: " + treeCoral.Count,
+                                    250, 300, Color.White);
         }
 
         public void Dispose()
@@ -154,6 +162,17 @@ namespace TGC.Group.Model.Inventory
             {
                 rock.RemoveRange(0, 2);
                 silver.RemoveRange(0, 2);
+            }
+        }
+
+        public void craftRod()
+        {
+            if (spiralCoral.Count() >= 1 && normalCoral.Count() >= 1 && treeCoral.Count() >= 1 && iron.Count() >= 1)
+            {
+                spiralCoral.RemoveRange(0, 1);
+                normalCoral.RemoveRange(0, 1);
+                treeCoral.RemoveRange(0, 1);
+                iron.RemoveRange(0, 1);
             }
         }
 

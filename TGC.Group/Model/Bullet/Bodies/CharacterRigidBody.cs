@@ -264,10 +264,16 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         private void crafting()
         {
-            if (input.keyDown(Key.M) && isInsideShip())
+            if (isInsideShip())
             {
-                inventory.craftWeapon();
+                if (input.keyDown(Key.M))
+                    inventory.craftWeapon();
+
+                if (input.keyDown(Key.N))
+                    inventory.craftRod();
+
             }
+            
         }
 
     }
