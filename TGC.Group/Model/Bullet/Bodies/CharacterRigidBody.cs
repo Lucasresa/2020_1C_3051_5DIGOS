@@ -69,8 +69,8 @@ namespace TGC.Group.Model.Bullet.Bodies
         #region Metodos
         private void Init()
         {
-            status = new CharacterStatus(MediaDir, ShadersDir, input);
             inventory = new InventoryManagement(MediaDir, ShadersDir, input);
+            status = new CharacterStatus(MediaDir, ShadersDir, input, inventory);
             createPickingRay();
 
             prevLatitude = Camera.latitude;

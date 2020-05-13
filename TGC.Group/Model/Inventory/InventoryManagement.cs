@@ -46,6 +46,7 @@ namespace TGC.Group.Model.Inventory
         private List<CommonRigidBody> yellowFish = new List<CommonRigidBody>();
 
         private bool hasARow = false;
+        public bool hasADivingHelmet = false;
         #endregion
 
         #region Constructor
@@ -194,6 +195,15 @@ namespace TGC.Group.Model.Inventory
             }
         }
 
+        public void craftDivingHelmet()
+        {
+            if(gold.Count() >= 4)
+            {
+                gold.RemoveRange(0, 4);
+                hasADivingHelmet = true;
+            }
+        }
+
         private void crafting()
         {
             if (isInsideShip())
@@ -203,6 +213,9 @@ namespace TGC.Group.Model.Inventory
 
                 if (Input.keyDown(Key.N))
                     craftRod();
+
+                if (Input.keyDown(Key.B))
+                    craftDivingHelmet();
             }
         }
 
