@@ -44,6 +44,8 @@ namespace TGC.Group.Model.Inventory
         private List<CommonRigidBody> spiralCoral = new List<CommonRigidBody>();
         private List<CommonRigidBody> treeCoral = new List<CommonRigidBody>();
         private List<CommonRigidBody> yellowFish = new List<CommonRigidBody>();
+
+        private bool hasARow = false;
         #endregion
 
         #region Constructor
@@ -101,13 +103,21 @@ namespace TGC.Group.Model.Inventory
 
             var lookAtRigidBody = commonRigidBody.Find(rigidBody =>
             {
-                var aabb = rigidBody.getAABB();
+                if ( isAFish(rigidBody) && !(hasARow))
+                    isMatch = false; 
+                else
+                {
+                    var aabb = rigidBody.getAABB();
 
-                intersected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabb, out TGCVector3 collisionPoint);
-                inSight = Math.Sqrt(TGCVector3.LengthSq(characterPosition, collisionPoint)) < 500;
-                isMatch = intersected && inSight;
-
+                    intersected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabb, out TGCVector3 collisionPoint);
+                    inSight = Math.Sqrt(TGCVector3.LengthSq(characterPosition, collisionPoint)) < 500;
+                    isMatch = intersected && inSight;
+                }
+                
                 return isMatch;
+                    
+                
+                
             });
 
             if (isMatch)
@@ -180,6 +190,7 @@ namespace TGC.Group.Model.Inventory
                 treeCoral.RemoveRange(0, 1);
                 iron.RemoveRange(0, 1);
                 MessageBox.Show("Se crafteo una caña exitorsamente.");
+                hasARow = true;
             }
         }
 
@@ -200,6 +211,11 @@ namespace TGC.Group.Model.Inventory
             return characterPosition.Y < 0;
         }
 
+        private bool isAFish(CommonRigidBody rigidBody)
+        {
+            var name = rigidBody.getName();
+            return name.Substring(0, name.IndexOf("_")) == "fish" || name.Substring(0, name.IndexOf("_")) == "yellowFish";
+        }
         #endregion
     }
 }
