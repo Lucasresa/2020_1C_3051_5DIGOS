@@ -54,7 +54,6 @@ namespace TGC.Group.Model.Terrains
         {
             var size = sky.Size.X / 2;
             sky.Center = new TGCVector3(Camera.position.X, sky.Center.Y, Camera.position.Z);
-
             perimeter.xMin = sky.Center.X - size;
             perimeter.xMax = sky.Center.X + size;
             perimeter.zMin = sky.Center.Z - size;
@@ -84,6 +83,11 @@ namespace TGC.Group.Model.Terrains
             var posZ = vegetation.Position.Z;
             return (posX < perimeter.xMax && posX > perimeter.xMin &&
                      posZ < perimeter.zMax && posZ > perimeter.zMin);
+        }
+
+        public TGCVector3 getSkyboxCenter()
+        {
+            return sky.Center;
         }
 
     }

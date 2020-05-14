@@ -112,7 +112,7 @@ namespace TGC.Group.Model.Bullet.Bodies
 
             if (input.keyPressed(Key.E)) Teleport();
 
-            body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * getGravity();
+            //body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * getGravity();
 
             Camera.position = new TGCVector3(body.CenterOfMassPosition) + Constants.cameraHeight;
 

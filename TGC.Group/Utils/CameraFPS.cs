@@ -16,6 +16,7 @@ namespace TGC.Group.Utils
         public float movementSpeed = 500f;
         public float jumpSpeed = 500f;
         public TGCVector3 position;
+        public TGCVector3 Direction { get { return TGCVector3.Normalize(LookAt - position); } }
         public bool isOutside = false;
 
         private TgcD3dInput Input { get; }
@@ -23,7 +24,7 @@ namespace TGC.Group.Utils
         private TGCMatrix cameraRotation;
         private float latitude = FastMath.PI_HALF;
         private float longitude = -FastMath.PI / 10.0f;
-        private TGCVector3 directionView = new TGCVector3(0, 0.1f, -1);
+        public TGCVector3 directionView = new TGCVector3(0, 0.1f, -1);
         private TGCVector3 translation = TGCVector3.Empty;
 
         private TGCVector3 indoorPosition;
