@@ -61,7 +61,7 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public override void Update(TgcD3dInput input, float elapsedTime)
         {
-            var speed = 1000;
+            var speed = 1000f;
             /***
              * Hacer que el tiburon se mueva y que detecte si tiene obstaculos delante de el -- Falta que detecte a los peces como obstaculos
              * DONE Hacer que solo se mueva dentro del skybox para que este dentro del rango del jugador (personaje)
@@ -92,7 +92,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         }
 
         #region Movements
-        private void PerformStalkerMove(float elapsedTime, int speed, float rotationAngle, TGCVector3 rotationAxis)
+        private void PerformStalkerMove(float elapsedTime, float speed, float rotationAngle, TGCVector3 rotationAxis)
         {
             var actualDirector = -1 * director;
             seekTimeCounter += elapsedTime;
@@ -110,7 +110,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             body.LinearVelocity = director.ToBulletVector3() * -speed;
         }
 
-        private void PerformNormalMove(float elapsedTime, int speed, TGCVector3 headPosition)
+        private void PerformNormalMove(float elapsedTime, float speed, TGCVector3 headPosition)
         {
             var XRotation = 0f;
             var YRotation = 0f;
@@ -146,6 +146,7 @@ namespace TGC.Group.Model.Bullet.Bodies
                                  TGCMatrix.RotationX(XRotation) *
                                  new TGCMatrix(body.InterpolationWorldTransform);
                 body.WorldTransform = mesh.Transform.ToBulletMatrix();
+                speed /= 1.5f;
             }
             else if (YRotation != 0)
             {
