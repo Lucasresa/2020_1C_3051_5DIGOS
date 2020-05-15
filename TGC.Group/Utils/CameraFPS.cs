@@ -24,7 +24,7 @@ namespace TGC.Group.Utils
         private TGCMatrix cameraRotation;
         private float latitude = FastMath.PI_HALF;
         private float longitude = -FastMath.PI / 10.0f;
-        public TGCVector3 directionView = new TGCVector3(0, 0.1f, -1);
+        private TGCVector3 directionView = new TGCVector3(0, 0.1f, -1);
         private TGCVector3 translation = TGCVector3.Empty;
 
         private TGCVector3 indoorPosition;
