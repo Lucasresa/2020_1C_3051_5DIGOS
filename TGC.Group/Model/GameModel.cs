@@ -119,30 +119,30 @@ namespace TGC.Group.Model
 
 
 
-            //if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
-            //{
-            //    bool selected;
-            //    pickingRay.updateRay();
-            //
-            //    List<RigidBody> aux = new List<RigidBody>();
-            //
-            //    rigidBody.getListRigidBody().ForEach(rigidBody =>
-            //    {
-            //        var mesh = rigidBody.Mesh;
-            //        var aabb = mesh.BoundingBox;
-            //
-            //        selected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabb, out collisionPoint);
-            //
-            //        if (selected && Math.Sqrt(TGCVector3.LengthSq(camera.Position, collisionPoint)) < 500)
-            //        {
-            //            inventory.Add(mesh);
-            //            aux.Add(rigidBody);
-            //        }
-            //    });
-            //
-            //    aux.ForEach( rigidBodyAux => rigidBody.getListRigidBody().Remove(rigidBodyAux) );
-            //}            
-            //
+            if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+            {
+                bool selected;
+                pickingRay.updateRay();
+            
+                List<RigidBody> aux = new List<RigidBody>();
+            
+                rigidBody.getListRigidBody().ForEach(rigidBody =>
+                {
+                    var mesh = rigidBody.Mesh;
+                    var aabb = mesh.BoundingBox;
+            
+                    selected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabb, out collisionPoint);
+            
+                    if (selected && Math.Sqrt(TGCVector3.LengthSq(camera.Position, collisionPoint)) < 500)
+                    {
+                        inventory.Add(mesh);
+                        aux.Add(rigidBody);
+                    }
+                });
+            
+                aux.ForEach( rigidBodyAux => rigidBody.getListRigidBody().Remove(rigidBodyAux) );
+            }            
+            
             if (Input.keyPressed(Key.J))
                 showInventory = !showInventory;
 

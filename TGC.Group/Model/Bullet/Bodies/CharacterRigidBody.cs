@@ -26,8 +26,6 @@ namespace TGC.Group.Model.Bullet.Bodies
         }
 
         private CameraFPS Camera;
-        private TGCVector3 directorz = new TGCVector3(1, 0, 0);
-        private TGCVector3 directorx = new TGCVector3(0, 0, 1);
         private TGCVector3 position;
         private TGCVector3 indoorPosition;
         private TGCVector3 outdoorPosition;
