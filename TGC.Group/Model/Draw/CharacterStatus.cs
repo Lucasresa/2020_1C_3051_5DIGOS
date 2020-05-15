@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.DirectX.DirectInput;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TGC.Core.Direct3D;
+using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
+using TGC.Group.Model.Inventory;
 
 namespace TGC.Group.Model.Draw
 {
     class CharacterStatus
     {
+        #region Atributos
         struct Constants
         {
             public static (float min, float max) oxygen = (min: 0, max: 100);
@@ -19,38 +18,44 @@ namespace TGC.Group.Model.Draw
             public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
         }
 
-        private Bar life;
-        private Bar oxygen;
-
-        public bool canBreathe { get; set; }
-
-        private string MediaDir;
-        private string ShadersDir;
-
-        private float oxygenPercentage = 100;
-        private float lifePercentage = 100;
-
         private TgcText2D DrawText = new TgcText2D();
+        private Sprite life, oxygen;
+        private string MediaDir, ShadersDir;
+        private float oxygenPercentage = 100, lifePercentage = 100;
+        private InventoryManagement inventory;
 
-        public CharacterStatus(string mediaDir, string shadersDir)
+        public TgcD3dInput input;
+        public bool canBreathe;
+        #endregion
+
+        #region Constructor
+        public CharacterStatus(string mediaDir, string shadersDir, TgcD3dInput input, InventoryManagement inventory)
         {
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
+            this.input = input;
+            this.inventory = inventory;
             initializer();
         }
+        #endregion
 
+        #region Metodos
         private void initializer()
         {
-            life = new Bar(MediaDir, ShadersDir);
-            life.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 0), "barra_vida.png");
+            life = new Sprite(MediaDir, ShadersDir);
+            life.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 0), "barra_vida");
 
-            oxygen = new Bar(MediaDir, ShadersDir);
-            oxygen.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 30), "barra_oxigeno.png");
+            oxygen = new Sprite(MediaDir, ShadersDir);
+            oxygen.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 30), "barra_oxigeno");
         }
 
         public void Update()
         {
-            UpdateOxygen();
+            if (!isDead())
+            {
+                UpdateOxygen();
+                UpdateLife();
+            }
         }
 
         private void UpdateOxygen()
@@ -58,12 +63,39 @@ namespace TGC.Group.Model.Draw
             if (canRecoverOxygen())
                 oxygenPercentage += 0.2f;
 
-            oxygenPercentage -= 0.05f;
+            if(inventory.hasADivingHelmet)
+                oxygenPercentage -= 0.025f;
+            else
+                oxygenPercentage -= 0.05f;
+            
             oxygenPercentage = FastMath.Clamp(oxygenPercentage, Constants.oxygen.min, Constants.oxygen.max);
 
             var initialScale = oxygen.initialScaleSprite;
             var newScale = new TGCVector2((oxygenPercentage / Constants.oxygen.max) * initialScale.X, initialScale.Y);
             oxygen.sprite.Scaling = newScale;
+        }
+
+        private void UpdateLife()
+        {
+            var damage = 5f; // TODO: ver como contamos el daño, si recibe un daño fijo o depende de algo
+            if (receivedAnAttack())
+            {
+                lifePercentage -= damage;
+                lifePercentage = FastMath.Clamp(lifePercentage, Constants.life.min, Constants.life.max);
+
+                var initialScale = life.initialScaleSprite;
+                var newScale = new TGCVector2((lifePercentage / Constants.life.max) * initialScale.X, initialScale.Y);
+                life.sprite.Scaling = newScale;
+            }
+        }
+
+        private bool receivedAnAttack()
+        {
+            // TODO: Podriamos decir que recibio un ataque si el tiburon colisiono o se acerco a cierta distancia al personaje
+            if (input.keyPressed(Key.Q))
+                return true;
+            else
+                return false;
         }
 
         private bool canRecoverOxygen()
@@ -75,7 +107,6 @@ namespace TGC.Group.Model.Draw
         {
             life.Render();
             oxygen.Render();
-
             life.drawText("LIFE", Color.MediumVioletRed, new Point(10, 20), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
             oxygen.drawText("OXYGEN", Color.DeepSkyBlue, new Point(10, 50), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
 
@@ -90,7 +121,8 @@ namespace TGC.Group.Model.Draw
 
         private bool isDead()
         {
-            return oxygenPercentage == 0;
+            return oxygenPercentage == 0 || lifePercentage == 0;
         }
+        #endregion
     }
 }

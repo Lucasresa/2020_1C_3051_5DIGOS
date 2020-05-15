@@ -1,41 +1,58 @@
-﻿using TGC.Core.Mathematica;
+﻿using BulletSharp;
+using TGC.Core.BoundingVolumes;
+using TGC.Core.BulletPhysics;
+using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Watercraft;
 
 namespace TGC.Group.Model.Bullet.Bodies
 {
-    class OutdoorShipRigidBody : RigidBody
+    class OutdoorShipRigidBody
     {
         #region Atributos
-        private TGCVector3 scale = new TGCVector3(10, 10, 10);
-        private TGCVector3 position = new TGCVector3(530, 3630, 100);
+        struct Constants
+        {
+            public static TGCVector3 scale = new TGCVector3(10, 10, 10);
+            public static TGCVector3 position = new TGCVector3(530, 3630, 100);
+        }
+
+        private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
+        private TgcMesh Mesh;
+        public RigidBody body;
         #endregion
 
         #region Constructor
         public OutdoorShipRigidBody(Ship ship)
         {
-            this.mesh = ship.OutdoorMesh;
+            Mesh = ship.OutdoorMesh;
+            Init();
         }
         #endregion
 
         #region Metodos
-        public override void Init()
+        private void Init()
         {
-            Mesh.Transform = TGCMatrix.Scaling(scale) * TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position);
+            Mesh.Transform = TGCMatrix.Scaling(Constants.scale) * TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(Constants.position);
             body = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
-            body.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position)).ToBulletMatrix();
-            body.CollisionShape.LocalScaling = scale.ToBulletVector3();
+            body.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(Constants.position)).ToBulletMatrix();
+            body.CollisionShape.LocalScaling = Constants.scale.ToBulletVector3();
+            Mesh.BoundingBox.scaleTranslate(Constants.position, Constants.scale);
         }
 
-        public override void Render()
+        public void Render()
         {
-            mesh.Render();
+            Mesh.Render();
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             body.Dispose();
-            mesh.Dispose();
+            Mesh.Dispose();
+        }
+
+        public TgcBoundingAxisAlignBox getAABB()
+        {
+            return Mesh.BoundingBox;
         }
         #endregion
     }

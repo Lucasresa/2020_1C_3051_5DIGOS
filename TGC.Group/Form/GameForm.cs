@@ -58,29 +58,17 @@ namespace TGC.Group.Form
         private TgcD3dInput Input { get; set; }
 
         private void GameForm_Load(object sender, EventArgs e)
-        {          
-            //OriginalBorderStyle
-            //this.FormBorderStyle = FormBorderStyle.Sizable;
-
-            //Iniciar graficos.
+        {         
             InitGraphics();
-
-            //Titulo de la ventana principal.
             Text = Modelo.Name + @" - " + Modelo.Description;
-
-            //Focus panel3D.
             panel3D.Focus();
-
-            //Inicio el ciclo de Render.
             InitRenderLoop();
         }
 
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (ApplicationRunning)
-            {
                 ShutDown();
-            }
         }
 
         /// <summary>
@@ -88,10 +76,7 @@ namespace TGC.Group.Form
         /// </summary>
         public void InitGraphics()
         {         
-            //Se inicio la aplicación
             ApplicationRunning = true;
-
-            //Inicio Device
             D3DDevice.Instance.InitializeD3DDevice(panel3D);
 
             //Inicio inputs
@@ -140,10 +125,7 @@ namespace TGC.Group.Form
                         if (Input.keyDown(Key.Escape)) Close(); // TODO Cambiar cuando haya inventario y menu
                     }
                     else
-                    {
-                        //Si no tenemos el foco, dormir cada tanto para no consumir gran cantidad de CPU.
                         Thread.Sleep(100);
-                    }
                 }
                 // Process application messages.
                 Application.DoEvents();
@@ -157,16 +139,12 @@ namespace TGC.Group.Form
         public bool ApplicationActive()
         {
             if (ContainsFocus)
-            {
                 return true;
-            }
 
             foreach (var form in OwnedForms)
             {
                 if (form.ContainsFocus)
-                {
                     return true;
-                }
             }
 
             return false;

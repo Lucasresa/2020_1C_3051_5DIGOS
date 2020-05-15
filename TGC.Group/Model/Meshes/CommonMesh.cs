@@ -1,14 +1,12 @@
-﻿using TGC.Core.Mathematica;
-using TGC.Core.SceneLoader;
+﻿using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model
 {
     class CommonMesh
     {
         #region Atributos
-        protected string MeshName;
-        protected readonly string MediaDir;
-        public TgcMesh Mesh { get; set; }
+        private string MeshName, MediaDir, ShadersDir;
+        public TgcMesh Mesh;
         #endregion
 
         #region Constructor
@@ -26,6 +24,6 @@ namespace TGC.Group.Model
             Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + MeshName + "-TgcScene.xml").Meshes[0];
             Mesh.Name = MeshName;
         }
-	#endregion
+        #endregion
     }
 }

@@ -1,42 +1,50 @@
-﻿using TGC.Core.Mathematica;
+﻿using BulletSharp;
+using TGC.Core.BulletPhysics;
+using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Model.Watercraft;
 
 namespace TGC.Group.Model.Bullet.Bodies
 {
-    class IndoorShipRigidBody : RigidBody
+    class IndoorShipRigidBody
     {
         #region Atributos
-        private TGCVector3 scale = new TGCVector3(10, 10, 10);
-        private TGCVector3 position = new TGCVector3(350, -2500, -45);
+        struct Constants
+        {
+            public static TGCVector3 position = new TGCVector3(350, -2500, -45);
+            public static TGCVector3 scale = new TGCVector3(20, 20, 20);
+        }
+        private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
+        private TgcMesh Mesh;
+        public RigidBody body;
         #endregion
 
         #region Constructor
         public IndoorShipRigidBody(Ship ship)
         {
-            this.mesh = ship.IndoorMesh;
-            isIndoorShip = true;
+            Mesh = ship.IndoorMesh;
+            Init();
         }
         #endregion
 
         #region Metodos
-        public override void Init()
+        private void Init()
         {
-            Mesh.Transform = TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Scaling(scale) * TGCMatrix.Translation(position);
+            Mesh.Transform = TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Scaling(Constants.scale) * TGCMatrix.Translation(Constants.position);
             body = rigidBodyFactory.CreateRigidBodyFromTgcMesh(Mesh);
-            body.CollisionShape.LocalScaling = scale.ToBulletVector3();
-            body.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(position)).ToBulletMatrix();
+            body.CollisionShape.LocalScaling = Constants.scale.ToBulletVector3();
+            body.CenterOfMassTransform = (TGCMatrix.RotationYawPitchRoll(FastMath.PI_HALF, 0, 0) * TGCMatrix.Translation(Constants.position)).ToBulletMatrix();
         }
 
-        public override void Render()
+        public void Render()
         {
-            mesh.Render();
+            Mesh.Render();
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             body.Dispose();
-            mesh.Dispose();
+            Mesh.Dispose();
         }
         #endregion
     }
