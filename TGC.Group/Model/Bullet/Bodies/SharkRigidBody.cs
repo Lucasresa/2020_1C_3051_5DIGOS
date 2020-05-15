@@ -69,13 +69,6 @@ namespace TGC.Group.Model.Bullet.Bodies
         public void Update(TgcD3dInput input, float elapsedTime)
         {
             var speed = 1000f;
-            /***
-             * Hacer que el tiburon se mueva y que detecte si tiene obstaculos delante de el -- Falta que detecte a los peces como obstaculos
-             * DONE Hacer que solo se mueva dentro del skybox para que este dentro del rango del jugador (personaje)
-             * DONE Hacer que el tiburon persiga al jugador y busque colisionar con este
-             * DONE Una vez que haga la colision el tiburon debera volver a su movimiento normal de "asechar" por un tiempo y luego volver a atacar
-             * DONE Agregar ángulo mínimo de visión para que el tiburon solo se gire a perseguir al jugador cuando este dentro de cierto rango de vision
-             */
             var headPosition = GetHeadPosition();
 
             body.ActivationState = ActivationState.ActiveTag;
