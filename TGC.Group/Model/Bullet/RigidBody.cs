@@ -23,7 +23,7 @@ namespace TGC.Group.Model.Bullet
         public bool isTerrain = false;
         public bool isIndoorShip = false;
         protected TgcMesh mesh;
-
+        public bool isCharacter = false;
         public TgcMesh Mesh { get { return mesh; } }
         #endregion
 
