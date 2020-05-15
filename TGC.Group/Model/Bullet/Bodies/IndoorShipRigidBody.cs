@@ -9,7 +9,6 @@ namespace TGC.Group.Model.Bullet.Bodies
     class IndoorShipRigidBody
     {
         #region Atributos
-
         struct Constants
         {
             public static TGCVector3 position = new TGCVector3(350, -2500, -45);

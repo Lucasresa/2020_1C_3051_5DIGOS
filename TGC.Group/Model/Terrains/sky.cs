@@ -1,8 +1,13 @@
-﻿using BulletSharp;
+using System.Collections.Generic;
+using System.Linq;
+using BulletSharp;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Terrain;
+using TGC.Group.Model.Bullet;
 using TGC.Group.Utils;
+using static TGC.Core.Terrain.TgcSkyBox;
+using static TGC.Group.Model.Terrains.Terrain;
 using static TGC.Group.Model.GameModel;
 
 namespace TGC.Group.Model.Terrains
@@ -70,7 +75,14 @@ namespace TGC.Group.Model.Terrains
             sky.Dispose();
         }
 
-        public bool inSkyBox(TgcMesh vegetation)
+        public bool Contains(RigidBody rigidBody)
+        {
+            var posX = rigidBody.CenterOfMassPosition.X;
+            var posZ = rigidBody.CenterOfMassPosition.Z;
+            return inPerimeterSkyBox(posX, posZ);
+        }
+
+        public bool Contains(TgcMesh vegetation)
         {
             var posX = vegetation.Position.X;
             var posZ = vegetation.Position.Z;
@@ -78,11 +90,9 @@ namespace TGC.Group.Model.Terrains
             return inPerimeterSkyBox(posX, posZ);
         }
 
-        public bool inSkyBox(RigidBody rigidBody)
+        public TGCVector3 getSkyboxCenter()
         {
-            var posX = rigidBody.CenterOfMassPosition.X;
-            var posZ = rigidBody.CenterOfMassPosition.Z;
-            return inPerimeterSkyBox(posX, posZ);
+            return sky.Center;
         }
 
         private bool inPerimeterSkyBox(float posX, float posZ)

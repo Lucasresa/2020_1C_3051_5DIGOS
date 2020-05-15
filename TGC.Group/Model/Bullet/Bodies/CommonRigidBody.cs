@@ -50,7 +50,6 @@ namespace TGC.Group.Model.Bullet.Bodies
             body.Dispose();
             Mesh.Dispose();
         }
-
         public TgcBoundingAxisAlignBox getAABB()
         {
             return Mesh.BoundingBox;

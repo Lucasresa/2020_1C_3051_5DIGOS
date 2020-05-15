@@ -97,7 +97,6 @@ namespace TGC.Group.Model.Bullet.Bodies
             teleport();
 
             #region Movimiento 
-
             body.ActivationState = ActivationState.ActiveTag;
             body.AngularVelocity = TGCVector3.Empty.ToBulletVector3();
 

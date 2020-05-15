@@ -1,4 +1,4 @@
-﻿using BulletSharp;
+using BulletSharp;
 using TGC.Core.BulletPhysics;
 using TGC.Group.Model.Terrains;
 

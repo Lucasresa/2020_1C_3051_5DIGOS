@@ -5,12 +5,16 @@ using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Core.SceneLoader;
-using TGC.Group.Model.Bullet;
+using TGC.Group.Model.Bullet.Bodies;
 using TGC.Group.Model.MeshBuilders;
 using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Watercraft;
 using TGC.Group.Utils;
+using TGC.Core.Collision;
+using static TGC.Group.Model.Terrains.Terrain;
+using TGC.Core.Input;
+using TGC.Group.Model.Bullet;
 
 namespace TGC.Group.Model
 {
@@ -78,6 +82,7 @@ namespace TGC.Group.Model
             rigidBodyManager = new RigidBodyManager(MediaDir, ShadersDir);
             rigidBodyManager.Init(Input,terrain, camera, shark, ship, skyBox, ref Meshes);
             #endregion
+
         }
 
         public override void Update()
@@ -121,7 +126,7 @@ namespace TGC.Group.Model
             {
                 skyBox.Render();
                 water.Render();
-                vegetation.ForEach(vegetation => { if (skyBox.inSkyBox(vegetation)) vegetation.Render(); } );
+                vegetation.ForEach(vegetation => { if (skyBox.Contains(vegetation)) vegetation.Render(); } );
             }
 
             rigidBodyManager.Render();
@@ -136,11 +141,11 @@ namespace TGC.Group.Model
             water.Dispose();
             skyBox.Dispose();
             vegetation.ForEach(vegetation => vegetation.Dispose());
+            rigidBodyManager.Dispose();
             #endregion
         }
 
         #region Metodos Privados
-
         private List<TgcMesh> meshInitializer(Perimeter perimeter)
         {
             #region Ubicar meshes

@@ -13,6 +13,9 @@ namespace TGC.Group.Utils
     {
         #region Atributos
 
+        public TGCVector3 position;
+        public TGCVector3 Direction { get { return TGCVector3.Normalize(LookAt - position); } }
+
         private struct Constants
         {
             public static TGCVector3 outdoorPosition = new TGCVector3(1300, 3505, 20);
@@ -23,13 +26,12 @@ namespace TGC.Group.Utils
             public static float rotationSpeed = 0.1f;
             public static TGCVector3 directionView = new TGCVector3(0, 0.1f, -1);
         }
-        
+
         private TgcD3dInput Input { get; }
         private TGCMatrix cameraRotation;
         private float longitude = -FastMath.PI / 10.0f;
         public float latitude { get; private set; } = FastMath.PI_HALF;
         public bool lockCam;
-        public TGCVector3 position;
         #endregion
 
         #region Constructores

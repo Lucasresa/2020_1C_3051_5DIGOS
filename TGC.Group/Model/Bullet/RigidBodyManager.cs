@@ -59,7 +59,7 @@ namespace TGC.Group.Model.Bullet
             #region Agregar rigidos al mundo fisico
             terrainRigidBody = new TerrainRigidBody(terrain);
             characterRigidBody = new CharacterRigidBody(input, camera, MediaDir, ShadersDir);
-            sharkRigidBody = new SharkRigidBody(shark);
+            sharkRigidBody = new SharkRigidBody(shark, skybox, terrain, camera);
             outdoorShipRigidBody = new OutdoorShipRigidBody(ship);
             indoorShipRigidBody = new IndoorShipRigidBody(ship);
 
@@ -86,15 +86,15 @@ namespace TGC.Group.Model.Bullet
             {
                 terrainRigidBody.Render();
 
-                if (skybox.inSkyBox(sharkRigidBody.body))
+                if (skybox.Contains(sharkRigidBody.body))
                     sharkRigidBody.Render();
 
-                if (skybox.inSkyBox(outdoorShipRigidBody.body))
+                if (skybox.Contains(outdoorShipRigidBody.body))
                     outdoorShipRigidBody.Render();
 
                 commonRigidBody.ForEach(rigidBody =>
                 {
-                    if (skybox.inSkyBox(rigidBody.body))
+                    if (skybox.Contains(rigidBody.body))
                         rigidBody.Render();
                 });
             }

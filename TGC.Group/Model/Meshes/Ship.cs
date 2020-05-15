@@ -1,4 +1,6 @@
 ﻿using TGC.Core.SceneLoader;
+using TGC.Core.BoundingVolumes;
+using Microsoft.DirectX.Direct3D;
 
 namespace TGC.Group.Model.Watercraft
 {
@@ -24,6 +26,7 @@ namespace TGC.Group.Model.Watercraft
         {
             OutdoorMesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
             IndoorMesh = OutdoorMesh.createMeshInstance("InsideRoom");
+            OutdoorMesh.updateBoundingBox();
         }
         #endregion
     }
