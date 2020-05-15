@@ -137,7 +137,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             body.ActivationState = ActivationState.ActiveTag;
             ray.Origin = new TGCVector3(body.CenterOfMassPosition);
 
-            if (XRotation != 0)
+            if (XRotation != 0 || FastMath.Abs(acumulatedXRotation) > 0.0012)
             {
                 var rotationAxis = TGCVector3.Cross(TGCVector3.Up, director);
                 director.TransformCoordinate(TGCMatrix.RotationAxis(rotationAxis, XRotation));
