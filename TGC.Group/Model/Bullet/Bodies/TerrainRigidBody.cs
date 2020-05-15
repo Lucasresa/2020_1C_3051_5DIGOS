@@ -1,28 +1,32 @@
-﻿using TGC.Group.Model.Terrains;
+﻿using BulletSharp;
+using TGC.Core.BulletPhysics;
+using TGC.Group.Model.Terrains;
 
 namespace TGC.Group.Model.Bullet.Bodies
 {
-    class TerrainRigidBody : RigidBody
+    class TerrainRigidBody
     {
         private Terrain Terrain;
+        private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
+        public RigidBody body;
 
         public TerrainRigidBody(Terrain terrain)
         {
             Terrain = terrain;
-            isTerrain = true;
+            Init();
         }
 
-        public override void Init()
+        public void Init()
         {
             body = rigidBodyFactory.CreateSurfaceFromHeighMap(Terrain.world.getVertices());
         }
 
-        public override void Render()
+        public void Render()
         {
             Terrain.Render();
         }
 
-        public override void Dispose()
+        public void Dispose()
         {
             Terrain.Dispose();
             body.Dispose();

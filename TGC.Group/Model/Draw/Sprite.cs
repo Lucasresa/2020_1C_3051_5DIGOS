@@ -15,18 +15,18 @@ using Font = System.Drawing.Font;
 
 namespace TGC.Group.Model.Draw
 {
-    class Bar
+    class Sprite
     {
         private string MediaDir;
         private string ShadersDir;
 
         public TgcText2D text;
         
-        private Sprite DxSprite;
+        private Microsoft.DirectX.Direct3D.Sprite DxSprite;
         public CustomSprite sprite;
         public TGCVector2 initialScaleSprite { get; private set; }
             
-        public Bar(string mediaDir, string shadersDir)
+        public Sprite(string mediaDir, string shadersDir)
         {
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
@@ -35,7 +35,7 @@ namespace TGC.Group.Model.Draw
 
         private void Init()
         {
-            DxSprite = new Sprite(D3DDevice.Instance.Device);
+            DxSprite = new Microsoft.DirectX.Direct3D.Sprite(D3DDevice.Instance.Device);
             sprite = new CustomSprite();
             text = new TgcText2D();
         }
@@ -44,7 +44,13 @@ namespace TGC.Group.Model.Draw
         {
             sprite.Scaling = initialScaleSprite = scale;
             sprite.Position = position;
-            sprite.texture = TgcTexture.createTexture(MediaDir + @"Imagenes\" + nameImage);
+            sprite.texture = TgcTexture.createTexture(MediaDir + @"Imagenes\" + nameImage + ".png");
+        }
+
+        public void setInitialSprite(TGCVector2 scale, string nameImage)
+        {
+            sprite.Scaling = initialScaleSprite = scale;
+            sprite.texture = TgcTexture.createTexture(MediaDir + @"Imagenes\" + nameImage + ".png");
         }
 
         public void drawText(string Text, Color color, Point posicion, Size size, TgcText2D.TextAlign align, Font font)

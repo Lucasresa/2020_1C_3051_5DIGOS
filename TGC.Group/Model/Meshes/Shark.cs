@@ -5,10 +5,7 @@ namespace TGC.Group.Model.Sharky
     class Shark
     {
         #region Atributos
-        protected string FILE_NAME;
-        private string MediaDir;
-        private string ShadersDir;
-
+        private string FILE_NAME, MediaDir, ShadersDir;
         public TgcMesh Mesh;
         #endregion
 
@@ -27,7 +24,6 @@ namespace TGC.Group.Model.Sharky
         {
             Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
         }
-
         #endregion
     }
 }

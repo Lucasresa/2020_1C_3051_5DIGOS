@@ -1,4 +1,5 @@
 ﻿using Microsoft.DirectX.DirectInput;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using TGC.Core.Camara;
@@ -12,123 +13,74 @@ namespace TGC.Group.Utils
     {
         #region Atributos
 
-        public float rotationSpeed = 0.1f;
-        public float movementSpeed = 500f;
-        public float jumpSpeed = 500f;
-        public TGCVector3 position;
-        public bool isOutside = false;
-
+        private struct Constants
+        {
+            public static TGCVector3 outdoorPosition = new TGCVector3(1300, 3505, 20);
+            public static TGCVector3 indoorPosition  = new TGCVector3(515, -2340, -40);
+            public static float limitMax = FastMath.ToRad(90);
+            public static float limitMin = FastMath.ToRad(-60);
+            public static Point mouseCenter = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
+            public static float rotationSpeed = 0.1f;
+            public static TGCVector3 directionView = new TGCVector3(0, 0.1f, -1);
+        }
+        
         private TgcD3dInput Input { get; }
-        private Point mouseCenter = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
         private TGCMatrix cameraRotation;
-        private float latitude = FastMath.PI_HALF;
         private float longitude = -FastMath.PI / 10.0f;
-        private TGCVector3 directionView = new TGCVector3(0, 0.1f, -1);
-        private TGCVector3 translation = TGCVector3.Empty;
-
-        private TGCVector3 indoorPosition;
-        private TGCVector3 outdoorPosition;
-
-        protected TGCVector3 moveX = new TGCVector3(1, 0, 0);
-        protected TGCVector3 moveY = new TGCVector3(0, 1, 0);
-        protected TGCVector3 moveZ = new TGCVector3(0, 0, 1);
-        protected float limitMax = FastMath.ToRad(90);
-        protected float limitMin = FastMath.ToRad(-60);
-
-        public float Latitude { get { return latitude; } }
-
+        public float latitude { get; private set; } = FastMath.PI_HALF;
+        public bool lockCam;
+        public TGCVector3 position;
         #endregion
 
         #region Constructores
-
-        public CameraFPS(TgcD3dInput input, TGCVector3 indoorPosition, TGCVector3 outdoorPosition)
+        public CameraFPS(TgcD3dInput input)
         {
+            position = Constants.indoorPosition;
             Input = input;
-            setShipPosition(indoorPosition, outdoorPosition);
-            cameraRotation = TGCMatrix.RotationX(latitude) * TGCMatrix.RotationY(longitude);
         }
-
-        #endregion
-
-        public void setShipPosition(TGCVector3 inside, TGCVector3 outside)
+        #endregion             
+        
+        public override void UpdateCamera(float elapsedTime)
         {
-            indoorPosition = inside;
-            outdoorPosition = outside;
+            if (Input.keyPressed(Key.I))
+                lockCam = !lockCam;
+
+            if (lockCam)
+                return;
+
+            Cursor.Hide();
+            CameraRotation();
+            var target = TGCVector3.TransformNormal(Constants.directionView, cameraRotation);
+            var targetPosition = position + target;
+            var rotacionVectorUP = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
+            Cursor.Position = Constants.mouseCenter;
+            base.SetCamera(position, targetPosition, rotacionVectorUP);
         }
 
         public TGCVector3 getIndoorPosition()
         {
-            return indoorPosition;
+            return Constants.indoorPosition;
         }
 
         public TGCVector3 getOutdoorPosition()
         {
-            return outdoorPosition;
+            return Constants.outdoorPosition;
         }
-        
-        #region Desplazamiento de la Camara
-        private void CameraTranslate()
+
+        public bool isOutside()
         {
-            if (Input.keyDown(Key.W)) translation += moveZ * -movementSpeed;
-
-            if (Input.keyDown(Key.S)) translation += moveZ * movementSpeed;
-
-            if (Input.keyDown(Key.D)) translation += moveX * -movementSpeed;
-
-            if (Input.keyDown(Key.A)) translation += moveX * movementSpeed;
-
-            if (Input.keyDown(Key.Space)) translation += moveY * jumpSpeed;
-
-            if (Input.keyDown(Key.LeftControl)) translation += moveY * -jumpSpeed;
-
+            return position.Y > 0;
         }
-        #endregion
 
         #region Rotacion de la Camara
-
         private void CameraRotation()
         {
-            latitude -= -Input.XposRelative * rotationSpeed;
-            longitude -= Input.YposRelative * rotationSpeed;
-            longitude = FastMath.Clamp(longitude, limitMin, limitMax);
+            latitude -= -Input.XposRelative * Constants.rotationSpeed;
+            longitude -= Input.YposRelative * Constants.rotationSpeed;
+            longitude = FastMath.Clamp(longitude, Constants.limitMin, Constants.limitMax);
 
             cameraRotation = TGCMatrix.RotationX(longitude) * TGCMatrix.RotationY(latitude);
         }
         #endregion
-
-        public override void UpdateCamera(float elapsedTime)
-        {
-            if (position.Y < 0)
-                isOutside = false;
-            else
-                isOutside = true;
-
-            Cursor.Hide();
-            CameraRotation();
-
-            var newPosition = TGCVector3.TransformNormal(translation * elapsedTime, cameraRotation);
-            position += newPosition;
-
-            translation = TGCVector3.Empty;
-
-            var target = TGCVector3.TransformNormal(directionView, cameraRotation);
-            var targetPosition = position + target;
-
-            var rotacionVectorUP = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
-
-            Cursor.Position = mouseCenter;
-            base.SetCamera(position, targetPosition, rotacionVectorUP);
-        }
-
-        public void TeleportCamera(TGCVector3 translatePosition)
-        {
-            position = translatePosition;
-
-            var target = TGCVector3.TransformNormal(directionView, cameraRotation);
-            var targetPosition = position + target;
-
-            base.SetCamera(position, targetPosition);
-        }
-
     }
 }
