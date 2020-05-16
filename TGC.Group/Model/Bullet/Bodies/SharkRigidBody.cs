@@ -20,7 +20,6 @@ namespace TGC.Group.Model.Bullet.Bodies
         private TGCVector3 scale = new TGCVector3(5, 5, 5);
         private TGCVector3 position = new TGCVector3(-2885, 1720, -525);
         private TGCVector3 director = new TGCVector3(0, 0, 1);
-        private readonly TgcRay ray;
         private readonly Sky skybox;
         private readonly Terrain terrain;
         private CameraFPS camera;
@@ -45,10 +44,6 @@ namespace TGC.Group.Model.Bullet.Bodies
         public SharkRigidBody(Shark shark, Sky sky, Terrain terrain, CameraFPS camera)
         {
             Mesh = shark.Mesh;
-            ray = new TgcRay();
-
-            ray.Origin = position;
-            ray.Direction = -1 * director;
             skybox = sky;
             this.terrain = terrain;
             this.camera = camera;
@@ -135,7 +130,6 @@ namespace TGC.Group.Model.Bullet.Bodies
             acumulatedYRotation += YRotation;
 
             body.ActivationState = ActivationState.ActiveTag;
-            ray.Origin = new TGCVector3(body.CenterOfMassPosition);
 
             if (XRotation != 0 || FastMath.Abs(acumulatedXRotation) > 0.0012)
             {

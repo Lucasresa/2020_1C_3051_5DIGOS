@@ -95,7 +95,7 @@ namespace TGC.Group.Model.Terrains
             return sky.Center;
         }
 
-        private bool inPerimeterSkyBox(float posX, float posZ)
+        public bool inPerimeterSkyBox(float posX, float posZ)
         {
             return posX < currentPerimeter.xMax && posX > currentPerimeter.xMin && posZ < currentPerimeter.zMax && posZ > currentPerimeter.zMin;
         }

@@ -23,6 +23,7 @@ namespace TGC.Group.Model
         #region Atributos
         private float time;
         private List<TgcMesh> vegetation = new List<TgcMesh>();
+        private List<FishMesh> fishes = new List<FishMesh>();
         private CameraFPS camera;
         private Terrain terrain;
         private Water water;
@@ -90,6 +91,7 @@ namespace TGC.Group.Model
             #region Update
             rigidBodyManager.Update(Input, ElapsedTime, TimeBetweenUpdates);
             skyBox.Update();
+            fishes.ForEach(fish => fish.Update(Input, ElapsedTime, camera.position));
             #endregion
 
             #region Teclas
@@ -127,8 +129,8 @@ namespace TGC.Group.Model
                 skyBox.Render();
                 water.Render();
                 vegetation.ForEach(vegetation => { if (skyBox.Contains(vegetation)) vegetation.Render(); } );
+                fishes.ForEach(fish => fish.Render());
             }
-
             rigidBodyManager.Render();
             #endregion
 
@@ -142,6 +144,7 @@ namespace TGC.Group.Model
             skyBox.Dispose();
             vegetation.ForEach(vegetation => vegetation.Dispose());
             rigidBodyManager.Dispose();
+            fishes.ForEach(fish => fish.Dispose());
             #endregion
         }
 
@@ -159,14 +162,18 @@ namespace TGC.Group.Model
             Meshes.AddRange(createMesh(MeshType.silverOre, 5, perimeter));
             Meshes.AddRange(createMesh(MeshType.ironOre, 5, perimeter));
             Meshes.AddRange(createMesh(MeshType.rock, 5, perimeter));
-            Meshes.AddRange(createMesh(MeshType.normalFish, 5, perimeter));
-            Meshes.AddRange(createMesh(MeshType.yellowFish, 5, perimeter));
             vegetation.AddRange(createMesh(MeshType.alga, 5, perimeter));
             vegetation.AddRange(createMesh(MeshType.alga_2, 5, perimeter));
             vegetation.AddRange(createMesh(MeshType.alga_3, 5, perimeter));
             vegetation.AddRange(createMesh(MeshType.alga_4, 5, perimeter));
-            #endregion 
-            
+
+            var normalFishes = createMesh(MeshType.normalFish, 5, perimeter);
+            var yellowFishes = createMesh(MeshType.yellowFish, 5, perimeter);
+            fishes.AddRange(normalFishes.ConvertAll(fish => new FishMesh(fish, skyBox, terrain)));
+            fishes.AddRange(yellowFishes.ConvertAll(fish => new FishMesh(fish, skyBox, terrain)));
+            fishes.ForEach(fish => fish.Init());
+            #endregion
+
             return Meshes;
         }
 
