@@ -19,6 +19,7 @@ namespace TGC.Group.Model
             public static TGCVector3 Scale = new TGCVector3(10, 10, 10);
             public static float MaxYRotation = FastMath.PI - FastMath.QUARTER_PI;
             public static float MaxAxisRotation = FastMath.QUARTER_PI;
+            public static float ScapeFromPlayerCooldown = 3;
         }
 
         private TGCVector3 director;
@@ -26,7 +27,7 @@ namespace TGC.Group.Model
         private float acumulatedYRotation;
         private bool activateMove;
         private TGCMatrix TotalRotation;
-        
+        private float time;
         private Sky skybox;
         private Terrain terrain;
         
@@ -41,6 +42,7 @@ namespace TGC.Group.Model
 
         public void Init()
         {
+            time = Constants.ScapeFromPlayerCooldown;
             acumulatedXRotation = 0;
             acumulatedYRotation = 0;
             activateMove = false;
@@ -51,7 +53,7 @@ namespace TGC.Group.Model
         public void Update(TgcD3dInput input, float elapsedTime, TGCVector3 cameraPosition)
         {
 
-            if (IsNearFromPlayer(cameraPosition))
+            if (IsNearFromPlayer(cameraPosition) && time <= 0)
                 ChangeFishWay();
             else if (activateMove)
                 PerformNormalMove(elapsedTime, 500, GetFishHeadPosition());
@@ -71,12 +73,14 @@ namespace TGC.Group.Model
 
         private void PerformNormalMove(float elapsedTime, float speed, TGCVector3 headPosition)
         {
+            time -= elapsedTime;
             float XRotation = 0f, YRotation = 0f;
             var meshPosition = GetMeshPosition();
             terrain.world.interpoledHeight(headPosition.X, headPosition.Z, out float floorHeight);
             var distanceToFloor = meshPosition.Y - floorHeight;
             var XRotationStep = FastMath.PI * 0.1f * elapsedTime;
-
+            var YRotationStep = FastMath.PI * 0.3f * elapsedTime;
+            
             if (distanceToFloor < Constants.FishHeight.X - 40 && acumulatedXRotation < Constants.MaxAxisRotation)
                 XRotation = XRotationStep;
             else if (IsNumberBetweenInterval(distanceToFloor, Constants.FishHeight) && acumulatedXRotation > 0.0012)
@@ -88,7 +92,7 @@ namespace TGC.Group.Model
 
             if (!skybox.inPerimeterSkyBox(meshPosition.X, meshPosition.Z) && 
                                                         FastMath.Abs(acumulatedYRotation) < Constants.MaxYRotation)
-                YRotation = RotationYAxis(elapsedTime);
+                YRotation = YRotationStep * RotationYSign();
             else
                 acumulatedYRotation = 0;
 
@@ -121,18 +125,19 @@ namespace TGC.Group.Model
         }
         private void ChangeFishWay()
         {
-            director.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
-            TotalRotation *= TGCMatrix.RotationY(FastMath.PI_HALF);
+            float Rotation = -RotationYSign() * FastMath.PI_HALF;
+            director.TransformCoordinate(TGCMatrix.RotationY(Rotation));
+            TotalRotation *= TGCMatrix.RotationY(Rotation);
             Mesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * TGCMatrix.Translation(GetMeshPosition());
+            time = Constants.ScapeFromPlayerCooldown;
         }
 
-        private float RotationYAxis(float elapsedTime)
+        private float RotationYSign()
         {
             var bodyToSkyboxCenterVector = TGCVector3.Normalize(skybox.getSkyboxCenter() - GetMeshPosition());
             var actualDirector = -1 * director;
             var normalVector = TGCVector3.Cross(actualDirector, bodyToSkyboxCenterVector);
-            var rotationStep = FastMath.PI * 0.3f * elapsedTime;
-            return normalVector.Y > 0 ? rotationStep : -rotationStep;
+            return normalVector.Y > 0 ? 1 : -1;
         }
 
         private bool IsNumberBetweenInterval(float number, TGCVector2 interval)
