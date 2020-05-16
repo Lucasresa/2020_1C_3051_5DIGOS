@@ -178,7 +178,7 @@ namespace TGC.Group.Model.Inventory
             {
                 rock.RemoveRange(0, 2);
                 silver.RemoveRange(0, 2);
-                MessageBox.Show("Se crafteo una arma exitosamente.");
+                MessageBox.Show("Se crafteo un arma exitosamente.");
             }
         }
 

@@ -19,14 +19,16 @@ namespace TGC.Group.Model.MeshBuilders
             public static TGCVector3 scale_vegetation = new TGCVector3(7, 7, 7);
         }
         private Random random;
-        List<MeshType> vegetation = new List<MeshType>();
-        List<MeshType> fishes = new List<MeshType>();
+        List<MeshType> vegetation;
+        List<MeshType> fishes;
         #endregion
 
         #region Constructor
         public MeshBuilder()
         {
             random = new Random();
+            vegetation = new List<MeshType>() { MeshType.alga, MeshType.alga_2, MeshType.alga_3, MeshType.alga_4 };
+            fishes = new List<MeshType>() { MeshType.normalFish, MeshType.yellowFish };            
         }
         #endregion
 
@@ -81,7 +83,6 @@ namespace TGC.Group.Model.MeshBuilders
             meshes.ForEach(mesh => LocateMeshInWorld(type, ref mesh, terrainArea, terrain, water));
         }
 
-
         private (int XPosition, int ZPosition) getXZPositionByPerimeter(Perimeter perimeter)
         {
             var XMin = (int)perimeter.xMin;
@@ -121,17 +122,11 @@ namespace TGC.Group.Model.MeshBuilders
 
         private bool isVegetation(MeshType type)
         {            
-            vegetation.Add(MeshType.alga);
-            vegetation.Add(MeshType.alga_2);
-            vegetation.Add(MeshType.alga_3);
-            vegetation.Add(MeshType.alga_4);
             return vegetation.Contains(type);
         }
 
         private bool isFish(MeshType type)
         {           
-            fishes.Add(MeshType.normalFish);
-            fishes.Add(MeshType.yellowFish);
             return fishes.Contains(type);
         }
         #endregion
