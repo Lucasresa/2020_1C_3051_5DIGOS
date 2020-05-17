@@ -16,19 +16,23 @@ namespace TGC.Group.Model.Bullet.Bodies
     class SharkRigidBody
     {
         #region Atributos
-        private const float MAX_LIFE = 250;
-        private readonly TGCVector2 SHARK_HEIGHT = new TGCVector2(700, 1800);
+        private struct Constants
+        {
+            public static float MAX_LIFE = 250;
+            public static TGCVector2 SHARK_HEIGHT = new TGCVector2(700, 1800);
+            public static TGCVector3 scale = new TGCVector3(5, 5, 5);
+            public static TGCVector3 startPosition = new TGCVector3(-2885, 1720, -525);
+            public static float MaxYRotation = FastMath.PI - (FastMath.QUARTER_PI / 2);
+            public static float MaxAxisRotation = FastMath.QUARTER_PI;
+        }
+
         private const float SHARK_SEEK_TIME = 5;
-        private TGCVector3 scale = new TGCVector3(5, 5, 5);
-        private TGCVector3 position = new TGCVector3(-2885, 1720, -525);
         private TGCVector3 director = new TGCVector3(0, 0, 1);
         private readonly Sky skybox;
         private readonly Terrain terrain;
         private CameraFPS camera;
         private bool normalMove = false;
         private bool stalkerModeMove = false;
-        private readonly float MaxYRotation = FastMath.PI - (FastMath.QUARTER_PI / 2);
-        private readonly float MaxAxisRotation = FastMath.QUARTER_PI;
         private float acumulatedYRotation = 0;
         private float acumulatedXRotation = 0;
         private float seekTimeCounter = 0;
@@ -49,7 +53,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             skybox = sky;
             this.terrain = terrain;
             this.camera = camera;
-            Life = MAX_LIFE;
+            Life = Constants.MAX_LIFE;
             Init();
         }
 
@@ -59,9 +63,8 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         private void Init()
         {
-            Mesh.Transform = TGCMatrix.Scaling(scale) * TGCMatrix.Translation(position);
-            body = rigidBodyFactory.CreateBox(new TGCVector3(88, 77, 280) * 2, 1000, position, 0, 0, 0, 0, false);
-            body.CenterOfMassTransform = TGCMatrix.Translation(position).ToBulletMatrix();
+            Mesh.Transform = TGCMatrix.Scaling(Constants.scale) * TGCMatrix.Translation(Constants.startPosition);
+            body = rigidBodyFactory.CreateBox(new TGCVector3(88, 77, 280) * 2, 1000, Constants.startPosition, 0, 0, 0, 0, false);
         }
 
         public void Update(TgcD3dInput input, float elapsedTime, CharacterStatus playerStatus)
@@ -92,7 +95,7 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public void Render()
         {
-            Mesh.Transform = TGCMatrix.Scaling(scale) * new TGCMatrix(body.InterpolationWorldTransform);
+            Mesh.Transform = TGCMatrix.Scaling(Constants.scale) * new TGCMatrix(body.InterpolationWorldTransform);
             Mesh.BoundingBox.transform(Mesh.Transform);
             Mesh.BoundingBox.Render();
             Mesh.Render();
@@ -114,16 +117,16 @@ namespace TGC.Group.Model.Bullet.Bodies
             var XRotationStep = FastMath.PI * 0.1f * elapsedTime;
             var YRotationStep = FastMath.PI * 0.4f * elapsedTime;
 
-            if (distanceToFloor < SHARK_HEIGHT.X - 150 && acumulatedXRotation < MaxAxisRotation)
+            if (distanceToFloor < Constants.SHARK_HEIGHT.X - 150 && acumulatedXRotation < Constants.MaxAxisRotation)
                 XRotation = XRotationStep;
-            else if (IsNumberBetweenInterval(distanceToFloor, SHARK_HEIGHT) && acumulatedXRotation > 0.0012)
+            else if (IsNumberBetweenInterval(distanceToFloor, Constants.SHARK_HEIGHT) && acumulatedXRotation > 0.0012)
                 XRotation = -XRotationStep;
-            if (distanceToFloor > SHARK_HEIGHT.Y + 150 && acumulatedXRotation > -MaxAxisRotation)
+            if (distanceToFloor > Constants.SHARK_HEIGHT.Y + 150 && acumulatedXRotation > -Constants.MaxAxisRotation)
                 XRotation = -XRotationStep;
-            else if (IsNumberBetweenInterval(distanceToFloor, SHARK_HEIGHT) && acumulatedXRotation < -0.0012)
+            else if (IsNumberBetweenInterval(distanceToFloor, Constants.SHARK_HEIGHT) && acumulatedXRotation < -0.0012)
                 XRotation = XRotationStep;
 
-            if (!skybox.Contains(body) && FastMath.Abs(acumulatedYRotation) < MaxYRotation)
+            if (!skybox.Contains(body) && FastMath.Abs(acumulatedYRotation) < Constants.MaxYRotation)
                 YRotation = YRotationStep * RotationYSign();
             else
                 acumulatedYRotation = 0;
@@ -161,7 +164,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             var actualDirector = -1 * director;
             seekTimeCounter += elapsedTime;
-            var RotationStep = FastMath.PI * 0.4f * elapsedTime;
+            var RotationStep = FastMath.PI * 0.3f * elapsedTime;
 
             if (rotationAngle <= RotationStep)
                 return;
@@ -179,7 +182,7 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public void ReceiveDamage(float damage)
         {
-            Life = FastMath.Clamp(Life - damage, 0, MAX_LIFE);
+            Life = FastMath.Clamp(Life - damage, 0, Constants.MAX_LIFE);
         }
 
         #endregion
@@ -195,13 +198,13 @@ namespace TGC.Group.Model.Bullet.Bodies
             var distanceToPlayer = (camera.position - GetHeadPosition()).Length(); 
             return distanceToPlayer < 100;
         }
+
         private void ChangeSharkWay(float elapsedTime)
         {
-            var rotation = TGCMatrix.RotationY(FastMath.PI * -RotationYSign());
+            var rotation = TGCMatrix.RotationY(FastMath.PI_HALF * -RotationYSign());
             director = new TGCVector3(0, 0, 1);
             director.TransformCoordinate(rotation);
-            Mesh.Transform = rotation *
-                             TGCMatrix.Translation(new TGCVector3(body.CenterOfMassPosition));
+            Mesh.Transform = rotation * TGCMatrix.Translation(new TGCVector3(body.CenterOfMassPosition));
             body.WorldTransform = Mesh.Transform.ToBulletMatrix();
             seekTimeCounter = 0;
             acumulatedXRotation = 0;
