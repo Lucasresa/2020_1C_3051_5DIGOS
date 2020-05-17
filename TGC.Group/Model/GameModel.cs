@@ -5,15 +5,11 @@ using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Core.SceneLoader;
-using TGC.Group.Model.Bullet.Bodies;
 using TGC.Group.Model.MeshBuilders;
 using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Watercraft;
 using TGC.Group.Utils;
-using TGC.Core.Collision;
-using static TGC.Group.Model.Terrains.Terrain;
-using TGC.Core.Input;
 using TGC.Group.Model.Bullet;
 
 namespace TGC.Group.Model
