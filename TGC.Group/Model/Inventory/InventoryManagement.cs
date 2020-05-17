@@ -14,6 +14,7 @@ using TGC.Core.Mathematica;
 using TGC.Core.Text;
 using TGC.Group.Model.Bullet.Bodies;
 using TGC.Group.Model.Draw;
+using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Inventory
 {
@@ -31,10 +32,8 @@ namespace TGC.Group.Model.Inventory
         private TgcText2D DrawText = new TgcText2D();
         private Sprite lookAt;
         private (int posX, int posY) mouseCenter;
-        public TgcPickingRay pickingRay;
-        public TGCVector3 characterPosition;
-
-        private Dictionary<string, List<CommonRigidBody>> inventory;
+        private Ray ray;
+        public Dictionary<string, List<CommonRigidBody>> items;
         private List<CommonRigidBody> gold = new List<CommonRigidBody>();
         private List<CommonRigidBody> iron = new List<CommonRigidBody>();
         private List<CommonRigidBody> fish = new List<CommonRigidBody>();
@@ -62,16 +61,8 @@ namespace TGC.Group.Model.Inventory
         #region Metodos
         private void initializer()
         {
-            inventory = new Dictionary<string, List<CommonRigidBody>>();
-            inventory.Add("gold", gold);
-            inventory.Add("silver", silver);
-            inventory.Add("rock-n", rock);
-            inventory.Add("iron", iron);
-            inventory.Add("fish", fish);
-            inventory.Add("yellowFish", yellowFish);
-            inventory.Add("spiralCoral", spiralCoral);
-            inventory.Add("normalCoral", normalCoral);
-            inventory.Add("treeCoral", treeCoral);
+            ray = new Ray(Input);
+            initializerDiccionary();
 
             lookAt = new Sprite(MediaDir, ShadersDir);
             lookAt.setInitialSprite(new TGCVector2(1, 1), "mira");
@@ -83,68 +74,25 @@ namespace TGC.Group.Model.Inventory
         public void Update(TgcD3dInput input, DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody, bool lockCam)
         {
             if (lockCam)
-                lookAt.sprite.Position = new TGCVector2 (Cursor.Position.X, Cursor.Position.Y);
+                lookAt.sprite.Position = new TGCVector2(Cursor.Position.X, Cursor.Position.Y);
             else
                 lookAt.sprite.Position = new TGCVector2(mouseCenter.posX, mouseCenter.posY);
 
             showInventory = lockCam;
 
             if (input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
-                addInventory(dynamicsWorld, ref commonRigidBody);
-
-            crafting();
-        }
-
-        private void addInventory(DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody)
-        {
-            bool isMatch = false;
-            bool intersected = false;
-            bool inSight = false;
-            pickingRay.updateRay();
-
-            var lookAtRigidBody = commonRigidBody.Find(rigidBody =>
-            {
-                if ( isAFish(rigidBody) && !(hasARow))
-                    isMatch = false; 
-                else
-                {
-                    var aabb = rigidBody.getAABB();
-
-                    intersected = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabb, out TGCVector3 collisionPoint);
-                    inSight = Math.Sqrt(TGCVector3.LengthSq(characterPosition, collisionPoint)) < 500;
-                    isMatch = intersected && inSight;
-                }
-                
-                return isMatch;
-                    
-                
-                
-            });
-
-            if (isMatch)
-            {
-                splitItems(lookAtRigidBody);
-                dynamicsWorld.RemoveRigidBody(lookAtRigidBody.body);
-                commonRigidBody.Remove(lookAtRigidBody);
-            }
-        }
-
-        private void splitItems(CommonRigidBody lookAtRigidBody)
-        {
-            var name = lookAtRigidBody.getName();
-            var key = name.Substring(0, name.IndexOf("_"));
-            inventory[key].Add(lookAtRigidBody);
+                findItem(dynamicsWorld, ref commonRigidBody);
         }
 
         public void Render()
         {
             lookAt.Render();
             if (showInventory)
-                DrawText.drawText( "Gold: " + gold.Count + 
+                DrawText.drawText("Gold: " + gold.Count +
                                    "\nSilver: " + silver.Count +
-                                   "\nRocas: " + rock.Count + 
+                                   "\nRocas: " + rock.Count +
                                    "\niron: " + iron.Count +
-                                   "\nFish: " + fish.Count + 
+                                   "\nFish: " + fish.Count +
                                    "\nYellow Fish: " + yellowFish.Count +
                                    "\nSpiral Coral: " + spiralCoral.Count +
                                    "\nNormal Coral: " + normalCoral.Count +
@@ -172,62 +120,44 @@ namespace TGC.Group.Model.Inventory
             list.RemoveRange(0, list.Count);
         }
 
-        public void craftWeapon()
-        {
-            if (rock.Count() >= 2 && silver.Count() >= 2)
-            {
-                rock.RemoveRange(0, 2);
-                silver.RemoveRange(0, 2);
-                MessageBox.Show("Se crafteo un arma exitosamente.");
-            }
-        }
-
-        public void craftRod()
-        {
-            if (spiralCoral.Count() >= 1 && normalCoral.Count() >= 1 && treeCoral.Count() >= 1 && iron.Count() >= 1)
-            {
-                spiralCoral.RemoveRange(0, 1);
-                normalCoral.RemoveRange(0, 1);
-                treeCoral.RemoveRange(0, 1);
-                iron.RemoveRange(0, 1);
-                MessageBox.Show("Se crafteo una caña exitorsamente.");
-                hasARow = true;
-            }
-        }
-
-        public void craftDivingHelmet()
-        {
-            if(gold.Count() >= 4)
-            {
-                gold.RemoveRange(0, 4);
-                hasADivingHelmet = true;
-            }
-        }
-
-        private void crafting()
-        {
-            if (isInsideShip())
-            {
-                if (Input.keyDown(Key.M))
-                    craftWeapon();
-
-                if (Input.keyDown(Key.N))
-                    craftRod();
-
-                if (Input.keyDown(Key.B))
-                    craftDivingHelmet();
-            }
-        }
-
-        private bool isInsideShip()
-        {
-            return characterPosition.Y < 0;
-        }
-
         private bool isAFish(CommonRigidBody rigidBody)
         {
-            var name = rigidBody.getName();
-            return name.Substring(0, name.IndexOf("_")) == "fish" || name.Substring(0, name.IndexOf("_")) == "yellowFish";
+            var name = rigidBody.getName().ToLower();
+            return name.Contains("fish");
+        }
+
+        private void splitItems(CommonRigidBody lookAtRigidBody)
+        {
+            var name = lookAtRigidBody.getName();
+            var key = name.Substring(0, name.IndexOf("_"));
+            items[key].Add(lookAtRigidBody);
+        }
+
+        private void findItem(DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody)
+        {
+            var item = commonRigidBody.Find(rigidBody =>
+            { return isAFish(rigidBody) && !(hasARow) ? false : ray.intersectsWithObject(rigidBody.getAABB(), 500); });
+
+            if (item != null)
+            {
+                splitItems(item);
+                dynamicsWorld.RemoveRigidBody(item.body);
+                commonRigidBody.Remove(item);
+            }
+        }
+
+        private void initializerDiccionary()
+        {
+            items = new Dictionary<string, List<CommonRigidBody>>();
+            items.Add("gold", gold);
+            items.Add("silver", silver);
+            items.Add("rock-n", rock);
+            items.Add("iron", iron);
+            items.Add("fish", fish);
+            items.Add("yellowFish", yellowFish);
+            items.Add("spiralCoral", spiralCoral);
+            items.Add("normalCoral", normalCoral);
+            items.Add("treeCoral", treeCoral);
         }
         #endregion
     }

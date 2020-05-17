@@ -4,7 +4,6 @@ using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
-using TGC.Group.Model.Inventory;
 
 namespace TGC.Group.Model.Draw
 {
@@ -22,19 +21,17 @@ namespace TGC.Group.Model.Draw
         private Sprite life, oxygen;
         private string MediaDir, ShadersDir;
         private float oxygenPercentage = 100, lifePercentage = 100;
-        private InventoryManagement inventory;
 
         public TgcD3dInput input;
         public bool canBreathe;
         #endregion
 
         #region Constructor
-        public CharacterStatus(string mediaDir, string shadersDir, TgcD3dInput input, InventoryManagement inventory)
+        public CharacterStatus(string mediaDir, string shadersDir, TgcD3dInput input)
         {
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
             this.input = input;
-            this.inventory = inventory;
             initializer();
         }
         #endregion
@@ -49,25 +46,22 @@ namespace TGC.Group.Model.Draw
             oxygen.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 30), "barra_oxigeno");
         }
 
-        public void Update()
+        public void Update(bool hasADivingHelmet)
         {
             if (!isDead())
-            {
-                UpdateOxygen();
-                UpdateLife();
-            }
+                UpdateOxygen(hasADivingHelmet);                
         }
 
-        private void UpdateOxygen()
+        private void UpdateOxygen(bool hasADivingHelmet)
         {
             if (canRecoverOxygen())
-                oxygenPercentage += 0.2f;
+                oxygenPercentage += 1f;
 
-            if(inventory.hasADivingHelmet)
+            if(hasADivingHelmet)
                 oxygenPercentage -= 0.025f;
             else
                 oxygenPercentage -= 0.05f;
-            
+
             oxygenPercentage = FastMath.Clamp(oxygenPercentage, Constants.oxygen.min, Constants.oxygen.max);
 
             var initialScale = oxygen.initialScaleSprite;
@@ -75,27 +69,14 @@ namespace TGC.Group.Model.Draw
             oxygen.sprite.Scaling = newScale;
         }
 
-        private void UpdateLife()
+        public void ReceiveDamage(float damage)
         {
-            var damage = 5f; // TODO: ver como contamos el daño, si recibe un daño fijo o depende de algo
-            if (receivedAnAttack())
-            {
-                lifePercentage -= damage;
-                lifePercentage = FastMath.Clamp(lifePercentage, Constants.life.min, Constants.life.max);
+            lifePercentage -= damage;
+            lifePercentage = FastMath.Clamp(lifePercentage, Constants.life.min, Constants.life.max);
 
-                var initialScale = life.initialScaleSprite;
-                var newScale = new TGCVector2((lifePercentage / Constants.life.max) * initialScale.X, initialScale.Y);
-                life.sprite.Scaling = newScale;
-            }
-        }
-
-        private bool receivedAnAttack()
-        {
-            // TODO: Podriamos decir que recibio un ataque si el tiburon colisiono o se acerco a cierta distancia al personaje
-            if (input.keyPressed(Key.Q))
-                return true;
-            else
-                return false;
+            var initialScale = life.initialScaleSprite;
+            var newScale = new TGCVector2((lifePercentage / Constants.life.max) * initialScale.X, initialScale.Y);
+            life.sprite.Scaling = newScale;
         }
 
         private bool canRecoverOxygen()

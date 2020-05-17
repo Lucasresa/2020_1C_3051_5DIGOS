@@ -6,6 +6,7 @@ using TGC.Core.Collision;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Group.Model.Draw;
 using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
 using TGC.Group.Utils;
@@ -15,6 +16,7 @@ namespace TGC.Group.Model.Bullet.Bodies
     class SharkRigidBody
     {
         #region Atributos
+        private const float MAX_LIFE = 250;
         private readonly TGCVector2 SHARK_HEIGHT = new TGCVector2(700, 1800);
         private const float SHARK_SEEK_TIME = 5;
         private TGCVector3 scale = new TGCVector3(5, 5, 5);
@@ -30,8 +32,8 @@ namespace TGC.Group.Model.Bullet.Bodies
         private float acumulatedYRotation = 0;
         private float acumulatedXRotation = 0;
         private float seekTimeCounter = 0;
-        private TGCQuaternion prevRotation = TGCQuaternion.Identity;
-        
+        private TGCMatrix TotalRotation = TGCMatrix.Identity;
+        private float Life;
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
 
         public RigidBody body;
@@ -47,6 +49,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             skybox = sky;
             this.terrain = terrain;
             this.camera = camera;
+            Life = MAX_LIFE;
             Init();
         }
 
@@ -61,7 +64,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             body.CenterOfMassTransform = TGCMatrix.Translation(position).ToBulletMatrix();
         }
 
-        public void Update(TgcD3dInput input, float elapsedTime)
+        public void Update(TgcD3dInput input, float elapsedTime, CharacterStatus playerStatus)
         {
             var speed = 1000f;
             var headPosition = GetHeadPosition();
@@ -70,14 +73,15 @@ namespace TGC.Group.Model.Bullet.Bodies
             body.AngularVelocity = Vector3.Zero;
 
             if (stalkerModeMove && CanSeekPlayer(out float rotationAngle, out TGCVector3 rotationAxis))
-            {
-                if (IsCollapsinWithPlayer())
-                    ChangeSharkWay(elapsedTime);
-                else
-                    PerformStalkerMove(elapsedTime, speed, rotationAngle, rotationAxis);
-            }
+                PerformStalkerMove(elapsedTime, speed, rotationAngle, rotationAxis);
             else if (normalMove)
                 PerformNormalMove(elapsedTime, speed, headPosition);
+
+            if (IsCollapsinWithPlayer())
+            {
+                playerStatus.ReceiveDamage(30);
+                ChangeSharkWay(elapsedTime);
+            }
 
             if (seekTimeCounter >= SHARK_SEEK_TIME || input.keyDown(Key.P))
                 ChangeSharkWay(elapsedTime);
@@ -86,43 +90,41 @@ namespace TGC.Group.Model.Bullet.Bodies
             if (input.keyPressed(Key.Y)) stalkerModeMove = !stalkerModeMove;
         }
 
-        #region Movements
-        private void PerformStalkerMove(float elapsedTime, float speed, float rotationAngle, TGCVector3 rotationAxis)
+        public void Render()
         {
-            var actualDirector = -1 * director;
-            seekTimeCounter += elapsedTime;
-
-            actualDirector.TransformCoordinate(TGCMatrix.RotationAxis(rotationAxis, rotationAngle));
-            var newRotation = TGCQuaternion.RotationAxis(rotationAxis, rotationAngle);
-            var rotation = TGCQuaternion.Slerp(prevRotation, newRotation, 0.08f);
-            prevRotation = rotation;
-
-            Mesh.Transform = TGCMatrix.RotationTGCQuaternion(rotation) *
-                new TGCMatrix(body.InterpolationWorldTransform);
-            body.WorldTransform = Mesh.Transform.ToBulletMatrix();
-
-            director = -1 * actualDirector;
-            body.LinearVelocity = director.ToBulletVector3() * -speed;
+            Mesh.Transform = TGCMatrix.Scaling(scale) * new TGCMatrix(body.InterpolationWorldTransform);
+            Mesh.BoundingBox.transform(Mesh.Transform);
+            Mesh.BoundingBox.Render();
+            Mesh.Render();
         }
 
+        public void Dispose()
+        {
+            body.Dispose();
+            Mesh.Dispose();
+        }
+
+        #region Movements
         private void PerformNormalMove(float elapsedTime, float speed, TGCVector3 headPosition)
         {
             var XRotation = 0f;
             var YRotation = 0f;
             terrain.world.interpoledHeight(headPosition.X, headPosition.Z, out float floorHeight);
             var distanceToFloor = body.CenterOfMassPosition.Y - floorHeight;
+            var XRotationStep = FastMath.PI * 0.1f * elapsedTime;
+            var YRotationStep = FastMath.PI * 0.4f * elapsedTime;
 
             if (distanceToFloor < SHARK_HEIGHT.X - 150 && acumulatedXRotation < MaxAxisRotation)
-                XRotation = FastMath.PI * 0.1f * elapsedTime;
+                XRotation = XRotationStep;
             else if (IsNumberBetweenInterval(distanceToFloor, SHARK_HEIGHT) && acumulatedXRotation > 0.0012)
-                XRotation = -FastMath.PI * 0.1f * elapsedTime;
+                XRotation = -XRotationStep;
             if (distanceToFloor > SHARK_HEIGHT.Y + 150 && acumulatedXRotation > -MaxAxisRotation)
-                XRotation = -FastMath.PI * 0.1f * elapsedTime;
+                XRotation = -XRotationStep;
             else if (IsNumberBetweenInterval(distanceToFloor, SHARK_HEIGHT) && acumulatedXRotation < -0.0012)
-                XRotation = FastMath.PI * 0.1f * elapsedTime;
+                XRotation = XRotationStep;
 
             if (!skybox.Contains(body) && FastMath.Abs(acumulatedYRotation) < MaxYRotation)
-                YRotation = RotationYAxis(elapsedTime);
+                YRotation = YRotationStep * RotationYSign();
             else
                 acumulatedYRotation = 0;
 
@@ -141,6 +143,7 @@ namespace TGC.Group.Model.Bullet.Bodies
                                  new TGCMatrix(body.InterpolationWorldTransform);
                 body.WorldTransform = Mesh.Transform.ToBulletMatrix();
                 speed /= 1.5f;
+                TotalRotation *= TGCMatrix.RotationX(XRotation);
             }
             else if (YRotation != 0)
             {
@@ -149,22 +152,36 @@ namespace TGC.Group.Model.Bullet.Bodies
                                  TGCMatrix.RotationY(YRotation) *
                                  new TGCMatrix(body.InterpolationWorldTransform);
                 body.WorldTransform = Mesh.Transform.ToBulletMatrix();
+                TotalRotation *= TGCMatrix.RotationY(YRotation);
             }
+            body.LinearVelocity = director.ToBulletVector3() * -speed;
+        }
+
+        private void PerformStalkerMove(float elapsedTime, float speed, float rotationAngle, TGCVector3 rotationAxis)
+        {
+            var actualDirector = -1 * director;
+            seekTimeCounter += elapsedTime;
+            var RotationStep = FastMath.PI * 0.4f * elapsedTime;
+
+            if (rotationAngle <= RotationStep)
+                return;
+            actualDirector.TransformCoordinate(TGCMatrix.RotationAxis(rotationAxis, RotationStep));
+            var newRotation = TGCMatrix.RotationAxis(rotationAxis, RotationStep);
+            TotalRotation *= newRotation;
+
+            Mesh.Transform = TotalRotation * TGCMatrix.Translation(new TGCVector3(body.CenterOfMassPosition));
+            body.WorldTransform = Mesh.Transform.ToBulletMatrix();
+
+            director = -1 * actualDirector;
             body.LinearVelocity = director.ToBulletVector3() * -speed;
         }
         #endregion
 
-        public void Render()
+        public void ReceiveDamage(float damage)
         {
-            Mesh.Transform = TGCMatrix.Scaling(scale) * new TGCMatrix(body.InterpolationWorldTransform);
-            Mesh.Render();
+            Life = FastMath.Clamp(Life - damage, 0, MAX_LIFE);
         }
 
-        public void Dispose()
-        {
-            body.Dispose();
-            Mesh.Dispose();
-        }
         #endregion
 
         #region Private Methods
@@ -180,15 +197,16 @@ namespace TGC.Group.Model.Bullet.Bodies
         }
         private void ChangeSharkWay(float elapsedTime)
         {
-            var rotation = TGCQuaternion.Slerp(prevRotation, TGCQuaternion.Identity, elapsedTime);
+            var rotation = TGCMatrix.RotationY(FastMath.PI * -RotationYSign());
             director = new TGCVector3(0, 0, 1);
-            Mesh.Transform = TGCMatrix.RotationTGCQuaternion(rotation) *
+            director.TransformCoordinate(rotation);
+            Mesh.Transform = rotation *
                              TGCMatrix.Translation(new TGCVector3(body.CenterOfMassPosition));
             body.WorldTransform = Mesh.Transform.ToBulletMatrix();
             seekTimeCounter = 0;
             acumulatedXRotation = 0;
             acumulatedYRotation = 0;
-            prevRotation = TGCQuaternion.Identity;
+            TotalRotation = rotation;
         }
 
         private bool CanSeekPlayer(out float rotationAngle, out TGCVector3 rotationAxis)
@@ -220,14 +238,14 @@ namespace TGC.Group.Model.Bullet.Bodies
             return number > interval.X && number < interval.Y;
         }
 
-        private float RotationYAxis(float elapsedTime)
+        private float RotationYSign()
         {
             var bodyToSkyboxCenterVector = TGCVector3.Normalize(skybox.getSkyboxCenter() - new TGCVector3(body.CenterOfMassPosition));
             var actualDirector = -1 * director;
             var normalVector = TGCVector3.Cross(actualDirector, bodyToSkyboxCenterVector);
-            var rotationStep = FastMath.PI * 0.5f * elapsedTime;
-            return normalVector.Y > 0 ? rotationStep : -rotationStep;
+            return normalVector.Y > 0 ? 1 : -1;
         }
+
         private TGCVector3 GetHeadPosition()
         {
             return new TGCVector3(body.CenterOfMassPosition) + director * -560;

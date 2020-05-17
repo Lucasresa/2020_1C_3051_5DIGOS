@@ -8,6 +8,9 @@ using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Watercraft;
 using TGC.Group.Utils;
+using TGC.Group.Model.Inventory;
+using TGC.Group.Model.Craft;
+using Microsoft.DirectX.DirectInput;
 
 namespace TGC.Group.Model.Bullet
 {
@@ -16,6 +19,7 @@ namespace TGC.Group.Model.Bullet
         #region Atributos
         private string MediaDir, ShadersDir;
         private Sky skybox;
+        private InventoryManagement inventory;
         private List<CommonRigidBody> commonRigidBody = new List<CommonRigidBody>();
         private TerrainRigidBody terrainRigidBody;
         private CharacterRigidBody characterRigidBody;
@@ -23,6 +27,8 @@ namespace TGC.Group.Model.Bullet
         private OutdoorShipRigidBody outdoorShipRigidBody;
         private IndoorShipRigidBody indoorShipRigidBody;
         private DiscreteDynamicsWorld dynamicsWorld;
+        private CameraFPS Camera;
+        private Crafting crafting;
         #endregion
 
         #region PhysicalWorld
@@ -45,7 +51,7 @@ namespace TGC.Group.Model.Bullet
             GImpactCollisionAlgorithm.RegisterAlgorithm(dispatcher);
             constraintSolver = new SequentialImpulseConstraintSolver();
             overlappingPairCache = new DbvtBroadphase();
-            dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, overlappingPairCache, constraintSolver, collisionConfiguration) {  Gravity = gravityZero };
+            dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, overlappingPairCache, constraintSolver, collisionConfiguration) { Gravity = gravityZero };
             #endregion
         }
         #endregion
@@ -55,6 +61,9 @@ namespace TGC.Group.Model.Bullet
         public void Init(TgcD3dInput input, Terrain terrain, CameraFPS camera, Shark shark, Ship ship, Sky skyBox, ref List<TgcMesh> meshes)
         {
             skybox = skyBox;
+            Camera = camera;
+            inventory = new InventoryManagement(MediaDir, ShadersDir, input);
+            crafting = new Crafting(MediaDir, ShadersDir, inventory.items);
 
             #region Agregar rigidos al mundo fisico
             terrainRigidBody = new TerrainRigidBody(terrain);
@@ -77,6 +86,8 @@ namespace TGC.Group.Model.Bullet
 
         public void Render()
         {
+            inventory.Render();
+
             #region Renderizar deacuerdo a la posicion del personaje
             characterRigidBody.Render();
 
@@ -104,9 +115,12 @@ namespace TGC.Group.Model.Bullet
         public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
         {
             dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
-            characterRigidBody.Update(dynamicsWorld, ref commonRigidBody);
+            characterRigidBody.Update(elapsedTime, sharkRigidBody);
+            inventory.Update(input, dynamicsWorld, ref commonRigidBody, Camera.lockCam);
+            crafting.Update(input);
+            characterRigidBody.status.Update(crafting.hasADivingHelmet);
             if (!characterRigidBody.isInsideShip())
-                sharkRigidBody.Update(input, elapsedTime);
+                sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
         }
 
         public void Dispose()
@@ -122,6 +136,7 @@ namespace TGC.Group.Model.Bullet
             outdoorShipRigidBody.Dispose();
             indoorShipRigidBody.Dispose();
             commonRigidBody.ForEach(rigidBody => rigidBody.Dispose());
+            inventory.Dispose();
         }
 
         public void addNewRigidBody(ref List<TgcMesh> meshes)

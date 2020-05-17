@@ -20,7 +20,7 @@ namespace TGC.Group.Utils
         {
             public static TGCVector3 outdoorPosition = new TGCVector3(1300, 3505, 20);
             public static TGCVector3 indoorPosition  = new TGCVector3(515, -2340, -40);
-            public static float limitMax = FastMath.ToRad(90);
+            public static float limitMax = FastMath.ToRad(60);
             public static float limitMin = FastMath.ToRad(-60);
             public static Point mouseCenter = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
             public static float rotationSpeed = 0.1f;
@@ -29,7 +29,7 @@ namespace TGC.Group.Utils
 
         private TgcD3dInput Input { get; }
         private TGCMatrix cameraRotation;
-        private float longitude = -FastMath.PI / 10.0f;
+        public float longitude { get; private set; } = -FastMath.PI / 10.0f;
         public float latitude { get; private set; } = FastMath.PI_HALF;
         public bool lockCam;
         #endregion
