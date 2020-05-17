@@ -226,8 +226,8 @@ namespace TGC.Group.Model.Inventory
 
         private bool isAFish(CommonRigidBody rigidBody)
         {
-            var name = rigidBody.getName();
-            return name.Substring(0, name.IndexOf("_")) == "fish" || name.Substring(0, name.IndexOf("_")) == "yellowFish";
+            var name = rigidBody.getName().ToLower();
+            return name.Contains("fish");
         }
         #endregion
     }

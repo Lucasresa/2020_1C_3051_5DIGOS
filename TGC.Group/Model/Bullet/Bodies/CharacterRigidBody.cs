@@ -13,6 +13,7 @@ using TGC.Core.Mathematica;
 using TGC.Core.Text;
 using TGC.Group.Model.Draw;
 using TGC.Group.Model.Inventory;
+using TGC.Group.Model.Meshes;
 using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Bullet.Bodies
@@ -51,6 +52,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         private bool showEnterShipInfo;
         public TgcBoundingAxisAlignBox aabbShip;
         public RigidBody body;
+        private Weapon weapon;
         #endregion
 
         #region Constructor
@@ -69,6 +71,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         #region Metodos
         private void Init()
         {
+            weapon = new Weapon(MediaDir, ShadersDir);
             inventory = new InventoryManagement(MediaDir, ShadersDir, input);
             status = new CharacterStatus(MediaDir, ShadersDir, input, inventory);
             createPickingRay();
@@ -82,7 +85,8 @@ namespace TGC.Group.Model.Bullet.Bodies
             #endregion
         }
 
-        public void Update(DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody)
+        public void Update(DiscreteDynamicsWorld dynamicsWorld, 
+            ref List<CommonRigidBody> commonRigidBody, float elapsedTime)
         {
             var speed = Constants.speed;
             
@@ -124,9 +128,14 @@ namespace TGC.Group.Model.Bullet.Bodies
                 body.AngularVelocity = Vector3.Zero;
             }
 
+            if (input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_RIGHT))
+            {
+                weapon.ActivateAtackMove();
+            }
+
             body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * getGravity();
             Camera.position = new TGCVector3(body.CenterOfMassPosition) + Constants.cameraHeight;
-
+            weapon.Update(Camera, director, elapsedTime);
             #endregion
         }
 
@@ -134,7 +143,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             status.Render();
             inventory.Render();
-
+            weapon.Render();
             if(showEnterShipInfo)
                 DrawText.drawText("PRESIONA E PARA ENTRAR A LA NAVE", 500, 400, Color.White);
         }
@@ -144,6 +153,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             body.Dispose();
             status.Dispose();
             inventory.Dispose();
+            weapon.Dispose();
         }
 
         public void teleport()
