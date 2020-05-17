@@ -12,7 +12,6 @@ using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
 using TGC.Group.Model.Draw;
-using TGC.Group.Model.Inventory;
 using TGC.Group.Model.Meshes;
 using TGC.Group.Utils;
 
@@ -25,7 +24,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             public static TGCVector3 indoorPosition;
             public static TGCVector3 outdoorPosition;
-            public static float speed = 450f;
+            public static float speed = 850f;
             public static TGCVector3 cameraHeight = new TGCVector3(0, 85, 0);
             public static TGCVector3 planeDirector
             {
@@ -45,16 +44,14 @@ namespace TGC.Group.Model.Bullet.Bodies
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
         private CameraFPS Camera;
         private TgcD3dInput input;
-        private TgcPickingRay pickingRay;
-        private CharacterStatus status;
-        private InventoryManagement inventory;
+        private Ray ray;
         private float prevLatitude;
         private bool showEnterShipInfo;
         public TgcBoundingAxisAlignBox aabbShip;
         public RigidBody body;
         private Weapon weapon;
 
-        public CharacterStatus Status { get { return status; } }
+        public CharacterStatus status;
         #endregion
 
         #region Constructor
@@ -73,10 +70,9 @@ namespace TGC.Group.Model.Bullet.Bodies
         #region Metodos
         private void Init()
         {
+            status = new CharacterStatus(MediaDir, ShadersDir, input);
             weapon = new Weapon(MediaDir, ShadersDir);
-            inventory = new InventoryManagement(MediaDir, ShadersDir, input);
-            status = new CharacterStatus(MediaDir, ShadersDir, input, inventory);
-            createPickingRay();
+            ray = new Ray(input);
 
             prevLatitude = Camera.latitude;
             Constants.planeDirector.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
@@ -87,19 +83,14 @@ namespace TGC.Group.Model.Bullet.Bodies
             #endregion
         }
 
-        public void Update(DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody, 
-                            float elapsedTime, SharkRigidBody shark)
+        public void Update(float elapsedTime, SharkRigidBody shark)
         {
             var speed = Constants.speed;
-            
-            inventory.Update(input, dynamicsWorld, ref commonRigidBody, Camera.lockCam);
 
             if (Camera.lockCam)
                 return;
 
             canRecoverOxygen();
-            status.Update();
-            updateInventoryWithCharacterPosition();
             teleport();
 
             #region Movimiento 
@@ -140,13 +131,13 @@ namespace TGC.Group.Model.Bullet.Bodies
             body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * getGravity();
             Camera.position = new TGCVector3(body.CenterOfMassPosition) + Constants.cameraHeight;
             weapon.Update(Camera, director, elapsedTime);
+
             #endregion
         }
 
         public void Render()
         {
             status.Render();
-            inventory.Render();
             weapon.Render();
             if(showEnterShipInfo)
                 DrawText.drawText("PRESIONA E PARA ENTRAR A LA NAVE", 500, 400, Color.White);
@@ -156,16 +147,12 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             body.Dispose();
             status.Dispose();
-            inventory.Dispose();
             weapon.Dispose();
         }
 
         public void teleport()
         {
-            if (isInsideShip() || isNearShip())
-                showEnterShipInfo = true;
-            else
-                showEnterShipInfo = false;
+            showEnterShipInfo = isInsideShip() || isNearShip();
 
             if (input.keyPressed(Key.E))
             {
@@ -183,11 +170,12 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         private bool CheckIfCanAtack(SharkRigidBody shark)
         {
-            pickingRay.updateRay();
+            return ray.intersectsWithObject(shark.Mesh.BoundingBox, 100);
+        }
 
-            var intersect = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, shark.Mesh.BoundingBox, out TGCVector3 collisionPoint);
-            var inSight = Math.Sqrt(TGCVector3.LengthSq(Camera.position, collisionPoint)) < 100 || isInsideShip();
-            return intersect && inSight;
+        private bool isNearShip()
+        {
+            return ray.intersectsWithObject(aabbShip, 500);
         }
 
         private void changePosition(TGCVector3 newPosition)
@@ -208,46 +196,10 @@ namespace TGC.Group.Model.Bullet.Bodies
             return Camera.position.Y > 3505;
         }
 
-
-        private void createPickingRay()
-        {
-            pickingRay = new TgcPickingRay(input);
-            inventory.pickingRay = pickingRay;
-        }
-
         private void canRecoverOxygen()
         {
             status.canBreathe = isOutOfWater() || isInsideShip();
-        }
-
-        private void updateInventoryWithCharacterPosition()
-        {
-            inventory.characterPosition = Camera.position;
-        }
-
-        private bool isNearShip()
-        {
-            pickingRay.updateRay();
-
-            var intersected = intersectBetweenCharacterAndShip(out TGCVector3 collisionPoint);
-            var inSight = distanceBetweenCharacterAndShip(collisionPoint);
-           
-            return intersected && inSight;
-        }
-
-        private bool intersectBetweenCharacterAndShip( out TGCVector3 collisionPoint )
-        {   // TODO: Despues podriamos considerar la idea de si esta mirando el techo
-            collisionPoint = TGCVector3.Empty;
-            if (isInsideShip())
-                return true;
-            else
-                return TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, aabbShip, out collisionPoint);
-        }
-
-        private bool distanceBetweenCharacterAndShip(TGCVector3 collisionPoint)
-        {
-            return Math.Sqrt(TGCVector3.LengthSq(Camera.position, collisionPoint)) < 500 || isInsideShip();
-        }
+        }            
 
         #region Movimientos
         private void insideMovement(TGCVector3 director, TGCVector3 sideDirector, float speed)

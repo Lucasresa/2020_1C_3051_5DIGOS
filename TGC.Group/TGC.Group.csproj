@@ -108,6 +108,7 @@
     <Compile Include="Model\Bullet\RigidBodyManager.cs" />
     <Compile Include="Model\Bullet\Bodies\SharkRigidBody.cs" />
     <Compile Include="Model\Bullet\Bodies\TerrainRigidBody.cs" />
+    <Compile Include="Model\Craft\Crafting.cs" />
     <Compile Include="Model\Draw\CharacterStatus.cs" />
     <Compile Include="Model\Draw\Sprite.cs" />
     <Compile Include="Model\Meshes\FishMesh.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CameraFPS.cs" />
     <Compile Include="Utils\CustomSprite.cs" />
+    <Compile Include="Utils\Ray.cs" />
     <Compile Include="Utils\SmartTerrain.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
       <DependentUpon>GameForm.cs</DependentUpon>

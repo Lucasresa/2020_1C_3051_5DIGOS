@@ -11,8 +11,8 @@ namespace TGC.Group.Model.Bullet.Bodies
         #region Atributos
         struct Constants
         {
-            public static TGCVector3 position = new TGCVector3(350, -2500, -45);
-            public static TGCVector3 scale = new TGCVector3(20, 20, 20);
+            public static TGCVector3 position = new TGCVector3(515, -2340, -40);
+            public static TGCVector3 scale = new TGCVector3(10, 10, 10);
         }
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
         private TgcMesh Mesh;

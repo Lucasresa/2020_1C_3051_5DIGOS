@@ -4,7 +4,6 @@ using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
-using TGC.Group.Model.Inventory;
 
 namespace TGC.Group.Model.Draw
 {
@@ -22,19 +21,17 @@ namespace TGC.Group.Model.Draw
         private Sprite life, oxygen;
         private string MediaDir, ShadersDir;
         private float oxygenPercentage = 100, lifePercentage = 100;
-        private InventoryManagement inventory;
 
         public TgcD3dInput input;
         public bool canBreathe;
         #endregion
 
         #region Constructor
-        public CharacterStatus(string mediaDir, string shadersDir, TgcD3dInput input, InventoryManagement inventory)
+        public CharacterStatus(string mediaDir, string shadersDir, TgcD3dInput input)
         {
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
             this.input = input;
-            this.inventory = inventory;
             initializer();
         }
         #endregion
@@ -49,24 +46,22 @@ namespace TGC.Group.Model.Draw
             oxygen.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 30), "barra_oxigeno");
         }
 
-        public void Update()
+        public void Update(bool hasADivingHelmet)
         {
             if (!isDead())
-            {
-                UpdateOxygen();
-            }
+                UpdateOxygen(hasADivingHelmet);                
         }
 
-        private void UpdateOxygen()
+        private void UpdateOxygen(bool hasADivingHelmet)
         {
             if (canRecoverOxygen())
                 oxygenPercentage += 1f;
 
-            if(inventory.hasADivingHelmet)
+            if(hasADivingHelmet)
                 oxygenPercentage -= 0.025f;
             else
                 oxygenPercentage -= 0.05f;
-            
+
             oxygenPercentage = FastMath.Clamp(oxygenPercentage, Constants.oxygen.min, Constants.oxygen.max);
 
             var initialScale = oxygen.initialScaleSprite;
