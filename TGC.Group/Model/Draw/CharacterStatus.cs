@@ -54,14 +54,13 @@ namespace TGC.Group.Model.Draw
             if (!isDead())
             {
                 UpdateOxygen();
-                UpdateLife();
             }
         }
 
         private void UpdateOxygen()
         {
             if (canRecoverOxygen())
-                oxygenPercentage += 0.2f;
+                oxygenPercentage += 1f;
 
             if(inventory.hasADivingHelmet)
                 oxygenPercentage -= 0.025f;
@@ -75,27 +74,14 @@ namespace TGC.Group.Model.Draw
             oxygen.sprite.Scaling = newScale;
         }
 
-        private void UpdateLife()
+        public void ReceiveDamage(float damage)
         {
-            var damage = 5f; // TODO: ver como contamos el daño, si recibe un daño fijo o depende de algo
-            if (receivedAnAttack())
-            {
-                lifePercentage -= damage;
-                lifePercentage = FastMath.Clamp(lifePercentage, Constants.life.min, Constants.life.max);
+            lifePercentage -= damage;
+            lifePercentage = FastMath.Clamp(lifePercentage, Constants.life.min, Constants.life.max);
 
-                var initialScale = life.initialScaleSprite;
-                var newScale = new TGCVector2((lifePercentage / Constants.life.max) * initialScale.X, initialScale.Y);
-                life.sprite.Scaling = newScale;
-            }
-        }
-
-        private bool receivedAnAttack()
-        {
-            // TODO: Podriamos decir que recibio un ataque si el tiburon colisiono o se acerco a cierta distancia al personaje
-            if (input.keyPressed(Key.Q))
-                return true;
-            else
-                return false;
+            var initialScale = life.initialScaleSprite;
+            var newScale = new TGCVector2((lifePercentage / Constants.life.max) * initialScale.X, initialScale.Y);
+            life.sprite.Scaling = newScale;
         }
 
         private bool canRecoverOxygen()

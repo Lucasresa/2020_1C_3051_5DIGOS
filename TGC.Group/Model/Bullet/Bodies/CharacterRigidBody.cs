@@ -53,6 +53,8 @@ namespace TGC.Group.Model.Bullet.Bodies
         public TgcBoundingAxisAlignBox aabbShip;
         public RigidBody body;
         private Weapon weapon;
+
+        public CharacterStatus Status { get { return status; } }
         #endregion
 
         #region Constructor
@@ -85,8 +87,8 @@ namespace TGC.Group.Model.Bullet.Bodies
             #endregion
         }
 
-        public void Update(DiscreteDynamicsWorld dynamicsWorld, 
-            ref List<CommonRigidBody> commonRigidBody, float elapsedTime)
+        public void Update(DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody, 
+                            float elapsedTime, SharkRigidBody shark)
         {
             var speed = Constants.speed;
             
@@ -128,9 +130,11 @@ namespace TGC.Group.Model.Bullet.Bodies
                 body.AngularVelocity = Vector3.Zero;
             }
 
-            if (input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_RIGHT))
+            if (input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_RIGHT) && !weapon.AtackLocked)
             {
                 weapon.ActivateAtackMove();
+                if (CheckIfCanAtack(shark))
+                    shark.ReceiveDamage(50);
             }
 
             body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * getGravity();
@@ -172,6 +176,20 @@ namespace TGC.Group.Model.Bullet.Bodies
             }
         }
 
+        public bool isInsideShip()
+        {
+            return Camera.position.Y < 0;
+        }
+
+        private bool CheckIfCanAtack(SharkRigidBody shark)
+        {
+            pickingRay.updateRay();
+
+            var intersect = TgcCollisionUtils.intersectRayAABB(pickingRay.Ray, shark.Mesh.BoundingBox, out TGCVector3 collisionPoint);
+            var inSight = Math.Sqrt(TGCVector3.LengthSq(Camera.position, collisionPoint)) < 100 || isInsideShip();
+            return intersect && inSight;
+        }
+
         private void changePosition(TGCVector3 newPosition)
         {
             body.CenterOfMassTransform = TGCMatrix.Translation(newPosition).ToBulletMatrix();
@@ -190,10 +208,6 @@ namespace TGC.Group.Model.Bullet.Bodies
             return Camera.position.Y > 3505;
         }
 
-        public bool isInsideShip()
-        {
-            return Camera.position.Y < 0;
-        }
 
         private void createPickingRay()
         {

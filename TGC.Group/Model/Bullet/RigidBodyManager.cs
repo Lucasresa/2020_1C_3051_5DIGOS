@@ -104,9 +104,9 @@ namespace TGC.Group.Model.Bullet
         public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
         {
             dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
-            characterRigidBody.Update(dynamicsWorld, ref commonRigidBody, elapsedTime);
+            characterRigidBody.Update(dynamicsWorld, ref commonRigidBody, elapsedTime, sharkRigidBody);
             if (!characterRigidBody.isInsideShip())
-                sharkRigidBody.Update(input, elapsedTime);
+                sharkRigidBody.Update(input, elapsedTime, characterRigidBody.Status);
         }
 
         public void Dispose()
