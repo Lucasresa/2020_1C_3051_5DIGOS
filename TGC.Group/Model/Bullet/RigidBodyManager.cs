@@ -116,23 +116,11 @@ namespace TGC.Group.Model.Bullet
         {
             dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
             characterRigidBody.Update(elapsedTime, sharkRigidBody);
-
+            inventory.Update(input, dynamicsWorld, ref commonRigidBody, Camera.lockCam);
+            crafting.Update(input);
+            characterRigidBody.status.Update(crafting.hasADivingHelmet);
             if (!characterRigidBody.isInsideShip())
                 sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
-
-            inventory.Update(input, dynamicsWorld, ref commonRigidBody, Camera.lockCam);
-
-            if (Camera.Position.Y > 0)
-                return;
-
-            if (input.keyDown(Key.M))
-                crafting.craftWeapon();
-
-            if (input.keyDown(Key.N))
-                crafting.craftRod();
-
-            if (input.keyDown(Key.B))
-                crafting.craftDivingHelmet();
         }
 
         public void Dispose()

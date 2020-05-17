@@ -46,21 +46,21 @@ namespace TGC.Group.Model.Draw
             oxygen.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(100, 30), "barra_oxigeno");
         }
 
-        public void Update()
+        public void Update(bool hasADivingHelmet)
         {
             if (!isDead())
-                UpdateOxygen();                
+                UpdateOxygen(hasADivingHelmet);                
         }
 
-        private void UpdateOxygen()
+        private void UpdateOxygen(bool hasADivingHelmet)
         {
             if (canRecoverOxygen())
                 oxygenPercentage += 1f;
 
-            //if(inventory.hasADivingHelmet)
-            //    oxygenPercentage -= 0.025f;
-            //else
-            oxygenPercentage -= 0.05f;
+            if(hasADivingHelmet)
+                oxygenPercentage -= 0.025f;
+            else
+                oxygenPercentage -= 0.05f;
 
             oxygenPercentage = FastMath.Clamp(oxygenPercentage, Constants.oxygen.min, Constants.oxygen.max);
 

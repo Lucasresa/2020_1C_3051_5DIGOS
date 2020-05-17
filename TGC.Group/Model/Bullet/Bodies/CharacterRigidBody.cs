@@ -91,7 +91,6 @@ namespace TGC.Group.Model.Bullet.Bodies
                 return;
 
             canRecoverOxygen();
-            status.Update();
             teleport();
 
             #region Movimiento 

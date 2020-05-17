@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TGC.Core.Input;
 using TGC.Group.Model.Bullet.Bodies;
 using TGC.Group.Model.Inventory;
 
@@ -15,6 +16,8 @@ namespace TGC.Group.Model.Craft
 
         private string MediaDir, ShadersDir;
         Dictionary<string, List<CommonRigidBody>> Items;
+        public bool hasARow;
+        public bool hasADivingHelmet;
 
         public Crafting(string mediaDir, string shadersDir, Dictionary<string, List<CommonRigidBody>> items)
         {
@@ -42,7 +45,7 @@ namespace TGC.Group.Model.Craft
                 Items["treeCoral"].RemoveRange(0, 1);
                 Items["iron"].RemoveRange(0, 1);
                 MessageBox.Show("Se crafteo una caña exitosamente.");
-                // hasARow = true;
+                hasARow = true;
             }
         }
 
@@ -52,8 +55,20 @@ namespace TGC.Group.Model.Craft
             {
                 Items["gold"].RemoveRange(0, 4);
                 MessageBox.Show("Se crafteo una casco de buceo exitosamente.");
-                // hasADivingHelmet = true;
+                hasADivingHelmet = true;
             }
+        }
+
+        internal void Update(TgcD3dInput input)
+        {
+            if (input.keyDown(Key.M))
+                craftWeapon();
+
+            if (input.keyDown(Key.N))
+                craftRod();
+
+            if (input.keyDown(Key.B))
+                craftDivingHelmet();
         }
     }
 }
