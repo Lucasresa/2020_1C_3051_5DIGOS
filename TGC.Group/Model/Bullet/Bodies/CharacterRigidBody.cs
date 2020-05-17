@@ -8,9 +8,11 @@ using System.Windows.Forms;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Collision;
+using TGC.Core.Geometry;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
+using TGC.Core.Textures;
 using TGC.Group.Model.Draw;
 using TGC.Group.Model.Meshes;
 using TGC.Group.Utils;
@@ -50,7 +52,6 @@ namespace TGC.Group.Model.Bullet.Bodies
         public TgcBoundingAxisAlignBox aabbShip;
         public RigidBody body;
         private Weapon weapon;
-
         public CharacterStatus status;
         #endregion
 
@@ -152,11 +153,11 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public void teleport()
         {
-            showEnterShipInfo = isInsideShip() || isNearShip();
+            showEnterShipInfo = lookAtHatch() || isNearShip();
 
             if (input.keyPressed(Key.E))
             {
-                if(isInsideShip())
+                if (lookAtHatch())
                     changePosition(Constants.outdoorPosition);
                 if (isNearShip())
                     changePosition(Constants.indoorPosition);
@@ -166,6 +167,15 @@ namespace TGC.Group.Model.Bullet.Bodies
         public bool isInsideShip()
         {
             return Camera.position.Y < 0;
+        }
+
+        private bool lookAtHatch()
+        {
+            var texture = TgcTexture.createTexture(MediaDir + @"Textures\fondo_plano.png");
+            var position = Camera.getIndoorPosition() + new TGCVector3(-200, 300, -100);
+            TgcPlane plane = new TgcPlane(position, new TGCVector3(200, 0, 200), TgcPlane.Orientations.XZplane, texture);
+            
+            return ray.intersectsWithObject(plane.BoundingBox, 500);
         }
 
         private bool CheckIfCanAtack(SharkRigidBody shark)
