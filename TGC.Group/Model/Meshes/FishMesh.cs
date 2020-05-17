@@ -125,9 +125,9 @@ namespace TGC.Group.Model
         }
         private void ChangeFishWay()
         {
-            float Rotation = -RotationYSign() * FastMath.PI_HALF;
-            director.TransformCoordinate(TGCMatrix.RotationY(Rotation));
-            TotalRotation *= TGCMatrix.RotationY(Rotation);
+            TGCMatrix Rotation = TGCMatrix.RotationY(-RotationYSign() * FastMath.PI_HALF);
+            director.TransformCoordinate(Rotation);
+            TotalRotation *= Rotation;
             Mesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * TGCMatrix.Translation(GetMeshPosition());
             time = Constants.ScapeFromPlayerCooldown;
         }
