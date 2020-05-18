@@ -119,7 +119,7 @@ namespace TGC.Group.Model.Bullet
         {
             dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
             characterRigidBody.Update(elapsedTime, sharkRigidBody);
-            inventory.Update(input, dynamicsWorld, ref commonRigidBody, Camera.lockCam);
+            inventory.Update(input, dynamicsWorld, ref commonRigidBody, Camera.lockCam, elapsedTime);
             crafting.Update(input);
             characterRigidBody.status.Update(crafting.hasADivingHelmet);
             if (!characterRigidBody.isInsideShip())
