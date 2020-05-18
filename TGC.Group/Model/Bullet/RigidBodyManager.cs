@@ -11,6 +11,7 @@ using TGC.Group.Utils;
 using TGC.Group.Model.Inventory;
 using TGC.Group.Model.Craft;
 using Microsoft.DirectX.DirectInput;
+using TGC.Core.Mathematica;
 
 namespace TGC.Group.Model.Bullet
 {
@@ -29,6 +30,7 @@ namespace TGC.Group.Model.Bullet
         private DiscreteDynamicsWorld dynamicsWorld;
         private CameraFPS Camera;
         private Crafting crafting;
+        private TgcD3dInput Input;
         #endregion
 
         #region PhysicalWorld
@@ -62,7 +64,8 @@ namespace TGC.Group.Model.Bullet
         {
             skybox = skyBox;
             Camera = camera;
-            inventory = new InventoryManagement(MediaDir, ShadersDir, input);
+            Input = input;
+            inventory = new InventoryManagement(MediaDir, ShadersDir, Input);
             crafting = new Crafting(MediaDir, ShadersDir, inventory.items);
 
             #region Agregar rigidos al mundo fisico
@@ -121,6 +124,15 @@ namespace TGC.Group.Model.Bullet
             characterRigidBody.status.Update(crafting.hasADivingHelmet);
             if (!characterRigidBody.isInsideShip())
                 sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
+
+
+            if (Input.keyPressed(Key.I))
+            {
+                Camera.lockCam = !Camera.lockCam;
+                inventory.changePointer();
+            }
+       
+
         }
 
         public void Dispose()

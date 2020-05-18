@@ -30,7 +30,7 @@ namespace TGC.Group.Model.Inventory
         private TgcD3dInput Input;
         private bool showInventory { get; set; }
         private TgcText2D DrawText = new TgcText2D();
-        private Sprite lookAt;
+        public Sprite lookAt;
         private (int posX, int posY) mouseCenter;
         private Ray ray;
         public Dictionary<string, List<CommonRigidBody>> items;
@@ -46,6 +46,7 @@ namespace TGC.Group.Model.Inventory
 
         private bool hasARow = false;
         public bool hasADivingHelmet = false;
+        private bool lookWithPuntero = false;
         #endregion
 
         #region Constructor
@@ -144,6 +145,19 @@ namespace TGC.Group.Model.Inventory
                 dynamicsWorld.RemoveRigidBody(item.body);
                 commonRigidBody.Remove(item);
             }
+        }
+
+        public void changePointer()
+        {
+            if (lookWithPuntero)
+            {
+                lookAt.setInitialSprite(new TGCVector2(1, 1), "mira");
+            }
+            else
+            {
+                lookAt.setInitialSprite(new TGCVector2(1, 1), "puntero");
+            }
+            lookWithPuntero = !lookWithPuntero;
         }
 
         private void initializerDiccionary()
