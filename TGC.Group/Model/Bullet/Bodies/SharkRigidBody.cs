@@ -10,6 +10,9 @@ using TGC.Group.Model.Draw;
 using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
 using TGC.Group.Utils;
+using TGC.Core.Text;
+using System.Drawing;
+using TGC.Core.Direct3D;
 
 namespace TGC.Group.Model.Bullet.Bodies
 {
@@ -35,10 +38,16 @@ namespace TGC.Group.Model.Bullet.Bodies
         private TGCMatrix TotalRotation = TGCMatrix.Identity;
         private float Life;
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
+        private Sprite spriteLife;
+        public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
+
 
         public RigidBody body;
         public TgcMesh Mesh;
-        
+
+        public string MediaDir { get; private set; } = Game.Default.MediaDirectory;
+        public string ShadersDir { get; private set; } = Game.Default.ShadersDirectory;
+
         #endregion
 
         #region Constructor
@@ -62,6 +71,9 @@ namespace TGC.Group.Model.Bullet.Bodies
             Mesh.Transform = TGCMatrix.Scaling(scale) * TGCMatrix.Translation(position);
             body = rigidBodyFactory.CreateBox(new TGCVector3(88, 77, 280) * 2, 1000, position, 0, 0, 0, 0, false);
             body.CenterOfMassTransform = TGCMatrix.Translation(position).ToBulletMatrix();
+
+            spriteLife = new Sprite(MediaDir, ShadersDir);
+            spriteLife.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(650, 0), "barra_vida");
         }
 
         public void Update(TgcD3dInput input, float elapsedTime, CharacterStatus playerStatus)
@@ -96,12 +108,17 @@ namespace TGC.Group.Model.Bullet.Bodies
             Mesh.BoundingBox.transform(Mesh.Transform);
             Mesh.BoundingBox.Render();
             Mesh.Render();
+            spriteLife.Render();
+            if(MAX_LIFE>0)
+            spriteLife.drawText("LIFE SHARK", Color.MediumVioletRed, new Point(580, 20), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
+
         }
 
         public void Dispose()
         {
             body.Dispose();
             Mesh.Dispose();
+            spriteLife.Dispose();
         }
 
         #region Movements
@@ -180,6 +197,10 @@ namespace TGC.Group.Model.Bullet.Bodies
         public void ReceiveDamage(float damage)
         {
             Life = FastMath.Clamp(Life - damage, 0, MAX_LIFE);
+           
+            var initialScale = spriteLife.initialScaleSprite;
+            var newScale = new TGCVector2((Life / MAX_LIFE) * initialScale.X, initialScale.Y);
+            spriteLife.sprite.Scaling = newScale;
         }
 
         #endregion
