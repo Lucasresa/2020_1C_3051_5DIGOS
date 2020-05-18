@@ -8,9 +8,12 @@ using System.Windows.Forms;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Collision;
+using TGC.Core.Direct3D;
+using TGC.Core.Geometry;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Text;
+using TGC.Core.Textures;
 using TGC.Group.Model.Draw;
 using TGC.Group.Model.Meshes;
 using TGC.Group.Utils;
@@ -37,6 +40,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             }
             public static float capsuleSize = 160f;
             public static float capsuleRadius = 40f;
+            public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
         }
 
         private string MediaDir, ShadersDir;
@@ -50,7 +54,6 @@ namespace TGC.Group.Model.Bullet.Bodies
         public TgcBoundingAxisAlignBox aabbShip;
         public RigidBody body;
         private Weapon weapon;
-
         public CharacterStatus status;
         #endregion
 
@@ -139,8 +142,14 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             status.Render();
             weapon.Render();
-            if(showEnterShipInfo)
-                DrawText.drawText("PRESIONA E PARA ENTRAR A LA NAVE", 500, 400, Color.White);
+            if (showEnterShipInfo)
+            {
+                Sprite txt = new Sprite();
+                var text = "PRESIONA E PARA ENTRAR A LA NAVE";
+                (int width, int height) size = (width: 400, height: 10);
+                (int posX, int posY) position = (posX: (Constants.screen.width - size.width) / 2, posY: (Constants.screen.height - size.height * 10) / 2);
+                txt.drawText(text, Color.White, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
+            }
         }
 
         public void Dispose()
@@ -152,11 +161,11 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public void teleport()
         {
-            showEnterShipInfo = isInsideShip() || isNearShip();
+            showEnterShipInfo = lookAtHatch() || isNearShip();
 
             if (input.keyPressed(Key.E))
             {
-                if(isInsideShip())
+                if (lookAtHatch())
                     changePosition(Constants.outdoorPosition);
                 if (isNearShip())
                     changePosition(Constants.indoorPosition);
@@ -166,6 +175,15 @@ namespace TGC.Group.Model.Bullet.Bodies
         public bool isInsideShip()
         {
             return Camera.position.Y < 0;
+        }
+
+        private bool lookAtHatch()
+        {
+            var texture = TgcTexture.createTexture(MediaDir + @"Textures\fondo_plano.png");
+            var position = Camera.getIndoorPosition() + new TGCVector3(-200, 300, -100);
+            TgcPlane plane = new TgcPlane(position, new TGCVector3(200, 0, 200), TgcPlane.Orientations.XZplane, texture);
+            
+            return ray.intersectsWithObject(plane.BoundingBox, 500);
         }
 
         private bool CheckIfCanAtack(SharkRigidBody shark)
