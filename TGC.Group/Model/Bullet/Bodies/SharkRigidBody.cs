@@ -11,6 +11,9 @@ using TGC.Group.Model.Draw;
 using TGC.Group.Model.Sharky;
 using TGC.Group.Model.Terrains;
 using TGC.Group.Utils;
+using TGC.Core.Text;
+using System.Drawing;
+using TGC.Core.Direct3D;
 
 namespace TGC.Group.Model.Bullet.Bodies
 {
@@ -50,9 +53,13 @@ namespace TGC.Group.Model.Bullet.Bodies
         private float Life;
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
         private GameEventsManager Events;
+        private Sprite spriteLife;
+        public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
 
         public RigidBody body;
         public TgcMesh Mesh;
+        public string MediaDir { get; private set; } = Game.Default.MediaDirectory;
+        public string ShadersDir { get; private set; } = Game.Default.ShadersDirectory;
 
         #endregion
 
@@ -86,6 +93,9 @@ namespace TGC.Group.Model.Bullet.Bodies
             Life = Constants.MAX_LIFE;
             Mesh.Transform = TGCMatrix.Scaling(Constants.scale) * TGCMatrix.Translation(Constants.startPosition);
             body = rigidBodyFactory.CreateBox(Constants.sharkBodySize, Constants.sharkMass, Constants.startPosition, 0, 0, 0, 0, false);
+
+            spriteLife = new Sprite(MediaDir, ShadersDir);
+            spriteLife.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(650, 0), "barra_vida");
         }
 
         public void Update(TgcD3dInput input, float elapsedTime, CharacterStatus playerStatus)
@@ -126,12 +136,17 @@ namespace TGC.Group.Model.Bullet.Bodies
             Mesh.Transform = TGCMatrix.Scaling(Constants.scale) * new TGCMatrix(body.InterpolationWorldTransform);
             Mesh.BoundingBox.transform(Mesh.Transform);
             Mesh.Render();
+            spriteLife.Render();
+            if(Constants.MAX_LIFE > 0)
+            spriteLife.drawText("LIFE SHARK", Color.MediumVioletRed, new Point(580, 20), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
+
         }
 
         public void Dispose()
         {
             body.Dispose();
             Mesh.Dispose();
+            spriteLife.Dispose();
         }
 
         #region Movements
@@ -219,6 +234,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             Events = events;
             stalkerModeMove = true;
             normalMove = true;
+            deathMove = false;
             var position = CalculateInitialPosition();
             Mesh.Transform = TGCMatrix.Scaling(Constants.scale) * TGCMatrix.Translation(position);
             body.WorldTransform = Mesh.Transform.ToBulletMatrix();
@@ -230,11 +246,15 @@ namespace TGC.Group.Model.Bullet.Bodies
             acumulatedYRotation = 0;
             acumulatedZRotation = 0;
             Life = Constants.MAX_LIFE;
+            spriteLife.setInitialSprite(new TGCVector2(0.4f, 0.5f), new TGCVector2(650, 0), "barra_vida");
         }
 
         public void ReceiveDamage(float damage)
         {
             Life = FastMath.Clamp(Life - damage, 0, Constants.MAX_LIFE);
+            var initialScale = spriteLife.initialScaleSprite;
+            var newScale = new TGCVector2((Life / Constants.MAX_LIFE) * initialScale.X, initialScale.Y);
+            spriteLife.sprite.Scaling = newScale;
             deathMove = IsDead();
         }
 

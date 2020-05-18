@@ -44,12 +44,10 @@ namespace TGC.Group.Utils
         
         public override void UpdateCamera(float elapsedTime)
         {
-            if (Input.keyPressed(Key.I))
-                lockCam = !lockCam;
-
+           
             if (lockCam)
-                return;
-
+                return; 
+                
             Cursor.Hide();
             CameraRotation();
             var target = TGCVector3.TransformNormal(Constants.directionView, cameraRotation);

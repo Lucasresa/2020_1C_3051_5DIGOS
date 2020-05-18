@@ -31,6 +31,7 @@ namespace TGC.Group.Model.Bullet
         private GameEventsManager gameEventsManager;
         private CameraFPS Camera;
         private Crafting crafting;
+        private TgcD3dInput Input;
         #endregion
 
         #region PhysicalWorld
@@ -64,7 +65,8 @@ namespace TGC.Group.Model.Bullet
         {
             skybox = skyBox;
             Camera = camera;
-            inventory = new InventoryManagement(MediaDir, ShadersDir, input);
+            Input = input;
+            inventory = new InventoryManagement(MediaDir, ShadersDir, Input);
             crafting = new Crafting(MediaDir, ShadersDir, inventory.items);
             #region Agregar rigidos al mundo fisico
             terrainRigidBody = new TerrainRigidBody(terrain);
@@ -94,8 +96,13 @@ namespace TGC.Group.Model.Bullet
             characterRigidBody.status.Update(crafting.hasADivingHelmet);
 
             gameEventsManager.Update(elapsedTime);
-
             sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
+            
+            if (Input.keyPressed(Key.I))
+            {
+                Camera.lockCam = !Camera.lockCam;
+                inventory.changePointer();
+            }
         }
 
         public void Render()
@@ -111,6 +118,7 @@ namespace TGC.Group.Model.Bullet
             {
                 terrainRigidBody.Render();
 
+                if (gameEventsManager.SharkIsAttacking)
                 sharkRigidBody.Render();
 
                 if (skybox.Contains(outdoorShipRigidBody.body))
@@ -124,7 +132,6 @@ namespace TGC.Group.Model.Bullet
             }
             #endregion
         }
-
 
         public void Dispose()
         {

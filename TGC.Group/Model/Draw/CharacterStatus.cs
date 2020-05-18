@@ -20,7 +20,7 @@ namespace TGC.Group.Model.Draw
         private TgcText2D DrawText = new TgcText2D();
         private Sprite life, oxygen;
         private string MediaDir, ShadersDir;
-        private float oxygenPercentage = 100, lifePercentage = 100;
+        public float oxygenPercentage = 100, lifePercentage = 100;
 
         public TgcD3dInput input;
         public bool canBreathe;
@@ -91,7 +91,11 @@ namespace TGC.Group.Model.Draw
             life.drawText("LIFE", Color.MediumVioletRed, new Point(10, 20), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
             oxygen.drawText("OXYGEN", Color.DeepSkyBlue, new Point(10, 50), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
 
-            if (isDead()) DrawText.drawText("You are dead!", Constants.screen.width / 2, Constants.screen.height / 2, Color.Red); ;
+            if (isDead())
+               DrawText.drawText("You are dead!", Constants.screen.width / 2, Constants.screen.height / 2, Color.Red); 
+          
+
+       
         }
 
         public void Dispose()
@@ -100,7 +104,7 @@ namespace TGC.Group.Model.Draw
             oxygen.Dispose();
         }
 
-        private bool isDead()
+        public bool isDead()
         {
             return oxygenPercentage == 0 || lifePercentage == 0;
         }
