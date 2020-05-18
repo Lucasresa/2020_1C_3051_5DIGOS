@@ -11,6 +11,7 @@ using TGC.Group.Utils;
 using TGC.Group.Model.Inventory;
 using TGC.Group.Model.Craft;
 using Microsoft.DirectX.DirectInput;
+using TGC.Core.Mathematica;
 
 namespace TGC.Group.Model.Bullet
 {
@@ -27,6 +28,7 @@ namespace TGC.Group.Model.Bullet
         private OutdoorShipRigidBody outdoorShipRigidBody;
         private IndoorShipRigidBody indoorShipRigidBody;
         private DiscreteDynamicsWorld dynamicsWorld;
+        private GameEventsManager gameEventsManager;
         private CameraFPS Camera;
         private Crafting crafting;
         #endregion
@@ -64,7 +66,6 @@ namespace TGC.Group.Model.Bullet
             Camera = camera;
             inventory = new InventoryManagement(MediaDir, ShadersDir, input);
             crafting = new Crafting(MediaDir, ShadersDir, inventory.items);
-
             #region Agregar rigidos al mundo fisico
             terrainRigidBody = new TerrainRigidBody(terrain);
             characterRigidBody = new CharacterRigidBody(input, camera, MediaDir, ShadersDir);
@@ -81,7 +82,23 @@ namespace TGC.Group.Model.Bullet
             addNewRigidBody(ref meshes);
             #endregion
 
+            gameEventsManager = new GameEventsManager(sharkRigidBody, characterRigidBody);
             characterRigidBody.aabbShip = outdoorShipRigidBody.getAABB();
+        }
+        public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
+        {
+            dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
+            characterRigidBody.Update(elapsedTime, sharkRigidBody);
+            inventory.Update(input, dynamicsWorld, ref commonRigidBody, Camera.lockCam);
+            crafting.Update(input);
+            characterRigidBody.status.Update(crafting.hasADivingHelmet);
+
+            gameEventsManager.Update(elapsedTime);
+
+            //if (input.keyPressed(Key.T))
+            //    sharkRigidBody.ActivateShark(gameEventsManager);
+
+            sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
         }
 
         public void Render()
@@ -97,8 +114,7 @@ namespace TGC.Group.Model.Bullet
             {
                 terrainRigidBody.Render();
 
-                if (skybox.Contains(sharkRigidBody.body))
-                    sharkRigidBody.Render();
+                sharkRigidBody.Render();
 
                 if (skybox.Contains(outdoorShipRigidBody.body))
                     outdoorShipRigidBody.Render();
@@ -112,16 +128,6 @@ namespace TGC.Group.Model.Bullet
             #endregion
         }
 
-        public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
-        {
-            dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
-            characterRigidBody.Update(elapsedTime, sharkRigidBody);
-            inventory.Update(input, dynamicsWorld, ref commonRigidBody, Camera.lockCam);
-            crafting.Update(input);
-            characterRigidBody.status.Update(crafting.hasADivingHelmet);
-            if (!characterRigidBody.isInsideShip())
-                sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
-        }
 
         public void Dispose()
         {

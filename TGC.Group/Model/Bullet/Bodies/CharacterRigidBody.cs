@@ -52,6 +52,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         private Weapon weapon;
 
         public CharacterStatus status;
+        public bool IsOutside { get { return !isInsideShip(); } }
         #endregion
 
         #region Constructor

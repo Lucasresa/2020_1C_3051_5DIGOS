@@ -25,6 +25,7 @@ namespace TGC.Group.Model.Terrains
         private string MediaDir, ShadersDir;
         private CameraFPS Camera;
         public Perimeter currentPerimeter;
+        public float Radius { get { return Constants.size.X / 2; } }
         #endregion
 
         #region Constructor
