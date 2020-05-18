@@ -125,7 +125,6 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             Mesh.Transform = TGCMatrix.Scaling(Constants.scale) * new TGCMatrix(body.InterpolationWorldTransform);
             Mesh.BoundingBox.transform(Mesh.Transform);
-            Mesh.BoundingBox.Render();
             Mesh.Render();
         }
 
