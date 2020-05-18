@@ -95,9 +95,6 @@ namespace TGC.Group.Model.Bullet
 
             gameEventsManager.Update(elapsedTime);
 
-            //if (input.keyPressed(Key.T))
-            //    sharkRigidBody.ActivateShark(gameEventsManager);
-
             sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
         }
 

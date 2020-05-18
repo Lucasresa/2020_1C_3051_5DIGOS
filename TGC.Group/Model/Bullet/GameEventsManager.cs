@@ -12,12 +12,12 @@ namespace TGC.Group.Model.Bullet
 
         private struct Constants
         {
-            public static float TIME_BETWEEN_ATTACKS = 20;
+            public static float TIME_BETWEEN_ATTACKS = 120;
         }
         private SharkRigidBody Shark;
         private CharacterRigidBody Character;
         private float timeBetweenAttacks = Constants.TIME_BETWEEN_ATTACKS;
-        private bool atackBegan = false;
+        private bool isAttacking = false;
 
         public GameEventsManager(SharkRigidBody shark, CharacterRigidBody character)
         {
@@ -27,22 +27,33 @@ namespace TGC.Group.Model.Bullet
 
         public void Update(float elapsedTime)
         {
-            if (Character.IsOutside && !atackBegan)
+            if (Character.IsOutside)
+                CheckIfSharkCanAttack(elapsedTime);
+            else if (isAttacking)
+            {
+                Shark.EndSharkAttack();
+                timeBetweenAttacks = Constants.TIME_BETWEEN_ATTACKS;
+                InformFinishFromAttack();
+            }
+        }
+
+        public void InformFinishFromAttack()
+        {
+            isAttacking = false;
+        }
+
+        private void CheckIfSharkCanAttack(float elapsedTime)
+        {
+            if (!isAttacking)
             {
                 timeBetweenAttacks -= elapsedTime;
                 if (timeBetweenAttacks <= 0)
                 {
                     Shark.ActivateShark(this);
-                    atackBegan = true;
+                    isAttacking = true;
                     timeBetweenAttacks = Constants.TIME_BETWEEN_ATTACKS;
                 }
             }
-
-        }
-
-        public void InformFinishFromAttack()
-        {
-            atackBegan = false;
         }
 
     }
