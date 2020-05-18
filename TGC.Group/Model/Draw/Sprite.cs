@@ -33,6 +33,11 @@ namespace TGC.Group.Model.Draw
             Init();
         }
 
+        public Sprite()
+        {
+            text = new TgcText2D();
+        }
+
         private void Init()
         {
             DxSprite = new Microsoft.DirectX.Direct3D.Sprite(D3DDevice.Instance.Device);
@@ -66,14 +71,19 @@ namespace TGC.Group.Model.Draw
 
         public void Render()
         {
-            DrawSprite(sprite);
+            if (sprite != null)
+                DrawSprite(sprite);
         }
 
         public void Dispose()
         {
-            text.Dispose();
-            sprite.Dispose();
-            DxSprite.Dispose();
+            if (text != null)
+                text.Dispose();
+            if (sprite != null)
+            {
+                sprite.Dispose();
+                DxSprite.Dispose();
+            }
         }
 
         public void DrawSprite(CustomSprite sprite)

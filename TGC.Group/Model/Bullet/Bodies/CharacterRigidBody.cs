@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Collision;
+using TGC.Core.Direct3D;
 using TGC.Core.Geometry;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
@@ -39,6 +40,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             }
             public static float capsuleSize = 160f;
             public static float capsuleRadius = 40f;
+            public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
         }
 
         private string MediaDir, ShadersDir;
@@ -140,8 +142,14 @@ namespace TGC.Group.Model.Bullet.Bodies
         {
             status.Render();
             weapon.Render();
-            if(showEnterShipInfo)
-                DrawText.drawText("PRESIONA E PARA ENTRAR A LA NAVE", 500, 400, Color.White);
+            if (showEnterShipInfo)
+            {
+                Sprite txt = new Sprite();
+                var text = "PRESIONA E PARA ENTRAR A LA NAVE";
+                (int width, int height) size = (width: 400, height: 10);
+                (int posX, int posY) position = (posX: (Constants.screen.width - size.width) / 2, posY: (Constants.screen.height - size.height * 10) / 2);
+                txt.drawText(text, Color.White, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
+            }
         }
 
         public void Dispose()
