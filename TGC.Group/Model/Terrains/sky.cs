@@ -65,9 +65,11 @@ namespace TGC.Group.Model.Terrains
             calculatePerimeter();
         }
 
-        public virtual void Render()
+        public virtual void Render(Perimeter worldSize)
         {
-            sky.Center = new TGCVector3(Camera.position.X, sky.Center.Y, Camera.position.Z);
+            sky.Center = new TGCVector3(FastMath.Clamp(Camera.position.X, worldSize.xMin + Radius, worldSize.xMax - Radius), 
+                                        sky.Center.Y,
+                                        FastMath.Clamp(Camera.position.Z, worldSize.zMin + Radius, worldSize.zMax - Radius));
             sky.Render();
         }
 

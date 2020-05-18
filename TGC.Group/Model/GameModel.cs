@@ -52,7 +52,7 @@ namespace TGC.Group.Model
             Description = Game.Default.Description;
             meshBuilder = new MeshBuilder();
             MeshDuplicator.MediaDir = mediaDir;
-            D3DDevice.Instance.ZFarPlaneDistance = 8000f;
+            D3DDevice.Instance.ZFarPlaneDistance = 12000f;
             #endregion
         }
 
@@ -121,7 +121,7 @@ namespace TGC.Group.Model
             #region Renderizado
             if (camera.isOutside())
             {
-                skyBox.Render();
+                skyBox.Render(terrain.SizeWorld());
                 water.Render();
                 vegetation.ForEach(vegetation => { if (skyBox.Contains(vegetation)) vegetation.Render(); } );
             }
