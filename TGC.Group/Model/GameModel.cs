@@ -77,7 +77,7 @@ namespace TGC.Group.Model
 
             #region Mundo fisico
             rigidBodyManager = new RigidBodyManager(MediaDir, ShadersDir);
-            rigidBodyManager.Init(Input,terrain, camera, shark, ship, skyBox, ref Meshes);
+            rigidBodyManager.Init(Input,terrain, camera, shark, ship, skyBox, ref Meshes, fishes);
             #endregion
 
         }
@@ -87,7 +87,6 @@ namespace TGC.Group.Model
             #region Update
             rigidBodyManager.Update(Input, ElapsedTime, TimeBetweenUpdates);
             skyBox.Update();
-            fishes.ForEach(fish => fish.Update(Input, ElapsedTime, camera.position));
             #endregion
 
             #region Teclas
@@ -125,7 +124,6 @@ namespace TGC.Group.Model
                 skyBox.Render();
                 water.Render();
                 vegetation.ForEach(vegetation => { if (skyBox.Contains(vegetation)) vegetation.Render(); } );
-                fishes.ForEach(fish => fish.Render());
             }
             rigidBodyManager.Render();
             #endregion
@@ -140,7 +138,6 @@ namespace TGC.Group.Model
             skyBox.Dispose();
             vegetation.ForEach(vegetation => vegetation.Dispose());
             rigidBodyManager.Dispose();
-            fishes.ForEach(fish => fish.Dispose());
             #endregion
         }
 

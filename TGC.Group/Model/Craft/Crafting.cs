@@ -15,11 +15,11 @@ namespace TGC.Group.Model.Craft
     {
 
         private string MediaDir, ShadersDir;
-        Dictionary<string, List<CommonRigidBody>> Items;
+        Dictionary<string, List<string>> Items;
         public bool hasARow;
         public bool hasADivingHelmet;
 
-        public Crafting(string mediaDir, string shadersDir, Dictionary<string, List<CommonRigidBody>> items)
+        public Crafting(string mediaDir, string shadersDir, Dictionary<string, List<string>> items)
         {
             MediaDir = mediaDir;
             ShadersDir = shadersDir;

@@ -19,7 +19,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         }
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
 
-        private TgcMesh Mesh;
+        public readonly TgcMesh Mesh;
         public RigidBody body;
         #endregion
 
