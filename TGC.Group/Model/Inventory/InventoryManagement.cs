@@ -47,6 +47,7 @@ namespace TGC.Group.Model.Inventory
         private bool hasARow = false;
         public bool hasADivingHelmet = false;
         private bool lookWithPuntero = false;
+        public CharacterStatus status;
         #endregion
 
         #region Constructor
@@ -99,6 +100,10 @@ namespace TGC.Group.Model.Inventory
                                    "\nNormal Coral: " + normalCoral.Count +
                                    "\nTree Coral: " + treeCoral.Count,
                                     250, 300, Color.White);
+
+           //if (status.isDead())
+             //   initializerDiccionary();
+
         }
 
         public void Dispose()

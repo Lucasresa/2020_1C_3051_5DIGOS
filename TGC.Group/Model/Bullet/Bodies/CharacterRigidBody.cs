@@ -150,6 +150,13 @@ namespace TGC.Group.Model.Bullet.Bodies
                 (int posX, int posY) position = (posX: (Constants.screen.width - size.width) / 2, posY: (Constants.screen.height - size.height * 10) / 2);
                 txt.drawText(text, Color.White, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
             }
+            if(status.isDead())
+            {
+                changePosition(Constants.indoorPosition);
+                status.lifePercentage = 100;
+                status.oxygenPercentage = 100;
+
+            }
         }
 
         public void Dispose()
