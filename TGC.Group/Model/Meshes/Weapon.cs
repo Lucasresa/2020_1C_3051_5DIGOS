@@ -20,11 +20,10 @@ namespace TGC.Group.Model.Meshes
         private TGCVector3 position = new TGCVector3(1300, 3505, 20);
         private float RotationYOffset = FastMath.QUARTER_PI / 1.5f;
         private float RotationXOffset = FastMath.PI_HALF;
-        private bool IsAtacking = false;
         private float AtackRotation = 0f;
-        private bool AtackIsLocked = false;
-        public bool Atacking { get { return IsAtacking; } }
-        public bool AtackLocked { get { return AtackIsLocked; } }
+
+        public bool Atacking { get; private set; } = false;
+        public bool AtackLocked { get; private set; } = false;
 
         public Weapon(string mediaDir, string shadersDir)
         {
@@ -44,7 +43,7 @@ namespace TGC.Group.Model.Meshes
         {
             float RotationStep = FastMath.PI * 2.5f * elapsedTime;
             CalculateRotationByAtack(RotationStep);
-            AtackIsLocked = !(AtackRotation <= 0);
+            AtackLocked = !(AtackRotation <= 0);
 
             var localSideAxis = TGCVector3.Cross(TGCVector3.Up, cameraDirection);
             localSideAxis.Normalize();
@@ -69,17 +68,17 @@ namespace TGC.Group.Model.Meshes
 
         public void ActivateAtackMove()
         {
-            if (IsAtacking || AtackIsLocked)
+            if (Atacking || AtackLocked)
                 return;
-            IsAtacking = true;
-            AtackIsLocked = true;
+            Atacking = true;
+            AtackLocked = true;
         }
 
         private void CalculateRotationByAtack(float rotationStep)
         {
-            if (IsAtacking)
+            if (Atacking)
             {
-                IsAtacking = AtackRotation <= FastMath.PI_HALF;
+                Atacking = AtackRotation <= FastMath.PI_HALF;
                 AtackRotation += rotationStep;
             }
             else if (AtackRotation > 0)
