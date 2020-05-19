@@ -1,4 +1,5 @@
 ﻿using BulletSharp;
+using Microsoft.DirectX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -43,12 +44,17 @@ namespace TGC.Group.Model.Inventory
         private List<string> yellowFish = new List<string>();
 
         private Text textInfo = new Text();
+        public bool hasAWeapon = false;
         public bool HasARod { get; set; } = false;
         public bool hasADivingHelmet = false;
+
         private bool lookWithPuntero = false;
         private bool showRecolectionInfo = false;
         private string recolectionName;
         private float timeShowRecolection;
+
+        public int inHand = 0; // 0-Nada 1-Arma
+
         #endregion
 
         #region Constructor
@@ -74,6 +80,7 @@ namespace TGC.Group.Model.Inventory
             lookAt.sprite.Position = new TGCVector2(mouseCenter.posX, mouseCenter.posY);
         }
 
+
         public void Update(TgcD3dInput input, DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody, ref List<FishMesh> fishes, bool lockCam, float elapsedTime)
         {
             if (lockCam)
@@ -93,6 +100,12 @@ namespace TGC.Group.Model.Inventory
 
             if (timeShowRecolection > 1.00)
                 showRecolectionInfo = false;
+
+            if (hasAWeapon && input.keyPressed(Key.D1))
+                inHand = 1;
+
+            if (input.keyPressed(Key.D0))
+                inHand = 0;
         }
 
         public void Render()
@@ -124,7 +137,6 @@ namespace TGC.Group.Model.Inventory
                 (int posX, int posY) position = (posX: (Constants.screen.width - size.width) / 2, posY: (Constants.screen.height - size.height * 10) / 2);
                 txt.drawText(text, Color.White, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 10, FontStyle.Bold));
             }
-
         }
 
         public void Dispose()
@@ -159,6 +171,7 @@ namespace TGC.Group.Model.Inventory
 
             if (item != null)
             {
+
                 splitItems(item.Mesh);
                 showRecolectionOfType(item.Mesh);
                 dynamicsWorld.RemoveRigidBody(item.body);
@@ -199,7 +212,6 @@ namespace TGC.Group.Model.Inventory
             items.Add("normalCoral", normalCoral);
             items.Add("treeCoral", treeCoral);
         }
-
         private void showRecolectionOfType(TgcMesh collectedMesh)
         {
             string name = collectedMesh.Name.Split('_')[0]; 
@@ -238,6 +250,7 @@ namespace TGC.Group.Model.Inventory
             showRecolectionInfo = !showRecolectionInfo;
             recolectionName = showName;
         }
+
         #endregion
     }
 }

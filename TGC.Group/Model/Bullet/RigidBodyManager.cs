@@ -70,10 +70,11 @@ namespace TGC.Group.Model.Bullet
             Camera = camera;
             Input = input;
             inventory = new InventoryManagement(MediaDir, ShadersDir, Input);
-            crafting = new Crafting(MediaDir, ShadersDir, inventory.items);
+            crafting = new Crafting(MediaDir, ShadersDir, inventory);
+
             #region Agregar rigidos al mundo fisico
             terrainRigidBody = new TerrainRigidBody(terrain);
-            characterRigidBody = new CharacterRigidBody(input, camera, MediaDir, ShadersDir);
+            characterRigidBody = new CharacterRigidBody(input, camera, MediaDir, ShadersDir, inventory);
             sharkRigidBody = new SharkRigidBody(shark, skybox, terrain, camera);
             outdoorShipRigidBody = new OutdoorShipRigidBody(ship);
             indoorShipRigidBody = new IndoorShipRigidBody(ship);
@@ -95,7 +96,7 @@ namespace TGC.Group.Model.Bullet
             if (activeWorld)
             {
                 dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
-                characterRigidBody.status.Update(crafting.hasADivingHelmet);
+                characterRigidBody.status.Update(inventory.hasADivingHelmet);
                 characterRigidBody.Update(elapsedTime, sharkRigidBody, skybox);
                 sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
                 gameEventsManager.Update(elapsedTime, fishes);

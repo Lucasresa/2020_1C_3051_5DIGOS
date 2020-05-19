@@ -1,12 +1,7 @@
 ﻿using Microsoft.DirectX.DirectInput;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TGC.Core.Input;
-using TGC.Group.Model.Bullet.Bodies;
 using TGC.Group.Model.Inventory;
 
 namespace TGC.Group.Model.Craft
@@ -15,53 +10,51 @@ namespace TGC.Group.Model.Craft
     {
 
         private string MediaDir, ShadersDir;
-        Dictionary<string, List<string>> Items;
-        public bool hasARod;
-        public bool hasADivingHelmet;
+        private InventoryManagement Inventory;
 
-        public Crafting(string mediaDir, string shadersDir, Dictionary<string, List<string>> items)
+        public Crafting(string mediaDir, string shadersDir, InventoryManagement inventory)
         {
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
-            Items = items;
+            Inventory = inventory;
         }
 
         public void craftWeapon()
         {
-            if (Items["rock-n"].Count() >= 2 && Items["silver"].Count() >= 2)
+            if (Inventory.items["rock-n"].Count() >= 2 && Inventory.items["silver"].Count() >= 2)
             {
-                Items["rock-n"].RemoveRange(0, 2);
-                Items["silver"].RemoveRange(0, 2);
+                Inventory.items["rock-n"].RemoveRange(0, 2);
+                Inventory.items["silver"].RemoveRange(0, 2);
                 MessageBox.Show("Se crafteo un arma exitosamente.");
+                Inventory.hasAWeapon = true;
             }
         }
 
         public void craftRod()
         {
-            if (Items["spiralCoral"].Count() >= 1 && Items["normalCoral"].Count() >= 1 && Items["treeCoral"].Count() >= 1 && Items["iron"].Count() >= 1)
+            if (Inventory.items["spiralCoral"].Count() >= 1 && Inventory.items["normalCoral"].Count() >= 1 && Inventory.items["treeCoral"].Count() >= 1 && Inventory.items["iron"].Count() >= 1)
             {
-                Items["spiralCoral"].RemoveRange(0, 1);
-                Items["normalCoral"].RemoveRange(0, 1);
-                Items["treeCoral"].RemoveRange(0, 1);
-                Items["iron"].RemoveRange(0, 1);
+                Inventory.items["spiralCoral"].RemoveRange(0, 1);
+                Inventory.items["normalCoral"].RemoveRange(0, 1);
+                Inventory.items["treeCoral"].RemoveRange(0, 1);
+                Inventory.items["iron"].RemoveRange(0, 1);
                 MessageBox.Show("Se crafteo una caña exitosamente.");
-                hasARod = true;
+                Inventory.HasARod = true;
             }
         }
 
         public void craftDivingHelmet()
         {
-            if (Items["gold"].Count() >= 4)
+            if (Inventory.items["gold"].Count() >= 4)
             {
-                Items["gold"].RemoveRange(0, 4);
+                Inventory.items["gold"].RemoveRange(0, 4);
                 MessageBox.Show("Se crafteo una casco de buceo exitosamente.");
-                hasADivingHelmet = true;
+                Inventory.hasADivingHelmet = true;
             }
         }
 
         internal void Update(TgcD3dInput input, InventoryManagement inventory)
         {
-            inventory.HasARod = hasARod;
             if (input.keyDown(Key.M))
                 craftWeapon();
 
