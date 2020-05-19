@@ -48,16 +48,13 @@ namespace TGC.Group.Model.Draw
 
         public void Update(bool hasADivingHelmet)
         {
-            if (!isDead())
-                UpdateOxygen(hasADivingHelmet);                
-        }
+            if (isDead())
+                return;
 
-        private void UpdateOxygen(bool hasADivingHelmet)
-        {
             if (canRecoverOxygen())
                 oxygenPercentage += 1f;
 
-            if(hasADivingHelmet)
+            if (hasADivingHelmet)
                 oxygenPercentage -= 0.025f;
             else
                 oxygenPercentage -= 0.05f;
@@ -67,6 +64,7 @@ namespace TGC.Group.Model.Draw
             var initialScale = oxygen.initialScaleSprite;
             var newScale = new TGCVector2((oxygenPercentage / Constants.oxygen.max) * initialScale.X, initialScale.Y);
             oxygen.sprite.Scaling = newScale;
+
         }
 
         public void ReceiveDamage(float damage)
@@ -93,9 +91,6 @@ namespace TGC.Group.Model.Draw
 
             if (isDead())
                DrawText.drawText("You are dead!", Constants.screen.width / 2, Constants.screen.height / 2, Color.Red); 
-          
-
-       
         }
 
         public void Dispose()

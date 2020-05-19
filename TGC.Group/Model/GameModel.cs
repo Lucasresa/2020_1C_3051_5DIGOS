@@ -87,7 +87,7 @@ namespace TGC.Group.Model
             #region Update
             rigidBodyManager.Update(Input, ElapsedTime, TimeBetweenUpdates);
             skyBox.Update();
-            fishes.ForEach(fish => fish.Update(Input, ElapsedTime, camera.position));
+            fishes.ForEach(fish => fish.Update(Input, ElapsedTime, camera));
             #endregion
 
             #region Teclas

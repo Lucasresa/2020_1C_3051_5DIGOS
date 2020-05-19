@@ -82,6 +82,8 @@ namespace TGC.Group.Model.Inventory
             else
                 lookAt.sprite.Position = new TGCVector2(mouseCenter.posX, mouseCenter.posY);
 
+            showInventory = lockCam;
+
             if (input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
             {
                 findItem(dynamicsWorld, ref commonRigidBody);

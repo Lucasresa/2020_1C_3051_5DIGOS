@@ -19,6 +19,7 @@ namespace TGC.Group.Model.Bullet
     {
         #region Atributos
         private string MediaDir, ShadersDir;
+        private bool activeWorld = true;
         private Sky skybox;
         private InventoryManagement inventory;
         private List<CommonRigidBody> commonRigidBody = new List<CommonRigidBody>();
@@ -89,17 +90,20 @@ namespace TGC.Group.Model.Bullet
         }
         public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
         {
-            dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
-            characterRigidBody.Update(elapsedTime, sharkRigidBody);
+            if (activeWorld)
+            {
+                dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
+                characterRigidBody.status.Update(crafting.hasADivingHelmet);
+                characterRigidBody.Update(elapsedTime, sharkRigidBody);
+                sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
+                gameEventsManager.Update(elapsedTime);
+            }
             inventory.Update(input, dynamicsWorld, ref commonRigidBody, Camera.lockCam, elapsedTime);
             crafting.Update(input);
-            characterRigidBody.status.Update(crafting.hasADivingHelmet);
-
-            gameEventsManager.Update(elapsedTime);
-            sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
             
             if (Input.keyPressed(Key.I))
             {
+                activeWorld = !activeWorld;
                 Camera.lockCam = !Camera.lockCam;
                 inventory.changePointer();
             }

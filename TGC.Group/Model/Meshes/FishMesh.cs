@@ -50,15 +50,14 @@ namespace TGC.Group.Model
             Mesh.BoundingBox.scaleTranslate(Mesh.Position, Constants.Scale);
         }
 
-        public void Update(TgcD3dInput input, float elapsedTime, TGCVector3 cameraPosition)
+        public void Update(TgcD3dInput input, float elapsedTime, CameraFPS camera)
         {
-
-            if (IsNearFromPlayer(cameraPosition) && time <= 0)
+            if (IsNearFromPlayer(camera.position) && time <= 0)
                 ChangeFishWay();
             else if (activateMove)
                 PerformNormalMove(elapsedTime, 500, GetFishHeadPosition());
 
-            if (input.keyPressed(Key.U)) activateMove = !activateMove;
+            activateMove = !camera.lockCam;
         }
 
         public void Render()
