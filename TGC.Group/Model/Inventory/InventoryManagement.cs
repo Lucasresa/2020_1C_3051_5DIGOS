@@ -11,6 +11,7 @@ using TGC.Core.Text;
 using TGC.Group.Model.Bullet.Bodies;
 using TGC.Group.Model.Draw;
 using TGC.Group.Utils;
+using Text = TGC.Group.Model.Draw.Sprite;
 
 namespace TGC.Group.Model.Inventory
 {
@@ -29,6 +30,7 @@ namespace TGC.Group.Model.Inventory
         public Sprite lookAt;
         private (int posX, int posY) mouseCenter;
         private Ray ray;
+
         public Dictionary<string, List<String>> items;
         private List<string> gold = new List<string>();
         private List<string> iron = new List<string>();
@@ -40,10 +42,13 @@ namespace TGC.Group.Model.Inventory
         private List<string> treeCoral = new List<string>();
         private List<string> yellowFish = new List<string>();
 
-        private bool hasARod = false;
+        private Text textInfo = new Text();
+        public bool HasARod { get; set; } = false;
         public bool hasADivingHelmet = false;
         private bool lookWithPuntero = false;
-        public CharacterStatus status;
+        private bool showRecolectionInfo = false;
+        private string recolectionName;
+        private float timeShowRecolection;
         #endregion
 
         #region Constructor
@@ -69,7 +74,7 @@ namespace TGC.Group.Model.Inventory
             lookAt.sprite.Position = new TGCVector2(mouseCenter.posX, mouseCenter.posY);
         }
 
-        public void Update(TgcD3dInput input, DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody, ref List<FishMesh> fishes, bool lockCam)
+        public void Update(TgcD3dInput input, DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody, ref List<FishMesh> fishes, bool lockCam, float elapsedTime)
         {
             if (lockCam)
                 lookAt.sprite.Position = new TGCVector2(Cursor.Position.X, Cursor.Position.Y);
@@ -79,40 +84,51 @@ namespace TGC.Group.Model.Inventory
             showInventory = lockCam;
 
             if (input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+            {
                 findItem(dynamicsWorld, ref commonRigidBody, ref fishes);
+                timeShowRecolection = 0;
+            }
+
+            timeShowRecolection += elapsedTime;
+
+            if (timeShowRecolection > 1.00)
+                showRecolectionInfo = false;
         }
 
         public void Render()
         {
             lookAt.Render();
             if (showInventory)
-                DrawText.drawText("Gold: " + gold.Count +
-                                   "\nSilver: " + silver.Count +
-                                   "\nRocas: " + rock.Count +
-                                   "\niron: " + iron.Count +
-                                   "\nFish: " + fish.Count +
-                                   "\nYellow Fish: " + yellowFish.Count +
-                                   "\nSpiral Coral: " + spiralCoral.Count +
-                                   "\nNormal Coral: " + normalCoral.Count +
-                                   "\nTree Coral: " + treeCoral.Count,
-                                    250, 300, Color.White);
+            {
+                var text = "Inventario: " +
+                           "\n\nGold: " + gold.Count +
+                           "\nSilver: " + silver.Count +
+                           "\nRocas: " + rock.Count +
+                           "\niron: " + iron.Count +
+                           "\nFish: " + fish.Count +
+                           "\nYellow Fish: " + yellowFish.Count +
+                           "\nSpiral Coral: " + spiralCoral.Count +
+                           "\nNormal Coral: " + normalCoral.Count +
+                           "\nTree Coral: " + treeCoral.Count;
 
-           //if (status.isDead())
-             //   initializerDiccionary();
+                (int width, int height) size = (width: 500, height: 500);
+                (int posX, int posY) position = (posX: (Constants.screen.width - size.width) / 2, posY: (Constants.screen.height - size.height) / 2);
+                textInfo.drawText(text, Color.White, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 12, FontStyle.Bold));
+            }
+
+            if (showRecolectionInfo)
+            {
+                Sprite txt = new Sprite();
+                var text = "RECOLECTASTE " + recolectionName;
+                (int width, int height) size = (width: 400, height: 10);
+                (int posX, int posY) position = (posX: (Constants.screen.width - size.width) / 2, posY: (Constants.screen.height - size.height * 10) / 2);
+                txt.drawText(text, Color.White, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 10, FontStyle.Bold));
+            }
 
         }
 
         public void Dispose()
         {
-            //DisposeAll(gold);
-            //DisposeAll(silver);
-            //DisposeAll(rock);
-            //DisposeAll(iron);
-            //DisposeAll(fish);
-            //DisposeAll(yellowFish);
-            //DisposeAll(spiralCoral);
-            //DisposeAll(normalCoral);
-            //DisposeAll(treeCoral);
             lookAt.Dispose();
         }
 
@@ -144,15 +160,17 @@ namespace TGC.Group.Model.Inventory
             if (item != null)
             {
                 splitItems(item.Mesh);
+                showRecolectionOfType(item.Mesh);
                 dynamicsWorld.RemoveRigidBody(item.body);
                 commonRigidBody.Remove(item);
                 item.Dispose();
-            } else if(hasARod)
+            } else if(HasARod)
             {
                 var fishItem = fishes.Find(fish => ray.intersectsWithObject(fish.Mesh.BoundingBox, 500));
                 if (fishItem != null)
                 {
                     splitItems(fishItem.Mesh);
+                    showRecolectionOfType(fishItem.Mesh);
                     fishes.Remove(fishItem);
                     fishItem.Dispose();
                 }
@@ -162,13 +180,9 @@ namespace TGC.Group.Model.Inventory
         public void changePointer()
         {
             if (lookWithPuntero)
-            {
                 lookAt.setInitialSprite(new TGCVector2(1, 1), "mira");
-            }
             else
-            {
                 lookAt.setInitialSprite(new TGCVector2(1, 1), "puntero");
-            }
             lookWithPuntero = !lookWithPuntero;
         }
 
@@ -184,6 +198,45 @@ namespace TGC.Group.Model.Inventory
             items.Add("spiralCoral", spiralCoral);
             items.Add("normalCoral", normalCoral);
             items.Add("treeCoral", treeCoral);
+        }
+
+        private void showRecolectionOfType(TgcMesh collectedMesh)
+        {
+            string name = collectedMesh.Name.Split('_')[0]; 
+            string showName = "";
+            switch (name)
+            {
+                case "gold":
+                    showName = "GOLD +1";
+                    break;
+                case "silver":
+                    showName = "SILVER +1";
+                    break;
+                case "rock-n":
+                    showName = "ROCK +1";
+                    break;
+                case "iron":
+                    showName = "IRON +1";
+                    break;
+                case "fish":
+                    showName = "FISH +1";
+                    break;
+                case "yellowFish":
+                    showName = "YELLOW FISH +1";
+                    break;
+                case "spiralCoral":
+                    showName = "SPIRAL CORAL +1";
+                    break;
+                case "normalCoral":
+                    showName = "NORMAL CORAL +1";
+                    break;
+                case "treeCoral":
+                    showName = "TREE CORAL +1";
+                    break;
+            }
+
+            showRecolectionInfo = !showRecolectionInfo;
+            recolectionName = showName;
         }
         #endregion
     }

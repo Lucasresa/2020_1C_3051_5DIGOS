@@ -19,6 +19,7 @@ namespace TGC.Group.Model.Bullet
     {
         #region Atributos
         private string MediaDir, ShadersDir;
+        private bool activeWorld = true;
         private Sky skybox;
         private InventoryManagement inventory;
         private List<FishMesh> fishes = new List<FishMesh>();
@@ -91,19 +92,22 @@ namespace TGC.Group.Model.Bullet
         }
         public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
         {
-            dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
-            characterRigidBody.Update(elapsedTime, sharkRigidBody, skybox);
-            inventory.Update(input, dynamicsWorld, ref commonRigidBody, ref fishes, Camera.lockCam);
-            crafting.Update(input);
-            characterRigidBody.status.Update(crafting.hasADivingHelmet);
+            if (activeWorld)
+            {
+                dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
+                characterRigidBody.status.Update(crafting.hasADivingHelmet);
+                characterRigidBody.Update(elapsedTime, sharkRigidBody, skybox);
+                sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
+                gameEventsManager.Update(elapsedTime, fishes);
+                fishes.ForEach(fish => fish.Update(input, elapsedTime, Camera));
+            }
 
-            gameEventsManager.Update(elapsedTime, fishes);
-
-            sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
-            fishes.ForEach(fish => fish.Update(input, elapsedTime, Camera.position));
+            inventory.Update(input, dynamicsWorld, ref commonRigidBody, ref fishes, Camera.lockCam, elapsedTime);
+            crafting.Update(input, inventory);
 
             if (Input.keyPressed(Key.I))
             {
+                activeWorld = !activeWorld;
                 Camera.lockCam = !Camera.lockCam;
                 inventory.changePointer();
             }

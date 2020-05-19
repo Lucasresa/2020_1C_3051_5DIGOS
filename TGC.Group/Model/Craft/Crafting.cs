@@ -16,7 +16,7 @@ namespace TGC.Group.Model.Craft
 
         private string MediaDir, ShadersDir;
         Dictionary<string, List<string>> Items;
-        public bool hasARow;
+        public bool hasARod;
         public bool hasADivingHelmet;
 
         public Crafting(string mediaDir, string shadersDir, Dictionary<string, List<string>> items)
@@ -45,7 +45,7 @@ namespace TGC.Group.Model.Craft
                 Items["treeCoral"].RemoveRange(0, 1);
                 Items["iron"].RemoveRange(0, 1);
                 MessageBox.Show("Se crafteo una caña exitosamente.");
-                hasARow = true;
+                hasARod = true;
             }
         }
 
@@ -59,8 +59,9 @@ namespace TGC.Group.Model.Craft
             }
         }
 
-        internal void Update(TgcD3dInput input)
+        internal void Update(TgcD3dInput input, InventoryManagement inventory)
         {
+            inventory.HasARod = hasARod;
             if (input.keyDown(Key.M))
                 craftWeapon();
 

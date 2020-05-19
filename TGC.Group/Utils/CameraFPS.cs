@@ -42,7 +42,6 @@ namespace TGC.Group.Utils
         
         public override void UpdateCamera(float elapsedTime)
         {
-           
             if (lockCam)
                 return; 
                 

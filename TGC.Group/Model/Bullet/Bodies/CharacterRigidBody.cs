@@ -138,12 +138,20 @@ namespace TGC.Group.Model.Bullet.Bodies
             Camera.position = new TGCVector3(body.CenterOfMassPosition) + Constants.cameraHeight;
             weapon.Update(Camera, director, elapsedTime);
             #endregion
+
+            if (status.isDead())
+            {
+                changePosition(Constants.indoorPosition);
+                status.lifePercentage = 100;
+                status.oxygenPercentage = 100;
+            }
         }
 
         public void Render()
         {
             status.Render();
             weapon.Render();
+            
             if (showEnterShipInfo)
             {
                 Sprite txt = new Sprite();
@@ -151,14 +159,7 @@ namespace TGC.Group.Model.Bullet.Bodies
                 (int width, int height) size = (width: 400, height: 10);
                 (int posX, int posY) position = (posX: (Constants.screen.width - size.width) / 2, posY: (Constants.screen.height - size.height * 10) / 2);
                 txt.drawText(text, Color.White, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
-            }
-            if(status.isDead())
-            {
-                changePosition(Constants.indoorPosition);
-                status.lifePercentage = 100;
-                status.oxygenPercentage = 100;
-
-            }
+            }            
         }
         public void Dispose()
 
