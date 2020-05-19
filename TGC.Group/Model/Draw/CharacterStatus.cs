@@ -65,6 +65,17 @@ namespace TGC.Group.Model.Draw
             var newScale = new TGCVector2((oxygenPercentage / Constants.oxygen.max) * initialScale.X, initialScale.Y);
             oxygen.sprite.Scaling = newScale;
 
+            if (isDead())
+            {
+                lifePercentage = 100;
+                lifePercentage = FastMath.Clamp(lifePercentage, Constants.life.min, Constants.life.max);
+
+                initialScale = life.initialScaleSprite;
+                newScale = new TGCVector2((lifePercentage / Constants.life.max) * initialScale.X, initialScale.Y);
+                life.sprite.Scaling = newScale;
+            }
+
+
         }
 
         public void ReceiveDamage(float damage)
@@ -90,7 +101,15 @@ namespace TGC.Group.Model.Draw
             oxygen.drawText("OXYGEN", Color.DeepSkyBlue, new Point(10, 50), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
 
             if (isDead())
-               DrawText.drawText("You are dead!", Constants.screen.width / 2, Constants.screen.height / 2, Color.Red); 
+            {
+                DrawText.drawText("You are dead!", Constants.screen.width / 2, Constants.screen.height / 2, Color.Red);
+                lifePercentage = 100;
+                lifePercentage = FastMath.Clamp(lifePercentage, Constants.life.min, Constants.life.max);
+
+                var initialScale = life.initialScaleSprite;
+                var newScale = new TGCVector2((lifePercentage / Constants.life.max) * initialScale.X, initialScale.Y);
+                life.sprite.Scaling = newScale;
+            }
         }
 
         public void Dispose()

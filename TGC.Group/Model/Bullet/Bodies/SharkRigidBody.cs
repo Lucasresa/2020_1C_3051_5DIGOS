@@ -137,9 +137,11 @@ namespace TGC.Group.Model.Bullet.Bodies
             Mesh.BoundingBox.transform(Mesh.Transform);
             Mesh.Render();
             spriteLife.Render();
-            if(Constants.MAX_LIFE > 0)
-            spriteLife.drawText("LIFE SHARK", Color.MediumVioletRed, new Point(580, 20), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
-
+            if (!IsDead())
+            {
+               spriteLife.Render();
+               spriteLife.drawText("LIFE SHARK", Color.MediumVioletRed, new Point(580, 20), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
+            }
         }
 
         public void Dispose()
