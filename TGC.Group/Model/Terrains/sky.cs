@@ -103,6 +103,11 @@ namespace TGC.Group.Model.Terrains
             return posX < currentPerimeter.xMax && posX > currentPerimeter.xMin && posZ < currentPerimeter.zMax && posZ > currentPerimeter.zMin;
         }
 
+        public bool CameraIsNearBorder(CameraFPS camera)
+        {
+            return !inPerimeterSkyBox(camera.position.X, camera.position.Z);
+        }
+
         private void calculatePerimeter()
         {
             var size = sky.Size.X / 2;

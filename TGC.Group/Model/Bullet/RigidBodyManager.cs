@@ -92,7 +92,7 @@ namespace TGC.Group.Model.Bullet
         public void Update(TgcD3dInput input, float elapsedTime, float timeBetweenFrames)
         {
             dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
-            characterRigidBody.Update(elapsedTime, sharkRigidBody);
+            characterRigidBody.Update(elapsedTime, sharkRigidBody, skybox);
             inventory.Update(input, dynamicsWorld, ref commonRigidBody, ref fishes, Camera.lockCam);
             crafting.Update(input);
             characterRigidBody.status.Update(crafting.hasADivingHelmet);

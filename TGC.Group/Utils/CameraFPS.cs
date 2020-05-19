@@ -1,6 +1,4 @@
-﻿using Microsoft.DirectX.DirectInput;
-using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using TGC.Core.Camara;
 using TGC.Core.Direct3D;
@@ -56,7 +54,6 @@ namespace TGC.Group.Utils
             Cursor.Position = Constants.mouseCenter;
             base.SetCamera(position, targetPosition, rotacionVectorUP);
         }
-
         public TGCVector3 getIndoorPosition()
         {
             return Constants.indoorPosition;
