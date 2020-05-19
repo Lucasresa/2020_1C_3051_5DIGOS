@@ -98,6 +98,7 @@ namespace TGC.Group.Model.Bullet
                 sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
                 gameEventsManager.Update(elapsedTime);
             }
+
             inventory.Update(input, dynamicsWorld, ref commonRigidBody, Camera.lockCam, elapsedTime);
             crafting.Update(input);
             

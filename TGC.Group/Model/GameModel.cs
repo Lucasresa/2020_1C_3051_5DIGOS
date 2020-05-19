@@ -11,6 +11,8 @@ using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Watercraft;
 using TGC.Group.Utils;
 using TGC.Group.Model.Bullet;
+using Text = TGC.Group.Model.Draw.Sprite;
+using TGC.Core.Text;
 
 namespace TGC.Group.Model
 {
@@ -28,7 +30,10 @@ namespace TGC.Group.Model
         private Shark shark;
         private MeshBuilder meshBuilder;
         private RigidBodyManager rigidBodyManager;
+        private Text textInfo = new Text();
         private bool showDebugInfo { get; set; }
+        private bool showHelp { get; set; } = true;
+        public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
         public struct Perimeter
         {
             public float xMin, xMax, zMin, zMax;
@@ -117,6 +122,28 @@ namespace TGC.Group.Model
 
 		        DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
             }
+
+            if (Input.keyPressed(Key.F1))
+                showHelp = !showHelp;
+
+            if (showHelp)
+            {
+                var text = "Instrucciones para salir de la nave: " +
+                           "\n\tPara salir de la nave mirar hacia la escotilla y presionar la tecla E" +
+                           "\nRecolectar y atacar: " +
+                           "\n\tPara recolectar los objetos acercarse y clickearlos." +
+                           "\n\tPara atacar al tiburon hacer click derecho cuando se tiene el arma." +
+                           "\nCrafteos dentro de la nave: " +
+                           "\n\tArma: necesitas recolectar dos rocas y dos metales de plata y apretar la tecla M" +
+                           "\n\tRed para agarrar peces: necesitas recolectar 1 coral de cada tipo y un metal de hierro y apretar la tecla N" +
+                           "\n\tCasco de oxigeno: necesitas recolectar 4 metales de oro y apretar dentro de la nave la tecla B" +
+                           "\nPara abrir y cerrar la ayuda apretar F1";
+
+                (int width, int height) size = (width: 1200, height: 600);
+                (int posX, int posY) position = (posX: 10, posY: (screen.height - size.height) / 2);
+                textInfo.drawText(text, Color.RoyalBlue, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 12, FontStyle.Bold));
+            }
+
             #endregion
 
             #region Renderizado
@@ -141,6 +168,7 @@ namespace TGC.Group.Model
             vegetation.ForEach(vegetation => vegetation.Dispose());
             rigidBodyManager.Dispose();
             fishes.ForEach(fish => fish.Dispose());
+            textInfo.Dispose();
             #endregion
         }
 
