@@ -16,6 +16,7 @@ using TGC.Core.Text;
 using TGC.Core.Textures;
 using TGC.Group.Model.Draw;
 using TGC.Group.Model.Meshes;
+using TGC.Group.Model.Terrains;
 using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Bullet.Bodies
@@ -54,6 +55,8 @@ namespace TGC.Group.Model.Bullet.Bodies
         public TgcBoundingAxisAlignBox aabbShip;
         public RigidBody body;
         private Weapon weapon;
+        private TGCVector3 movementDirection;
+
         public CharacterStatus status;
         public bool IsOutside { get { return !isInsideShip(); } }
         #endregion
@@ -87,10 +90,9 @@ namespace TGC.Group.Model.Bullet.Bodies
             #endregion
         }
 
-        public void Update(float elapsedTime, SharkRigidBody shark)
+        public void Update(float elapsedTime, SharkRigidBody shark, Sky skybox)
         {
             var speed = Constants.speed;
-
             if (Camera.lockCam)
                 return;
 
@@ -111,7 +113,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             if (!isOutOfWater())
             {
                 if (!isInsideShip())
-                    outsideMovement(director, sideDirector, speed);
+                    outsideMovement(director, sideDirector, speed, skybox);
                 else
                     insideMovement(director, sideDirector, speed);
             }
@@ -135,7 +137,6 @@ namespace TGC.Group.Model.Bullet.Bodies
             body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * getGravity();
             Camera.position = new TGCVector3(body.CenterOfMassPosition) + Constants.cameraHeight;
             weapon.Update(Camera, director, elapsedTime);
-
             #endregion
 
             if (status.isDead())
@@ -160,8 +161,8 @@ namespace TGC.Group.Model.Bullet.Bodies
                 txt.drawText(text, Color.White, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
             }            
         }
-
         public void Dispose()
+
         {
             body.Dispose();
             status.Dispose();
@@ -244,19 +245,37 @@ namespace TGC.Group.Model.Bullet.Bodies
                 body.LinearVelocity = sideDirector.ToBulletVector3() * speed;
         }
 
-        private void outsideMovement(TGCVector3 director, TGCVector3 sideDirector, float speed)
+        private void outsideMovement(TGCVector3 director, TGCVector3 sideDirector, float speed, Sky skybox)
         {
+            if (skybox.CameraIsNearBorder(Camera))
+            {
+                body.ApplyCentralImpulse(movementDirection.ToBulletVector3() * -100);
+                return;
+            }
+
             if (input.keyDown(Key.W))
+            {
                 body.LinearVelocity = director.ToBulletVector3() * speed;
+                movementDirection = director;
+            }
 
             if (input.keyDown(Key.S))
+            {
                 body.LinearVelocity = director.ToBulletVector3() * -speed;
+                movementDirection = -director;
+            }
 
             if (input.keyDown(Key.A))
+            {
                 body.LinearVelocity = sideDirector.ToBulletVector3() * -speed;
+                movementDirection = -sideDirector;
+            }
 
             if (input.keyDown(Key.D))
+            {
                 body.LinearVelocity = sideDirector.ToBulletVector3() * speed;
+                movementDirection = sideDirector;
+            }
 
             if (input.keyDown(Key.Space))
                 body.LinearVelocity = Vector3.UnitY * speed;

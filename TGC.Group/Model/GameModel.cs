@@ -57,7 +57,7 @@ namespace TGC.Group.Model
             Description = Game.Default.Description;
             meshBuilder = new MeshBuilder();
             MeshDuplicator.MediaDir = mediaDir;
-            D3DDevice.Instance.ZFarPlaneDistance = 8000f;
+            D3DDevice.Instance.ZFarPlaneDistance = 12000f;
             #endregion
         }
 
@@ -82,7 +82,7 @@ namespace TGC.Group.Model
 
             #region Mundo fisico
             rigidBodyManager = new RigidBodyManager(MediaDir, ShadersDir);
-            rigidBodyManager.Init(Input,terrain, camera, shark, ship, skyBox, ref Meshes);
+            rigidBodyManager.Init(Input,terrain, camera, shark, ship, skyBox, ref Meshes, fishes);
             #endregion
 
         }
@@ -92,7 +92,6 @@ namespace TGC.Group.Model
             #region Update
             rigidBodyManager.Update(Input, ElapsedTime, TimeBetweenUpdates);
             skyBox.Update();
-            fishes.ForEach(fish => fish.Update(Input, ElapsedTime, camera));
             #endregion
 
             #region Teclas
@@ -150,10 +149,9 @@ namespace TGC.Group.Model
             #region Renderizado
             if (camera.isOutside())
             {
-                skyBox.Render();
+                skyBox.Render(terrain.SizeWorld());
                 water.Render();
                 vegetation.ForEach(vegetation => { if (skyBox.Contains(vegetation)) vegetation.Render(); } );
-                fishes.ForEach(fish => fish.Render());
             }
             rigidBodyManager.Render();
             #endregion
@@ -168,7 +166,6 @@ namespace TGC.Group.Model
             skyBox.Dispose();
             vegetation.ForEach(vegetation => vegetation.Dispose());
             rigidBodyManager.Dispose();
-            fishes.ForEach(fish => fish.Dispose());
             textInfo.Dispose();
             #endregion
         }

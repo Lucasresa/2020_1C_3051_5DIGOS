@@ -25,16 +25,22 @@ namespace TGC.Group.Model.Bullet
             Character = character;
         }
 
-        public void Update(float elapsedTime)
+        public void Update(float elapsedTime, List<FishMesh> fishes)
         {
             if (Character.IsOutside)
+            {
+                fishes.ForEach(fish => fish.ActivateMove = true);
                 CheckIfSharkCanAttack(elapsedTime);
-            else if (isAttacking || Shark.IsDead())
+            }
+            else
             {
                 Shark.EndSharkAttack();
                 timeBetweenAttacks = Constants.TIME_BETWEEN_ATTACKS;
                 InformFinishFromAttack();
+                fishes.ForEach(fish => fish.ActivateMove = false);
             }
+
+
         }
 
         public void InformFinishFromAttack()

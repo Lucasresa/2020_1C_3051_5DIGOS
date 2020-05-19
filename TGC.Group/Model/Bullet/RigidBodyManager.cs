@@ -22,6 +22,7 @@ namespace TGC.Group.Model.Bullet
         private bool activeWorld = true;
         private Sky skybox;
         private InventoryManagement inventory;
+        private List<FishMesh> fishes = new List<FishMesh>();
         private List<CommonRigidBody> commonRigidBody = new List<CommonRigidBody>();
         private TerrainRigidBody terrainRigidBody;
         private CharacterRigidBody characterRigidBody;
@@ -62,7 +63,8 @@ namespace TGC.Group.Model.Bullet
 
         #region Metodos
 
-        public void Init(TgcD3dInput input, Terrain terrain, CameraFPS camera, Shark shark, Ship ship, Sky skyBox, ref List<TgcMesh> meshes)
+        public void Init(TgcD3dInput input, Terrain terrain, CameraFPS camera, Shark shark, Ship ship, Sky skyBox, 
+            ref List<TgcMesh> meshes, List<FishMesh> fishes)
         {
             skybox = skyBox;
             Camera = camera;
@@ -84,7 +86,7 @@ namespace TGC.Group.Model.Bullet
 
             addNewRigidBody(ref meshes);
             #endregion
-
+            this.fishes = fishes;
             gameEventsManager = new GameEventsManager(sharkRigidBody, characterRigidBody);
             characterRigidBody.aabbShip = outdoorShipRigidBody.getAABB();
         }
@@ -94,14 +96,15 @@ namespace TGC.Group.Model.Bullet
             {
                 dynamicsWorld.StepSimulation(elapsedTime, 10, timeBetweenFrames);
                 characterRigidBody.status.Update(crafting.hasADivingHelmet);
-                characterRigidBody.Update(elapsedTime, sharkRigidBody);
+                characterRigidBody.Update(elapsedTime, sharkRigidBody, skybox);
                 sharkRigidBody.Update(input, elapsedTime, characterRigidBody.status);
-                gameEventsManager.Update(elapsedTime);
+                gameEventsManager.Update(elapsedTime, fishes);
+                fishes.ForEach(fish => fish.Update(input, elapsedTime, Camera));
             }
 
-            inventory.Update(input, dynamicsWorld, ref commonRigidBody, Camera.lockCam, elapsedTime);
-            crafting.Update(input);
-            
+            inventory.Update(input, dynamicsWorld, ref commonRigidBody, ref fishes, Camera.lockCam, elapsedTime);
+            crafting.Update(input, inventory);
+
             if (Input.keyPressed(Key.I))
             {
                 activeWorld = !activeWorld;
@@ -124,7 +127,7 @@ namespace TGC.Group.Model.Bullet
                 terrainRigidBody.Render();
 
                 if (gameEventsManager.SharkIsAttacking)
-                sharkRigidBody.Render();
+                    sharkRigidBody.Render();
 
                 if (skybox.Contains(outdoorShipRigidBody.body))
                     outdoorShipRigidBody.Render();
@@ -134,6 +137,7 @@ namespace TGC.Group.Model.Bullet
                     if (skybox.Contains(rigidBody.body))
                         rigidBody.Render();
                 });
+                fishes.ForEach(fish =>  fish.Render());
             }
             #endregion
         }
@@ -152,6 +156,7 @@ namespace TGC.Group.Model.Bullet
             indoorShipRigidBody.Dispose();
             commonRigidBody.ForEach(rigidBody => rigidBody.Dispose());
             inventory.Dispose();
+            fishes.ForEach(fish => fish.Dispose());
         }
 
         public void addNewRigidBody(ref List<TgcMesh> meshes)
