@@ -127,7 +127,7 @@ namespace TGC.Group.Model.Bullet.Bodies
                 body.AngularVelocity = Vector3.Zero;
             }
 
-            if (input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_RIGHT) && !weapon.AtackLocked)
+            if (input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_RIGHT) && !weapon.AtackLocked && Inventory.inHand == 1)
             {
                 weapon.ActivateAtackMove();
                 if (CheckIfCanAtack(shark))
