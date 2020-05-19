@@ -15,6 +15,7 @@ using TGC.Core.Mathematica;
 using TGC.Core.Text;
 using TGC.Core.Textures;
 using TGC.Group.Model.Draw;
+using TGC.Group.Model.Inventory;
 using TGC.Group.Model.Meshes;
 using TGC.Group.Utils;
 
@@ -55,10 +56,11 @@ namespace TGC.Group.Model.Bullet.Bodies
         public RigidBody body;
         private Weapon weapon;
         public CharacterStatus status;
+        public InventoryManagement Inventory;
         #endregion
 
         #region Constructor
-        public CharacterRigidBody(TgcD3dInput Input, CameraFPS camera, string mediaDir, string shadersDir)
+        public CharacterRigidBody(TgcD3dInput Input, CameraFPS camera, string mediaDir, string shadersDir, InventoryManagement inventory)
         {
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
@@ -66,6 +68,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             Constants.indoorPosition = camera.getIndoorPosition();
             Constants.outdoorPosition = camera.getOutdoorPosition();
             input = Input;
+            Inventory = inventory;
             Init();
         }
         #endregion
@@ -133,7 +136,8 @@ namespace TGC.Group.Model.Bullet.Bodies
 
             body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * getGravity();
             Camera.position = new TGCVector3(body.CenterOfMassPosition) + Constants.cameraHeight;
-            weapon.Update(Camera, director, elapsedTime);
+            if(Inventory.inHand == 1)
+                weapon.Update(Camera, director, elapsedTime);
 
             #endregion
         }
@@ -141,7 +145,10 @@ namespace TGC.Group.Model.Bullet.Bodies
         public void Render()
         {
             status.Render();
-            weapon.Render();
+
+            if(Inventory.inHand == 1)
+                weapon.Render();
+            
             if (showEnterShipInfo)
             {
                 Sprite txt = new Sprite();

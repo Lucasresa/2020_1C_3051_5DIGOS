@@ -16,6 +16,7 @@ using TGC.Group.Model.Bullet.Bodies;
 using TGC.Group.Model.Draw;
 using TGC.Group.Utils;
 using TGC.Group.Model.Draw;
+using System.Security.Cryptography;
 
 namespace TGC.Group.Model.Inventory
 {
@@ -45,13 +46,16 @@ namespace TGC.Group.Model.Inventory
         private List<CommonRigidBody> treeCoral = new List<CommonRigidBody>();
         private List<CommonRigidBody> yellowFish = new List<CommonRigidBody>();
 
-
-        private bool hasARow = false;
+        public bool hasAWeapon = false;
+        public bool hasARow = false;
         public bool hasADivingHelmet = false;
+
         private bool lookWithPuntero = false;
         private bool showRecolectionInfo = false;
         private string recolectionName;
         private float timeShowRecolection;
+
+        public int inHand = 0; // 0-Nada 1-Arma
         #endregion
 
         #region Constructor
@@ -96,6 +100,13 @@ namespace TGC.Group.Model.Inventory
 
             if (timeShowRecolection > 1.00)
                 showRecolectionInfo = false;
+
+            if (hasAWeapon && input.keyPressed(Key.D1))
+                inHand = 1;
+
+            if (input.keyPressed(Key.D0))
+                inHand = 0;
+
         }
 
         public void Render()
@@ -235,6 +246,7 @@ namespace TGC.Group.Model.Inventory
             showRecolectionInfo = !showRecolectionInfo;
             recolectionName = showName;
         }
+
         #endregion
     }
 }
