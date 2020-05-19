@@ -1,7 +1,4 @@
-﻿
-using System;
-using TGC.Core.Input;
-using TGC.Core.Mathematica;
+﻿using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Utils;
 

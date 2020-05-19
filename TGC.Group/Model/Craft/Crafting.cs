@@ -1,12 +1,7 @@
 ﻿using Microsoft.DirectX.DirectInput;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TGC.Core.Input;
-using TGC.Group.Model.Bullet.Bodies;
 using TGC.Group.Model.Inventory;
 
 namespace TGC.Group.Model.Craft
@@ -44,7 +39,7 @@ namespace TGC.Group.Model.Craft
                 Inventory.items["treeCoral"].RemoveRange(0, 1);
                 Inventory.items["iron"].RemoveRange(0, 1);
                 MessageBox.Show("Se crafteo una caña exitosamente.");
-                Inventory.hasARow = true;
+                Inventory.HasARod = true;
             }
         }
 
@@ -58,7 +53,7 @@ namespace TGC.Group.Model.Craft
             }
         }
 
-        internal void Update(TgcD3dInput input)
+        internal void Update(TgcD3dInput input, InventoryManagement inventory)
         {
             if (input.keyDown(Key.M))
                 craftWeapon();

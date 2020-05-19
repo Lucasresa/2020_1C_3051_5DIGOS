@@ -25,6 +25,7 @@ namespace TGC.Group.Model.Terrains
         private string MediaDir, ShadersDir;
         private CameraFPS Camera;
         public Perimeter currentPerimeter;
+        public float Radius { get { return Constants.size.X / 2; } }
         #endregion
 
         #region Constructor
@@ -64,9 +65,11 @@ namespace TGC.Group.Model.Terrains
             calculatePerimeter();
         }
 
-        public virtual void Render()
+        public virtual void Render(Perimeter worldSize)
         {
-            sky.Center = new TGCVector3(Camera.position.X, sky.Center.Y, Camera.position.Z);
+            sky.Center = new TGCVector3(FastMath.Clamp(Camera.position.X, worldSize.xMin + Radius, worldSize.xMax - Radius), 
+                                        sky.Center.Y,
+                                        FastMath.Clamp(Camera.position.Z, worldSize.zMin + Radius, worldSize.zMax - Radius));
             sky.Render();
         }
 
@@ -98,6 +101,11 @@ namespace TGC.Group.Model.Terrains
         public bool inPerimeterSkyBox(float posX, float posZ)
         {
             return posX < currentPerimeter.xMax && posX > currentPerimeter.xMin && posZ < currentPerimeter.zMax && posZ > currentPerimeter.zMin;
+        }
+
+        public bool CameraIsNearBorder(CameraFPS camera)
+        {
+            return !inPerimeterSkyBox(camera.position.X, camera.position.Z);
         }
 
         private void calculatePerimeter()

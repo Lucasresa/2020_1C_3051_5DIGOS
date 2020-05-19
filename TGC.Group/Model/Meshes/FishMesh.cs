@@ -25,12 +25,12 @@ namespace TGC.Group.Model
         private TGCVector3 director;
         private float acumulatedXRotation;
         private float acumulatedYRotation;
-        private bool activateMove;
         private TGCMatrix TotalRotation;
         private float time;
         private Sky skybox;
         private Terrain terrain;
-        
+
+        public bool ActivateMove { get; set; } = false;
         public TgcMesh Mesh;
         public FishMesh(TgcMesh mesh, Sky sky, Terrain terrain)
         {
@@ -45,20 +45,19 @@ namespace TGC.Group.Model
             time = Constants.ScapeFromPlayerCooldown;
             acumulatedXRotation = 0;
             acumulatedYRotation = 0;
-            activateMove = false;
+            ActivateMove = false;
             TotalRotation = TGCMatrix.Identity;
             Mesh.BoundingBox.scaleTranslate(Mesh.Position, Constants.Scale);
         }
 
-        public void Update(TgcD3dInput input, float elapsedTime, TGCVector3 cameraPosition)
+        public void Update(TgcD3dInput input, float elapsedTime, CameraFPS camera)
         {
-
-            if (IsNearFromPlayer(cameraPosition) && time <= 0)
+            if (IsNearFromPlayer(camera.position) && time <= 0)
                 ChangeFishWay();
-            else if (activateMove)
+            else if (ActivateMove)
                 PerformNormalMove(elapsedTime, 500, GetFishHeadPosition());
 
-            if (input.keyPressed(Key.U)) activateMove = !activateMove;
+            ActivateMove = !camera.lockCam;
         }
 
         public void Render()
