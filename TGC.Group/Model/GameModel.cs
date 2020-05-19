@@ -1,4 +1,4 @@
-using Microsoft.DirectX.DirectInput;
+﻿using Microsoft.DirectX.DirectInput;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -110,7 +110,7 @@ namespace TGC.Group.Model
             
             if (showDebugInfo)
             {   // TODO: AJUSTAR LA POSICION DONDE SE MUESTRE EN PANTALLA LA INFORMACION
-                DrawText.drawText("DATOS DE LA Camera: ", 0, 30, Color.Red);
+                DrawText.drawText("DATOS DE LA Camera: ", 0, 230, Color.Red);
                 DrawText.drawText("Posicion: [" + camera.Position.X.ToString() + "; "
                                                 + camera.Position.Y.ToString() + "; "
                                                 + camera.Position.Z.ToString() + "] ",
@@ -120,7 +120,7 @@ namespace TGC.Group.Model
                                                 + camera.LookAt.Z.ToString() + "] ",
                                   0, 80, Color.Red);
 
-		        DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
+		        DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 300, Color.Red);
             }
 
             if (Input.keyPressed(Key.F1))
@@ -128,7 +128,8 @@ namespace TGC.Group.Model
 
             if (showHelp)
             {
-                var text = "Instrucciones para salir de la nave: " +
+                var text = "Movimiento: W (↑) | A(←) | S(↓) | D(→) " +
+                           "\nInstrucciones para salir de la nave: " +
                            "\n\tPara salir de la nave mirar hacia la escotilla y presionar la tecla E" +
                            "\nRecolectar y atacar: " +
                            "\n\tPara recolectar los objetos acercarse y clickearlos." +
@@ -141,7 +142,7 @@ namespace TGC.Group.Model
 
                 (int width, int height) size = (width: 1200, height: 600);
                 (int posX, int posY) position = (posX: 10, posY: (screen.height - size.height) / 2);
-                textInfo.drawText(text, Color.RoyalBlue, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 12, FontStyle.Bold));
+                textInfo.drawText(text, Color.HotPink, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 12, FontStyle.Bold));
             }
 
             #endregion

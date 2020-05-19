@@ -15,6 +15,7 @@ using TGC.Core.Text;
 using TGC.Group.Model.Bullet.Bodies;
 using TGC.Group.Model.Draw;
 using TGC.Group.Utils;
+using Text = TGC.Group.Model.Draw.Sprite;
 
 namespace TGC.Group.Model.Inventory
 {
@@ -43,6 +44,7 @@ namespace TGC.Group.Model.Inventory
         private List<CommonRigidBody> spiralCoral = new List<CommonRigidBody>();
         private List<CommonRigidBody> treeCoral = new List<CommonRigidBody>();
         private List<CommonRigidBody> yellowFish = new List<CommonRigidBody>();
+        private Text textInfo = new Text();
 
         private bool hasARow = false;
         public bool hasADivingHelmet = false;
@@ -100,16 +102,22 @@ namespace TGC.Group.Model.Inventory
         {
             lookAt.Render();
             if (showInventory)
-                DrawText.drawText("Gold: " + gold.Count +
-                                   "\nSilver: " + silver.Count +
-                                   "\nRocas: " + rock.Count +
-                                   "\niron: " + iron.Count +
-                                   "\nFish: " + fish.Count +
-                                   "\nYellow Fish: " + yellowFish.Count +
-                                   "\nSpiral Coral: " + spiralCoral.Count +
-                                   "\nNormal Coral: " + normalCoral.Count +
-                                   "\nTree Coral: " + treeCoral.Count,
-                                    250, 300, Color.White);
+            {
+                var text = "Inventario: " +
+                           "\n\nGold: " + gold.Count +
+                           "\nSilver: " + silver.Count +
+                           "\nRocas: " + rock.Count +
+                           "\niron: " + iron.Count +
+                           "\nFish: " + fish.Count +
+                           "\nYellow Fish: " + yellowFish.Count +
+                           "\nSpiral Coral: " + spiralCoral.Count +
+                           "\nNormal Coral: " + normalCoral.Count +
+                           "\nTree Coral: " + treeCoral.Count;
+
+                (int width, int height) size = (width: 500, height: 500);
+                (int posX, int posY) position = (posX: (Constants.screen.width - size.width) / 2, posY: (Constants.screen.height - size.height) / 2);
+                textInfo.drawText(text, Color.White, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 12, FontStyle.Bold));
+            }
 
             if (showRecolectionInfo)
             {
