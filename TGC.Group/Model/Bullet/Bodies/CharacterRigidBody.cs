@@ -156,7 +156,6 @@ namespace TGC.Group.Model.Bullet.Bodies
                 changePosition(Constants.indoorPosition);
                 status.lifePercentage = 100;
                 status.oxygenPercentage = 100;
-
             }
         }
 

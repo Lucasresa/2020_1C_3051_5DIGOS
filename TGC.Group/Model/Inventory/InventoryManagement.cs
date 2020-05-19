@@ -47,7 +47,9 @@ namespace TGC.Group.Model.Inventory
         private bool hasARow = false;
         public bool hasADivingHelmet = false;
         private bool lookWithPuntero = false;
-        public CharacterStatus status;
+        private bool showRecolectionInfo = false;
+        private string recolectionName;
+        private float timeShowRecolection;
         #endregion
 
         #region Constructor
@@ -73,17 +75,23 @@ namespace TGC.Group.Model.Inventory
             lookAt.sprite.Position = new TGCVector2(mouseCenter.posX, mouseCenter.posY);
         }
 
-        public void Update(TgcD3dInput input, DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody, bool lockCam)
+        public void Update(TgcD3dInput input, DiscreteDynamicsWorld dynamicsWorld, ref List<CommonRigidBody> commonRigidBody, bool lockCam, float elapsedTime)
         {
             if (lockCam)
                 lookAt.sprite.Position = new TGCVector2(Cursor.Position.X, Cursor.Position.Y);
             else
                 lookAt.sprite.Position = new TGCVector2(mouseCenter.posX, mouseCenter.posY);
 
-            showInventory = lockCam;
-
             if (input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+            {
                 findItem(dynamicsWorld, ref commonRigidBody);
+                timeShowRecolection = 0;
+            }
+
+            timeShowRecolection += elapsedTime;
+
+            if (timeShowRecolection > 1.00)
+                showRecolectionInfo = false;
         }
 
         public void Render()
@@ -101,8 +109,14 @@ namespace TGC.Group.Model.Inventory
                                    "\nTree Coral: " + treeCoral.Count,
                                     250, 300, Color.White);
 
-           //if (status.isDead())
-             //   initializerDiccionary();
+            if (showRecolectionInfo)
+            {
+                Sprite txt = new Sprite();
+                var text = "RECOLECTASTE " + recolectionName;
+                (int width, int height) size = (width: 400, height: 10);
+                (int posX, int posY) position = (posX: (Constants.screen.width - size.width) / 2, posY: (Constants.screen.height - size.height * 10) / 2);
+                txt.drawText(text, Color.White, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 10, FontStyle.Bold));
+            }
 
         }
 
@@ -147,6 +161,7 @@ namespace TGC.Group.Model.Inventory
             if (item != null)
             {
                 splitItems(item);
+                showRecolectionOfType(item);
                 dynamicsWorld.RemoveRigidBody(item.body);
                 commonRigidBody.Remove(item);
             }
@@ -155,13 +170,9 @@ namespace TGC.Group.Model.Inventory
         public void changePointer()
         {
             if (lookWithPuntero)
-            {
                 lookAt.setInitialSprite(new TGCVector2(1, 1), "mira");
-            }
             else
-            {
                 lookAt.setInitialSprite(new TGCVector2(1, 1), "puntero");
-            }
             lookWithPuntero = !lookWithPuntero;
         }
 
@@ -177,6 +188,45 @@ namespace TGC.Group.Model.Inventory
             items.Add("spiralCoral", spiralCoral);
             items.Add("normalCoral", normalCoral);
             items.Add("treeCoral", treeCoral);
+        }
+
+        private void showRecolectionOfType(CommonRigidBody rigidBody)
+        {
+            string name = rigidBody.getName().Substring(0, rigidBody.getName().IndexOf("_"));
+            string showName = " ";
+            switch (name)
+            {
+                case "gold":
+                    showName = "GOLD +1";
+                    break;
+                case "silver":
+                    showName = "SILVER +1";
+                    break;
+                case "rock-n":
+                    showName = "ROCK +1";
+                    break;
+                case "iron":
+                    showName = "IRON +1";
+                    break;
+                case "fish":
+                    showName = "FISH +1";
+                    break;
+                case "yellowFish":
+                    showName = "YELLOW FISH +1";
+                    break;
+                case "spiralCoral":
+                    showName = "SPIRAL CORAL +1";
+                    break;
+                case "normalCoral":
+                    showName = "NORMAL CORAL +1";
+                    break;
+                case "treeCoral":
+                    showName = "TREE CORAL +1";
+                    break;
+            }
+
+            showRecolectionInfo = !showRecolectionInfo;
+            recolectionName = showName;
         }
         #endregion
     }
