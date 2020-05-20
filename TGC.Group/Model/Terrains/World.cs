@@ -12,12 +12,12 @@ namespace TGC.Group.Model.Terrains
         private string MediaDir, ShadersDir;
         protected TGCVector3 Position = TGCVector3.Empty;
         public SmartTerrain world = new SmartTerrain();
-        
+        protected string tecnica;
 
         public World(string mediaDir, string shadersDir)
         {
             MediaDir = mediaDir;
-            ShadersDir = mediaDir;
+            ShadersDir = shadersDir;
         }
 
         public virtual void Render()
@@ -34,7 +34,7 @@ namespace TGC.Group.Model.Terrains
         {
             world.loadHeightmap(MediaDir + FILE_HEIGHTMAPS, SCALEXZ, SCALEY, Position);
             world.loadTexture(MediaDir + FILE_TEXTURES);
-            world.loadEffect(ShadersDir + FILE_EFFECT);
+            world.loadEffect(ShadersDir + FILE_EFFECT, tecnica);
         }
 
         public virtual Perimeter SizeWorld()

@@ -172,12 +172,11 @@ namespace TGC.Group.Utils
             var d3dDevice = D3DDevice.Instance.Device;
             var texturesManager = TexturesManager.Instance;
             var shader = TGCShaders.Instance;
-
-            effect.SetValue("texDiffuseMap", terrainTexture);
+            
+            
             texturesManager.clear(1);
             shader.SetShaderMatrix(effect, TGCMatrix.Identity);
             d3dDevice.VertexDeclaration = shader.VdecPositionTextured;
-            effect.Technique = technique;
             d3dDevice.SetStreamSource(0, vbTerrain, 0);
 
             var p = effect.Begin(0);
@@ -196,10 +195,11 @@ namespace TGC.Group.Utils
             if (terrainTexture != null) terrainTexture.Dispose();
         }
 
-        public void loadEffect(string effectPath)
+        public void loadEffect(string effectPath, string tecnica)
         {
             effect = TGCShaders.Instance.LoadEffect(effectPath);
-            technique = "default";
+            effect.Technique = tecnica;
+            effect.SetValue("texDiffuseMap", terrainTexture);
         }
 
 
