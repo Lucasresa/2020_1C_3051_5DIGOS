@@ -1,4 +1,5 @@
 ﻿using Microsoft.DirectX.Direct3D;
+using System;
 using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
@@ -26,6 +27,8 @@ namespace TGC.Group.Utils
         private TGCVector3 center;
         public TGCVector3 Center { get => center; set => center = value; }
         public bool AlphaBlendEnable { get; set; }
+
+
         protected Effect effect;
         public Effect Effect { get => effect; set => effect = value; }
         protected string technique;
@@ -39,8 +42,6 @@ namespace TGC.Group.Utils
         {
             Enabled = true;
             AlphaBlendEnable = false;
-            effect = TGCShaders.Instance.VariosShader;
-            technique = TGCShaders.T_POSITION_TEXTURED;
         }
         #endregion       
 
@@ -171,12 +172,11 @@ namespace TGC.Group.Utils
             var d3dDevice = D3DDevice.Instance.Device;
             var texturesManager = TexturesManager.Instance;
             var shader = TGCShaders.Instance;
-
-            effect.SetValue("texDiffuseMap", terrainTexture);
+            
+            
             texturesManager.clear(1);
             shader.SetShaderMatrix(effect, TGCMatrix.Identity);
             d3dDevice.VertexDeclaration = shader.VdecPositionTextured;
-            effect.Technique = technique;
             d3dDevice.SetStreamSource(0, vbTerrain, 0);
 
             var p = effect.Begin(0);
@@ -194,6 +194,14 @@ namespace TGC.Group.Utils
             if (vbTerrain != null) vbTerrain.Dispose();
             if (terrainTexture != null) terrainTexture.Dispose();
         }
+
+        public void loadEffect(string effectPath, string tecnica)
+        {
+            effect = TGCShaders.Instance.LoadEffect(effectPath);
+            effect.Technique = tecnica;
+            effect.SetValue("texDiffuseMap", terrainTexture);
+        }
+
 
         #endregion 
 
