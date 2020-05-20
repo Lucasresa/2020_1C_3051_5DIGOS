@@ -118,7 +118,10 @@ namespace TGC.Group.Model.Bullet.Bodies
                 if (!isInsideShip())
                     outsideMovement(director, sideDirector, speed, skybox);
                 else
+                {
                     insideMovement(director, sideDirector, speed);
+                    status.RecoverLife();
+                }
             }
             else
                 body.ApplyCentralImpulse(Vector3.UnitY * -5);

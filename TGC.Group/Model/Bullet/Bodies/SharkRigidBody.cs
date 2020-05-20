@@ -22,7 +22,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         #region Atributos
         private struct Constants
         {
-            public static float MAX_LIFE = 50;
+            public static float MAX_LIFE = 250;
             public static TGCVector2 SHARK_HEIGHT = new TGCVector2(700, 1800);
             public static TGCVector3 scale = new TGCVector3(5, 5, 5);
             public static TGCVector3 startPosition = TGCVector3.Empty;
@@ -32,6 +32,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             public static float MaxYRotation = FastMath.PI - (FastMath.QUARTER_PI / 2);
             public static float MaxAxisRotation = FastMath.QUARTER_PI;
             public static float MaxZRotation = FastMath.PI;
+            public static float LIFE_REDUCE_STEP = -0.5f;
             public static float sharkMass = 1000;
             public static float SHARK_EVENT_TIME = 50;
             public static float SHARK_DEATH_TIME = 40;
@@ -49,6 +50,7 @@ namespace TGC.Group.Model.Bullet.Bodies
         private float acumulatedZRotation;
         private float deathTimeCounter;
         private float eventTimeCounter;
+        private float DamageTaken;
         private TGCMatrix TotalRotation;
         private float Life;
         private BulletRigidBodyFactory rigidBodyFactory = BulletRigidBodyFactory.Instance;
@@ -89,6 +91,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             acumulatedYRotation = 0;
             acumulatedXRotation = 0;
             acumulatedZRotation = 0;
+            DamageTaken = 0;
             director = Constants.directorZ;
             Life = Constants.MAX_LIFE;
             Mesh.Transform = TGCMatrix.Scaling(Constants.scale) * TGCMatrix.Translation(Constants.startPosition);
@@ -129,6 +132,7 @@ namespace TGC.Group.Model.Bullet.Bodies
             if (deathTimeCounter <= 0)
                 ManageEndOfDeath();
 
+            UpdateDamage();
         }
 
         public void Render()
@@ -253,14 +257,24 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         public void ReceiveDamage(float damage)
         {
-            Life = FastMath.Clamp(Life - damage, 0, Constants.MAX_LIFE);
-            var initialScale = spriteLife.initialScaleSprite;
-            var newScale = new TGCVector2((Life / Constants.MAX_LIFE) * initialScale.X, initialScale.Y);
-            spriteLife.sprite.Scaling = newScale;
-            deathMove = IsDead();
+            DamageTaken = damage;
         }
 
-        internal bool IsDead()
+        public void UpdateDamage()
+        {
+            if (DamageTaken > 0)
+            {
+                DamageTaken += Constants.LIFE_REDUCE_STEP;
+                Life += Constants.LIFE_REDUCE_STEP;
+                Life = FastMath.Clamp(Life, 0, Constants.MAX_LIFE);
+                var initialScale = spriteLife.initialScaleSprite;
+                var newScale = new TGCVector2((Life / Constants.MAX_LIFE) * initialScale.X, initialScale.Y);
+                spriteLife.sprite.Scaling = newScale;
+                deathMove = IsDead();
+            }
+        }
+
+        public bool IsDead()
         {
             return Life <= 0;
         }
