@@ -1,5 +1,4 @@
-﻿using Microsoft.DirectX.DirectInput;
-using System.Drawing;
+﻿using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
@@ -15,11 +14,13 @@ namespace TGC.Group.Model.Draw
             public static (float min, float max) oxygen = (min: 0, max: 100);
             public static (float min, float max) life = (min: 0, max: 100);
             public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
+            public static float LIFE_REDUCE_STEP = 0.3f;
         }
 
         private TgcText2D DrawText = new TgcText2D();
         private Sprite life, oxygen;
         private string MediaDir, ShadersDir;
+        private float DamageAcumulated = 0;
         public float oxygenPercentage = 100, lifePercentage = 100;
 
         public TgcD3dInput input;
@@ -59,38 +60,13 @@ namespace TGC.Group.Model.Draw
             else
                 oxygenPercentage -= 0.05f;
 
-            oxygenPercentage = FastMath.Clamp(oxygenPercentage, Constants.oxygen.min, Constants.oxygen.max);
-
-            var initialScale = oxygen.initialScaleSprite;
-            var newScale = new TGCVector2((oxygenPercentage / Constants.oxygen.max) * initialScale.X, initialScale.Y);
-            oxygen.sprite.Scaling = newScale;
-
-            if (isDead())
-            {
-                lifePercentage = 100;
-                lifePercentage = FastMath.Clamp(lifePercentage, Constants.life.min, Constants.life.max);
-
-                initialScale = life.initialScaleSprite;
-                newScale = new TGCVector2((lifePercentage / Constants.life.max) * initialScale.X, initialScale.Y);
-                life.sprite.Scaling = newScale;
-            }
-
-
+            UpdateOxygenSprite();
+            UpdateLifeSprite();
         }
 
         public void ReceiveDamage(float damage)
         {
-            lifePercentage -= damage;
-            lifePercentage = FastMath.Clamp(lifePercentage, Constants.life.min, Constants.life.max);
-
-            var initialScale = life.initialScaleSprite;
-            var newScale = new TGCVector2((lifePercentage / Constants.life.max) * initialScale.X, initialScale.Y);
-            life.sprite.Scaling = newScale;
-        }
-
-        private bool canRecoverOxygen()
-        {
-            return canBreathe && !isDead();
+            DamageAcumulated = damage;
         }
 
         public void Render()
@@ -100,16 +76,6 @@ namespace TGC.Group.Model.Draw
             life.drawText("LIFE", Color.MediumVioletRed, new Point(10, 20), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
             oxygen.drawText("OXYGEN", Color.DeepSkyBlue, new Point(10, 50), new Size(100, 100), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 14, FontStyle.Bold));
 
-            if (isDead())
-            {
-                DrawText.drawText("You are dead!", Constants.screen.width / 2, Constants.screen.height / 2, Color.Red);
-                lifePercentage = 100;
-                lifePercentage = FastMath.Clamp(lifePercentage, Constants.life.min, Constants.life.max);
-
-                var initialScale = life.initialScaleSprite;
-                var newScale = new TGCVector2((lifePercentage / Constants.life.max) * initialScale.X, initialScale.Y);
-                life.sprite.Scaling = newScale;
-            }
         }
 
         public void Dispose()
@@ -122,6 +88,35 @@ namespace TGC.Group.Model.Draw
         {
             return oxygenPercentage == 0 || lifePercentage == 0;
         }
+
+        private bool canRecoverOxygen()
+        {
+            return canBreathe && !isDead();
+        }
+
+        private void UpdateLifeSprite()
+        {
+            if (DamageAcumulated > 0)
+            {
+                lifePercentage -= Constants.LIFE_REDUCE_STEP;
+                lifePercentage = FastMath.Clamp(lifePercentage, Constants.life.min, Constants.life.max);
+
+                var initialScale = life.initialScaleSprite;
+                var newScale = new TGCVector2((lifePercentage / Constants.life.max) * initialScale.X, initialScale.Y);
+                life.sprite.Scaling = newScale;
+                DamageAcumulated -= Constants.LIFE_REDUCE_STEP;
+            }
+        }
+
+        private void UpdateOxygenSprite()
+        {
+            oxygenPercentage = FastMath.Clamp(oxygenPercentage, Constants.oxygen.min, Constants.oxygen.max);
+
+            var initialScale = oxygen.initialScaleSprite;
+            var newScale = new TGCVector2((oxygenPercentage / Constants.oxygen.max) * initialScale.X, initialScale.Y);
+            oxygen.sprite.Scaling = newScale;
+        }
+
         #endregion
     }
 }

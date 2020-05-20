@@ -15,12 +15,13 @@ namespace TGC.Group.Model.Meshes
         
         private TGCVector3 scale = new TGCVector3(2, 2, 2);
         private TGCVector3 position = new TGCVector3(1300, 3505, 20);
-        private float RotationYOffset = FastMath.QUARTER_PI / 1.5f;
+        private float MaxForwardRotation = FastMath.PI_HALF;
+        private float MaxSideRotation = FastMath.QUARTER_PI/1.3f;
         private float RotationXOffset = FastMath.PI_HALF;
-        private float AtackRotation = 0f;
-
-        public bool Atacking { get; private set; } = false;
-        public bool AtackLocked { get; private set; } = false;
+        private float AttackForwardRotation = 0f;
+        private float AttackSideRotation = 0f;
+        public bool Attacking { get; private set; } = false;
+        public bool AttackLocked { get; private set; } = false;
 
         public Weapon(string mediaDir, string shadersDir)
         {
@@ -40,7 +41,7 @@ namespace TGC.Group.Model.Meshes
         {
             float RotationStep = FastMath.PI * 2.5f * elapsedTime;
             CalculateRotationByAtack(RotationStep);
-            AtackLocked = !(AtackRotation <= 0);
+            AttackLocked = !(AttackForwardRotation <= 0) && !(AttackSideRotation <= 0);
 
             var localSideAxis = TGCVector3.Cross(TGCVector3.Up, cameraDirection);
             localSideAxis.Normalize();
@@ -49,7 +50,7 @@ namespace TGC.Group.Model.Meshes
             TGCVector3 newPosition = camera.position + forwardOffset + sideOffset;
             
             Mesh.Transform = TGCMatrix.Scaling(scale) * 
-                             TGCMatrix.RotationYawPitchRoll(camera.latitude - RotationYOffset, camera.longitude + RotationXOffset - AtackRotation, 0) *
+                             TGCMatrix.RotationYawPitchRoll(camera.latitude - AttackSideRotation, camera.longitude + RotationXOffset - AttackForwardRotation, 0) *
                              TGCMatrix.Translation(newPosition);
         }
 
@@ -65,21 +66,25 @@ namespace TGC.Group.Model.Meshes
 
         public void ActivateAtackMove()
         {
-            if (Atacking || AtackLocked)
+            if (Attacking || AttackLocked)
                 return;
-            Atacking = true;
-            AtackLocked = true;
+            Attacking = true;
+            AttackLocked = true;
         }
 
         private void CalculateRotationByAtack(float rotationStep)
         {
-            if (Atacking)
+            if (Attacking)
             {
-                Atacking = AtackRotation <= FastMath.PI_HALF;
-                AtackRotation += rotationStep;
+                Attacking = AttackForwardRotation <= MaxForwardRotation || AttackSideRotation <= MaxSideRotation;
+                AttackForwardRotation += AttackForwardRotation <= MaxForwardRotation ? rotationStep : 0;
+                AttackSideRotation += AttackSideRotation <= MaxSideRotation ? rotationStep/2 : 0;
             }
-            else if (AtackRotation > 0)
-                AtackRotation += -rotationStep * 0.5f;
+            else if (AttackForwardRotation > 0 || AttackSideRotation > 0)
+            {
+                AttackForwardRotation += AttackForwardRotation > 0 ? -rotationStep * 0.5f : 0;
+                AttackSideRotation += AttackSideRotation > 0 ? -rotationStep * 0.25f : 0;
+            }
         }
 
     }
