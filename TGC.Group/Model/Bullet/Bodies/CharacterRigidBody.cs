@@ -209,7 +209,7 @@ namespace TGC.Group.Model.Bullet.Bodies
 
         private bool CheckIfCanAtack(SharkRigidBody shark)
         {
-            return ray.intersectsWithObject(shark.Mesh.BoundingBox, 100);
+            return ray.intersectsWithObject(shark.Mesh.BoundingBox, 150);
         }
 
         private bool isNearShip()

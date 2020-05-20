@@ -177,20 +177,22 @@ namespace TGC.Group.Model
             var Meshes = new List<TgcMesh>();
             MeshDuplicator.InitOriginalMeshes();
 
-            Meshes.AddRange(createMesh(MeshType.normalCoral, 5, perimeter));
-            Meshes.AddRange(createMesh(MeshType.treeCoral, 5, perimeter));
-            Meshes.AddRange(createMesh(MeshType.spiralCoral, 5, perimeter));
-            Meshes.AddRange(createMesh(MeshType.goldOre, 5, perimeter));
-            Meshes.AddRange(createMesh(MeshType.silverOre, 5, perimeter));
-            Meshes.AddRange(createMesh(MeshType.ironOre, 5, perimeter));
-            Meshes.AddRange(createMesh(MeshType.rock, 5, perimeter));
-            vegetation.AddRange(createMesh(MeshType.alga, 5, perimeter));
-            vegetation.AddRange(createMesh(MeshType.alga_2, 5, perimeter));
-            vegetation.AddRange(createMesh(MeshType.alga_3, 5, perimeter));
-            vegetation.AddRange(createMesh(MeshType.alga_4, 5, perimeter));
+            var terrainSize = terrain.SizeWorld();
 
-            var normalFishes = createMesh(MeshType.normalFish, 5, perimeter);
-            var yellowFishes = createMesh(MeshType.yellowFish, 5, perimeter);
+            Meshes.AddRange(createMesh(MeshType.normalCoral, 50, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.treeCoral, 50, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.spiralCoral, 50, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.goldOre, 30, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.silverOre, 50, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.ironOre, 50, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.rock, 50, terrainSize));
+            vegetation.AddRange(createMesh(MeshType.alga, 40, perimeter));
+            vegetation.AddRange(createMesh(MeshType.alga_2, 20, perimeter));
+            vegetation.AddRange(createMesh(MeshType.alga_3, 20, perimeter));
+            vegetation.AddRange(createMesh(MeshType.alga_4, 20, perimeter));
+
+            var normalFishes = createMesh(MeshType.normalFish, 16, perimeter);
+            var yellowFishes = createMesh(MeshType.yellowFish, 8, perimeter);
             fishes.AddRange(normalFishes.ConvertAll(fish => new FishMesh(fish, skyBox, terrain)));
             fishes.AddRange(yellowFishes.ConvertAll(fish => new FishMesh(fish, skyBox, terrain)));
             fishes.ForEach(fish => fish.Init());
