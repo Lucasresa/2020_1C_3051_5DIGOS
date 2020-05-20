@@ -133,6 +133,7 @@ namespace TGC.Group.Model
                            "\nRecolectar y atacar: " +
                            "\n\tPara recolectar los objetos acercarse y clickearlos." +
                            "\n\tPara atacar al tiburon hacer click derecho cuando se tiene el arma." +
+                           "\n\tUna vez crafteada el arma se equipa con el numero 1 y para desequiparla presionar el 0" +
                            "\nCrafteos dentro de la nave: " +
                            "\n\tArma: necesitas recolectar dos rocas y dos metales de plata y apretar la tecla M" +
                            "\n\tRed para agarrar peces: necesitas recolectar 1 coral de cada tipo y un metal de hierro y apretar la tecla N" +
