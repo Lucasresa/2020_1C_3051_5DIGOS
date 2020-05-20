@@ -101,12 +101,26 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
-    <Compile Include="Model\Meshes\CommonMesh.cs" />
+    <Compile Include="Model\Bullet\Bodies\CharacterRigidBody.cs" />
+    <Compile Include="Model\Bullet\Bodies\IndoorShipRigidBody.cs" />
+    <Compile Include="Model\Bullet\Bodies\CommonRigidBody.cs" />
+    <Compile Include="Model\Bullet\Bodies\OutdoorShipRigidBody.cs" />
+    <Compile Include="Model\Bullet\GameEventsManager.cs" />
+    <Compile Include="Model\Bullet\RigidBodyManager.cs" />
+    <Compile Include="Model\Bullet\Bodies\SharkRigidBody.cs" />
+    <Compile Include="Model\Bullet\Bodies\TerrainRigidBody.cs" />
+    <Compile Include="Model\Craft\Crafting.cs" />
+    <Compile Include="Model\Draw\CharacterStatus.cs" />
+    <Compile Include="Model\Draw\Sprite.cs" />
+    <Compile Include="Model\Meshes\FishMesh.cs" />
     <Compile Include="Model\GameModel.cs" />
+    <Compile Include="Model\Inventory\InventoryManagement.cs" />
+    <Compile Include="Model\Meshes\CommonMesh.cs" />
     <Compile Include="Model\MeshBuilders\MeshBuilder.cs" />
     <Compile Include="Model\MeshBuilders\MeshDuplicator.cs" />
     <Compile Include="Model\MeshBuilders\MeshType.cs" />
     <Compile Include="Model\Meshes\Shark.cs" />
+    <Compile Include="Model\Meshes\Weapon.cs" />
     <Compile Include="Model\Terrains\Sky.cs" />
     <Compile Include="Model\Terrains\Terrain.cs" />
     <Compile Include="Model\Terrains\Water.cs" />
@@ -115,6 +129,8 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CameraFPS.cs" />
+    <Compile Include="Utils\CustomSprite.cs" />
+    <Compile Include="Utils\Ray.cs" />
     <Compile Include="Utils\SmartTerrain.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
       <DependentUpon>GameForm.cs</DependentUpon>
@@ -185,11 +201,17 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Media\alga-TgcScene.xml" />
+    <Content Include="Media\alga_3-TgcScene.xml" />
+    <Content Include="Media\alga_4-TgcScene.xml" />
     <Content Include="Media\fish-TgcScene.xml" />
     <Content Include="Media\gold-TgcScene.xml" />
     <Content Include="Media\Heightmaps\oceano.jpg" />
     <Content Include="Media\Heightmaps\suelo.jpg" />
+    <Content Include="Media\Imagenes\barra_oxigeno.png" />
+    <Content Include="Media\Imagenes\barra_vida.png" />
+    <Content Include="Media\Imagenes\PRE_CARGA_INICIAL.jpg" />
     <Content Include="Media\iron-TgcScene.xml" />
+    <Content Include="Media\new_alga-TgcScene.xml" />
     <Content Include="Media\normal_coral-TgcScene.xml" />
     <Content Include="Media\rock-n-TgcScene.xml" />
     <Content Include="Media\shark-TgcScene.xml" />
@@ -205,10 +227,11 @@
     <Content Include="Media\spiral_coral-TgcScene.xml" />
     <Content Include="Media\Textures\.png" />
     <Content Include="Media\Textures\10010_Coral_v1_Diffuse.jpg" />
-    <Content Include="Media\Textures\12960_Shark_diff_v2.jpg" />
     <Content Include="Media\Textures\20943_Spiral_Wire_Coral_v1_diff.JPG" />
     <Content Include="Media\Textures\agua.jpg" />
     <Content Include="Media\Textures\Alga.png" />
+    <Content Include="Media\Textures\alga_3.png" />
+    <Content Include="Media\Textures\alga_4.png" />
     <Content Include="Media\Textures\blue.jpg" />
     <Content Include="Media\Textures\blue_fish.jpg" />
     <Content Include="Media\Textures\bodyColor_de_la_Superficie.png" />
@@ -222,6 +245,7 @@
     <Content Include="Media\Textures\LAMPOclusión_Ambiental.jpg" />
     <Content Include="Media\Textures\LAMP_UVS.png" />
     <Content Include="Media\Textures\megalodon.png" />
+    <Content Include="Media\Textures\new_alga.png" />
     <Content Include="Media\Textures\normal_enganche.png" />
     <Content Include="Media\Textures\normal_float.png" />
     <Content Include="Media\Textures\Plata.jpg" />
@@ -230,6 +254,9 @@
     <Content Include="Media\Textures\sandy.png" />
     <Content Include="Media\tree_coral-TgcScene.xml" />
     <Content Include="Media\yellow_fish-TgcScene.xml" />
+    <None Include="Shaders\TerrainShader.fx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

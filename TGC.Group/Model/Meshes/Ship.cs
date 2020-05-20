@@ -1,55 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TGC.Core.Mathematica;
-using TGC.Core.SceneLoader;
+﻿using TGC.Core.SceneLoader;
+using TGC.Core.BoundingVolumes;
+using Microsoft.DirectX.Direct3D;
 
 namespace TGC.Group.Model.Watercraft
 {
     class Ship
     {
-        protected string FILE_NAME;
+        #region Atributos
+        private string FILE_NAME, MediaDir, ShadersDir;
+        public TgcMesh OutdoorMesh, IndoorMesh;
+        #endregion
 
-        private string MediaDir;
-        private string ShadersDir;
-
-        public TgcMesh Mesh;
-        public TgcMesh InsideMesh;
-
+        #region Constructor
         public Ship(string mediaDir, string shadersDir)
         {
             FILE_NAME = "ship-TgcScene.xml";
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
+            LoadShip();
         }
+        #endregion
 
-        public virtual void Render()
+        #region Metodos
+        private void LoadShip()
         {
-            Mesh.UpdateMeshTransform();
-            Mesh.Render();
-            InsideMesh.UpdateMeshTransform();
-            InsideMesh.Render();
+            OutdoorMesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
+            IndoorMesh = OutdoorMesh.createMeshInstance("InsideRoom");
+            OutdoorMesh.updateBoundingBox();
         }
-
-        public virtual void Dispose()
-        {
-            Mesh.Dispose();
-            InsideMesh.Dispose();
-        }
-
-        public void LoadShip()
-        {
-            Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + FILE_NAME).Meshes[0];
-            Mesh.Scale = new TGCVector3(10, 10, 10);
-            Mesh.Position = new TGCVector3(530, 3630, 100);
-            Mesh.Rotation = new TGCVector3(-13, 1, 270);
-
-            InsideMesh = Mesh.createMeshInstance("InsideRoom");
-            InsideMesh.Position = new TGCVector3(350, -2500, -45);
-            InsideMesh.Scale = new TGCVector3(10, 10, 10);
-            InsideMesh.Rotation = new TGCVector3(0, FastMath.PI_HALF, 0);
-        }
+        #endregion
     }
 }

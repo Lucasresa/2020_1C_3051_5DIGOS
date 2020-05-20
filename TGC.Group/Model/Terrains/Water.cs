@@ -1,21 +1,20 @@
-﻿using System.Collections.Generic;
-using TGC.Core.Mathematica;
-using static TGC.Group.Model.Terrains.Terrain;
+﻿using TGC.Core.Mathematica;
 
 namespace TGC.Group.Model.Terrains
 {
     class Water : World
     {
+        private TGCVector3 waterPosition = new TGCVector3(0, 3500, 0);
+
         public Water(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
-            FILE_HEIGHTMAPS = "Heightmaps\\oceano.jpg";
-            FILE_TEXTURES = "Textures\\agua.jpg";
-        }
-
-        public override void LoadWorld(TGCVector3 position)
-        {
+            Position = waterPosition;
+            FILE_HEIGHTMAPS = @"Heightmaps\oceano.jpg";
+            FILE_TEXTURES = @"Textures\agua.jpg";
+            FILE_EFFECT = "Varios.fx";
+            tecnica = "PositionTextured";
             SCALEY = 1;
-            base.LoadWorld(position);
+            LoadWorld();
         }
     }
 }

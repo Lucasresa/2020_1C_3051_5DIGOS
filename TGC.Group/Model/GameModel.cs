@@ -1,282 +1,212 @@
-using Microsoft.DirectX.DirectInput;
+﻿using Microsoft.DirectX.DirectInput;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
-using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
-using TGC.Group.Utils;
-using System.Collections.Generic;
-using System;
-using TGC.Group.Model.Terrains;
-using TGC.Group.Model.Sharky;
 using TGC.Group.Model.MeshBuilders;
+using TGC.Group.Model.Sharky;
+using TGC.Group.Model.Terrains;
 using TGC.Group.Model.Watercraft;
-using static TGC.Group.Model.Terrains.Terrain;
-using System.Runtime.CompilerServices;
+using TGC.Group.Utils;
+using TGC.Group.Model.Bullet;
+using Text = TGC.Group.Model.Draw.Sprite;
+using TGC.Core.Text;
 
 namespace TGC.Group.Model
 {
     public class GameModel : TGCExample
     {
-        #region Constantes
-        private struct Constants
-        {
-            public static float WATER_HEIGHT = 3500;
-            public static TGCVector3 OUTSIDE_SHIP_POSITION = new TGCVector3(1300, 3505, 20);
-            public static TGCVector3 INSIDE_SHIP_POSITION = new TGCVector3(515, -2338, -40);
-        }
-        #endregion
-
         #region Atributos
         private float time;
-        private List<TgcMesh> corales = new List<TgcMesh>();
-        private List<TgcMesh> minerals = new List<TgcMesh>();
         private List<TgcMesh> vegetation = new List<TgcMesh>();
-        private List<TgcMesh> fishes = new List<TgcMesh>();
-        private Sky skyBox;
-        private Perimeter currentCameraArea;
-        private Ship ship;
+        private List<FishMesh> fishes = new List<FishMesh>();
+        private CameraFPS camera;
         private Terrain terrain;
         private Water water;
+        private Sky skyBox;
+        private Ship ship;
         private Shark shark;
         private MeshBuilder meshBuilder;
+        private RigidBodyManager rigidBodyManager;
+        private Text textInfo = new Text();
         private bool showDebugInfo { get; set; }
-        private CameraFPS camera;
+        private bool showHelp { get; set; } = true;
+        public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
+        public struct Perimeter
+        {
+            public float xMin, xMax, zMin, zMax;
+
+            public Perimeter(float xMin, float xMax, float zMin, float zMax)
+            {
+                this.xMin = xMin;
+                this.xMax = xMax;
+                this.zMin = zMin;
+                this.zMax = zMax;
+            }
+        }
         #endregion
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
+            #region Configuracion
+            FixedTickEnable = true;
             Category = Game.Default.Category;
             Name = Game.Default.Name;
             Description = Game.Default.Description;
             meshBuilder = new MeshBuilder();
             MeshDuplicator.MediaDir = mediaDir;
-            D3DDevice.Instance.ZFarPlaneDistance = 8000f;           
+            D3DDevice.Instance.ZFarPlaneDistance = 12000f;
+            #endregion
         }
 
         public override void Init()
         {
-            #region Fix
-            FixedTickEnable = true;
-            Tick();
-            #endregion
+            #region Camera
+            Camera = new CameraFPS(Input);
 
-            #region Camera 
-            Camera = new CameraFPS(Input, Constants.INSIDE_SHIP_POSITION);
             camera = (CameraFPS)Camera;
             #endregion
-
+            
             #region Mundo            
             terrain = new Terrain(MediaDir, ShadersDir);
-            terrain.LoadWorld(TGCVector3.Empty);
-            terrain.splitToArea();
             water = new Water(MediaDir, ShadersDir);
-            water.LoadWorld(new TGCVector3(0, Constants.WATER_HEIGHT, 0));
             skyBox = new Sky(MediaDir, ShadersDir, camera);
-            skyBox.LoadSkyBox();
             #endregion
 
-            #region Nave
+            #region Meshes
             ship = new Ship(MediaDir, ShadersDir);
-            ship.LoadShip();
-            #endregion
-
-            #region Enemigo
             shark = new Shark(MediaDir, ShadersDir);
-            shark.LoadShark();
+            var Meshes = meshInitializer(skyBox.currentPerimeter); // TODO: Ya que disminui la cantidad, hago que coloque los meshes dentro del skybox asi los vemos, luego cambiar por terrain.SizeWorld().
             #endregion
 
-            #region Vegetacion del mundo
-            MeshDuplicator.InitOriginalMeshes();
-            meshInitializer();
+            #region Mundo fisico
+            rigidBodyManager = new RigidBodyManager(MediaDir, ShadersDir);
+            rigidBodyManager.Init(Input,terrain, camera, shark, ship, skyBox, ref Meshes, fishes);
             #endregion
+
         }
 
         public override void Update()
         {
-            PreUpdate();
-            
-            currentCameraArea = terrain.getArea(camera.position.X, camera.position.Z);
-
-            #region Teclas
-
-            if (Input.keyPressed(Key.F))
-                showDebugInfo = !showDebugInfo;
-
-            if (Input.keyPressed(Key.E) && CameraInRoom())
-            {
-                camera.TeleportCamera(Constants.OUTSIDE_SHIP_POSITION);
-            }
-
-            if (Input.keyPressed(Key.E) && CameraOutRoom())
-            {
-                camera.TeleportCamera(Constants.INSIDE_SHIP_POSITION);
-            }
-
+            #region Update
+            rigidBodyManager.Update(Input, ElapsedTime, TimeBetweenUpdates);
+            skyBox.Update();
             #endregion
 
-            PostUpdate();
+
+            #region Teclas
+            if (Input.keyPressed(Key.F))
+                showDebugInfo = !showDebugInfo;
+            #endregion
         }
 
         public override void Render()
         {
-            // INFO: Con el nuevo Core los fps no se muestran mas
             PreRender();
-
+            
             #region Texto en pantalla
-
+            
             time += ElapsedTime;
-
             if (showDebugInfo)
-            {
-                DrawText.drawText("DATOS DE LA Camera: ", 0, 30, Color.Red);
+            {   // TODO: AJUSTAR LA POSICION DONDE SE MUESTRE EN PANTALLA LA INFORMACION
+                DrawText.drawText("DATOS DE LA Camera: ", 0, 230, Color.Red);
                 DrawText.drawText("Posicion: [" + camera.Position.X.ToString() + "; "
                                                 + camera.Position.Y.ToString() + "; "
                                                 + camera.Position.Z.ToString() + "] ",
-                                  0, 60, Color.Red);     
+                                  0, 260, Color.Red);
                 DrawText.drawText("Objetivo: [" + camera.LookAt.X.ToString() + "; "
                                                 + camera.LookAt.Y.ToString() + "; "
                                                 + camera.LookAt.Z.ToString() + "] ",
-                                  0, 80, Color.Red);
+                                  0, 280, Color.Red);
+		            DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 300, Color.Red);
+            }
+            if (Input.keyPressed(Key.F1))
+                showHelp = !showHelp;
 
-                // INFO: Con este nuevo core el elapsedTime hace cualquiera y por ende el TIME no sirve.
-                DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 100, Color.Red);
+            if (showHelp)
+            {
+                var text = "Movimiento: W (↑) | A(←) | S(↓) | D(→) " +
+                           "\nInstrucciones para salir de la nave: " +
+                           "\n\tPara salir de la nave mirar hacia la escotilla y presionar la tecla E" +
+                           "\nRecolectar y atacar: " +
+                           "\n\tPara recolectar los objetos acercarse y clickearlos." +
+                           "\n\tPara atacar al tiburon hacer click derecho cuando se tiene el arma." +
+                           "\n\tUna vez crafteada el arma se equipa con el numero 1 y para desequiparla presionar el 0" +
+                           "\nCrafteos dentro de la nave: " +
+                           "\n\tArma: necesitas recolectar dos rocas y dos metales de plata y apretar la tecla M" +
+                           "\n\tRed para agarrar peces: necesitas recolectar 1 coral de cada tipo y un metal de hierro y apretar la tecla N" +
+                           "\n\tCasco de oxigeno: necesitas recolectar 4 metales de oro y apretar dentro de la nave la tecla B" +
+                           "\nPara abrir y cerrar la ayuda apretar F1";
 
-                DrawText.drawText("DATOS DEL AREA ACTUAL: ", 0, 130, Color.Red);
-
-                DrawText.drawText("RANGO DE X: " +
-                                    "\nMinimo " + currentCameraArea.xMin.ToString() +
-                                    "\nMaximo " + currentCameraArea.xMax.ToString() + "\n\n" +
-
-                                  "RANGO DE Z: " +
-                                    "\nMinimo " + currentCameraArea.zMin.ToString() +
-                                    "\nMaximo " + currentCameraArea.zMax.ToString(),
-                             0, 160, Color.Red);
+                (int width, int height) size = (width: 1200, height: 600);
+                (int posX, int posY) position = (posX: 10, posY: (screen.height - size.height) / 2);
+                textInfo.drawText(text, Color.HotPink, new Point(position.posX, position.posY), new Size(size.width, size.height), TgcText2D.TextAlign.LEFT, new Font("Arial Black", 12, FontStyle.Bold));
             }
 
             #endregion
 
             #region Renderizado
-            
-            ship.Render();
-
-            if (camera.position.Y > 0)
+            if (camera.isOutside())
             {
-                skyBox.Render();
-
-                if (inSkyBox())
-                {
-                    terrain.Render();
-                    water.Render();
-
-                    corales.ForEach(coral =>
-                    {
-                        coral.UpdateMeshTransform();
-                        coral.Render();
-                    });
-
-                    minerals.ForEach(ore =>
-                    {
-                        ore.UpdateMeshTransform();
-                        ore.Render();
-
-                    });
-
-                    vegetation.ForEach(vegetation =>
-                    {
-                        vegetation.AlphaBlendEnable = true;
-                        vegetation.UpdateMeshTransform();
-                        vegetation.Render();
-
-                    });
-
-                    shark.Render();
-                    fishes.ForEach(fish =>
-                    {
-                        fish.UpdateMeshTransform();
-                        fish.Render();
-
-                    });
-                }
+                skyBox.Render(terrain.SizeWorld());
+                water.Render();
+                vegetation.ForEach(vegetation => { if (skyBox.Contains(vegetation)) vegetation.Render(); } );
             }
-
+            rigidBodyManager.Render();
             #endregion
 
             PostRender();
         }
 
-        private bool inSkyBox()
-        {
-            return camera.position.X < skyBox.perimeter.xMax &&
-                   camera.position.X > skyBox.perimeter.xMin &&
-                   camera.position.Z < skyBox.perimeter.zMax &&
-                   camera.position.Z > skyBox.perimeter.zMin;
-        }
-
         public override void Dispose()
         {
-            #region Liberacion de recursos            
-            ship.Dispose();
-            terrain.Dispose();
+            #region Liberacion de recursos
             water.Dispose();
             skyBox.Dispose();
-            shark.Dispose();
-            fishes.ForEach(fish => fish.Dispose());
-            corales.ForEach(coral => coral.Dispose());
-            minerals.ForEach(ore => ore.Dispose());
             vegetation.ForEach(vegetation => vegetation.Dispose());
-            MeshDuplicator.DisposeOriginalMeshes();
+            rigidBodyManager.Dispose();
+            textInfo.Dispose();
             #endregion
         }
 
         #region Metodos Privados
-        private void meshInitializer()
+        private List<TgcMesh> meshInitializer(Perimeter perimeter)
         {
-            var treeCorals = meshBuilder.CreateNewScaledMeshes(MeshType.treeCoral, 30, 10);
-            meshBuilder.LocateMeshesInTerrain(ref treeCorals, terrain.SizeWorld(), terrain.world);
-            var spiralCorals = meshBuilder.CreateNewScaledMeshes(MeshType.spiralCoral, 30, 10);
-            meshBuilder.LocateMeshesInTerrain(ref spiralCorals, terrain.SizeWorld(), terrain.world);
-            var goldOre = meshBuilder.CreateNewScaledMeshes(MeshType.goldOre, 30, 5);
-            meshBuilder.LocateMeshesInTerrain(ref goldOre, terrain.SizeWorld(), terrain.world);
-            var silverOre = meshBuilder.CreateNewScaledMeshes(MeshType.silverOre, 30, 5);
-            meshBuilder.LocateMeshesInTerrain(ref silverOre, terrain.SizeWorld(), terrain.world);
-            var ironOre = meshBuilder.CreateNewScaledMeshes(MeshType.ironOre, 30, 5);
-            meshBuilder.LocateMeshesInTerrain(ref ironOre, terrain.SizeWorld(), terrain.world);
-            var rock = meshBuilder.CreateNewScaledMeshes(MeshType.rock, 30, 8);
-            meshBuilder.LocateMeshesInTerrain(ref rock, terrain.SizeWorld(), terrain.world);
-            var alga = meshBuilder.CreateNewScaledMeshes(MeshType.alga, 460, 5);
-            meshBuilder.LocateMeshesInTerrain(ref alga, terrain.SizeWorld(), terrain.world);
-            var normalFish = meshBuilder.CreateNewScaledMeshes(MeshType.normalFish, 30, 5);
-            meshBuilder.LocateMeshesUpToTerrain(ref normalFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
-            var yellowFish = meshBuilder.CreateNewScaledMeshes(MeshType.yellowFish, 30, 5);
-            meshBuilder.LocateMeshesUpToTerrain(ref yellowFish, terrain.SizeWorld(), terrain.world, water.world.Center.Y - 200);
+            #region Ubicar meshes
+            var Meshes = new List<TgcMesh>();
+            MeshDuplicator.InitOriginalMeshes();
 
-            corales.AddRange(treeCorals);
-            corales.AddRange(spiralCorals);
-            minerals.AddRange(goldOre);
-            minerals.AddRange(silverOre);
-            minerals.AddRange(ironOre);
-            minerals.AddRange(rock);
-            vegetation.AddRange(alga);
-            fishes.AddRange(normalFish);
-            fishes.AddRange(yellowFish);
+            var terrainSize = terrain.SizeWorld();
+
+            Meshes.AddRange(createMesh(MeshType.normalCoral, 30, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.treeCoral, 30, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.spiralCoral, 30, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.goldOre, 30, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.silverOre, 30, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.ironOre, 30, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.rock, 30, terrainSize));
+            vegetation.AddRange(createMesh(MeshType.alga, 40, perimeter));
+            vegetation.AddRange(createMesh(MeshType.alga_2, 20, perimeter));
+            vegetation.AddRange(createMesh(MeshType.alga_3, 20, perimeter));
+            vegetation.AddRange(createMesh(MeshType.alga_4, 20, perimeter));
+
+            var normalFishes = createMesh(MeshType.normalFish, 16, perimeter);
+            var yellowFishes = createMesh(MeshType.yellowFish, 8, perimeter);
+            fishes.AddRange(normalFishes.ConvertAll(fish => new FishMesh(fish, skyBox, terrain)));
+            fishes.AddRange(yellowFishes.ConvertAll(fish => new FishMesh(fish, skyBox, terrain)));
+            fishes.ForEach(fish => fish.Init());
+            #endregion
+
+            return Meshes;
         }
 
-        // TODO: Estos dos menos hay que cambiarlos para calcular distancias con un TGCRay
-
-        private bool CameraInRoom()
+        private List<TgcMesh> createMesh(MeshType type, int quantity, Perimeter perimeter)
         {
-            float delta = 300;
-            return ship.InsideMesh.Position.Y - delta < camera.position.Y &&
-                   camera.position.Y < ship.InsideMesh.Position.Y + delta;
-        }
-
-        private bool CameraOutRoom()
-        {
-            var delta = 50;
-            return ship.Mesh.Position.Y - delta < camera.position.Y &&
-                 camera.position.Y < ship.Mesh.Position.Y + delta;
-                
+            var meshes = meshBuilder.CreateNewScaledMeshes(type, quantity);
+            meshBuilder.LocateMeshesInWorld(type, ref meshes, perimeter, terrain.world, water.world);
+            return meshes;
         }
 
         #endregion

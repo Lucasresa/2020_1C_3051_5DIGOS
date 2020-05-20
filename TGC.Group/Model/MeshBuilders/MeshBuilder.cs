@@ -4,21 +4,35 @@ using System.Linq;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Utils;
-using static TGC.Group.Model.Terrains.Terrain;
+using static TGC.Group.Model.GameModel;
 
 namespace TGC.Group.Model.MeshBuilders
 {
     class MeshBuilder
     {
+        #region Atributos
+        private struct Constants
+        {
+            public static int meshTerrainOffset = 300;
+            public static int maxYPosition = 200;
+            public static TGCVector3 scale = new TGCVector3(10, 10, 10);
+            public static TGCVector3 scale_vegetation = new TGCVector3(7, 7, 7);
+        }
         private Random random;
-        private int meshTerrainOffset = 300;
+        List<MeshType> vegetation;
+        List<MeshType> fishes;
+        #endregion
 
-        public int MeshTerrainOffset { set { meshTerrainOffset = value; } }
-
+        #region Constructor
         public MeshBuilder()
         {
             random = new Random();
+            vegetation = new List<MeshType>() { MeshType.alga, MeshType.alga_2, MeshType.alga_3, MeshType.alga_4 };
+            fishes = new List<MeshType>() { MeshType.normalFish, MeshType.yellowFish };            
         }
+        #endregion
+
+        #region Metodos
 
         #region MeshCreation
         public TgcMesh CreateNewMeshCopy(MeshType meshType)
@@ -26,78 +40,96 @@ namespace TGC.Group.Model.MeshBuilders
             return MeshDuplicator.GetDuplicateMesh(meshType);
         }
 
-        public TgcMesh CreateNewScaledMesh(MeshType meshType, float scale)
+        public TgcMesh CreateNewScaledMesh(MeshType meshType)
         {
             var scaledMesh = CreateNewMeshCopy(meshType);
-            scaledMesh.Scale = new TGCVector3(scale, scale, scale);
+
+            if (isVegetation(meshType))
+                scaledMesh.Transform = TGCMatrix.Scaling(Constants.scale_vegetation);
+            else
+                scaledMesh.Transform = TGCMatrix.Scaling(Constants.scale);
+
             return scaledMesh;
         }
 
-        public List<TgcMesh> CreateNewScaledMeshes(MeshType meshType, int quantity, float scale = 1)
+        public List<TgcMesh> CreateNewScaledMeshes(MeshType meshType, int quantity)
         {
             var meshes = new List<TgcMesh>();
             foreach (int _ in Enumerable.Range(1, quantity))
-                meshes.Add( CreateNewScaledMesh(meshType, scale) );
+                meshes.Add(CreateNewScaledMesh(meshType));
             return meshes;
         }
-
         #endregion
 
-        #region Location
-        public bool LocateMeshInTerrain(ref TgcMesh mesh, Perimeter terrainArea,
-                                 SmartTerrain terrain)
+        #region Location       
+        private bool LocateMeshInWorld(MeshType type, ref TgcMesh mesh, Perimeter terrainArea, SmartTerrain terrain, SmartTerrain water)
         {
-            var XZPosition = getXZPositionByPerimeter(terrainArea);
-            var XPosition = XZPosition.Item1;
-            var ZPosition = XZPosition.Item2;
-            if (!terrain.interpoledHeight(XPosition, ZPosition, out float YPosition))
+            
+            var pairXZ = getXZPositionByPerimeter(terrainArea);
+
+            if (!terrain.interpoledHeight(pairXZ.XPosition, pairXZ.ZPosition, out float YPosition))
                 throw new Exception("The Mesh: " + mesh.Name + " calculated position was outside of terrain");
 
-            mesh.Position = new TGCVector3(XPosition, YPosition, ZPosition);
-            terrain.AdaptToSurface(mesh);
+            if (isFish(type))
+                locateFish(ref mesh, pairXZ, (int)water.Center.Y, YPosition);
+            else
+                locateMeshesTypeTerrain(ref mesh, pairXZ, terrain, YPosition);
+            
             return true;
         }
 
-        public bool LocateMeshUpToTerrain(ref TgcMesh mesh, Perimeter terrainArea,
-                                 SmartTerrain terrain, float maxYPosition)
+        public void LocateMeshesInWorld(MeshType type, ref List<TgcMesh> meshes, Perimeter terrainArea, SmartTerrain terrain, SmartTerrain water)
         {
-            var XZPosition = getXZPositionByPerimeter(terrainArea);
-            var XPosition = XZPosition.Item1;
-            var ZPosition = XZPosition.Item2;
-            if (!terrain.interpoledHeight(XPosition, ZPosition, out float YPosition))
-                throw new Exception("The Mesh: " + mesh.Name + " calculated position was outside of terrain");
-
-            YPosition = random.Next((int)YPosition + meshTerrainOffset, (int)maxYPosition);
-            mesh.Position = new TGCVector3(XPosition, YPosition, ZPosition);
-            return true;
+            meshes.ForEach(mesh => LocateMeshInWorld(type, ref mesh, terrainArea, terrain, water));
         }
 
-        public void LocateMeshesInTerrain(ref List<TgcMesh> meshes, Perimeter terrainArea,
-                                             SmartTerrain terrain)
-        {
-            meshes.ForEach(mesh => LocateMeshInTerrain(ref mesh, terrainArea, terrain));
-        }
-
-        public void LocateMeshesUpToTerrain(ref List<TgcMesh> meshes, Perimeter terrainArea,
-                                             SmartTerrain terrain, float maxYPosition)
-        {
-            meshes.ForEach(mesh => LocateMeshUpToTerrain(ref mesh, terrainArea, terrain, maxYPosition));
-        }
-        #endregion
-
-        #region Utils
-        // Retorna una tupla con el valor de X y Z (X, Z)
-        private Tuple<float, float> getXZPositionByPerimeter(Perimeter perimeter)
+        private (int XPosition, int ZPosition) getXZPositionByPerimeter(Perimeter perimeter)
         {
             var XMin = (int)perimeter.xMin;
             var XMax = (int)perimeter.xMax;
             var ZMin = (int)perimeter.zMin;
             var ZMax = (int)perimeter.zMax;
 
-            return new Tuple<float, float>(random.Next(XMin, XMax), random.Next(ZMin, ZMax));
+            var xPosition = random.Next(XMin, XMax);
+            var zPosition = random.Next(ZMin, ZMax);
+
+            return (XPosition: xPosition, ZPosition: zPosition);
         }
 
-        
+        private TGCVector3 calculateRotation(TGCVector3 normalObjeto)
+        {
+            var objectInclinationX = FastMath.Atan2(normalObjeto.X, normalObjeto.Y);
+            var objectInclinationZ = FastMath.Atan2(normalObjeto.X, normalObjeto.Y);
+            var rotation = new TGCVector3(-objectInclinationX, 0, -objectInclinationZ);
+            return rotation;
+        }
+
+        private void locateMeshesTypeTerrain(ref TgcMesh mesh, (int XPosition, int ZPosition) pairXZ, SmartTerrain terrain ,float YPosition)
+        {
+            var position = new TGCVector3(pairXZ.XPosition, YPosition, pairXZ.ZPosition);
+            var rotation = calculateRotation(terrain.NormalVectorGivenXZ(position.X, position.Z));
+            mesh.Transform *= TGCMatrix.RotationYawPitchRoll(rotation.Y, rotation.X, rotation.Z) * TGCMatrix.Translation(position);
+            mesh.Position = position;
+        }
+
+        private void locateFish(ref TgcMesh mesh, (int XPosition, int ZPosition) pairXZ, int heightWater, float YPosition)
+        {
+            YPosition = random.Next((int)YPosition + Constants.meshTerrainOffset, heightWater - Constants.maxYPosition);
+            var position = new TGCVector3(pairXZ.XPosition, YPosition, pairXZ.ZPosition);
+            mesh.Transform *= TGCMatrix.Translation(pairXZ.XPosition, YPosition, pairXZ.ZPosition);
+            mesh.Position = position;
+        }
+
+        private bool isVegetation(MeshType type)
+        {            
+            return vegetation.Contains(type);
+        }
+
+        private bool isFish(MeshType type)
+        {           
+            return fishes.Contains(type);
+        }
+        #endregion
 
         #endregion
     }

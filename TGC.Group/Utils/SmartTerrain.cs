@@ -1,4 +1,5 @@
 ﻿using Microsoft.DirectX.Direct3D;
+using System;
 using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
@@ -26,6 +27,8 @@ namespace TGC.Group.Utils
         private TGCVector3 center;
         public TGCVector3 Center { get => center; set => center = value; }
         public bool AlphaBlendEnable { get; set; }
+
+
         protected Effect effect;
         public Effect Effect { get => effect; set => effect = value; }
         protected string technique;
@@ -39,8 +42,6 @@ namespace TGC.Group.Utils
         {
             Enabled = true;
             AlphaBlendEnable = false;
-            effect = TGCShaders.Instance.VariosShader;
-            technique = TGCShaders.T_POSITION_TEXTURED;
         }
         #endregion       
 
@@ -171,12 +172,11 @@ namespace TGC.Group.Utils
             var d3dDevice = D3DDevice.Instance.Device;
             var texturesManager = TexturesManager.Instance;
             var shader = TGCShaders.Instance;
-
-            effect.SetValue("texDiffuseMap", terrainTexture);
+            
+            
             texturesManager.clear(1);
             shader.SetShaderMatrix(effect, TGCMatrix.Identity);
             d3dDevice.VertexDeclaration = shader.VdecPositionTextured;
-            effect.Technique = technique;
             d3dDevice.SetStreamSource(0, vbTerrain, 0);
 
             var p = effect.Begin(0);
@@ -186,7 +186,7 @@ namespace TGC.Group.Utils
                 d3dDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, TotalVertices / 3);
                 effect.EndPass();
             }
-            effect.End();           
+            effect.End();
         }
 
         public void Dispose()
@@ -194,6 +194,14 @@ namespace TGC.Group.Utils
             if (vbTerrain != null) vbTerrain.Dispose();
             if (terrainTexture != null) terrainTexture.Dispose();
         }
+
+        public void loadEffect(string effectPath, string tecnica)
+        {
+            effect = TGCShaders.Instance.LoadEffect(effectPath);
+            effect.Technique = tecnica;
+            effect.SetValue("texDiffuseMap", terrainTexture);
+        }
+
 
         #endregion 
 
@@ -210,7 +218,7 @@ namespace TGC.Group.Utils
                 return false;
             return true;
         }
-        
+
         public TGCVector2 xzWorldToHeightmap(float x, float z)
         {
             var WorldPosX = (x + traslation.X) * ScaleXZ;
@@ -225,7 +233,7 @@ namespace TGC.Group.Utils
             return new TGCVector2(WorldPosX, WorldPosZ);
 
         }
-        
+
         public float convertToWorld(float pos)
         {
             return (pos + traslation.X) * ScaleXZ;
@@ -286,20 +294,6 @@ namespace TGC.Group.Utils
             TGCVector3 vectorNS = new TGCVector3(0, alturaN - alturaS, delta * 2);
 
             return TGCVector3.Cross(vectorNS, vectorEO);
-        }
-
-        public void AdaptToSurface(ITransformObject o)
-        {
-            var normalObjeto = NormalVectorGivenXZ(o.Position.X, o.Position.Z);
-
-            var objectInclinationX = FastMath.Atan2(normalObjeto.X, normalObjeto.Y) * -FastMath.Sin(0);
-            var objectInclinationZ = FastMath.Atan2(normalObjeto.X, normalObjeto.Y) * FastMath.Cos(0);
-
-            float rotationX = -objectInclinationX;
-            float rotationZ = -objectInclinationZ;
-
-            o.RotateX(rotationX);
-            o.RotateZ(rotationZ);
         }
 
         public bool setObjectPosition(ITransformObject o)

@@ -1,22 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TGC.Group.Model.MeshBuilders
+﻿namespace TGC.Group.Model.MeshBuilders
 {
     enum MeshType
     {
-        normalCoral, 
-        treeCoral, 
-        spiralCoral, 
+        normalCoral,
+        treeCoral,
+        spiralCoral,
         ironOre,
         silverOre,
         goldOre,
-        rock, 
-        alga, 
-        normalFish, 
-        yellowFish
+        rock,
+        normalFish,
+        yellowFish,
+        alga,
+        alga_2,
+        alga_3,
+        alga_4
     }
 }

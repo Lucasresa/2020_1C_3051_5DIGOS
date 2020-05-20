@@ -9,6 +9,8 @@ using TGC.Core.Shaders;
 using TGC.Core.Sound;
 using TGC.Core.Textures;
 using TGC.Group.Model;
+using System.Drawing;
+using Microsoft.DirectX.Direct3D;
 
 namespace TGC.Group.Form
 {
@@ -24,7 +26,16 @@ namespace TGC.Group.Form
         public GameForm()
         {
             InitializeComponent();
+            
+            WindowState = FormWindowState.Normal;
+            FormBorderStyle = FormBorderStyle.None;
+            WindowState = FormWindowState.Maximized;
+
+            Image = new Bitmap(Game.Default.MediaDirectory + @"Imagenes\PRE_CARGA_INICIAL.jpg");
+            panel3D.BackgroundImage = Image;
         }
+
+        private Bitmap Image { get; set; }
 
         /// <summary>
         ///     Ejemplo del juego a correr
@@ -47,45 +58,25 @@ namespace TGC.Group.Form
         private TgcD3dInput Input { get; set; }
 
         private void GameForm_Load(object sender, EventArgs e)
-        {
-            //FullScreen, van en este orden para que queda oculta la barra de Windows.
-            WindowState = FormWindowState.Normal;
-            FormBorderStyle = FormBorderStyle.None;
-            WindowState = FormWindowState.Maximized;
-
-            //OriginalBorderStyle
-            //this.FormBorderStyle = FormBorderStyle.Sizable;
-
-            //Iniciar graficos.
+        {         
             InitGraphics();
-
-            //Titulo de la ventana principal.
             Text = Modelo.Name + @" - " + Modelo.Description;
-
-            //Focus panel3D.
             panel3D.Focus();
-
-            //Inicio el ciclo de Render.
             InitRenderLoop();
         }
 
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (ApplicationRunning)
-            {
                 ShutDown();
-            }
         }
 
         /// <summary>
         ///     Inicio todos los objetos necesarios para cargar el ejemplo y directx.
         /// </summary>
         public void InitGraphics()
-        {
-            //Se inicio la aplicación
+        {         
             ApplicationRunning = true;
-
-            //Inicio Device
             D3DDevice.Instance.InitializeD3DDevice(panel3D);
 
             //Inicio inputs
@@ -93,8 +84,15 @@ namespace TGC.Group.Form
             Input.Initialize(this, panel3D);
 
             //Inicio sonido
-            DirectSound = new TgcDirectSound();
-            DirectSound.InitializeD3DDevice(panel3D);
+            DirectSound = new TgcDirectSound(); 
+            try 
+            {
+                DirectSound.InitializeD3DDevice(panel3D); 
+            }
+            catch (ApplicationException ex)
+            {
+                throw new Exception("No se pudo inicializar el sonido", ex);
+            }
 
             //Directorio actual de ejecución
             var currentDirectory = Environment.CurrentDirectory + "\\";
@@ -123,15 +121,11 @@ namespace TGC.Group.Form
                     //Solo renderizamos si la aplicacion tiene foco, para no consumir recursos innecesarios.
                     if (ApplicationActive())
                     {
-                        Modelo.Update();
-                        Modelo.Render();
+                        Modelo.Tick();
                         if (Input.keyDown(Key.Escape)) Close(); // TODO Cambiar cuando haya inventario y menu
                     }
                     else
-                    {
-                        //Si no tenemos el foco, dormir cada tanto para no consumir gran cantidad de CPU.
                         Thread.Sleep(100);
-                    }
                 }
                 // Process application messages.
                 Application.DoEvents();
@@ -145,16 +139,12 @@ namespace TGC.Group.Form
         public bool ApplicationActive()
         {
             if (ContainsFocus)
-            {
                 return true;
-            }
 
             foreach (var form in OwnedForms)
             {
                 if (form.ContainsFocus)
-                {
                     return true;
-                }
             }
 
             return false;
