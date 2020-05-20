@@ -65,6 +65,7 @@ namespace TGC.Group.Model
         {
             #region Camera
             Camera = new CameraFPS(Input);
+
             camera = (CameraFPS)Camera;
             #endregion
             
@@ -94,6 +95,7 @@ namespace TGC.Group.Model
             skyBox.Update();
             #endregion
 
+
             #region Teclas
             if (Input.keyPressed(Key.F))
                 showDebugInfo = !showDebugInfo;
@@ -105,23 +107,21 @@ namespace TGC.Group.Model
             PreRender();
             
             #region Texto en pantalla
-            time += ElapsedTime;
             
+            time += ElapsedTime;
             if (showDebugInfo)
             {   // TODO: AJUSTAR LA POSICION DONDE SE MUESTRE EN PANTALLA LA INFORMACION
                 DrawText.drawText("DATOS DE LA Camera: ", 0, 230, Color.Red);
                 DrawText.drawText("Posicion: [" + camera.Position.X.ToString() + "; "
                                                 + camera.Position.Y.ToString() + "; "
                                                 + camera.Position.Z.ToString() + "] ",
-                                  0, 60, Color.Red);
+                                  0, 260, Color.Red);
                 DrawText.drawText("Objetivo: [" + camera.LookAt.X.ToString() + "; "
                                                 + camera.LookAt.Y.ToString() + "; "
                                                 + camera.LookAt.Z.ToString() + "] ",
-                                  0, 80, Color.Red);
-
-		        DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 300, Color.Red);
+                                  0, 280, Color.Red);
+		            DrawText.drawText("TIME: [" + time.ToString() + "]", 0, 300, Color.Red);
             }
-
             if (Input.keyPressed(Key.F1))
                 showHelp = !showHelp;
 

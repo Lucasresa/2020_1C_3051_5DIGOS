@@ -10,7 +10,7 @@ namespace TGC.Group.Utils
     class CameraFPS : TgcCamera
     {
         #region Atributos
-
+        
         public TGCVector3 position;
         public TGCVector3 Direction { get { return TGCVector3.Normalize(LookAt - position); } }
 
