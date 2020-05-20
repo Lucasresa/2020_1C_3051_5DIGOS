@@ -180,13 +180,13 @@ namespace TGC.Group.Model
 
             var terrainSize = terrain.SizeWorld();
 
-            Meshes.AddRange(createMesh(MeshType.normalCoral, 50, terrainSize));
-            Meshes.AddRange(createMesh(MeshType.treeCoral, 50, terrainSize));
-            Meshes.AddRange(createMesh(MeshType.spiralCoral, 50, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.normalCoral, 30, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.treeCoral, 30, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.spiralCoral, 30, terrainSize));
             Meshes.AddRange(createMesh(MeshType.goldOre, 30, terrainSize));
-            Meshes.AddRange(createMesh(MeshType.silverOre, 50, terrainSize));
-            Meshes.AddRange(createMesh(MeshType.ironOre, 50, terrainSize));
-            Meshes.AddRange(createMesh(MeshType.rock, 50, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.silverOre, 30, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.ironOre, 30, terrainSize));
+            Meshes.AddRange(createMesh(MeshType.rock, 30, terrainSize));
             vegetation.AddRange(createMesh(MeshType.alga, 40, perimeter));
             vegetation.AddRange(createMesh(MeshType.alga_2, 20, perimeter));
             vegetation.AddRange(createMesh(MeshType.alga_3, 20, perimeter));
