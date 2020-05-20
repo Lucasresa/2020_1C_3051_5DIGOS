@@ -254,6 +254,9 @@
     <Content Include="Media\Textures\sandy.png" />
     <Content Include="Media\tree_coral-TgcScene.xml" />
     <Content Include="Media\yellow_fish-TgcScene.xml" />
+    <None Include="Shaders\TerrainShader.fx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

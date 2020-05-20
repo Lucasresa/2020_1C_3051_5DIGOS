@@ -1,4 +1,6 @@
-﻿namespace TGC.Group.Model.Terrains
+﻿using System.IO;
+
+namespace TGC.Group.Model.Terrains
 {
     class Terrain : World
     {
@@ -6,6 +8,7 @@
         {
             FILE_HEIGHTMAPS = "Heightmaps\\suelo.jpg";
             FILE_TEXTURES = "Textures\\sandy.png";
+            FILE_EFFECT = "TerrainShader.fx";
             LoadWorld();
         }
     }

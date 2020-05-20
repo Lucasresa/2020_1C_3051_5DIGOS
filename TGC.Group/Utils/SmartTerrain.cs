@@ -1,4 +1,5 @@
 ﻿using Microsoft.DirectX.Direct3D;
+using System;
 using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
@@ -26,6 +27,8 @@ namespace TGC.Group.Utils
         private TGCVector3 center;
         public TGCVector3 Center { get => center; set => center = value; }
         public bool AlphaBlendEnable { get; set; }
+
+
         protected Effect effect;
         public Effect Effect { get => effect; set => effect = value; }
         protected string technique;
@@ -39,8 +42,6 @@ namespace TGC.Group.Utils
         {
             Enabled = true;
             AlphaBlendEnable = false;
-            effect = TGCShaders.Instance.VariosShader;
-            technique = TGCShaders.T_POSITION_TEXTURED;
         }
         #endregion       
 
@@ -194,6 +195,13 @@ namespace TGC.Group.Utils
             if (vbTerrain != null) vbTerrain.Dispose();
             if (terrainTexture != null) terrainTexture.Dispose();
         }
+
+        public void loadEffect(string effectPath)
+        {
+            effect = TGCShaders.Instance.LoadEffect(effectPath);
+            technique = "default";
+        }
+
 
         #endregion 
 
