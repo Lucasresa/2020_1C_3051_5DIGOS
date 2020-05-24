@@ -23,6 +23,7 @@ namespace TGC.Group.Model
         private CameraFPS camera;
         private GameObjectManager ObjectManager;
         private Game2DManager Draw2DManager;
+        private GameEventsManager EventsManager;
         private CharacterStatus CharacterStatus;
         private SharkStatus SharkStatus;
 
@@ -40,6 +41,7 @@ namespace TGC.Group.Model
             CharacterStatus = new CharacterStatus(ObjectManager.Character);
             SharkStatus = new SharkStatus(ObjectManager.Shark);
             Draw2DManager = new Game2DManager(MediaDir, CharacterStatus, SharkStatus);
+            EventsManager = new GameEventsManager(ObjectManager.Shark, ObjectManager.Character);
         }
 
         public override void Update()
@@ -48,6 +50,7 @@ namespace TGC.Group.Model
             CharacterStatus.Update();
             SharkStatus.Update();
             Draw2DManager.Update();
+            EventsManager.Update(ElapsedTime, ObjectManager.Fish.ListFishes);
         }
 
         public override void Render()

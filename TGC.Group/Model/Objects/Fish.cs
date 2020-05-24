@@ -13,6 +13,7 @@ namespace TGC.Group.Model.Objects
             public string name;
             public TgcMesh mesh;
             public int quantity;
+            public bool activateMove;
         }
 
         private struct Constants
@@ -42,7 +43,6 @@ namespace TGC.Group.Model.Objects
         private TgcMesh currentMesh;
 
         public List<TypeFish> ListFishes = new List<TypeFish>();
-        public bool ActivateMove { get; set; } = false;
 
         public Fish(string mediaDir, string shadersDir, Skybox skybox, Terrain terrain)
         {
@@ -62,7 +62,6 @@ namespace TGC.Group.Model.Objects
         private void Init()
         {
             time = Constants.ScapeFromPlayerCooldown;
-            ActivateMove = false;
             TotalRotation = TGCMatrix.Identity;
             InitializerFishes();
             GenerateDuplicates(normalFish, ref ListFishes);
@@ -93,7 +92,8 @@ namespace TGC.Group.Model.Objects
                 TypeFish newFish = new TypeFish
                 {
                     name = fish.name + "_" + counter++,
-                    quantity = 1
+                    quantity = 1,
+                    activateMove = false
                 };
                 newFish.mesh = fish.mesh.createMeshInstance(newFish.name);
                 newFish.mesh.Transform = TGCMatrix.Scaling(Constants.Scale);

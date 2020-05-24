@@ -41,9 +41,9 @@ namespace TGC.Group.Model.Objects
         private float deathTimeCounter;
         private float eventTimeCounter;
         public bool DamageReceived { get; set; }
+        private GameEventsManager Events { get; set; }
         private TGCMatrix TotalRotation;
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
-        public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
 
         public RigidBody Body { get; set; }
         public TgcMesh Mesh;
@@ -58,6 +58,24 @@ namespace TGC.Group.Model.Objects
             Terrain = terrain;
             Camera = camera;
             Init();
+        }
+
+        public void ActivateShark(GameEventsManager events)
+        {
+            Events = events;
+            stalkerModeMove = true;
+            normalMove = true;
+            deathMove = false;
+            var position = CalculateInitialPosition();
+            Mesh.Transform = TGCMatrix.Scaling(Constants.scale) * TGCMatrix.Translation(position);
+            Body.WorldTransform = Mesh.Transform.ToBulletMatrix();
+            director = Constants.directorZ;
+            TotalRotation = TGCMatrix.Identity;
+            eventTimeCounter = Constants.SHARK_EVENT_TIME;
+            deathTimeCounter = Constants.SHARK_DEATH_TIME;
+            acumulatedXRotation = 0;
+            acumulatedYRotation = 0;
+            acumulatedZRotation = 0;
         }
 
         private void Init()
@@ -213,12 +231,16 @@ namespace TGC.Group.Model.Objects
                 ChangeSharkWay();
             stalkerModeMove = false;
             if (!Skybox.Contains(Body))
+            {
                 EndSharkAttack();
+                Events.InformFinishFromAttack();
+            }
         }
 
         private void ManageEndOfDeath()
         {
             deathMove = false;
+            Events.InformFinishFromAttack();
             EndSharkAttack();
         }
 
