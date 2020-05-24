@@ -54,7 +54,8 @@ namespace TGC.Group.Model
             CharacterStatus.Update();
             SharkStatus.Update();
             Draw2DManager.Update();
-            EventsManager.Update(ElapsedTime, ObjectManager.Fish.ListFishes);
+            EventsManager.Update(ElapsedTime, ObjectManager.Fish);
+            InventoryManager.AddItem(ObjectManager.ItemSelected.ID, ObjectManager.ItemSelected.name);
         }
 
         public override void Render()

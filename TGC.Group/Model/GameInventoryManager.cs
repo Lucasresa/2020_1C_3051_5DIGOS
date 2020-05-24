@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using TGC.Group.Utils;
@@ -11,7 +12,7 @@ namespace TGC.Group.Model
     {
         private struct Items
         {
-            public int id;
+            public int ID;
             public string name;
         }
 
@@ -29,12 +30,14 @@ namespace TGC.Group.Model
             ListItems = new List<Items>();
         }
 
-        public void AddItem(string nameItem)
+        public void AddItem(int id, string name)
         {
+            if (id == 0 && name is null)
+                return;
+
             Items item;
-            var nameAndID = nameItem.Split('_');
-            item.name = nameAndID[0];
-            item.id = int.Parse(nameAndID[1]);
+            item.ID = id;
+            item.name = name;
             ListItems.Add(item);
         }
     }

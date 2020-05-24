@@ -27,11 +27,11 @@ namespace TGC.Group.Model
             Character = character;
         }
 
-        public void Update(float elapsedTime, List<TypeFish> fishes)
+        public void Update(float elapsedTime, Fish fish)
         {
             if (Character.IsOutsideShip)
             {
-                fishes.ForEach(fish => fish.activateMove = true);
+                fish.ActivateMove = true;
                 CheckIfSharkCanAttack(elapsedTime);
             }
             else
@@ -39,7 +39,7 @@ namespace TGC.Group.Model
                 Shark.EndSharkAttack();
                 timeBetweenAttacks = Constants.TIME_BETWEEN_ATTACKS;
                 InformFinishFromAttack();
-                fishes.ForEach(fish => fish.activateMove = false);
+                fish.ActivateMove = false;
             }
         }
 

@@ -10,10 +10,9 @@ namespace TGC.Group.Model.Objects
     {
         public struct TypeFish
         {
+            public int ID;
             public string name;
             public TgcMesh mesh;
-            public int quantity;
-            public bool activateMove;
         }
 
         private struct Constants
@@ -39,9 +38,9 @@ namespace TGC.Group.Model.Objects
         private readonly Terrain Terrain;
         private TypeFish normalFish;
         private TypeFish yellowFish;
-        private int counter;
         private TgcMesh currentMesh;
 
+        public bool ActivateMove { get; set; }
         public List<TypeFish> ListFishes = new List<TypeFish>();
 
         public Fish(string mediaDir, string shadersDir, Skybox skybox, Terrain terrain)
@@ -71,11 +70,11 @@ namespace TGC.Group.Model.Objects
         private void InitializerFishes()
         {
             normalFish.name = Constants.NAME_FISH_NORMAL;
-            normalFish.quantity = Constants.QUANTITY_FISH_NORMAL;
+            normalFish.ID = Constants.QUANTITY_FISH_NORMAL;
             LoadInitial(ref normalFish);
 
             yellowFish.name = Constants.NAME_FISH_YELLOW;
-            yellowFish.quantity = Constants.QUANTITY_FISH_YELLOW;
+            yellowFish.ID = Constants.QUANTITY_FISH_YELLOW;
             LoadInitial(ref yellowFish);
         }
 
@@ -87,21 +86,18 @@ namespace TGC.Group.Model.Objects
 
         public void GenerateDuplicates(TypeFish fish, ref List<TypeFish> fishes)
         {
-            foreach (int _ in Enumerable.Range(1, fish.quantity))
+            foreach (int index in Enumerable.Range(1, fish.ID))
             {
                 TypeFish newFish = new TypeFish
                 {
-                    name = fish.name + "_" + counter++,
-                    quantity = 1,
-                    activateMove = false
+                    ID = index,
+                    name = fish.name + "_" + index
                 };
                 newFish.mesh = fish.mesh.createMeshInstance(newFish.name);
                 newFish.mesh.Transform = TGCMatrix.Scaling(Constants.Scale);
                 newFish.mesh.BoundingBox.scaleTranslate(newFish.mesh.Position, Constants.Scale);
                 fishes.Add(newFish);
             }
-
-            counter = 0;
         }
 
         public void Update(float elapsedTime, CameraFPS camera)
@@ -111,7 +107,7 @@ namespace TGC.Group.Model.Objects
                 currentMesh = fish.mesh;
                 if (IsNearFromPlayer(camera.Position) && time <= 0)
                     ChangeFishWay();
-                else if (true) //ActiveMove
+                else if (ActivateMove)
                     PerformNormalMove(elapsedTime, speed: 500, GetFishHeadPosition());
             });
         }

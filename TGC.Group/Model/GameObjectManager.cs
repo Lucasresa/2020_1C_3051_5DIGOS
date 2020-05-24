@@ -1,6 +1,10 @@
-﻿using TGC.Core.Input;
+﻿using BulletSharp;
+using System.Linq.Expressions;
+using TGC.Core.Input;
 using TGC.Group.Model.Objects;
 using TGC.Group.Utils;
+using static TGC.Group.Model.Objects.Common;
+using static TGC.Group.Model.Objects.Fish;
 
 namespace TGC.Group.Model
 {
@@ -26,6 +30,8 @@ namespace TGC.Group.Model
         public bool CharacterLooksAtTheHatch { get; set; }
         public bool CharacterCanAtack { get; set; }
         public bool CharacterNearShip { get; set; }
+
+        public (int ID, string name) ItemSelected { get; set; }
 
         public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input, Ray ray)
         {
@@ -56,9 +62,11 @@ namespace TGC.Group.Model
 
             MeshBuilder.LocateMeshesInWorld(meshes: ref Fish.ListFishes, area: Skybox.currentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Vegetation.ListAlgas, area: Skybox.currentPerimeter);
+            // MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListCommon, area: Skybox.currentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListCorals, area: Skybox.currentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListOres, area: Skybox.currentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListRock, area: Skybox.currentPerimeter);
+
             Common.LocateBody();
 
             /* Add rigidBody to the world */
@@ -69,9 +77,11 @@ namespace TGC.Group.Model
             PhysicalWorld.AddBodyToTheWorld(Ship.BodyOutdoorShip);
             PhysicalWorld.AddBodyToTheWorld(Ship.BodyIndoorShip);
             PhysicalWorld.AddBodyToTheWorld(Shark.Body);
+            // Common.ListCommon.ForEach(common => PhysicalWorld.AddBodyToTheWorld(common.Body));
             Common.ListCorals.ForEach(coral => PhysicalWorld.AddBodyToTheWorld(coral.Body));
             Common.ListOres.ForEach(ore => PhysicalWorld.AddBodyToTheWorld(ore.Body));
             Common.ListRock.ForEach(rock => PhysicalWorld.AddBodyToTheWorld(rock.Body));
+
         }
 
         public void Dispose()
@@ -107,7 +117,63 @@ namespace TGC.Group.Model
             CharacterLooksAtTheHatch = Ray.intersectsWithObject(Ship.Plane.BoundingBox, distance: 500);
             CharacterCanAtack = Ray.intersectsWithObject(Shark.Mesh.BoundingBox, distance: 150);
             CharacterNearShip = Ray.intersectsWithObject(Ship.OutdoorMesh.BoundingBox, distance: 500);
+
+            if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+            {
+                DetectSelectedFishItem();
+                DetectSelectedCoralItem();
+                DetectSelectedOreItem();
+            }
         }
+
+        private void DetectSelectedCoralItem()
+        {
+            TypeCommon item;
+            item = Common.ListCorals.Find(coral => { return Ray.intersectsWithObject(objectAABB: coral.mesh.BoundingBox, distance: 500); });
+
+            if (item.mesh is null)
+                ItemSelected = (item.ID, item.name);
+            else
+            {
+                PhysicalWorld.dynamicsWorld.RemoveRigidBody(item.Body);
+                Common.ListCorals.Remove(item);
+                item.mesh.Dispose();
+            }
+        }
+
+        private void DetectSelectedOreItem()
+        {
+            TypeCommon item;
+            item = Common.ListOres.Find(ore => Ray.intersectsWithObject(objectAABB: ore.mesh.BoundingBox, distance: 500));
+
+            if (item.mesh is null)
+                ItemSelected = (0, null);
+            else
+            {
+                ItemSelected = (item.ID, item.name);
+                PhysicalWorld.dynamicsWorld.RemoveRigidBody(item.Body);
+                Common.ListOres.Remove(item);
+                item.mesh.Dispose();
+            }
+        }
+
+        private void DetectSelectedFishItem()
+        {
+            if (!Character.HasARod) // TODO: Revisar, porque considero que no va en el personaje. Esto deberia ir en el inventario o en el crafteo.
+                return;
+
+            TypeFish item;
+            item = Fish.ListFishes.Find(fish => Ray.intersectsWithObject(objectAABB: fish.mesh.BoundingBox, distance: 500));
+            
+            if (item.mesh is null)
+                ItemSelected = (0, null);
+            else
+            {
+                ItemSelected = (item.ID, item.name);
+                Fish.ListFishes.Remove(item);
+                item.mesh.Dispose();
+            }
+        } 
     }
 }
 

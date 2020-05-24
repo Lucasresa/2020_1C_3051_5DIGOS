@@ -11,10 +11,10 @@ namespace TGC.Group.Model.Objects
     {
         public struct TypeCommon
         {
+            public int ID;
             public string name;
             public TgcMesh mesh;
             public RigidBody Body { get; set; }
-            public int quantity;
         }
 
         struct Constants
@@ -43,7 +43,6 @@ namespace TGC.Group.Model.Objects
         private TypeCommon oreSilver;
         private TypeCommon oreGold;
         private TypeCommon rock;
-        private int counter;
         private string MediaDir, ShadersDir;
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
 
@@ -80,31 +79,31 @@ namespace TGC.Group.Model.Objects
         private void InitializerFishes()
         {
             coralNormal.name = Constants.NAME_CORAL_NORMAL;
-            coralNormal.quantity = Constants.QUANTITY_CORAL_NORMAL;
+            coralNormal.ID = Constants.QUANTITY_CORAL_NORMAL;
             LoadInitial(ref coralNormal);
 
             coralSpiral.name = Constants.NAME_CORAL_SPIRAL;
-            coralSpiral.quantity = Constants.QUANTITY_CORAL_SPIRAL;
+            coralSpiral.ID = Constants.QUANTITY_CORAL_SPIRAL;
             LoadInitial(ref coralSpiral);
 
             coralTree.name = Constants.NAME_CORAL_TREE;
-            coralTree.quantity = Constants.QUANTITY_CORAL_TREE;
+            coralTree.ID = Constants.QUANTITY_CORAL_TREE;
             LoadInitial(ref coralTree);
 
             oreGold.name = Constants.NAME_ORE_GOLD;
-            oreGold.quantity = Constants.QUANTITY_ORE_GOLD;
+            oreGold.ID = Constants.QUANTITY_ORE_GOLD;
             LoadInitial(ref oreGold);
 
             oreIron.name = Constants.NAME_ORE_IRON;
-            oreIron.quantity = Constants.QUANTITY_ORE_IRON;
+            oreIron.ID = Constants.QUANTITY_ORE_IRON;
             LoadInitial(ref oreIron);
 
             oreSilver.name = Constants.NAME_ORE_SILVER;
-            oreSilver.quantity = Constants.QUANTITY_ORE_SILVER;
+            oreSilver.ID = Constants.QUANTITY_ORE_SILVER;
             LoadInitial(ref oreSilver);
 
             rock.name = Constants.NAME_ROCK;
-            rock.quantity = Constants.QUANTITY_ROCK;
+            rock.ID = Constants.QUANTITY_ROCK;
             LoadInitial(ref rock);
         }
 
@@ -131,12 +130,12 @@ namespace TGC.Group.Model.Objects
 
         public void GenerateDuplicates(TypeCommon common, ref List<TypeCommon> commons)
         {
-            foreach (int _ in Enumerable.Range(1, common.quantity))
+            foreach (int index in Enumerable.Range(1, common.ID))
             {
                 TypeCommon newCommon = new TypeCommon
                 {
-                    name = common.name + "_" + counter++,
-                    quantity = 1
+                    ID = index,
+                    name = common.name + "_" + index
                 };
                 newCommon.mesh = common.mesh.createMeshInstance(newCommon.name);
                 newCommon.mesh.Transform = TGCMatrix.Scaling(Constants.Scale);
@@ -144,7 +143,6 @@ namespace TGC.Group.Model.Objects
                 CreateRigidBody(ref newCommon);
                 commons.Add(newCommon);
             }
-            counter = 0;
         }
 
         public void Render()

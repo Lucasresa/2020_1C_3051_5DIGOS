@@ -9,9 +9,9 @@ namespace TGC.Group.Model.Objects
     {
         public struct TypeVegetation
         {
+            public int ID;
             public string name;
             public TgcMesh mesh;
-            public int quantity;
         }
 
         struct Constants
@@ -32,7 +32,6 @@ namespace TGC.Group.Model.Objects
         private TypeVegetation alga2;
         private TypeVegetation alga3;
         private TypeVegetation alga4;
-        private int counter;
 
         public List<TypeVegetation> ListAlgas = new List<TypeVegetation>();
 
@@ -60,19 +59,19 @@ namespace TGC.Group.Model.Objects
         private void InitializerVegetation()
         {
             alga1.name = Constants.NAME_ALGA_1;
-            alga1.quantity = Constants.QUANTITY_ALGA_1;
+            alga1.ID = Constants.QUANTITY_ALGA_1;
             LoadInitial(ref alga1);
 
             alga2.name = Constants.NAME_ALGA_2;
-            alga2.quantity = Constants.QUANTITY_ALGA_2;
+            alga2.ID = Constants.QUANTITY_ALGA_2;
             LoadInitial(ref alga2);
 
             alga3.name = Constants.NAME_ALGA_3;
-            alga3.quantity = Constants.QUANTITY_ALGA_3;
+            alga3.ID = Constants.QUANTITY_ALGA_3;
             LoadInitial(ref alga3);
 
             alga4.name = Constants.NAME_ALGA_4;
-            alga4.quantity = Constants.QUANTITY_ALGA_4;
+            alga4.ID = Constants.QUANTITY_ALGA_4;
             LoadInitial(ref alga4);
         }
 
@@ -84,12 +83,12 @@ namespace TGC.Group.Model.Objects
 
         public void GenerateDuplicates(TypeVegetation vegetation, ref List<TypeVegetation> vegetations)
         {
-            foreach (int _ in Enumerable.Range(1, vegetation.quantity))
+            foreach (int index in Enumerable.Range(1, vegetation.ID))
             {
                 TypeVegetation newVegetation = new TypeVegetation
                 {
-                    name = vegetation.name + "_" + counter++,
-                    quantity = 1
+                    ID = index,
+                    name = vegetation.name + "_" + index
                 };
                 newVegetation.mesh = vegetation.mesh.createMeshInstance(newVegetation.name);
                 newVegetation.mesh.AlphaBlendEnable = true;
@@ -97,8 +96,6 @@ namespace TGC.Group.Model.Objects
                 newVegetation.mesh.BoundingBox.scaleTranslate(newVegetation.mesh.Position, Constants.Scale);
                 vegetations.Add(newVegetation);
             }
-
-            counter = 0;
         }
 
         public void Render()

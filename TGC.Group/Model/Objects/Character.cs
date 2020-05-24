@@ -43,6 +43,8 @@ namespace TGC.Group.Model.Objects
         public bool IsOutsideShip { get => !IsInsideShip; }
         public bool IsOutOfWater { get { return Camera.Position.Y > 3105; } }
 
+        public bool HasARod { get; set; }
+
         public Character(CameraFPS camera, TgcD3dInput input)
         {
             Camera = camera;
