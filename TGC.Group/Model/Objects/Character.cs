@@ -35,13 +35,13 @@ namespace TGC.Group.Model.Objects
         private readonly CameraFPS Camera;
         private readonly TgcD3dInput Input;
         private float prevLatitude;
+        private float Gravity { get { return Body.CenterOfMassPosition.Y < 0 ? -200 : -5; } }
 
         public RigidBody Body { get; set; }
-
+        public bool DamageReceived { get; set; }
         public bool IsInsideShip { get { return Camera.Position.Y < 0; } }
         public bool IsOutsideShip { get => !IsInsideShip; }
-        private bool IsOutOfWater { get { return Camera.Position.Y > 3105; } }
-        private float Gravity { get { return Body.CenterOfMassPosition.Y < 0 ? -200 : -5; } }
+        public bool IsOutOfWater { get { return Camera.Position.Y > 3105; } }
 
         public Character(CameraFPS camera, TgcD3dInput input)
         {

@@ -1,5 +1,6 @@
 ﻿using TGC.Core.Direct3D;
 using TGC.Core.Example;
+using TGC.Group.Model.Status;
 using TGC.Group.Utils;
 
 namespace TGC.Group.Model
@@ -21,7 +22,9 @@ namespace TGC.Group.Model
             }
         }
 
-        private GameObjectManager objectManager;
+        private GameObjectManager ObjectManager;
+        private CharacterStatus CharacterStatus;
+        private SharkStatus SharkStatus;
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
@@ -33,24 +36,28 @@ namespace TGC.Group.Model
         {
             Camera = new CameraFPS(Input);
             camera = (CameraFPS)Camera;
-            objectManager = new GameObjectManager(MediaDir, ShadersDir, camera, Input);
+            ObjectManager = new GameObjectManager(MediaDir, ShadersDir, camera, Input);
+            CharacterStatus = new CharacterStatus(ObjectManager.Character);
+            SharkStatus = new SharkStatus(ObjectManager.Shark);
         }
 
         public override void Update()
         {
-            objectManager.Update(ElapsedTime, TimeBetweenUpdates);
+            ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
+            CharacterStatus.Update();
+            SharkStatus.Update();
         }
 
         public override void Render()
         {
             PreRender();
-            objectManager.Render();
+            ObjectManager.Render();
             PostRender();
         }
 
         public override void Dispose()
         {
-            objectManager.Dispose();
+            ObjectManager.Dispose();
         }
     }
 }

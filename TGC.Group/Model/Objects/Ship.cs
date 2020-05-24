@@ -21,7 +21,7 @@ namespace TGC.Group.Model.Objects
         public RigidBody BodyIndoorShip;
         public RigidBody BodyOutdoorShip;
 
-        private string MediaDir, ShadersDir;
+        private readonly string MediaDir, ShadersDir;
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
 
         public Ship(string mediaDir, string shadersDir)

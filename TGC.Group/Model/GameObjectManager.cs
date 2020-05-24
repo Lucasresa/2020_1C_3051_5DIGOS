@@ -40,7 +40,7 @@ namespace TGC.Group.Model
             Water = new Water(MediaDir, ShadersDir);
             MeshBuilder = new MeshBuilder(Terrain, Water);
             Ship = new Ship(MediaDir, ShadersDir);
-            Shark = new Shark(Skybox, Terrain, Camera);
+            Shark = new Shark(MediaDir, ShadersDir, Skybox, Terrain, Camera);
             Character = new Character(Camera, Input);
             Fish = new Fish(MediaDir, ShadersDir, Skybox, Terrain);
             Vegetation = new Vegetation(MediaDir, ShadersDir);

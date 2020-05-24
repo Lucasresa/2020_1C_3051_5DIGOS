@@ -14,7 +14,6 @@ namespace TGC.Group.Model.Objects
         private struct Constants
         {
             public static string FILE_NAME = "shark-TgcScene.xml";
-            public static float MAX_LIFE = 250;
             public static TGCVector2 SHARK_HEIGHT = new TGCVector2(700, 1800);
             public static TGCVector3 scale = new TGCVector3(5, 5, 5);
             public static TGCVector3 startPosition = TGCVector3.Empty;
@@ -24,16 +23,15 @@ namespace TGC.Group.Model.Objects
             public static float MaxYRotation = FastMath.PI - (FastMath.QUARTER_PI / 2);
             public static float MaxAxisRotation = FastMath.QUARTER_PI;
             public static float MaxZRotation = FastMath.PI;
-            public static float LIFE_REDUCE_STEP = -0.5f;
             public static float sharkMass = 1000;
             public static float SHARK_EVENT_TIME = 50;
             public static float SHARK_DEATH_TIME = 40;
         }
 
         private TGCVector3 director;
-        private readonly Skybox skybox;
-        private readonly Terrain terrain;
-        private CameraFPS camera;
+        private readonly Skybox Skybox;
+        private readonly Terrain Terrain;
+        private readonly CameraFPS Camera;
         private bool normalMove;
         private bool stalkerModeMove;
         private bool deathMove;
@@ -42,22 +40,23 @@ namespace TGC.Group.Model.Objects
         private float acumulatedZRotation;
         private float deathTimeCounter;
         private float eventTimeCounter;
-        private float DamageTaken;
+        public bool DamageReceived { get; set; }
         private TGCMatrix TotalRotation;
-        private float Life;
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
         public static (int width, int height) screen = (width: D3DDevice.Instance.Device.Viewport.Width, height: D3DDevice.Instance.Device.Viewport.Height);
 
         public RigidBody Body { get; set; }
         public TgcMesh Mesh;
-        public string MediaDir { get; private set; } = Game.Default.MediaDirectory;
-        public string ShadersDir { get; private set; } = Game.Default.ShadersDirectory;
 
-        public Shark(Skybox sky, Terrain terrain, CameraFPS camera)
+        private readonly string MediaDir, ShadersDir;
+
+        public Shark(string mediaDir, string shadersDir, Skybox skybox, Terrain terrain, CameraFPS camera)
         {
-            skybox = sky;
-            this.terrain = terrain;
-            this.camera = camera;
+            MediaDir = mediaDir;
+            ShadersDir = shadersDir;
+            Skybox = skybox;
+            Terrain = terrain;
+            Camera = camera;
             Init();
         }
 
@@ -73,9 +72,7 @@ namespace TGC.Group.Model.Objects
             acumulatedYRotation = 0;
             acumulatedXRotation = 0;
             acumulatedZRotation = 0;
-            DamageTaken = 0;
             director = Constants.directorZ;
-            Life = Constants.MAX_LIFE;
             Mesh.Transform = TGCMatrix.Scaling(Constants.scale) * TGCMatrix.Translation(Constants.startPosition);
             Body = RigidBodyFactory.CreateBox(Constants.sharkBodySize, Constants.sharkMass, Constants.startPosition, 0, 0, 0, 0, false);
         }
@@ -109,7 +106,6 @@ namespace TGC.Group.Model.Objects
 
             if (deathTimeCounter <= 0)
                 ManageEndOfDeath();
-
         }
 
         public void Render()
@@ -129,7 +125,7 @@ namespace TGC.Group.Model.Objects
         {
             var XRotation = 0f;
             var YRotation = 0f;
-            terrain.world.interpoledHeight(headPosition.X, headPosition.Z, out float floorHeight);
+            Terrain.world.interpoledHeight(headPosition.X, headPosition.Z, out float floorHeight);
             var distanceToFloor = Body.CenterOfMassPosition.Y - floorHeight;
             var XRotationStep = FastMath.PI * 0.1f * elapsedTime;
             var YRotationStep = FastMath.PI * 0.4f * elapsedTime;
@@ -143,7 +139,7 @@ namespace TGC.Group.Model.Objects
             else if (FastUtils.IsNumberBetweenInterval(distanceToFloor, Constants.SHARK_HEIGHT) && acumulatedXRotation < -0.0012)
                 XRotation = XRotationStep;
 
-            if (!skybox.Contains(Body) && FastMath.Abs(acumulatedYRotation) < Constants.MaxYRotation)
+            if (!Skybox.Contains(Body) && FastMath.Abs(acumulatedYRotation) < Constants.MaxYRotation)
                 YRotation = YRotationStep * RotationYSign();
             else
                 acumulatedYRotation = 0;
@@ -194,23 +190,13 @@ namespace TGC.Group.Model.Objects
         {
             deathTimeCounter -= elapsedTime;
             var RotationStep = FastMath.PI * 0.4f * elapsedTime;
-            if (acumulatedZRotation >= Constants.MaxZRotation)
+            if (FastUtils.GreaterThan(acumulatedZRotation, Constants.MaxZRotation))
                 return;
             acumulatedZRotation += RotationStep;
             TotalRotation *= TGCMatrix.RotationAxis(director, RotationStep);
             Mesh.Transform = TotalRotation * TGCMatrix.Translation(new TGCVector3(Body.CenterOfMassPosition));
             Body.WorldTransform = Mesh.Transform.ToBulletMatrix();
             Body.LinearVelocity = Constants.directorY.ToBulletVector3() * 200;
-        }
-
-        public void ReceiveDamage(float damage)
-        {
-            DamageTaken = damage;
-        }
-
-        public bool IsDead()
-        {
-            return Life <= 0;
         }
 
         public void EndSharkAttack()
@@ -226,7 +212,7 @@ namespace TGC.Group.Model.Objects
             if (stalkerModeMove)
                 ChangeSharkWay();
             stalkerModeMove = false;
-            if (!skybox.Contains(Body))
+            if (!Skybox.Contains(Body))
                 EndSharkAttack();
         }
 
@@ -238,14 +224,14 @@ namespace TGC.Group.Model.Objects
 
         private TGCVector3 CalculateInitialPosition()
         {
-            var outOfSkyboxPosition = camera.Position + TGCVector3.Mul(director, new TGCVector3(0, 0, skybox.Radius + 300));
-            terrain.world.interpoledHeight(outOfSkyboxPosition.X, outOfSkyboxPosition.Z, out float Y);
+            var outOfSkyboxPosition = Camera.Position + TGCVector3.Mul(director, new TGCVector3(0, 0, Skybox.Radius + 300));
+            Terrain.world.interpoledHeight(outOfSkyboxPosition.X, outOfSkyboxPosition.Z, out float Y);
             return new TGCVector3(outOfSkyboxPosition.X, Y + 600, outOfSkyboxPosition.Z);
         }
 
         private bool IsCollapsinWithPlayer()
         {
-            var distanceToPlayer = (camera.Position - GetHeadPosition()).Length();
+            var distanceToPlayer = (Camera.Position - GetHeadPosition()).Length();
             return distanceToPlayer < 100;
         }
 
@@ -264,7 +250,7 @@ namespace TGC.Group.Model.Objects
         private bool CanSeekPlayer(out float rotationAngle, out TGCVector3 rotationAxis)
         {
             var actualDirector = -1 * director;
-            var directorToPlayer = TGCVector3.Normalize(camera.Position - new TGCVector3(Body.CenterOfMassPosition));
+            var directorToPlayer = TGCVector3.Normalize(Camera.Position - new TGCVector3(Body.CenterOfMassPosition));
             var NormalVectorFromDirAndPlayer = FastUtils.ObtainNormalVector(actualDirector, directorToPlayer);
             if (NormalVectorFromDirAndPlayer.Length() > 0.98f)
             {
@@ -283,7 +269,7 @@ namespace TGC.Group.Model.Objects
 
         private float RotationYSign()
         {
-            var bodyToSkyboxCenterVector = TGCVector3.Normalize(skybox.GetSkyboxCenter() - new TGCVector3(Body.CenterOfMassPosition));
+            var bodyToSkyboxCenterVector = TGCVector3.Normalize(Skybox.GetSkyboxCenter() - new TGCVector3(Body.CenterOfMassPosition));
             var actualDirector = -1 * director;
             var normalVector = TGCVector3.Cross(actualDirector, bodyToSkyboxCenterVector);
             return normalVector.Y > 0 ? 1 : -1;
