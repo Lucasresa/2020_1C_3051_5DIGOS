@@ -7,8 +7,6 @@ namespace TGC.Group.Model
 {
     public class GameModel : TGCExample
     {
-        private CameraFPS camera;
-
         public struct Perimeter
         {
             public float xMin, xMax, zMin, zMax;
@@ -22,7 +20,9 @@ namespace TGC.Group.Model
             }
         }
 
+        private CameraFPS camera;
         private GameObjectManager ObjectManager;
+        private Game2DManager Draw2DManager;
         private CharacterStatus CharacterStatus;
         private SharkStatus SharkStatus;
 
@@ -39,6 +39,7 @@ namespace TGC.Group.Model
             ObjectManager = new GameObjectManager(MediaDir, ShadersDir, camera, Input);
             CharacterStatus = new CharacterStatus(ObjectManager.Character);
             SharkStatus = new SharkStatus(ObjectManager.Shark);
+            Draw2DManager = new Game2DManager(MediaDir, CharacterStatus, SharkStatus);
         }
 
         public override void Update()
@@ -46,18 +47,21 @@ namespace TGC.Group.Model
             ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
             CharacterStatus.Update();
             SharkStatus.Update();
+            Draw2DManager.Update();
         }
 
         public override void Render()
         {
             PreRender();
             ObjectManager.Render();
+            Draw2DManager.Render();
             PostRender();
         }
 
         public override void Dispose()
         {
             ObjectManager.Dispose();
+            Draw2DManager.Dispose();
         }
     }
 }

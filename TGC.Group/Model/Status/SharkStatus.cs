@@ -24,25 +24,21 @@ namespace TGC.Group.Model.Status
             Shark = shark;
         }
 
-        private void TakeDamage()
+        public float GetLifeMax()
         {
-            DamageAcumulated = Constants.DAMAGE_RECEIVED;
+            return Constants.LIFE_MAX;
         }
 
-        private void UpdateLife(float value)
+        public void Reset()
         {
-            Life += value;
-            Life = FastMath.Clamp(Life, Constants.LIFE_MIN, Constants.LIFE_MAX);
+            Life = Constants.LIFE_MAX;
+            DamageAcumulated = 0;
         }
 
         public void Update()
         {
             if (IsDead)
-            {
-                Life = Constants.LIFE_MAX;
-                DamageAcumulated = 0;
                 return;
-            }
 
             if (Shark.DamageReceived)
             {
@@ -55,6 +51,17 @@ namespace TGC.Group.Model.Status
                 UpdateLife(Constants.LIFE_REDUCE_STEP);
                 DamageAcumulated += Constants.LIFE_REDUCE_STEP;
             }
+        }
+
+        private void UpdateLife(float value)
+        {
+            Life += value;
+            Life = FastMath.Clamp(Life, Constants.LIFE_MIN, Constants.LIFE_MAX);
+        }
+
+        private void TakeDamage()
+        {
+            DamageAcumulated = Constants.DAMAGE_RECEIVED;
         }
     }
 }

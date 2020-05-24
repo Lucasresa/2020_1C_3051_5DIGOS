@@ -15,12 +15,19 @@ namespace TGC.Group.Utils
         private TgcTexture Texture { get; set; }
         private TGCMatrix TransformationMatrix { get; set; }
 
+        private TGCVector2 position;
+        private float rotation;
+        private TGCVector2 rotationCenter;
+        private TGCVector2 scaling;
+        private TGCVector2 scalingCenter;
+
         public Color Color { get; set; }
-        public TGCVector2 Position { get { return Position; } set { Position = value; UpdateTransformationMatrix(); } }
-        public float Rotation { get { return Rotation; } set { Rotation = value; UpdateTransformationMatrix(); } }
-        public TGCVector2 RotationCenter { get { return RotationCenter; } set { RotationCenter = value; UpdateTransformationMatrix(); } }
-        public TGCVector2 Scaling { get { return Scaling; } set { Scaling = value; UpdateTransformationMatrix(); } }
-        public TGCVector2 ScalingCenter { get { return ScalingCenter; } set { ScalingCenter = value; UpdateTransformationMatrix(); } }
+        
+        public TGCVector2 Position { get { return position; } set { position = value; UpdateTransformationMatrix(); } }
+        public float Rotation { get { return rotation; } set { rotation = value; UpdateTransformationMatrix(); } }
+        public TGCVector2 RotationCenter { get { return rotationCenter; } set { rotationCenter = value; UpdateTransformationMatrix(); } }
+        public TGCVector2 Scaling { get { return scaling; } set { scaling = value; UpdateTransformationMatrix(); } }
+        public TGCVector2 ScalingCenter { get { return scalingCenter; } set { scalingCenter = value; UpdateTransformationMatrix(); } }
         public TGCVector2 ScalingInitial { get; private set; }
 
         public DrawSprite(string mediaDir)
@@ -29,27 +36,11 @@ namespace TGC.Group.Utils
             Initialize();
         }
 
-        public void BeginDraw()
-        {
-            Sprite.Begin(SpriteFlags.AlphaBlend | SpriteFlags.SortDepthFrontToBack);
-        }
-
         public void Dispose()
         {
             if (Texture != null) Texture.dispose();
             Sprite.Dispose();
-        }
-
-        public void Draw()
-        {
-            Sprite.Transform = TransformationMatrix.ToMatrix();
-            Sprite.Draw(Texture.D3dTexture, SrcRect, TGCVector3.Empty, TGCVector3.Empty, Color);
-        }
-
-        public void EndDraw()
-        {
-            Sprite.End();
-        }
+        }            
 
         private void Initialize()
         {
@@ -62,6 +53,14 @@ namespace TGC.Group.Utils
             RotationCenter = TGCVector2.Zero;
             Color = Color.White;
             Sprite = new Sprite(D3DDevice.Instance.Device);
+        }
+
+        public void Render()
+        {
+            Sprite.Begin(SpriteFlags.AlphaBlend | SpriteFlags.SortDepthFrontToBack);
+            Sprite.Transform = TransformationMatrix.ToMatrix();
+            Sprite.Draw(Texture.D3dTexture, SrcRect, TGCVector3.Empty, TGCVector3.Empty, Color);
+            Sprite.End();
         }
 
         public void SetImage(string imageNameAndExtension)
@@ -78,7 +77,7 @@ namespace TGC.Group.Utils
 
         private void UpdateTransformationMatrix()
         {
-            TransformationMatrix = TGCMatrix.Transformation2D(ScalingCenter, 0, Scaling, RotationCenter, Rotation, Position);
+            TransformationMatrix = TGCMatrix.Transformation2D(scalingCenter, 0, scaling, rotationCenter, rotation, position);
         } 
     }
 }

@@ -38,21 +38,14 @@ namespace TGC.Group.Model.Status
             Character = character;
         }
 
-        public void TakeDamage()
+        public float GetLifeMax()
         {
-            DamageAcumulated = Constants.DAMAGE_RECEIVED;
+            return Constants.LIFE_MAX;
         }
 
-        private void UpdateLife(float value)
+        public float GetOxygenMax()
         {
-            Life += value;
-            Life = FastMath.Clamp(Life, Constants.LIFE_MIN, Constants.LIFE_MAX);
-        }
-
-        private void UpdateOxygen(float value)
-        {
-            Oxygen += value;
-            Oxygen = FastMath.Clamp(Oxygen, Constants.OXYGEN_MIN, Constants.OXYGEN_MAX);
+            return Constants.OXYGEN_MAX;
         }
 
         private void RecoverLife()
@@ -60,16 +53,18 @@ namespace TGC.Group.Model.Status
             UpdateLife(Constants.LIFE_INCREMENT_STEP);
         }
 
+        public void Reset()
+        {
+            Life = Constants.LIFE_MAX;
+            Oxygen = Constants.OXYGEN_MAX;
+            DamageAcumulated = 0;
+        }
+
         public void Update()
         {
-            if (IsDead)
-            {
-                Life = Constants.LIFE_MAX;
-                Oxygen = Constants.OXYGEN_MAX;
-                DamageAcumulated = 0;
+            if (IsDead)                         
                 return;
-            }
-
+            
             if (Character.DamageReceived)
             {
                 TakeDamage();
@@ -92,6 +87,23 @@ namespace TGC.Group.Model.Status
                     UpdateOxygen(Constants.OXYGEN_REDUCE_STEP_WHIT_DIVING_HELMET);
                 else
                     UpdateOxygen(Constants.OXYGEN_REDUCE_STEP);
+        }
+
+        private void UpdateLife(float value)
+        {
+            Life += value;
+            Life = FastMath.Clamp(Life, Constants.LIFE_MIN, Constants.LIFE_MAX);
+        }
+
+        private void UpdateOxygen(float value)
+        {
+            Oxygen += value;
+            Oxygen = FastMath.Clamp(Oxygen, Constants.OXYGEN_MIN, Constants.OXYGEN_MAX);
+        }
+
+        public void TakeDamage()
+        {
+            DamageAcumulated = Constants.DAMAGE_RECEIVED;
         }
     }
 }
