@@ -58,17 +58,32 @@ namespace TGC.Group.Model
 
         private void Init()
         {
+            InitializerLifeCharacter();
+            InitializerLifeShark();
+            InitializerOxygenCharacter();
+        }
+
+        private void InitializerLifeCharacter()
+        {
             LifeCharacter.SetImage("LifeBar.png");
             LifeCharacter.SetInitialScallingAndPosition(Constants.LIFE_CHARACTER_SCALE, Constants.LIFE_CHARACTER_POSITION);
+            LifeCharacterText.SetTextAndPosition(text: "LIFE", position: Constants.LIFE_CHARACTER_TEXT_POSITION);
+            LifeCharacterText.Color = Color.MediumVioletRed;
+        }
+
+        private void InitializerLifeShark()
+        {
             LifeShark.SetImage("LifeBar.png");
             LifeShark.SetInitialScallingAndPosition(Constants.LIFE_SHARK_SCALE, Constants.LIFE_SHARK_POSITION);
+            LifeSharkText.SetTextSizeAndPosition(text: "LIFE SHARK", size: Constants.LIFE_SHARK_TEXT_SIZE, position: Constants.LIFE_SHARK_TEXT_POSITION);
+            LifeSharkText.Color = Color.MediumVioletRed;
+        }
+
+        private void InitializerOxygenCharacter()
+        {
             OxygenCharacter.SetImage("OxygenBar.png");
             OxygenCharacter.SetInitialScallingAndPosition(Constants.OXYGEN_CHARACTER_SCALE, Constants.OXYGEN_CHARACTER_POSITION);
-            LifeCharacterText.SetTextAndPosition(text: "LIFE", position: Constants.LIFE_CHARACTER_TEXT_POSITION);
             OxygenCharacterText.SetTextAndPosition(text: "OXYGEN", position: Constants.OXYGEN_CHARACTER_TEXT_POSITION);
-            LifeSharkText.SetTextSizeAndPosition(text: "LIFE SHARK", size: Constants.LIFE_SHARK_TEXT_SIZE, position: Constants.LIFE_SHARK_TEXT_POSITION);
-            LifeCharacterText.Color = Color.MediumVioletRed;
-            LifeSharkText.Color = Color.MediumVioletRed;
             OxygenCharacterText.Color = Color.DeepSkyBlue;
         }
 
