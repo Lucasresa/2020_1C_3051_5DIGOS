@@ -130,10 +130,9 @@ namespace TGC.Group.Model
             TypeCommon item;
             item = Common.ListCorals.Find(coral => { return Ray.intersectsWithObject(objectAABB: coral.mesh.BoundingBox, distance: 500); });
 
-            if (item.mesh is null)
-                ItemSelected = (item.ID, item.name);
-            else
+            if (item.mesh != null)
             {
+                ItemSelected = (item.ID, item.name);
                 PhysicalWorld.dynamicsWorld.RemoveRigidBody(item.Body);
                 Common.ListCorals.Remove(item);
                 item.mesh.Dispose();
@@ -145,9 +144,7 @@ namespace TGC.Group.Model
             TypeCommon item;
             item = Common.ListOres.Find(ore => Ray.intersectsWithObject(objectAABB: ore.mesh.BoundingBox, distance: 500));
 
-            if (item.mesh is null)
-                ItemSelected = (0, null);
-            else
+            if (item.mesh != null)
             {
                 ItemSelected = (item.ID, item.name);
                 PhysicalWorld.dynamicsWorld.RemoveRigidBody(item.Body);
@@ -164,9 +161,7 @@ namespace TGC.Group.Model
             TypeFish item;
             item = Fish.ListFishes.Find(fish => Ray.intersectsWithObject(objectAABB: fish.mesh.BoundingBox, distance: 500));
             
-            if (item.mesh is null)
-                ItemSelected = (0, null);
-            else
+            if (item.mesh != null)
             {
                 ItemSelected = (item.ID, item.name);
                 Fish.ListFishes.Remove(item);

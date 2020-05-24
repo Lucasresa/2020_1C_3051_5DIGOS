@@ -49,7 +49,7 @@ namespace TGC.Group.Model
             SharkStatus = new SharkStatus(ObjectManager.Shark);
             Draw2DManager = new Game2DManager(MediaDir, CharacterStatus, SharkStatus);
             EventsManager = new GameEventsManager(ObjectManager.Shark, ObjectManager.Character);
-            InventoryManager = new GameInventoryManager(Ray);
+            InventoryManager = new GameInventoryManager();
         }
 
         public override void Update()
@@ -69,6 +69,7 @@ namespace TGC.Group.Model
                 ObjectManager.ItemSelected = (0, null);
             }
             
+            Draw2DManager.UpdateItems(InventoryManager.ListItems);
         }
 
         public override void Render()

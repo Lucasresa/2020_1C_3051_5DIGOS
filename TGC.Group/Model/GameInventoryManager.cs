@@ -10,18 +10,16 @@ namespace TGC.Group.Model
 {
     class GameInventoryManager
     {
-        private struct Items
+        public struct Items
         {
             public int ID;
             public string name;
         }
 
-        private Ray Ray;
-        private List<Items> ListItems;
+        public List<Items> ListItems { get; set; }
 
-        public GameInventoryManager(Ray ray)
+        public GameInventoryManager()
         {
-            Ray = ray;
             Init();   
         }
 
@@ -32,7 +30,7 @@ namespace TGC.Group.Model
 
         public void AddItem((int ID, string name) itemSelected)
         {
-            if ( itemSelected.name is null)
+            if ( itemSelected.name is null )
                 return;
 
             Items item;
