@@ -93,19 +93,24 @@ namespace TGC.Group.Model
 
         public void Render()
         {
-            Skybox.Render();
-            Terrain.Render();
-            Water.Render();
-            Ship.Render();
-            Shark.Render();
-            Fish.Render();
-            Vegetation.Render();
-            Common.Render();
+            if ( Character.IsInsideShip )
+                Ship.RenderIndoorShip();
+            else
+            {
+                Ship.RenderOutdoorShip();
+                Skybox.Render();
+                Terrain.Render();
+                Water.Render();
+                Shark.Render();
+                Fish.Render();
+                Vegetation.Render();
+                Common.Render();
+            }
         }
 
         public void Update(float elapsedTime, float timeBeetweenUpdate)
         {
-            PhysicalWorld.dynamicsWorld.StepSimulation(elapsedTime, 10, timeBeetweenUpdate);
+            PhysicalWorld.dynamicsWorld.StepSimulation(elapsedTime, maxSubSteps: 10, timeBeetweenUpdate);
             Fish.Update(elapsedTime, Camera);
             Character.LooksAtTheHatch = Ray.intersectsWithObject(Ship.Plane.BoundingBox, distance: 500);
             Character.CanAtack = Ray.intersectsWithObject(Shark.Mesh.BoundingBox, distance: 150);

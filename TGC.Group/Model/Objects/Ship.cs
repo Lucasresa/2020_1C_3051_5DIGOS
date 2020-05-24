@@ -74,9 +74,13 @@ namespace TGC.Group.Model.Objects
             return rigidBody;
         }
 
-        public void Render()
+        public void RenderIndoorShip()
         {
             IndoorMesh.Render();
+        }
+
+        public void RenderOutdoorShip()
+        {
             OutdoorMesh.Render();
         }
     }

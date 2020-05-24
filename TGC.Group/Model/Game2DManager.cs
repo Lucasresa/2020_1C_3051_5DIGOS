@@ -141,15 +141,16 @@ namespace TGC.Group.Model
 
         public void Render()
         {
-            LifeShark.Render();
-            LifeCharacter.Render();
-            OxygenCharacter.Render();
-            LifeSharkText.Render();
-            LifeCharacterText.Render();
-            OxygenCharacterText.Render();
-
             if (!ActiveInventory)
+            {
+                LifeShark.Render();
+                LifeCharacter.Render();
+                OxygenCharacter.Render();
+                LifeSharkText.Render();
+                LifeCharacterText.Render();
+                OxygenCharacterText.Render();
                 Pointer.Render();
+            }
             else
             {
                 MousePointer.Position = new TGCVector2(Cursor.Position.X, Cursor.Position.Y);

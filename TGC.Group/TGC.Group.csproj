@@ -102,6 +102,7 @@
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
     <Compile Include="Model\Game2DManager.cs" />
+    <Compile Include="Model\GameCraftingManager.cs" />
     <Compile Include="Model\GameEventsManager.cs" />
     <Compile Include="Model\GameInventoryManager.cs" />
     <Compile Include="Model\GameModel.cs" />

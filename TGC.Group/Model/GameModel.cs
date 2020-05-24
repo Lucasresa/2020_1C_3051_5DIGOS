@@ -74,7 +74,6 @@ namespace TGC.Group.Model
 
             if (Input.keyPressed(Key.E))
                 ObjectManager.Character.Teleport();
-
         }
 
         public override void Render()
