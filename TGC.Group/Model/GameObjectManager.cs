@@ -61,12 +61,12 @@ namespace TGC.Group.Model
             /* Location */
 
             MeshBuilder.LocateMeshesInWorld(meshes: ref Fish.ListFishes, area: Skybox.currentPerimeter);
-            MeshBuilder.LocateMeshesInWorld(meshes: ref Vegetation.ListAlgas, area: Skybox.currentPerimeter);
-            // MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListCommon, area: Skybox.currentPerimeter);
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Vegetation.ListAlgas, area: Skybox.currentPerimeter);            
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListCorals, area: Skybox.currentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListOres, area: Skybox.currentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListRock, area: Skybox.currentPerimeter);
 
+            Fish.UpdateBoundingBox();
             Common.LocateBody();
 
             /* Add rigidBody to the world */
@@ -76,8 +76,7 @@ namespace TGC.Group.Model
             PhysicalWorld.AddBodyToTheWorld(Character.Body);
             PhysicalWorld.AddBodyToTheWorld(Ship.BodyOutdoorShip);
             PhysicalWorld.AddBodyToTheWorld(Ship.BodyIndoorShip);
-            PhysicalWorld.AddBodyToTheWorld(Shark.Body);
-            // Common.ListCommon.ForEach(common => PhysicalWorld.AddBodyToTheWorld(common.Body));
+            PhysicalWorld.AddBodyToTheWorld(Shark.Body);            
             Common.ListCorals.ForEach(coral => PhysicalWorld.AddBodyToTheWorld(coral.Body));
             Common.ListOres.ForEach(ore => PhysicalWorld.AddBodyToTheWorld(ore.Body));
             Common.ListRock.ForEach(rock => PhysicalWorld.AddBodyToTheWorld(rock.Body));

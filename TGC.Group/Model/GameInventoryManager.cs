@@ -30,14 +30,14 @@ namespace TGC.Group.Model
             ListItems = new List<Items>();
         }
 
-        public void AddItem(int id, string name)
+        public void AddItem((int ID, string name) itemSelected)
         {
-            if (id == 0 && name is null)
+            if ( itemSelected.name is null)
                 return;
 
             Items item;
-            item.ID = id;
-            item.name = name;
+            item.ID = itemSelected.ID;
+            item.name = itemSelected.name;
             ListItems.Add(item);
         }
     }

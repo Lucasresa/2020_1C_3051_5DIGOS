@@ -94,8 +94,7 @@ namespace TGC.Group.Model.Objects
                     name = fish.name + "_" + index
                 };
                 newFish.mesh = fish.mesh.createMeshInstance(newFish.name);
-                newFish.mesh.Transform = TGCMatrix.Scaling(Constants.Scale);
-                newFish.mesh.BoundingBox.scaleTranslate(newFish.mesh.Position, Constants.Scale);
+                newFish.mesh.Transform = TGCMatrix.Scaling(Constants.Scale);                
                 fishes.Add(newFish);
             }
         }
@@ -110,6 +109,11 @@ namespace TGC.Group.Model.Objects
                 else if (ActivateMove)
                     PerformNormalMove(elapsedTime, speed: 500, GetFishHeadPosition());
             });
+        }
+
+        public void UpdateBoundingBox()
+        {
+            ListFishes.ForEach(fish => fish.mesh.BoundingBox.scaleTranslate(fish.mesh.Position, Constants.Scale));
         }
 
         public void Render()

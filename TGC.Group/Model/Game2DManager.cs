@@ -1,4 +1,5 @@
 ﻿using System.Drawing;
+using System.Reflection;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Status;
@@ -23,6 +24,9 @@ namespace TGC.Group.Model
             public static TGCVector2 LIFE_SHARK_POSITION = new TGCVector2(SCREEN_WIDTH - LIFE_SHARK_SIZE.X - 20, 0);
             public static TGCVector2 LIFE_SHARK_TEXT_SIZE = new TGCVector2(130, 100);
             public static TGCVector2 LIFE_SHARK_TEXT_POSITION = new TGCVector2(LIFE_SHARK_POSITION.X - LIFE_SHARK_TEXT_SIZE.X, 20f);
+            public static TGCVector2 POINTER_SCALE = new TGCVector2(1, 1);
+            public static TGCVector2 POINTER_SIZE = new TGCVector2(64 * POINTER_SCALE.X, 64 * POINTER_SCALE.Y);
+            public static TGCVector2 POINTER_POSITION = new TGCVector2((SCREEN_WIDTH - POINTER_SIZE.X) / 2, (SCREEN_HEIGHT - POINTER_SIZE.Y) /2);
         }
 
         private readonly string MediaDir;
@@ -34,6 +38,8 @@ namespace TGC.Group.Model
         private readonly DrawText OxygenCharacterText;
         private readonly CharacterStatus Character;
         private readonly SharkStatus Shark;
+        private readonly DrawSprite Pointer;
+        private readonly DrawSprite MousePointer;
 
         public Game2DManager(string mediaDir, CharacterStatus character, SharkStatus shark)
         {
@@ -43,6 +49,7 @@ namespace TGC.Group.Model
             LifeCharacter = new DrawSprite(MediaDir);
             LifeShark = new DrawSprite(MediaDir);
             OxygenCharacter = new DrawSprite(MediaDir);
+            Pointer = new DrawSprite(MediaDir);
             LifeCharacterText = new DrawText();
             LifeSharkText = new DrawText();
             OxygenCharacterText = new DrawText();
@@ -54,6 +61,10 @@ namespace TGC.Group.Model
             LifeCharacter.Dispose();
             LifeShark.Dispose();
             OxygenCharacter.Dispose();
+            Pointer.Dispose();
+            LifeCharacterText.Dispose();
+            LifeSharkText.Dispose();
+            OxygenCharacterText.Dispose();
         }
 
         private void Init()
@@ -61,6 +72,7 @@ namespace TGC.Group.Model
             InitializerLifeCharacter();
             InitializerLifeShark();
             InitializerOxygenCharacter();
+            InitializerPointer();
         }
 
         private void InitializerLifeCharacter()
@@ -86,12 +98,19 @@ namespace TGC.Group.Model
             OxygenCharacterText.SetTextAndPosition(text: "OXYGEN", position: Constants.OXYGEN_CHARACTER_TEXT_POSITION);
             OxygenCharacterText.Color = Color.DeepSkyBlue;
         }
+        
+        private void InitializerPointer()
+        {
+            Pointer.SetImage("Pointer.png");
+            Pointer.SetInitialScallingAndPosition(Constants.POINTER_SCALE, Constants.POINTER_POSITION);
+        }
 
         public void Render()
         {
             LifeShark.Render();
             LifeCharacter.Render();
             OxygenCharacter.Render();
+            Pointer.Render();
             LifeSharkText.Render();
             LifeCharacterText.Render();
             OxygenCharacterText.Render();
@@ -100,7 +119,6 @@ namespace TGC.Group.Model
         public void Update()
         {
             UpdateSprite(LifeShark, Shark.Life, Shark.GetLifeMax());
-            
             UpdateSprite(LifeCharacter, Character.Life, Character.GetLifeMax());
             UpdateSprite(OxygenCharacter, Character.Oxygen, Character.GetOxygenMax());
         }

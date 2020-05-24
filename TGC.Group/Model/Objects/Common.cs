@@ -43,7 +43,7 @@ namespace TGC.Group.Model.Objects
         private TypeCommon oreSilver;
         private TypeCommon oreGold;
         private TypeCommon rock;
-        private string MediaDir, ShadersDir;
+        private readonly string MediaDir, ShadersDir;
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
 
         public List<TypeCommon> ListCorals = new List<TypeCommon>();
@@ -116,9 +116,9 @@ namespace TGC.Group.Model.Objects
 
         public void LocateBody()
         {
-            ListCorals.ForEach(coral => coral.Body.Translate(coral.mesh.Position.ToBulletVector3()));
-            ListOres.ForEach(ore => ore.Body.Translate(ore.mesh.Position.ToBulletVector3()));
-            ListRock.ForEach(rock => rock.Body.Translate(rock.mesh.Position.ToBulletVector3()));
+            ListCorals.ForEach(coral => { coral.Body.Translate(coral.mesh.Position.ToBulletVector3()); coral.mesh.BoundingBox.scaleTranslate(coral.mesh.Position, Constants.Scale); });
+            ListOres.ForEach(ore => { ore.Body.Translate(ore.mesh.Position.ToBulletVector3()); ore.mesh.BoundingBox.scaleTranslate(ore.mesh.Position, Constants.Scale); });
+            ListRock.ForEach(rock => { rock.Body.Translate(rock.mesh.Position.ToBulletVector3()); rock.mesh.BoundingBox.scaleTranslate(rock.mesh.Position, Constants.Scale); });
         }
 
         private void CreateRigidBody(ref TypeCommon common)
@@ -139,7 +139,6 @@ namespace TGC.Group.Model.Objects
                 };
                 newCommon.mesh = common.mesh.createMeshInstance(newCommon.name);
                 newCommon.mesh.Transform = TGCMatrix.Scaling(Constants.Scale);
-                newCommon.mesh.BoundingBox.scaleTranslate(newCommon.mesh.Position, Constants.Scale);
                 CreateRigidBody(ref newCommon);
                 commons.Add(newCommon);
             }
@@ -147,7 +146,7 @@ namespace TGC.Group.Model.Objects
 
         public void Render()
         {
-            ListCorals.ForEach(coral => coral.mesh.Render());
+            ListCorals.ForEach(coral => { coral.mesh.Render(); });
             ListOres.ForEach(ore => ore.mesh.Render());
             ListRock.ForEach(rock => rock.mesh.Render());
         }
