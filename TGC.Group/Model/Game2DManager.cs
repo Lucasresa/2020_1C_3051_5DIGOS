@@ -1,5 +1,7 @@
 ﻿using System.Drawing;
 using System.Reflection;
+using System.Security.AccessControl;
+using System.Windows.Forms;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Status;
@@ -27,6 +29,9 @@ namespace TGC.Group.Model
             public static TGCVector2 POINTER_SCALE = new TGCVector2(1, 1);
             public static TGCVector2 POINTER_SIZE = new TGCVector2(64 * POINTER_SCALE.X, 64 * POINTER_SCALE.Y);
             public static TGCVector2 POINTER_POSITION = new TGCVector2((SCREEN_WIDTH - POINTER_SIZE.X) / 2, (SCREEN_HEIGHT - POINTER_SIZE.Y) /2);
+            public static TGCVector2 MOUSE_POINTER_SCALE = new TGCVector2(1, 1);
+            public static TGCVector2 MOUSE_POINTER_SIZE = new TGCVector2(32 * POINTER_SCALE.X, 32 * POINTER_SCALE.Y);
+            public static TGCVector2 MOUSE_POINTER_POSITION = new TGCVector2((SCREEN_WIDTH - MOUSE_POINTER_SIZE.X) / 2, (SCREEN_HEIGHT - MOUSE_POINTER_SIZE.Y) /2);
         }
 
         private readonly string MediaDir;
@@ -41,6 +46,8 @@ namespace TGC.Group.Model
         private readonly DrawSprite Pointer;
         private readonly DrawSprite MousePointer;
 
+        public bool ActiveInventory { get; set; }
+
         public Game2DManager(string mediaDir, CharacterStatus character, SharkStatus shark)
         {
             MediaDir = mediaDir;
@@ -50,6 +57,7 @@ namespace TGC.Group.Model
             LifeShark = new DrawSprite(MediaDir);
             OxygenCharacter = new DrawSprite(MediaDir);
             Pointer = new DrawSprite(MediaDir);
+            MousePointer = new DrawSprite(MediaDir);
             LifeCharacterText = new DrawText();
             LifeSharkText = new DrawText();
             OxygenCharacterText = new DrawText();
@@ -62,6 +70,7 @@ namespace TGC.Group.Model
             LifeShark.Dispose();
             OxygenCharacter.Dispose();
             Pointer.Dispose();
+            MousePointer.Dispose();
             LifeCharacterText.Dispose();
             LifeSharkText.Dispose();
             OxygenCharacterText.Dispose();
@@ -73,6 +82,7 @@ namespace TGC.Group.Model
             InitializerLifeShark();
             InitializerOxygenCharacter();
             InitializerPointer();
+            InitializerMousePointer();
         }
 
         private void InitializerLifeCharacter()
@@ -105,15 +115,28 @@ namespace TGC.Group.Model
             Pointer.SetInitialScallingAndPosition(Constants.POINTER_SCALE, Constants.POINTER_POSITION);
         }
 
+        private void InitializerMousePointer()
+        {
+            MousePointer.SetImage("MousePointer.png");
+            MousePointer.SetInitialScallingAndPosition(Constants.MOUSE_POINTER_SCALE, Constants.MOUSE_POINTER_POSITION);
+        }
+
         public void Render()
         {
             LifeShark.Render();
             LifeCharacter.Render();
             OxygenCharacter.Render();
-            Pointer.Render();
             LifeSharkText.Render();
             LifeCharacterText.Render();
             OxygenCharacterText.Render();
+
+            if (!ActiveInventory)
+                Pointer.Render();
+            else
+            {
+                MousePointer.Position = new TGCVector2(Cursor.Position.X, Cursor.Position.Y);
+                MousePointer.Render();
+            }
         }
 
         public void Update()

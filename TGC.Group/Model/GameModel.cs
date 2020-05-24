@@ -1,4 +1,6 @@
-﻿using TGC.Core.Direct3D;
+﻿using Microsoft.DirectX.DirectInput;
+using System.Security.Policy;
+using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Group.Model.Status;
 using TGC.Group.Utils;
@@ -28,6 +30,8 @@ namespace TGC.Group.Model
         private SharkStatus SharkStatus;
         private Ray Ray;
         private GameInventoryManager InventoryManager;
+        
+        private bool ActiveInventory { get; set; }
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
@@ -55,8 +59,16 @@ namespace TGC.Group.Model
             SharkStatus.Update();
             Draw2DManager.Update();
             EventsManager.Update(ElapsedTime, ObjectManager.Fish);
-            InventoryManager.AddItem(ObjectManager.ItemSelected);
-            ObjectManager.ItemSelected = (0, null);
+
+            if (Input.keyPressed(Key.I))
+                Draw2DManager.ActiveInventory = camera.Lock = ActiveInventory = !ActiveInventory;
+
+            if (!ActiveInventory)
+            {
+                InventoryManager.AddItem(ObjectManager.ItemSelected);
+                ObjectManager.ItemSelected = (0, null);
+            }
+            
         }
 
         public override void Render()

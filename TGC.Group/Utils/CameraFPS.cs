@@ -25,6 +25,7 @@ namespace TGC.Group.Utils
         private TGCMatrix CameraRotation;
         public float Longitude { get; private set; } = -FastMath.PI / 10.0f;
         public float Latitude { get; private set; }  = FastMath.PI_HALF;
+        public bool Lock { get; set; }
     
         public CameraFPS(TgcD3dInput input)
         {
@@ -33,6 +34,9 @@ namespace TGC.Group.Utils
         
         public override void UpdateCamera(float elapsedTime)
         {
+            if (Lock)
+                return;
+
             Cursor.Hide();
             Rotation();
             var target = TGCVector3.TransformNormal(Constants.directionView, CameraRotation);
@@ -42,7 +46,7 @@ namespace TGC.Group.Utils
             base.SetCamera(Position, targetPosition, rotacionVectorUP);
         }
 
-        public bool isOutside()
+        public bool IsOutside()
         {
             return Position.Y > 0;
         }
