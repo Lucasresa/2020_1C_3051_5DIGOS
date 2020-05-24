@@ -27,10 +27,6 @@ namespace TGC.Group.Model
         public Vegetation Vegetation { get; set; }
         public Common Common { get; set; }
 
-        public bool CharacterLooksAtTheHatch { get; set; }
-        public bool CharacterCanAtack { get; set; }
-        public bool CharacterNearShip { get; set; }
-
         public (int ID, string name) ItemSelected { get; set; }
 
         public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input, Ray ray)
@@ -80,7 +76,6 @@ namespace TGC.Group.Model
             Common.ListCorals.ForEach(coral => PhysicalWorld.AddBodyToTheWorld(coral.Body));
             Common.ListOres.ForEach(ore => PhysicalWorld.AddBodyToTheWorld(ore.Body));
             Common.ListRock.ForEach(rock => PhysicalWorld.AddBodyToTheWorld(rock.Body));
-
         }
 
         public void Dispose()
@@ -111,11 +106,10 @@ namespace TGC.Group.Model
         public void Update(float elapsedTime, float timeBeetweenUpdate)
         {
             PhysicalWorld.dynamicsWorld.StepSimulation(elapsedTime, 10, timeBeetweenUpdate);
-            Character.Update(Skybox);
             Fish.Update(elapsedTime, Camera);
-            CharacterLooksAtTheHatch = Ray.intersectsWithObject(Ship.Plane.BoundingBox, distance: 500);
-            CharacterCanAtack = Ray.intersectsWithObject(Shark.Mesh.BoundingBox, distance: 150);
-            CharacterNearShip = Ray.intersectsWithObject(Ship.OutdoorMesh.BoundingBox, distance: 500);
+            Character.LooksAtTheHatch = Ray.intersectsWithObject(Ship.Plane.BoundingBox, distance: 500);
+            Character.CanAtack = Ray.intersectsWithObject(Shark.Mesh.BoundingBox, distance: 150);
+            Character.NearShip = Ray.intersectsWithObject(Ship.OutdoorMesh.BoundingBox, distance: 500);
 
             if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
             {
@@ -123,6 +117,11 @@ namespace TGC.Group.Model
                 DetectSelectedCoralItem();
                 DetectSelectedOreItem();
             }
+        }
+
+        public void UpdateCharacter()
+        {
+            Character.Update(Skybox);
         }
 
         private void DetectSelectedCoralItem()

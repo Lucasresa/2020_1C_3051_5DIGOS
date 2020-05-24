@@ -2,6 +2,7 @@
 using System.Security.Policy;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
+using TGC.Group.Model.Objects;
 using TGC.Group.Model.Status;
 using TGC.Group.Utils;
 
@@ -54,22 +55,26 @@ namespace TGC.Group.Model
 
         public override void Update()
         {
-            ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
-            CharacterStatus.Update();
-            SharkStatus.Update();
-            Draw2DManager.Update();
-            EventsManager.Update(ElapsedTime, ObjectManager.Fish);
+            ObjectManager.UpdateCharacter();
 
             if (Input.keyPressed(Key.I))
                 Draw2DManager.ActiveInventory = camera.Lock = ActiveInventory = !ActiveInventory;
 
             if (!ActiveInventory)
             {
+                ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
+                EventsManager.Update(ElapsedTime, ObjectManager.Fish);
                 InventoryManager.AddItem(ObjectManager.ItemSelected);
                 ObjectManager.ItemSelected = (0, null);
+                CharacterStatus.Update();
+                SharkStatus.Update();
+                Draw2DManager.Update();
+                Draw2DManager.UpdateItems(InventoryManager.ListItems);
             }
-            
-            Draw2DManager.UpdateItems(InventoryManager.ListItems);
+
+            if (Input.keyPressed(Key.E))
+                ObjectManager.Character.Teleport();
+
         }
 
         public override void Render()

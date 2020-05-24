@@ -15,7 +15,7 @@ namespace TGC.Group.Model.Objects
         {
             public static TGCVector3 outdoorPosition = new TGCVector3(1300, 3505, 20);
             public static TGCVector3 indoorPosition = new TGCVector3(515, -2340, -40);
-            public static float speed = 850f;
+            public static float speed = 550f;
             public static TGCVector3 cameraHeight = new TGCVector3(0, 85, 0);
             public static TGCVector3 planeDirector
             {
@@ -41,9 +41,13 @@ namespace TGC.Group.Model.Objects
         public bool DamageReceived { get; set; }
         public bool IsInsideShip { get { return Camera.Position.Y < 0; } }
         public bool IsOutsideShip { get => !IsInsideShip; }
-        public bool IsOutOfWater { get { return Camera.Position.Y > 3105; } }
+        public bool IsOutOfWater { get { return Camera.Position.Y > 3505; } }
 
-        public bool HasARod { get; set; }
+        public bool LooksAtTheHatch { get; set; }
+        public bool CanAtack { get; set; }
+        public bool NearShip { get; set; }
+
+        public bool HasARod { get; set; } // TODO: Creo que no va aca
 
         public Character(CameraFPS camera, TgcD3dInput input)
         {
@@ -52,7 +56,7 @@ namespace TGC.Group.Model.Objects
             Init();
         }
 
-        private void ChangePosition(TGCVector3 newPosition)
+        public void ChangePosition(TGCVector3 newPosition)
         {
             Body.CenterOfMassTransform = TGCMatrix.Translation(newPosition).ToBulletMatrix();
             Camera.Position = new TGCVector3(Body.CenterOfMassPosition);
@@ -138,17 +142,9 @@ namespace TGC.Group.Model.Objects
                     Input.keyUp(Key.Space) || Input.keyUp(Key.LeftControl) )
                 RestartBodySpeed();
         }
-
-        public void Teleport()
-        {
-            if (Input.keyPressed(Key.E))
-                ChangePosition(Constants.outdoorPosition);
-        }
-
+        
         public void Update(Skybox skybox)
         {
-            Teleport();
-
             var speed = Constants.speed;
             var director = Camera.Direction;
             var sideRotation = Camera.Latitude - prevLatitude;
@@ -159,7 +155,7 @@ namespace TGC.Group.Model.Objects
             Body.AngularVelocity = Vector3.Zero;
 
             if (IsOutOfWater)
-                Body.ApplyCentralImpulse(Vector3.UnitY * -5);
+                Body.ApplyCentralImpulse(Vector3.UnitY * -3);
             else if (!IsInsideShip)
                 OutsideMovement(director, sideDirector, speed, skybox);
             else
@@ -169,6 +165,12 @@ namespace TGC.Group.Model.Objects
 
             Body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * Gravity;
             Camera.Position = new TGCVector3(Body.CenterOfMassPosition) + Constants.cameraHeight;
+        }
+
+        public void Teleport()
+        {
+            if ( LooksAtTheHatch ) ChangePosition(Constants.outdoorPosition);
+            if ( NearShip ) ChangePosition(Constants.indoorPosition);
         }
     }
 }
