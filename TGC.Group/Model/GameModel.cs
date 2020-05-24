@@ -26,6 +26,8 @@ namespace TGC.Group.Model
         private GameEventsManager EventsManager;
         private CharacterStatus CharacterStatus;
         private SharkStatus SharkStatus;
+        private Ray Ray;
+        private GameInventoryManager InventoryManager;
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
@@ -37,11 +39,13 @@ namespace TGC.Group.Model
         {
             Camera = new CameraFPS(Input);
             camera = (CameraFPS)Camera;
-            ObjectManager = new GameObjectManager(MediaDir, ShadersDir, camera, Input);
+            Ray = new Ray(Input);
+            ObjectManager = new GameObjectManager(MediaDir, ShadersDir, camera, Input, Ray);
             CharacterStatus = new CharacterStatus(ObjectManager.Character);
             SharkStatus = new SharkStatus(ObjectManager.Shark);
             Draw2DManager = new Game2DManager(MediaDir, CharacterStatus, SharkStatus);
             EventsManager = new GameEventsManager(ObjectManager.Shark, ObjectManager.Character);
+            InventoryManager = new GameInventoryManager(Ray);
         }
 
         public override void Update()

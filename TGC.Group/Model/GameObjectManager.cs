@@ -7,9 +7,10 @@ namespace TGC.Group.Model
     class GameObjectManager
     {
         private readonly string MediaDir, ShadersDir;
-        private PhysicalWorld PhysicalWorld;
         private MeshBuilder MeshBuilder;
+        private Ray Ray;
 
+        public PhysicalWorld PhysicalWorld { get; set; }
         public TgcD3dInput Input { get; set; }
         public CameraFPS Camera { get; set; }
         public Character Character { get; set; }
@@ -22,12 +23,17 @@ namespace TGC.Group.Model
         public Vegetation Vegetation { get; set; }
         public Common Common { get; set; }
 
-        public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input)
+        public bool CharacterLooksAtTheHatch { get; set; }
+        public bool CharacterCanAtack { get; set; }
+        public bool CharacterNearShip { get; set; }
+
+        public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input, Ray ray)
         {
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
             Camera = camera;
             Input = input;
+            Ray = ray;
             InitializerObjects();
         }
 
@@ -98,6 +104,10 @@ namespace TGC.Group.Model
             PhysicalWorld.dynamicsWorld.StepSimulation(elapsedTime, 10, timeBeetweenUpdate);
             Character.Update(Skybox);
             Fish.Update(elapsedTime, Camera);
+            CharacterLooksAtTheHatch = Ray.intersectsWithObject(Ship.Plane.BoundingBox, distance: 500);
+            CharacterCanAtack = Ray.intersectsWithObject(Shark.Mesh.BoundingBox, distance: 150);
+            CharacterNearShip = Ray.intersectsWithObject(Ship.OutdoorMesh.BoundingBox, distance: 500);
         }
     }
 }
+

@@ -103,6 +103,7 @@
     </Compile>
     <Compile Include="Model\Game2DManager.cs" />
     <Compile Include="Model\GameEventsManager.cs" />
+    <Compile Include="Model\GameInventoryManager.cs" />
     <Compile Include="Model\GameModel.cs" />
     <Compile Include="Model\GameObjectManager.cs" />
     <Compile Include="Model\Objects\Character.cs" />

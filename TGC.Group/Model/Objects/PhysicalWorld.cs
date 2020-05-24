@@ -51,5 +51,10 @@ namespace TGC.Group.Model.Objects
             overlappingPairCache = new DbvtBroadphase();
             dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, overlappingPairCache, constraintSolver, collisionConfiguration) { Gravity = gravityZero };
         }
+
+        public void RemoveBodyToTheWorld(RigidBody Body)
+        {
+            dynamicsWorld.RemoveRigidBody(Body);
+        }
     }
 }
