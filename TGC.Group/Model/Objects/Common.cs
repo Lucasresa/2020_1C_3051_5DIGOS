@@ -19,13 +19,13 @@ namespace TGC.Group.Model.Objects
 
         struct Constants
         {
-            public static string NAME_CORAL_NORMAL = "normalCoral";
-            public static string NAME_CORAL_TREE = "treeCoral";
-            public static string NAME_CORAL_SPIRAL = "spiralCoral";
-            public static string NAME_ORE_IRON = "iron";
-            public static string NAME_ORE_SILVER = "silver";
-            public static string NAME_ORE_GOLD = "gold";
-            public static string NAME_ROCK = "rock";
+            public static string NAME_CORAL_NORMAL = "NORMALCORAL";
+            public static string NAME_CORAL_TREE = "TREECORAL";
+            public static string NAME_CORAL_SPIRAL = "SPIRALCORAL";
+            public static string NAME_ORE_GOLD = "GOLD";
+            public static string NAME_ORE_IRON = "IRON";
+            public static string NAME_ORE_SILVER = "SILVER";
+            public static string NAME_ROCK = "ROCK";
             public static int QUANTITY_CORAL_NORMAL = 20;
             public static int QUANTITY_CORAL_TREE = 20;
             public static int QUANTITY_CORAL_SPIRAL = 20;

@@ -17,8 +17,8 @@ namespace TGC.Group.Model.Objects
 
         private struct Constants
         {
-            public static string NAME_FISH_NORMAL = "normalFish";
-            public static string NAME_FISH_YELLOW = "yellowFish";
+            public static string NAME_FISH_NORMAL = "NORMALFISH";
+            public static string NAME_FISH_YELLOW = "YELLOWFISH";
             public static int QUANTITY_FISH_NORMAL = 20;
             public static int QUANTITY_FISH_YELLOW = 20;
             public static TGCVector2 FishHeight = new TGCVector2(700, 2000);

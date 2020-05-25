@@ -10,13 +10,16 @@ namespace TGC.Group.Model
 {
     class GameInventoryManager
     {
-        public struct Items
-        {
-            public int ID;
-            public string name;
-        }
-
-        public List<Items> ListItems { get; set; }
+        public Dictionary<string, List<string>> Items;
+        public readonly List<string> CoralNormal = new List<string>();
+        public readonly List<string> CoralSpiral = new List<string>();
+        public readonly List<string> CoralTree = new List<string>();
+        public readonly List<string> FishNormal = new List<string>();
+        public readonly List<string> FishYellow = new List<string>();
+        public readonly List<string> OreGold = new List<string>();
+        public readonly List<string> OreIron = new List<string>();
+        public readonly List<string> OreSilver = new List<string>();
+        public readonly List<string> Rock = new List<string>();
 
         public GameInventoryManager()
         {
@@ -25,18 +28,27 @@ namespace TGC.Group.Model
 
         private void Init()
         {
-            ListItems = new List<Items>();
+            Items = new Dictionary<string, List<string>>
+            {
+                { "NORMALCORAL", CoralNormal },
+                { "SPIRALCORAL", CoralSpiral },
+                { "TREECORAL", CoralTree },
+                { "NORMALFISH", FishNormal },
+                { "YELLOWFISH", FishYellow },
+                { "GOLD", OreGold },
+                { "IRON", OreIron },
+                { "SILVER", OreSilver },
+                { "ROCK", Rock }
+            };
         }
 
-        public void AddItem((int ID, string name) itemSelected)
+        public void AddItem(string itemSelected)
         {
-            if ( itemSelected.name is null )
+            if ( itemSelected is null )
                 return;
 
-            Items item;
-            item.ID = itemSelected.ID;
-            item.name = itemSelected.name;
-            ListItems.Add(item);
+            var name = itemSelected.Substring(0, itemSelected.IndexOf('_'));
+            Items[name].Add(itemSelected);
         }
     }
 }

@@ -65,5 +65,10 @@ namespace TGC.Group.Utils
         {
             return FastMath.Abs(numberB - numberA);
         }
+
+        public static int CountOcurrences(List<string> list, string expressionSearch)
+        {
+            return list.Count(expression => expression.Contains(expressionSearch));
+        }
     }
 }

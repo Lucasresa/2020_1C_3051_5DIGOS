@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.DirectX.DirectInput;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
@@ -39,9 +40,7 @@ namespace TGC.Group.Model
             public static TGCVector2 INVENTORY_TEXT_POSITION = new TGCVector2(10, SCREEN_HEIGHT - INVENTORY_TEXT_SIZE.Y);
             public static string INVENTORY_TEXT_WITHOUT_ITEMS = "Inventory without items!";
         }
-
-
-        private List<string> Items = new List<string>();
+        
         private readonly string MediaDir;
         private readonly CharacterStatus Character;
         private readonly SharkStatus Shark;
@@ -166,21 +165,16 @@ namespace TGC.Group.Model
             UpdateSprite(OxygenCharacter, Character.Oxygen, Character.GetOxygenMax());
         }
 
-        public void UpdateItems(List<Items> items)
+        public void UpdateItems(Dictionary<string, List<string>> items)
         {
-            if (items.Count == Items.Count)
-                return;
-            
-            List<string> itemsName = new List<string>();
-            items.ForEach(item => itemsName.Add(item.name.ToUpper()));
-            Items.RemoveRange(0, Items.Count);
-            Items.AddRange(itemsName);
-            if (Items.Count > 0)
-                InventoryText.Text = "Inventario: " + "\n\nGold: " + Items.Count(item => item.Contains("GOLD")) + "\nSilver: " + Items.Count(item => item.Contains("SILVER")) +
-                                     "\nRock: " + Items.Count(item => item.Contains("ROCK")) + "\nIron: " + Items.Count(item => item.Contains("IRON")) +
-                                     "\nFish: " + Items.Count(item => item.Contains("NORMALFISH")) + "\nYellow Fish: " + Items.Count(item => item.Contains("YELLOW")) +
-                                     "\nSpiral Coral: " + Items.Count(item => item.Contains("SPIRALCORAL")) +
-                                     "\nNormal Coral: " + Items.Count(item => item.Contains("NORMALCORAL")) + "\nTree Coral: " + Items.Count(item => item.Contains("TREECORAL"));
+            var hasItems = items.Values.ToList().All(listItems => listItems.Count > 0 ? true : false );
+
+            if (hasItems)
+                InventoryText.Text = "Inventario: " + "\n\nGold: " + items["GOLD"].Count + "\nSilver: " + items["SILVER"].Count +
+                                     "\nRock: " + items["ROCK"].Count + "\nIron: " + items["IRON"].Count +
+                                     "\nFish: " + items["NORMALFISH"].Count + "\nYellow Fish: " + items["YELLOW"].Count +
+                                     "\nSpiral Coral: " + items["SPIRALCORAL"].Count + "\nNormal Coral: " + items["NORMALCORAL"].Count +
+                                     "\nTree Coral: " + items["TREECORAL"].Count;
             else
                 InventoryText.Text = Constants.INVENTORY_TEXT_WITHOUT_ITEMS;
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.DirectX.DirectInput;
+using System.Collections.Generic;
 using System.Security.Policy;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
@@ -33,6 +34,7 @@ namespace TGC.Group.Model
         private GameInventoryManager InventoryManager;
         
         private bool ActiveInventory { get; set; }
+        private bool CanCraftObjects { get { return ObjectManager.Character.IsInsideShip; } }
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
@@ -65,11 +67,11 @@ namespace TGC.Group.Model
                 ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
                 EventsManager.Update(ElapsedTime, ObjectManager.Fish);
                 InventoryManager.AddItem(ObjectManager.ItemSelected);
-                ObjectManager.ItemSelected = (0, null);
+                ObjectManager.ItemSelected = null;
                 CharacterStatus.Update();
                 SharkStatus.Update();
                 Draw2DManager.Update();
-                Draw2DManager.UpdateItems(InventoryManager.ListItems);
+                Draw2DManager.UpdateItems(InventoryManager.Items);
             }
 
             if (Input.keyPressed(Key.E))

@@ -12,7 +12,7 @@ namespace TGC.Group.Model
     {
         private readonly string MediaDir, ShadersDir;
         private MeshBuilder MeshBuilder;
-        private Ray Ray;
+        private readonly Ray Ray;
 
         public PhysicalWorld PhysicalWorld { get; set; }
         public TgcD3dInput Input { get; set; }
@@ -27,7 +27,7 @@ namespace TGC.Group.Model
         public Vegetation Vegetation { get; set; }
         public Common Common { get; set; }
 
-        public (int ID, string name) ItemSelected { get; set; }
+        public string ItemSelected { get; set; }
 
         public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input, Ray ray)
         {
@@ -136,7 +136,7 @@ namespace TGC.Group.Model
 
             if (item.mesh != null)
             {
-                ItemSelected = (item.ID, item.name);
+                ItemSelected = item.name;
                 PhysicalWorld.dynamicsWorld.RemoveRigidBody(item.Body);
                 Common.ListCorals.Remove(item);
                 item.mesh.Dispose();
@@ -150,7 +150,7 @@ namespace TGC.Group.Model
 
             if (item.mesh != null)
             {
-                ItemSelected = (item.ID, item.name);
+                ItemSelected = item.name;
                 PhysicalWorld.dynamicsWorld.RemoveRigidBody(item.Body);
                 Common.ListOres.Remove(item);
                 item.mesh.Dispose();
@@ -167,7 +167,7 @@ namespace TGC.Group.Model
             
             if (item.mesh != null)
             {
-                ItemSelected = (item.ID, item.name);
+                ItemSelected = item.name;
                 Fish.ListFishes.Remove(item);
                 item.mesh.Dispose();
             }
