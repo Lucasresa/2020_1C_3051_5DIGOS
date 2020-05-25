@@ -64,7 +64,7 @@ namespace TGC.Group.Model
             {
                 ObjectManager.UpdateCharacter();
                 ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
-                EventsManager.Update(ElapsedTime, ObjectManager.Fish);
+                EventsManager.Update(ElapsedTime, ObjectManager.Fishes);
                 InventoryManager.AddItem(ObjectManager.ItemSelected);
                 ObjectManager.ItemSelected = null;
                 CharacterStatus.Update();

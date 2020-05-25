@@ -1,20 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Utils;
+using static TGC.Group.Model.Objects.Common;
 
 namespace TGC.Group.Model.Objects
 {
     class Fish
     {
-        public struct TypeFish
-        {
-            public int ID;
-            public string name;
-            public TgcMesh mesh;
-        }
-
         private struct Constants
         {
             public static string NAME_FISH_NORMAL = "NORMALFISH";
@@ -28,7 +23,7 @@ namespace TGC.Group.Model.Objects
             public static float ScapeFromPlayerCooldown = 3;
         }
 
-        private string MediaDir, ShadersDir;
+        private string ShadersDir;
         private TGCVector3 director;
         private float acumulatedXRotation  = 0;
         private float acumulatedYRotation = 0;
@@ -36,89 +31,43 @@ namespace TGC.Group.Model.Objects
         private float time;
         private readonly Skybox Skybox;
         private readonly Terrain Terrain;
-        private TypeFish normalFish;
-        private TypeFish yellowFish;
-        private TgcMesh currentMesh;
 
         public bool ActivateMove { get; set; }
-        public List<TypeFish> ListFishes = new List<TypeFish>();
+        public TypeCommon Mesh { get; private set; }
+        public TgcBoundingAxisAlignBox BoundingBox { get { return Mesh.mesh.BoundingBox; } }
 
-        public Fish(string mediaDir, string shadersDir, Skybox skybox, Terrain terrain)
+        public Fish(string shadersDir, Skybox skybox, Terrain terrain, TypeCommon mesh)
         {
-            MediaDir = mediaDir;
             ShadersDir = shadersDir;
             director = new TGCVector3(0, 0, 1);
             Skybox = skybox;
             Terrain = terrain;
+            Mesh = mesh;
             Init();
         }
 
         public void Dispose()
         {
-            ListFishes.ForEach(fish => fish.mesh.Dispose());
+            Mesh.mesh.Dispose();
         }
 
         private void Init()
         {
             time = Constants.ScapeFromPlayerCooldown;
             TotalRotation = TGCMatrix.Identity;
-            InitializerFishes();
-            GenerateDuplicates(normalFish, ref ListFishes);
-            GenerateDuplicates(yellowFish, ref ListFishes);
-        }
-
-        private void InitializerFishes()
-        {
-            normalFish.name = Constants.NAME_FISH_NORMAL;
-            normalFish.ID = Constants.QUANTITY_FISH_NORMAL;
-            LoadInitial(ref normalFish);
-
-            yellowFish.name = Constants.NAME_FISH_YELLOW;
-            yellowFish.ID = Constants.QUANTITY_FISH_YELLOW;
-            LoadInitial(ref yellowFish);
-        }
-
-        private void LoadInitial(ref TypeFish fish)
-        {
-            fish.mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + fish.name + "-TgcScene.xml").Meshes[0];
-            fish.mesh.Name = fish.name;
-        }
-
-        public void GenerateDuplicates(TypeFish fish, ref List<TypeFish> fishes)
-        {
-            foreach (int index in Enumerable.Range(0, fish.ID))
-            {
-                TypeFish newFish = new TypeFish
-                {
-                    ID = index,
-                    name = fish.name + "_" + index
-                };
-                newFish.mesh = fish.mesh.createMeshInstance(newFish.name);
-                newFish.mesh.Transform = TGCMatrix.Scaling(Constants.Scale);                
-                fishes.Add(newFish);
-            }
         }
 
         public void Update(float elapsedTime, CameraFPS camera)
         {
-            ListFishes.ForEach(fish =>
-            {
-                currentMesh = fish.mesh;
-                if (IsNearFromPlayer(camera.Position) && time <= 0)
-                    ChangeFishWay();
-                else if (ActivateMove)
-                    PerformNormalMove(elapsedTime, speed: 500, GetFishHeadPosition());
-            });
-        }
-
-        public void UpdateBoundingBox()
-        {
-            ListFishes.ForEach(fish => fish.mesh.BoundingBox.scaleTranslate(fish.mesh.Position, Constants.Scale));
+            if (IsNearFromPlayer(camera.Position) && time <= 0)
+                ChangeFishWay();
+            else if (ActivateMove)
+                PerformNormalMove(elapsedTime, speed: 500, GetFishHeadPosition());
         }
 
         public void Render()
         {
-            ListFishes.ForEach(fish => fish.mesh.Render());
+            Mesh.mesh.Render();
         }
                
         private void PerformNormalMove(float elapsedTime, float speed, TGCVector3 headPosition)
@@ -168,8 +117,8 @@ namespace TGC.Group.Model.Objects
 
             TotalRotation *= rotation;
             TGCMatrix traslation = TGCMatrix.Translation(meshPosition + director * -speed * elapsedTime);
-            currentMesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * traslation;
-            currentMesh.BoundingBox.transform(currentMesh.Transform);
+            Mesh.mesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * traslation;
+            Mesh.mesh.BoundingBox.transform(Mesh.mesh.Transform);
         }
 
         private bool IsNearFromPlayer(TGCVector3 cameraPosition)
@@ -182,7 +131,7 @@ namespace TGC.Group.Model.Objects
             TGCMatrix Rotation = TGCMatrix.RotationY(-RotationYSign() * FastMath.PI_HALF);
             director.TransformCoordinate(Rotation);
             TotalRotation *= Rotation;
-            currentMesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * TGCMatrix.Translation(GetMeshPosition());
+            Mesh.mesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * TGCMatrix.Translation(GetMeshPosition());
             time = Constants.ScapeFromPlayerCooldown;
         }
 
@@ -196,13 +145,13 @@ namespace TGC.Group.Model.Objects
 
         private TGCVector3 GetMeshPosition()
         {
-            var transform = currentMesh.Transform.ToBulletMatrix();
+            var transform = Mesh.mesh.Transform.ToBulletMatrix();
             return new TGCVector3(transform.Row4.X, transform.Row4.Y, transform.Row4.Z);
         }
 
         private TGCVector3 GetFishHeadPosition()
         {
-            var distanceToHead = currentMesh.BoundingBox.calculateBoxRadius();
+            var distanceToHead = Mesh.mesh.BoundingBox.calculateBoxRadius();
             return GetMeshPosition() + director * -distanceToHead;
         }
     }
