@@ -9,7 +9,6 @@ using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Status;
 using TGC.Group.Utils;
-using static TGC.Group.Model.GameInventoryManager;
 
 namespace TGC.Group.Model
 {
@@ -17,6 +16,7 @@ namespace TGC.Group.Model
     {
         private struct Constants
         {
+            public static float TIME_HISTORY_TEXT = 10f;
             public static int SCREEN_WIDTH = D3DDevice.Instance.Device.Viewport.Width;
             public static int SCREEN_HEIGHT = D3DDevice.Instance.Device.Viewport.Height;
             public static TGCVector2 LIFE_CHARACTER_POSITION = new TGCVector2(100, 0);
@@ -39,6 +39,10 @@ namespace TGC.Group.Model
             public static TGCVector2 INVENTORY_TEXT_SIZE = new TGCVector2(300, 300);
             public static TGCVector2 INVENTORY_TEXT_POSITION = new TGCVector2(10, SCREEN_HEIGHT - INVENTORY_TEXT_SIZE.Y);
             public static string INVENTORY_TEXT_WITHOUT_ITEMS = "Inventory without items!";
+            public static string HELP_TEXT = "FOR HELP, PRESS F1 KEY";
+            public static string SHIP_EXIT_TEXT = "PRESS E TO EXIT";
+            public static string SHIP_ENTER_TEXT = "PRESS E TO ENTER";
+            public static string COLLECT_TEXT = "PRESS E TO PICK UP";
             public static TGCVector2 COMMON_TEXT_SIZE = new TGCVector2(300, 50);
             public static TGCVector2 HELP_TEXT_POSITION = new TGCVector2(SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 30, SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y + 20);
             public static TGCVector2 INSTRUCTION_TEXT_SIZE = new TGCVector2(860, 450);
@@ -59,6 +63,8 @@ namespace TGC.Group.Model
                                                     "\n\t- Ability to collect fish: ¨Press the N key." +
                                                     "\nTo open and close help, press F1 key.";
             public static TGCVector2 PRESS_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 145) /2 ,(SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y - 30) /2);
+            public static TGCVector2 COLLECT_TEXT_SIZE = new TGCVector2(320, 50);
+            public static TGCVector2 COLLECT_TEXT_POSITION = new TGCVector2(SCREEN_WIDTH - COLLECT_TEXT_SIZE.X, SCREEN_HEIGHT - COLLECT_TEXT_SIZE.Y);
         }
         
         private readonly string MediaDir;
@@ -74,13 +80,20 @@ namespace TGC.Group.Model
         private readonly DrawText OxygenCharacterText;
         private readonly DrawText InventoryText;
         private readonly DrawText InstructionText;
-        private readonly DrawText CommonText;
+        private readonly DrawText HelpText;
+        private readonly DrawText ShipText;
+        private readonly DrawText CollectText;
+        private readonly DrawText ItemsHistoryText;
 
+        public float ItemHistoryTime { get => Constants.TIME_HISTORY_TEXT; }
         public bool ActiveInventory { get; set; }
         public bool ShowHelp { get; set; }
         public bool ShowInfoExitShip { get; set; }
         public bool ShowInfoEnterShip { get; set; }
         public bool NearObjectForSelect { get; set; }
+        public bool ShowInfoItemCollect { get; set; }
+
+        public List<string> ItemHistory { get; set; }
 
         public Game2DManager(string mediaDir, CharacterStatus character, SharkStatus shark)
         {
@@ -97,14 +110,17 @@ namespace TGC.Group.Model
             OxygenCharacterText = new DrawText();
             InventoryText = new DrawText();
             InstructionText = new DrawText();
-            CommonText = new DrawText();
+            HelpText = new DrawText();
+            ShipText = new DrawText();
+            CollectText = new DrawText();
+            ItemsHistoryText = new DrawText();
             Init();
         }
 
         public void Dispose()
         {
             InstructionText.Dispose();
-            CommonText.Dispose();
+            HelpText.Dispose();
             InventoryText.Dispose();
             LifeCharacter.Dispose();
             LifeCharacterText.Dispose();
@@ -125,6 +141,7 @@ namespace TGC.Group.Model
             InitializerMousePointer();
             InitializerInventoryText();
             InitializerInstructionText();
+            InitializerSimpleText();
         }
 
         private void InitializerLifeCharacter()
@@ -175,12 +192,22 @@ namespace TGC.Group.Model
             InstructionText.Color = Color.Red;
         }
 
+        private void InitializerSimpleText()
+        {
+            HelpText.SetTextSizeAndPosition(text: Constants.HELP_TEXT, Constants.COMMON_TEXT_SIZE, Constants.HELP_TEXT_POSITION);
+            HelpText.Color = Color.Red;
+            ShipText.SetTextSizeAndPosition(text: Constants.SHIP_EXIT_TEXT, Constants.COMMON_TEXT_SIZE, Constants.PRESS_TEXT_POSITION);
+            CollectText.SetTextSizeAndPosition(text: Constants.COLLECT_TEXT, Constants.COMMON_TEXT_SIZE, Constants.PRESS_TEXT_POSITION);
+            ItemsHistoryText.Size = Constants.COLLECT_TEXT_SIZE;
+            ItemsHistoryText.Color = Color.Black;
+        }
+
         public void Render()
         {
             if (ShowHelp)
                 InstructionText.Render();
             else
-                CommonText.DrawSimpleText(text: "FOR HELP, PRESS F1 KEY", size: Constants.COMMON_TEXT_SIZE, position: Constants.HELP_TEXT_POSITION, color: Color.Red);
+                HelpText.Render();
 
             if (!ActiveInventory)
             {
@@ -191,16 +218,35 @@ namespace TGC.Group.Model
                 LifeCharacterText.Render();
                 OxygenCharacterText.Render();
                 Pointer.Render();
+
                 if (ShowInfoExitShip)
-                    CommonText.DrawSimpleText(text: "PRESS E TO EXIT", size: Constants.COMMON_TEXT_SIZE, position: Constants.PRESS_TEXT_POSITION, color: Color.White);
+                {
+                    ShipText.Text = Constants.SHIP_EXIT_TEXT;
+                    ShipText.Render();
+                }
                 if (ShowInfoEnterShip)
-                    CommonText.DrawSimpleText(text: "PRESS E TO ENTER", size: Constants.COMMON_TEXT_SIZE, position: Constants.PRESS_TEXT_POSITION, color: Color.White);
+                {
+                    ShipText.Text = Constants.SHIP_ENTER_TEXT;
+                    ShipText.Render();
+                }
                 if (NearObjectForSelect)
-                    CommonText.DrawSimpleText(text: "PRESS E TO PICK UP", size: Constants.COMMON_TEXT_SIZE, position: Constants.PRESS_TEXT_POSITION, color: Color.White);
+                    CollectText.Render();
+
+                if (ShowInfoItemCollect)
+                {
+                    var index = 0;
+                    ItemHistory.ForEach(item =>
+                    {
+                       index++;
+                       ItemsHistoryText.Text = "COLLECTED " + item + " + 1";
+                       ItemsHistoryText.Position = new TGCVector2(Constants.COLLECT_TEXT_POSITION.X, Constants.COLLECT_TEXT_POSITION.Y - index * 20);
+                       ItemsHistoryText.Render();
+                    });
+                }
             }
             else
             {
-                MousePointer.Position = new TGCVector2(Cursor.Position.X - 16 , Cursor.Position.Y - 16 );
+                MousePointer.Position = new TGCVector2(Cursor.Position.X - 16, Cursor.Position.Y - 16);
                 MousePointer.Render();
                 InventoryText.Render();
             }

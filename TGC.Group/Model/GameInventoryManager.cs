@@ -20,6 +20,9 @@ namespace TGC.Group.Model
         public readonly List<string> OreIron = new List<string>();
         public readonly List<string> OreSilver = new List<string>();
         public readonly List<string> Rock = new List<string>();
+        
+        public readonly List<string> ItemHistory = new List<string>();
+        public string Name { get; set; }
 
         public GameInventoryManager()
         {
@@ -46,8 +49,11 @@ namespace TGC.Group.Model
             if ( itemSelected is null )
                 return;
 
-            var name = itemSelected.Substring(0, itemSelected.IndexOf('_'));
-            Items[name].Add(itemSelected);
+            Name = itemSelected.Substring(0, itemSelected.IndexOf('_'));
+            ItemHistory.Add(Name);
+            Items[Name].Add(itemSelected);
+            if (ItemHistory.Count == 6)
+                ItemHistory.Remove(ItemHistory.First());
         }
     }
 }

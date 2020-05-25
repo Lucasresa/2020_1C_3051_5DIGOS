@@ -36,6 +36,9 @@ namespace TGC.Group.Model
         private bool ActiveInventory { get; set; }
         private bool CanCraftObjects { get { return ObjectManager.Character.IsInsideShip; } }
 
+        public float Time { get; set; }
+        public float ItemHistoryTime { get; set; }
+
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
             FixedTickEnable = true;
@@ -57,6 +60,8 @@ namespace TGC.Group.Model
 
         public override void Update()
         {
+            Time += ElapsedTime;
+
             if (Input.keyPressed(Key.I))
                 Draw2DManager.ActiveInventory = camera.Lock = ActiveInventory = !ActiveInventory;
 
@@ -66,6 +71,7 @@ namespace TGC.Group.Model
                 ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
                 EventsManager.Update(ElapsedTime, ObjectManager.Fish);
                 InventoryManager.AddItem(ObjectManager.ItemSelected);
+                Draw2DManager.ItemHistory = InventoryManager.ItemHistory;
                 ObjectManager.ItemSelected = null;
                 CharacterStatus.Update();
                 SharkStatus.Update();
@@ -92,6 +98,23 @@ namespace TGC.Group.Model
             Draw2DManager.ShowInfoExitShip = ObjectManager.Character.LooksAtTheHatch;
             Draw2DManager.ShowInfoEnterShip = ObjectManager.Character.NearShip;
             Draw2DManager.NearObjectForSelect = ObjectManager.NearObjectForSelect;
+            Draw2DManager.ShowInfoItemCollect = ObjectManager.ShowInfoItemCollect;
+
+            UpdateInfoItemCollect();
+        }
+
+        private void UpdateInfoItemCollect()
+        {
+            if (!Draw2DManager.ShowInfoItemCollect)
+                return;
+            
+            ItemHistoryTime += ElapsedTime;
+            if (ItemHistoryTime > Draw2DManager.ItemHistoryTime)
+            {
+                Draw2DManager.ShowInfoItemCollect = false;
+                InventoryManager.ItemHistory.RemoveRange(0, InventoryManager.ItemHistory.Count);
+                ItemHistoryTime = 0;
+            }
         }
 
         public override void Render()

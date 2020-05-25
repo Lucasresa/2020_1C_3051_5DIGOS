@@ -1,6 +1,7 @@
 ﻿using BulletSharp;
 using Microsoft.DirectX.DirectInput;
 using System.Linq.Expressions;
+using System.Windows.Forms;
 using TGC.Core.Input;
 using TGC.Group.Model.Objects;
 using TGC.Group.Utils;
@@ -30,6 +31,7 @@ namespace TGC.Group.Model
 
         public string ItemSelected { get; set; }
         public bool NearObjectForSelect { get; set; }
+        public bool ShowInfoItemCollect { get; set; }
 
         public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input, Ray ray)
         {
@@ -152,6 +154,7 @@ namespace TGC.Group.Model
         {
             if (item.mesh != null && Input.keyPressed(Key.E))
             {
+                ShowInfoItemCollect = true;
                 ItemSelected = item.name;
                 PhysicalWorld.RemoveBodyToTheWorld(item.Body);
                 if (item.name.ToUpper().Contains("CORAL"))
@@ -165,6 +168,7 @@ namespace TGC.Group.Model
         {
             if (item.mesh != null && Input.keyPressed(Key.E))
             {
+                ShowInfoItemCollect = true;
                 ItemSelected = item.name;
                 Fish.ListFishes.Remove(item);
             }
