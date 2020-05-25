@@ -80,11 +80,11 @@ namespace TGC.Group.Model
             if (CanCraftObjects)
             {
                 if (Input.keyPressed(Key.M))
-                    GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
+                    ObjectManager.Character.HasWeapon = GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
                 if (Input.keyPressed(Key.N))
-                    GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
+                    ObjectManager.Character.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
                 if (Input.keyPressed(Key.B))
-                    GameCraftingManager.CanCatchFish(InventoryManager.Items);
+                    ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
             }
         }
 

@@ -37,8 +37,7 @@ namespace TGC.Group.Model
                 { "YELLOWFISH", FishYellow },
                 { "GOLD", OreGold },
                 { "IRON", OreIron },
-                { "SILVER", OreSilver },
-                { "ROCK", Rock }
+                { "SILVER", OreSilver }
             };
         }
 

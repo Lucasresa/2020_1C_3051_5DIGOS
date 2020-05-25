@@ -47,7 +47,9 @@ namespace TGC.Group.Model.Objects
         public bool CanAtack { get; set; }
         public bool NearShip { get; set; }
 
-        public bool HasARod { get; set; } // TODO: Creo que no va aca
+        public bool HasWeapon { get; set; }
+        public bool HasDivingHelmet { get; set; }
+        public bool CanFish { get; set; }
 
         public Character(CameraFPS camera, TgcD3dInput input)
         {

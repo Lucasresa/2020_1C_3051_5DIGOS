@@ -167,12 +167,12 @@ namespace TGC.Group.Model
 
         public void UpdateItems(Dictionary<string, List<string>> items)
         {
-            var hasItems = items.Values.ToList().All(listItems => listItems.Count > 0 ? true : false );
+            var hasItems = items.Values.ToList().Any(listItems => listItems.Count > 0 );
 
             if (hasItems)
                 InventoryText.Text = "Inventario: " + "\n\nGold: " + items["GOLD"].Count + "\nSilver: " + items["SILVER"].Count +
-                                     "\nRock: " + items["ROCK"].Count + "\nIron: " + items["IRON"].Count +
-                                     "\nFish: " + items["NORMALFISH"].Count + "\nYellow Fish: " + items["YELLOW"].Count +
+                                     "\nIron: " + items["IRON"].Count +
+                                     "\nFish: " + items["NORMALFISH"].Count + "\nYellow Fish: " + items["YELLOWFISH"].Count +
                                      "\nSpiral Coral: " + items["SPIRALCORAL"].Count + "\nNormal Coral: " + items["NORMALCORAL"].Count +
                                      "\nTree Coral: " + items["TREECORAL"].Count;
             else

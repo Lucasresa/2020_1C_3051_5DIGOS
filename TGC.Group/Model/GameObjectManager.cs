@@ -131,6 +131,9 @@ namespace TGC.Group.Model
 
         private void DetectSelectedCoralItem()
         {
+            if (ItemSelected != null)
+                return;
+
             TypeCommon item;
             item = Common.ListCorals.Find(coral => { return Ray.intersectsWithObject(objectAABB: coral.mesh.BoundingBox, distance: 500); });
 
@@ -145,6 +148,9 @@ namespace TGC.Group.Model
 
         private void DetectSelectedOreItem()
         {
+            if (ItemSelected != null)
+                return;
+
             TypeCommon item;
             item = Common.ListOres.Find(ore => Ray.intersectsWithObject(objectAABB: ore.mesh.BoundingBox, distance: 500));
 
@@ -159,7 +165,10 @@ namespace TGC.Group.Model
 
         private void DetectSelectedFishItem()
         {
-            if (!Character.HasARod) // TODO: Revisar, porque considero que no va en el personaje. Esto deberia ir en el inventario o en el crafteo.
+            if (!Character.CanFish)
+                return;
+
+            if (ItemSelected != null)
                 return;
 
             TypeFish item;
