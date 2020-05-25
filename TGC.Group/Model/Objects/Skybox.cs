@@ -55,12 +55,12 @@ namespace TGC.Group.Model.Objects
             CalculatePerimeter();
         }
 
-        public virtual void Update()
+        public void Update()
         {
             CalculatePerimeter();
         }
 
-        public virtual void Render(Perimeter worldSize)
+        public void Render(Perimeter worldSize)
         {
             skybox.Center = new TGCVector3(FastMath.Clamp(Camera.Position.X, worldSize.xMin + Radius, worldSize.xMax - Radius),
                                         skybox.Center.Y,
@@ -113,10 +113,6 @@ namespace TGC.Group.Model.Objects
             currentPerimeter.zMax = skybox.Center.Z + size;
         }
 
-        public void Render()
-        {
-            skybox.Render();
-        }
         #endregion
     }
 }

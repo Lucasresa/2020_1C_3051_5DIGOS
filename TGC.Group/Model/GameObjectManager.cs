@@ -100,7 +100,7 @@ namespace TGC.Group.Model
             else
             {
                 Ship.RenderOutdoorShip();
-                Skybox.Render();
+                Skybox.Render(Terrain.SizeWorld());
                 Terrain.Render();
                 Water.Render();
                 Shark.Render();
@@ -153,7 +153,7 @@ namespace TGC.Group.Model
             if (item.mesh != null && Input.keyPressed(Key.E))
             {
                 ItemSelected = item.name;
-                PhysicalWorld.dynamicsWorld.RemoveRigidBody(item.Body);
+                PhysicalWorld.RemoveBodyToTheWorld(item.Body);
                 if (item.name.ToUpper().Contains("CORAL"))
                     Common.ListCorals.Remove(item);
                 else

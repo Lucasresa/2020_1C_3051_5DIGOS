@@ -42,16 +42,6 @@ namespace TGC.Group.Model.Objects
             dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, overlappingPairCache, constraintSolver, collisionConfiguration) { Gravity = gravityZero };
         }
 
-        public void Update()
-        {
-            collisionConfiguration = new DefaultCollisionConfiguration();
-            dispatcher = new CollisionDispatcher(collisionConfiguration);
-            GImpactCollisionAlgorithm.RegisterAlgorithm(dispatcher);
-            constraintSolver = new SequentialImpulseConstraintSolver();
-            overlappingPairCache = new DbvtBroadphase();
-            dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, overlappingPairCache, constraintSolver, collisionConfiguration) { Gravity = gravityZero };
-        }
-
         public void RemoveBodyToTheWorld(RigidBody Body)
         {
             dynamicsWorld.RemoveRigidBody(Body);
