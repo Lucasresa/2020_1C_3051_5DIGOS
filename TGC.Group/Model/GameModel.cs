@@ -95,6 +95,9 @@ namespace TGC.Group.Model
             if (Input.keyPressed(Key.F1))
                 Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
 
+            if (CharacterStatus.IsDead && Input.keyPressed(Key.R))
+                CharacterStatus.Respawn();
+
             Draw2DManager.ShowInfoExitShip = ObjectManager.Character.LooksAtTheHatch;
             Draw2DManager.ShowInfoEnterShip = ObjectManager.Character.NearShip;
             Draw2DManager.NearObjectForSelect = ObjectManager.NearObjectForSelect;

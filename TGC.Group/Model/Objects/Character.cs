@@ -50,7 +50,8 @@ namespace TGC.Group.Model.Objects
         public bool HasWeapon { get; set; }
         public bool HasDivingHelmet { get; set; }
         public bool CanFish { get; set; }
-
+        public bool IsDead { get; set; }
+        
         public Character(CameraFPS camera, TgcD3dInput input)
         {
             Camera = camera;
@@ -147,6 +148,11 @@ namespace TGC.Group.Model.Objects
         
         public void Update(Skybox skybox)
         {
+            Camera.Lock = IsDead ;
+
+            if (IsDead)
+                return;
+
             var speed = Constants.speed;
             var director = Camera.Direction;
             var sideRotation = Camera.Latitude - prevLatitude;
@@ -167,12 +173,18 @@ namespace TGC.Group.Model.Objects
 
             Body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * Gravity;
             Camera.Position = new TGCVector3(Body.CenterOfMassPosition) + Constants.cameraHeight;
+
         }
 
         public void Teleport()
         {
             if ( LooksAtTheHatch ) ChangePosition(Constants.outdoorPosition);
             if ( NearShip ) ChangePosition(Constants.indoorPosition);
+        }
+
+        public void Respawn()
+        {
+            ChangePosition(Constants.indoorPosition);
         }
     }
 }

@@ -62,9 +62,11 @@ namespace TGC.Group.Model.Status
 
         public void Update()
         {
-            if (IsDead)                         
+            Character.IsDead = IsDead;
+
+            if (IsDead)
                 return;
-            
+
             if (Character.DamageReceived)
             {
                 TakeDamage();
@@ -87,6 +89,7 @@ namespace TGC.Group.Model.Status
                     UpdateOxygen(Constants.OXYGEN_REDUCE_STEP_WHIT_DIVING_HELMET);
                 else
                     UpdateOxygen(Constants.OXYGEN_REDUCE_STEP);
+
         }
 
         private void UpdateLife(float value)
@@ -104,6 +107,12 @@ namespace TGC.Group.Model.Status
         public void TakeDamage()
         {
             DamageAcumulated = Constants.DAMAGE_RECEIVED;
+        }
+
+        public void Respawn()
+        {
+            Reset();
+            Character.Respawn();
         }
     }
 }
