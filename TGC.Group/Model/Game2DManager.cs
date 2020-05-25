@@ -218,7 +218,7 @@ namespace TGC.Group.Model
             var hasItems = items.Values.ToList().Any(listItems => listItems.Count > 0 );
 
             if (hasItems)
-                InventoryText.Text = "Inventario: " + "\n\nGold: " + items["GOLD"].Count + "\nSilver: " + items["SILVER"].Count +
+                InventoryText.Text = "Inventory: " + "\n\nGold: " + items["GOLD"].Count + "\nSilver: " + items["SILVER"].Count +
                                      "\nIron: " + items["IRON"].Count +
                                      "\nFish: " + items["NORMALFISH"].Count + "\nYellow Fish: " + items["YELLOWFISH"].Count +
                                      "\nSpiral Coral: " + items["SPIRALCORAL"].Count + "\nNormal Coral: " + items["NORMALCORAL"].Count +
