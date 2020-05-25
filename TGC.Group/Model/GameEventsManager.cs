@@ -12,16 +12,15 @@ namespace TGC.Group.Model
     {
         private struct Constants
         {
-            public static float TIME_BETWEEN_ATTACKS = 10;
+            public static float TIME_BETWEEN_ATTACKS = 20;
         }
 
         private Shark Shark;
         private Character Character;
         private float timeBetweenAttacks = Constants.TIME_BETWEEN_ATTACKS;
-        private bool isAttacking = false;
-        private bool ActivateFishMove = true;
-        public bool SharkIsAttacking { get { return isAttacking; } }
-        
+
+        public bool SharkIsAttacking { get; private set; } = false;
+
         public GameEventsManager(Shark shark, Character character)
         {
             Shark = shark;
@@ -45,18 +44,18 @@ namespace TGC.Group.Model
 
         public void InformFinishFromAttack()
         {
-            isAttacking = false;
+            SharkIsAttacking = false;
         }
 
         private void CheckIfSharkCanAttack(float elapsedTime)
         {
-            if (!isAttacking)
+            if (!SharkIsAttacking)
             {
                 timeBetweenAttacks -= elapsedTime;
                 if (timeBetweenAttacks <= 0)
                 {
                     Shark.ActivateShark(this);
-                    isAttacking = true;
+                    SharkIsAttacking = true;
                     timeBetweenAttacks = Constants.TIME_BETWEEN_ATTACKS;
                 }
             }

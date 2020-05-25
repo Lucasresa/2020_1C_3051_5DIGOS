@@ -114,6 +114,8 @@ namespace TGC.Group.Model
         public void Update(float elapsedTime, float timeBeetweenUpdate)
         {
             PhysicalWorld.dynamicsWorld.StepSimulation(elapsedTime, maxSubSteps: 10, timeBeetweenUpdate);
+            Shark.Update(Input, elapsedTime);
+            Skybox.Update();
             Fishes.ForEach(fish => fish.Update(elapsedTime, Camera));
             Character.LooksAtTheHatch = Ray.intersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
             Character.CanAtack = Ray.intersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
