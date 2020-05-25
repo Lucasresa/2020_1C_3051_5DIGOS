@@ -26,12 +26,12 @@ namespace TGC.Group.Model
 
         private CameraFPS camera;
         private GameObjectManager ObjectManager;
-        private Game2DManager Draw2DManager;
+        private GameInventoryManager InventoryManager;
         private GameEventsManager EventsManager;
+        private Game2DManager Draw2DManager;
         private CharacterStatus CharacterStatus;
         private SharkStatus SharkStatus;
         private Ray Ray;
-        private GameInventoryManager InventoryManager;
         
         private bool ActiveInventory { get; set; }
         private bool CanCraftObjects { get { return ObjectManager.Character.IsInsideShip; } }
@@ -76,6 +76,16 @@ namespace TGC.Group.Model
 
             if (Input.keyPressed(Key.E))
                 ObjectManager.Character.Teleport();
+
+            if (CanCraftObjects)
+            {
+                if (Input.keyPressed(Key.M))
+                    GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
+                if (Input.keyPressed(Key.N))
+                    GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
+                if (Input.keyPressed(Key.B))
+                    GameCraftingManager.CanCatchFish(InventoryManager.Items);
+            }
         }
 
         public override void Render()

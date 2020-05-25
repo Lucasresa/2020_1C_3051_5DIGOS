@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using TGC.Group.Model.Objects;
@@ -31,39 +32,71 @@ namespace TGC.Group.Model
             public static int CATCH_FISH_COUNT_CORAL_TREE = 1;
         }
 
-        public static bool CanCraftWeapon(ref List<string> items)
-        {
-            if ( FastUtils.CountOcurrences(items, "SILVER") > Constants.WEAPON_COUNT_ORE_SILVER &&
-                 FastUtils.CountOcurrences(items, "NORMALCORAL") > Constants.WEAPON_COUNT_CORAL_NORMAL &&
-                 FastUtils.CountOcurrences(items, "TREECORAL") > Constants.WEAPON_COUNT_CORAL_TREE &&
-                 FastUtils.CountOcurrences(items, "NORMALFISH") > Constants.WEAPON_COUNT_FISH_NORMAL &&
-                 FastUtils.CountOcurrences(items, "YELLOWFISH") > Constants.WEAPON_COUNT_FISH_YELLOW ) 
-                return true;
-            return false;
-        }
+        public static bool HasWeapon { get; set; }
+        public static bool HasDivingHelmet { get; set; }
+        public static bool HasCatchFish { get; set; }
 
-        public static bool CanCraftDivingHelmet(ref List<string> items)
+        public static void CanCraftWeapon(Dictionary<string, List<string>> items)
         {
-            if ( FastUtils.CountOcurrences(items, "GOLD") > Constants.DIVING_HELMET_COUNT_ORE_GOLD &&
-                 FastUtils.CountOcurrences(items, "IRON") > Constants.DIVING_HELMET_COUNT_ORE_IRON &&
-                 FastUtils.CountOcurrences(items, "SPIRALCORAL") > Constants.DIVING_HELMET_COUNT_CORAL_SPIRAL &&
-                 FastUtils.CountOcurrences(items, "TREECORAL") > Constants.DIVING_HELMET_COUNT_CORAL_TREE &&
-                 FastUtils.CountOcurrences(items, "NORMALFISH") > Constants.DIVING_HELMET_COUNT_FISH_NORMAL &&
-                 FastUtils.CountOcurrences(items, "YELLOWFISH") > Constants.DIVING_HELMET_COUNT_FISH_YELLOW )
-                return true;
-            return false;
-        }
+            if (HasWeapon)
+                return;
 
-        public static bool CanCatchFish(ref List<string> items)
-        {
-            if (FastUtils.CountOcurrences(items, "IRON") > Constants.CATCH_FISH_COUNT_ORE_IRON &&
-                 FastUtils.CountOcurrences(items, "SILVER") > Constants.CATCH_FISH_COUNT_ORE_SILVER &&
-                 FastUtils.CountOcurrences(items, "NORMALCORAL") > Constants.CATCH_FISH_COUNT_CORAL_NORMAL &&
-                 FastUtils.CountOcurrences(items, "TREECORAL") > Constants.CATCH_FISH_COUNT_CORAL_TREE)
+            if ( items["SILVER"].Count > Constants.WEAPON_COUNT_ORE_SILVER &&
+                 items["NORMALCORAL"].Count > Constants.WEAPON_COUNT_CORAL_NORMAL &&
+                 items["TREECORAL"].Count > Constants.WEAPON_COUNT_CORAL_TREE &&
+                 items["NORMALFISH"].Count > Constants.WEAPON_COUNT_FISH_NORMAL &&
+                 items["YELLOWFISH"].Count > Constants.WEAPON_COUNT_FISH_YELLOW)
             {
-                return true;
+                items["SILVER"].RemoveRange(0, Constants.WEAPON_COUNT_ORE_SILVER);
+                items["NORMALCORAL"].RemoveRange(0, Constants.WEAPON_COUNT_CORAL_NORMAL);
+                items["TREECORAL"].RemoveRange(0, Constants.WEAPON_COUNT_CORAL_TREE);
+                items["NORMALFISH"].RemoveRange(0, Constants.WEAPON_COUNT_FISH_NORMAL);
+                items["YELLOWFISH"].RemoveRange(0, Constants.WEAPON_COUNT_FISH_YELLOW);
+
+                HasWeapon = true;
             }
-            return false;
+        }
+
+        public static void CanCraftDivingHelmet(Dictionary<string, List<string>> items)
+        {
+            if (HasDivingHelmet)
+                return;
+
+            if ( items["GOLD"].Count > Constants.DIVING_HELMET_COUNT_ORE_GOLD &&
+                 items["IRON"].Count > Constants.DIVING_HELMET_COUNT_ORE_IRON &&
+                 items["SPIRALCORAL"].Count > Constants.DIVING_HELMET_COUNT_CORAL_SPIRAL &&
+                 items["TREECORAL"].Count > Constants.DIVING_HELMET_COUNT_CORAL_TREE &&
+                 items["NORMALFISH"].Count > Constants.DIVING_HELMET_COUNT_FISH_NORMAL &&
+                 items["YELLOWFISH"].Count > Constants.DIVING_HELMET_COUNT_FISH_YELLOW)
+            {
+                items["GOLD"].RemoveRange(0, Constants.DIVING_HELMET_COUNT_ORE_GOLD);
+                items["IRON"].RemoveRange(0, Constants.DIVING_HELMET_COUNT_ORE_IRON);
+                items["SPIRALCORAL"].RemoveRange(0, Constants.DIVING_HELMET_COUNT_CORAL_SPIRAL);
+                items["TREECORAL"].RemoveRange(0, Constants.DIVING_HELMET_COUNT_CORAL_TREE);
+                items["NORMALFISH"].RemoveRange(0, Constants.DIVING_HELMET_COUNT_FISH_NORMAL);
+                items["YELLOWFISH"].RemoveRange(0, Constants.DIVING_HELMET_COUNT_FISH_YELLOW);
+
+                HasDivingHelmet = true;
+            }
+        }
+
+        public static void CanCatchFish(Dictionary<string, List<string>> items)
+        {
+            if (HasCatchFish)
+                return;
+
+            if ( items["IRON"].Count > Constants.CATCH_FISH_COUNT_ORE_IRON &&
+                 items["SILVER"].Count > Constants.CATCH_FISH_COUNT_ORE_SILVER &&
+                 items["NORMALCORAL"].Count > Constants.CATCH_FISH_COUNT_CORAL_NORMAL &&
+                 items["TREECORAL"].Count > Constants.CATCH_FISH_COUNT_CORAL_TREE)
+            {
+                items["IRON"].RemoveRange(0, Constants.CATCH_FISH_COUNT_ORE_IRON);
+                items["SILVER"].RemoveRange(0, Constants.CATCH_FISH_COUNT_ORE_SILVER);
+                items["NORMALCORAL"].RemoveRange(0, Constants.CATCH_FISH_COUNT_CORAL_NORMAL);
+                items["TREECORAL"].RemoveRange(0, Constants.CATCH_FISH_COUNT_CORAL_TREE);
+
+                HasCatchFish = true;
+            }
         }
     }
 }
