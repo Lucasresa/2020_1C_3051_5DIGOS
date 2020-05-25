@@ -86,7 +86,7 @@ namespace TGC.Group.Model.Objects
 
         public void GenerateDuplicates(TypeFish fish, ref List<TypeFish> fishes)
         {
-            foreach (int index in Enumerable.Range(1, fish.ID))
+            foreach (int index in Enumerable.Range(0, fish.ID))
             {
                 TypeFish newFish = new TypeFish
                 {

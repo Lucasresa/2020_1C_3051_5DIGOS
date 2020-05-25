@@ -1,4 +1,5 @@
 ﻿using BulletSharp;
+using Microsoft.DirectX.DirectInput;
 using System.Linq.Expressions;
 using TGC.Core.Input;
 using TGC.Group.Model.Objects;
@@ -28,6 +29,7 @@ namespace TGC.Group.Model
         public Common Common { get; set; }
 
         public string ItemSelected { get; set; }
+        public bool NearObjectForSelect { get; set; }
 
         public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input, Ray ray)
         {
@@ -57,7 +59,7 @@ namespace TGC.Group.Model
             /* Location */
 
             MeshBuilder.LocateMeshesInWorld(meshes: ref Fish.ListFishes, area: Skybox.currentPerimeter);
-            MeshBuilder.LocateMeshesInWorld(meshes: ref Vegetation.ListAlgas, area: Skybox.currentPerimeter);            
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Vegetation.ListAlgas, area: Skybox.currentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListCorals, area: Skybox.currentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListOres, area: Skybox.currentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListRock, area: Skybox.currentPerimeter);
@@ -72,7 +74,7 @@ namespace TGC.Group.Model
             PhysicalWorld.AddBodyToTheWorld(Character.Body);
             PhysicalWorld.AddBodyToTheWorld(Ship.BodyOutdoorShip);
             PhysicalWorld.AddBodyToTheWorld(Ship.BodyIndoorShip);
-            PhysicalWorld.AddBodyToTheWorld(Shark.Body);            
+            PhysicalWorld.AddBodyToTheWorld(Shark.Body);
             Common.ListCorals.ForEach(coral => PhysicalWorld.AddBodyToTheWorld(coral.Body));
             Common.ListOres.ForEach(ore => PhysicalWorld.AddBodyToTheWorld(ore.Body));
             Common.ListRock.ForEach(rock => PhysicalWorld.AddBodyToTheWorld(rock.Body));
@@ -93,7 +95,7 @@ namespace TGC.Group.Model
 
         public void Render()
         {
-            if ( Character.IsInsideShip )
+            if (Character.IsInsideShip)
                 Ship.RenderIndoorShip();
             else
             {
@@ -112,16 +114,10 @@ namespace TGC.Group.Model
         {
             PhysicalWorld.dynamicsWorld.StepSimulation(elapsedTime, maxSubSteps: 10, timeBeetweenUpdate);
             Fish.Update(elapsedTime, Camera);
-            Character.LooksAtTheHatch = Ray.intersectsWithObject(Ship.Plane.BoundingBox, distance: 500);
-            Character.CanAtack = Ray.intersectsWithObject(Shark.Mesh.BoundingBox, distance: 150);
-            Character.NearShip = Ray.intersectsWithObject(Ship.OutdoorMesh.BoundingBox, distance: 500);
-
-            if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
-            {
-                DetectSelectedFishItem();
-                DetectSelectedCoralItem();
-                DetectSelectedOreItem();
-            }
+            Character.LooksAtTheHatch = Ray.intersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
+            Character.CanAtack = Ray.intersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
+            Character.NearShip = Ray.intersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);
+            DetectSelectedItem();
         }
 
         public void UpdateCharacter()
@@ -129,58 +125,49 @@ namespace TGC.Group.Model
             Character.Update(Skybox);
         }
 
-        private void DetectSelectedCoralItem()
+        private void DetectSelectedItem()
         {
-            if (ItemSelected != null)
-                return;
+            bool NearCoralForSelect = false;
+            bool NearOreForSelect = false;
+            bool NearFishForSelect = false;
+                        
+            TypeCommon Coral = Common.ListCorals.Find(coral => NearCoralForSelect = Ray.intersectsWithObject(objectAABB: coral.mesh.BoundingBox, distance: 500));
+            TypeCommon Ore = Common.ListOres.Find(ore => NearOreForSelect = Ray.intersectsWithObject(objectAABB: ore.mesh.BoundingBox, distance: 500));
 
-            TypeCommon item;
-            item = Common.ListCorals.Find(coral => { return Ray.intersectsWithObject(objectAABB: coral.mesh.BoundingBox, distance: 500); });
-
-            if (item.mesh != null)
+            if (Character.CanFish && Coral.mesh is null && Ore.mesh is null)
             {
-                ItemSelected = item.name;
-                PhysicalWorld.dynamicsWorld.RemoveRigidBody(item.Body);
-                Common.ListCorals.Remove(item);
-                item.mesh.Dispose();
+                TypeFish itemFish = Fish.ListFishes.Find(fish => NearFishForSelect = Ray.intersectsWithObject(objectAABB: fish.mesh.BoundingBox, distance: 500));
+                if (NearFishForSelect) SelectItem(itemFish);
             }
-        }
-
-        private void DetectSelectedOreItem()
-        {
-            if (ItemSelected != null)
-                return;
-
-            TypeCommon item;
-            item = Common.ListOres.Find(ore => Ray.intersectsWithObject(objectAABB: ore.mesh.BoundingBox, distance: 500));
-
-            if (item.mesh != null)
-            {
-                ItemSelected = item.name;
-                PhysicalWorld.dynamicsWorld.RemoveRigidBody(item.Body);
-                Common.ListOres.Remove(item);
-                item.mesh.Dispose();
-            }
-        }
-
-        private void DetectSelectedFishItem()
-        {
-            if (!Character.CanFish)
-                return;
-
-            if (ItemSelected != null)
-                return;
-
-            TypeFish item;
-            item = Fish.ListFishes.Find(fish => Ray.intersectsWithObject(objectAABB: fish.mesh.BoundingBox, distance: 500));
             
-            if (item.mesh != null)
+            NearObjectForSelect = NearCoralForSelect || NearOreForSelect || NearFishForSelect;
+
+            if (NearCoralForSelect)
+                SelectItem(Coral);
+            else if (NearOreForSelect)
+                SelectItem(Ore);
+        }
+
+        private void SelectItem(TypeCommon item)
+        {
+            if (item.mesh != null && Input.keyPressed(Key.E))
+            {
+                ItemSelected = item.name;
+                PhysicalWorld.dynamicsWorld.RemoveRigidBody(item.Body);
+                if (item.name.ToUpper().Contains("CORAL"))
+                    Common.ListCorals.Remove(item);
+                else
+                    Common.ListOres.Remove(item);
+            }
+        }
+
+        private void SelectItem(TypeFish item)
+        {
+            if (item.mesh != null && Input.keyPressed(Key.E))
             {
                 ItemSelected = item.name;
                 Fish.ListFishes.Remove(item);
-                item.mesh.Dispose();
             }
-        } 
+        }
     }
 }
-

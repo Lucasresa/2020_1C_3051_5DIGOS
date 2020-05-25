@@ -130,7 +130,7 @@ namespace TGC.Group.Model.Objects
 
         public void GenerateDuplicates(TypeCommon common, ref List<TypeCommon> commons)
         {
-            foreach (int index in Enumerable.Range(1, common.ID))
+            foreach (int index in Enumerable.Range(0, common.ID))
             {
                 TypeCommon newCommon = new TypeCommon
                 {
@@ -146,7 +146,7 @@ namespace TGC.Group.Model.Objects
 
         public void Render()
         {
-            ListCorals.ForEach(coral => { coral.mesh.Render(); });
+            ListCorals.ForEach(coral => coral.mesh.Render());
             ListOres.ForEach(ore => ore.mesh.Render());
             ListRock.ForEach(rock => rock.mesh.Render());
         }

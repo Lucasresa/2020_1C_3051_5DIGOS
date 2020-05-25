@@ -57,7 +57,6 @@ namespace TGC.Group.Model
 
         public override void Update()
         {
-
             if (Input.keyPressed(Key.I))
                 Draw2DManager.ActiveInventory = camera.Lock = ActiveInventory = !ActiveInventory;
 
@@ -92,6 +91,7 @@ namespace TGC.Group.Model
 
             Draw2DManager.ShowInfoExitShip = ObjectManager.Character.LooksAtTheHatch;
             Draw2DManager.ShowInfoEnterShip = ObjectManager.Character.NearShip;
+            Draw2DManager.NearObjectForSelect = ObjectManager.NearObjectForSelect;
         }
 
         public override void Render()

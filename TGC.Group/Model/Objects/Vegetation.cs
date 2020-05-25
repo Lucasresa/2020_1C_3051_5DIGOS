@@ -83,7 +83,7 @@ namespace TGC.Group.Model.Objects
 
         public void GenerateDuplicates(TypeVegetation vegetation, ref List<TypeVegetation> vegetations)
         {
-            foreach (int index in Enumerable.Range(1, vegetation.ID))
+            foreach (int index in Enumerable.Range(0, vegetation.ID))
             {
                 TypeVegetation newVegetation = new TypeVegetation
                 {

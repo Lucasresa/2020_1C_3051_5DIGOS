@@ -41,22 +41,22 @@ namespace TGC.Group.Model
             public static string INVENTORY_TEXT_WITHOUT_ITEMS = "Inventory without items!";
             public static TGCVector2 COMMON_TEXT_SIZE = new TGCVector2(300, 50);
             public static TGCVector2 HELP_TEXT_POSITION = new TGCVector2(SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 30, SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y + 20);
-            public static TGCVector2 INSTRUCTION_TEXT_SIZE = new TGCVector2(850, 450);
+            public static TGCVector2 INSTRUCTION_TEXT_SIZE = new TGCVector2(860, 450);
             public static TGCVector2 INSTRUCTION_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - INSTRUCTION_TEXT_SIZE.X) / 2, (SCREEN_HEIGHT - INSTRUCTION_TEXT_SIZE.Y) / 2);
             public static string INSTRUCTION_TEXT = "Movement: W(↑) | A(←) | S(↓) | D(→) " +
                                                     "\nInstructions for leaving and entering the ship: " +
-                                                    "\n\t-To exit the ship look towards the hatch and press the E key." +
-                                                    "\n\t-To enter the ship, come closer and press the E key." +
+                                                    "\n\t- To exit the ship look towards the hatch and press the E key." +
+                                                    "\n\t- To enter the ship, come closer and press the E key." +
                                                     "\nCollect and attack: " +
-                                                    "\n\t-To collect the objects, left click on them." +
-                                                    "\n\tTo attack the shark, right click when you have the weapon." +
-                                                    "\n\tOnce the weapon is crafted, it is equipped and unequipped with the number 1." +
+                                                    "\n\t- To collect the objects, press E key on them." +
+                                                    "\n\t- To attack the shark, right click when you have the weapon." +
+                                                    "\n\t- Once the weapon is crafted, it is equipped and unequipped with the 1 key." +
                                                     "\nInventory: " +
-                                                    "\n\t-To open and close, press I key." +
+                                                    "\n\t- To open and close, press I key." +
                                                     "\nCrafting inside the ship: " +
-                                                    "\n\t-Weapon: Press the M key." +
-                                                    "\n\t-Diving Helmet: Press the B key." +
-                                                    "\n\t-Ability to collect fish: ¨Press the N key." +
+                                                    "\n\t- Weapon: Press the M key." +
+                                                    "\n\t- Diving Helmet: Press the B key." +
+                                                    "\n\t- Ability to collect fish: ¨Press the N key." +
                                                     "\nTo open and close help, press F1 key.";
             public static TGCVector2 PRESS_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 145) /2 ,(SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y - 30) /2);
         }
@@ -80,6 +80,7 @@ namespace TGC.Group.Model
         public bool ShowHelp { get; set; }
         public bool ShowInfoExitShip { get; set; }
         public bool ShowInfoEnterShip { get; set; }
+        public bool NearObjectForSelect { get; set; }
 
         public Game2DManager(string mediaDir, CharacterStatus character, SharkStatus shark)
         {
@@ -194,6 +195,8 @@ namespace TGC.Group.Model
                     CommonText.DrawSimpleText(text: "PRESS E TO EXIT", size: Constants.COMMON_TEXT_SIZE, position: Constants.PRESS_TEXT_POSITION, color: Color.White);
                 if (ShowInfoEnterShip)
                     CommonText.DrawSimpleText(text: "PRESS E TO ENTER", size: Constants.COMMON_TEXT_SIZE, position: Constants.PRESS_TEXT_POSITION, color: Color.White);
+                if (NearObjectForSelect)
+                    CommonText.DrawSimpleText(text: "PRESS E TO PICK UP", size: Constants.COMMON_TEXT_SIZE, position: Constants.PRESS_TEXT_POSITION, color: Color.White);
             }
             else
             {
