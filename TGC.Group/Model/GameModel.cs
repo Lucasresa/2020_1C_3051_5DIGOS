@@ -81,7 +81,7 @@ namespace TGC.Group.Model
                 if (Input.keyPressed(Key.M))
                     ObjectManager.Character.HasWeapon = GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
                 if (Input.keyPressed(Key.N))
-                    ObjectManager.Character.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
+                    ObjectManager.Character.HasDivingHelmet = CharacterStatus.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
                 if (Input.keyPressed(Key.B))
                     ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
             }
