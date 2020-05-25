@@ -168,6 +168,7 @@ namespace TGC.Group.Model
             {
                 ItemSelected = item.Mesh.name;
                 Fishes.Remove(item);
+                Common.ListFishes.Remove(item.Mesh);
             }
         }
     }
