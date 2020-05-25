@@ -57,13 +57,13 @@ namespace TGC.Group.Model
 
         public override void Update()
         {
-            ObjectManager.UpdateCharacter();
 
             if (Input.keyPressed(Key.I))
                 Draw2DManager.ActiveInventory = camera.Lock = ActiveInventory = !ActiveInventory;
 
             if (!ActiveInventory)
             {
+                ObjectManager.UpdateCharacter();
                 ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
                 EventsManager.Update(ElapsedTime, ObjectManager.Fish);
                 InventoryManager.AddItem(ObjectManager.ItemSelected);
@@ -86,6 +86,12 @@ namespace TGC.Group.Model
                 if (Input.keyPressed(Key.B))
                     ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
             }
+
+            if (Input.keyPressed(Key.F1))
+                Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
+
+            Draw2DManager.ShowInfoExitShip = ObjectManager.Character.LooksAtTheHatch;
+            Draw2DManager.ShowInfoEnterShip = ObjectManager.Character.NearShip;
         }
 
         public override void Render()

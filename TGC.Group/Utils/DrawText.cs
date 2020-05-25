@@ -32,6 +32,17 @@ namespace TGC.Group.Utils
         {
             Text2D.Dispose();
         }        
+
+        public void DrawSimpleText(string text, TGCVector2 size, TGCVector2 position, Color color)
+        {
+            TgcText2D commonText2D = new TgcText2D();
+            Text = text;
+            Size = size;
+            Position = position;
+            Color = color;
+            UpdateTextSettings(commonText2D);
+            commonText2D.render();
+        }
         
         private void Initializer()
         {
@@ -70,6 +81,16 @@ namespace TGC.Group.Utils
             Text2D.Position = new Point((int)Position.X, (int)Position.Y);
             Text2D.Size = new Size((int)Size.X, (int)Size.Y);
             Text2D.changeFont(Font);
+        }
+
+        private void UpdateTextSettings(TgcText2D text2D)
+        {
+            text2D.Text = Text;
+            text2D.Color = Color;
+            text2D.Align = Align;
+            text2D.Position = new Point((int)Position.X, (int)Position.Y);
+            text2D.Size = new Size((int)Size.X, (int)Size.Y);
+            text2D.changeFont(Font);
         }
     }
 }

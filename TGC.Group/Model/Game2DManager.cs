@@ -39,6 +39,26 @@ namespace TGC.Group.Model
             public static TGCVector2 INVENTORY_TEXT_SIZE = new TGCVector2(300, 300);
             public static TGCVector2 INVENTORY_TEXT_POSITION = new TGCVector2(10, SCREEN_HEIGHT - INVENTORY_TEXT_SIZE.Y);
             public static string INVENTORY_TEXT_WITHOUT_ITEMS = "Inventory without items!";
+            public static TGCVector2 COMMON_TEXT_SIZE = new TGCVector2(300, 50);
+            public static TGCVector2 HELP_TEXT_POSITION = new TGCVector2(SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 30, SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y + 20);
+            public static TGCVector2 INSTRUCTION_TEXT_SIZE = new TGCVector2(850, 450);
+            public static TGCVector2 INSTRUCTION_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - INSTRUCTION_TEXT_SIZE.X) / 2, (SCREEN_HEIGHT - INSTRUCTION_TEXT_SIZE.Y) / 2);
+            public static string INSTRUCTION_TEXT = "Movement: W(↑) | A(←) | S(↓) | D(→) " +
+                                                    "\nInstructions for leaving and entering the ship: " +
+                                                    "\n\t-To exit the ship look towards the hatch and press the E key." +
+                                                    "\n\t-To enter the ship, come closer and press the E key." +
+                                                    "\nCollect and attack: " +
+                                                    "\n\t-To collect the objects, left click on them." +
+                                                    "\n\tTo attack the shark, right click when you have the weapon." +
+                                                    "\n\tOnce the weapon is crafted, it is equipped and unequipped with the number 1." +
+                                                    "\nInventory: " +
+                                                    "\n\t-To open and close, press I key." +
+                                                    "\nCrafting inside the ship: " +
+                                                    "\n\t-Weapon: Press the M key." +
+                                                    "\n\t-Diving Helmet: Press the B key." +
+                                                    "\n\t-Ability to collect fish: ¨Press the N key." +
+                                                    "\nTo open and close help, press F1 key.";
+            public static TGCVector2 PRESS_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 145) /2 ,(SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y - 30) /2);
         }
         
         private readonly string MediaDir;
@@ -53,8 +73,13 @@ namespace TGC.Group.Model
         private readonly DrawText LifeSharkText;
         private readonly DrawText OxygenCharacterText;
         private readonly DrawText InventoryText;
+        private readonly DrawText InstructionText;
+        private readonly DrawText CommonText;
 
         public bool ActiveInventory { get; set; }
+        public bool ShowHelp { get; set; }
+        public bool ShowInfoExitShip { get; set; }
+        public bool ShowInfoEnterShip { get; set; }
 
         public Game2DManager(string mediaDir, CharacterStatus character, SharkStatus shark)
         {
@@ -70,11 +95,15 @@ namespace TGC.Group.Model
             LifeSharkText = new DrawText();
             OxygenCharacterText = new DrawText();
             InventoryText = new DrawText();
+            InstructionText = new DrawText();
+            CommonText = new DrawText();
             Init();
         }
 
         public void Dispose()
         {
+            InstructionText.Dispose();
+            CommonText.Dispose();
             InventoryText.Dispose();
             LifeCharacter.Dispose();
             LifeCharacterText.Dispose();
@@ -94,6 +123,7 @@ namespace TGC.Group.Model
             InitializerPointer();
             InitializerMousePointer();
             InitializerInventoryText();
+            InitializerInstructionText();
         }
 
         private void InitializerLifeCharacter()
@@ -134,12 +164,23 @@ namespace TGC.Group.Model
 
         private void InitializerInventoryText()
         {
-            InventoryText.SetTextSizeAndPosition(Constants.INVENTORY_TEXT_WITHOUT_ITEMS, Constants.INVENTORY_TEXT_SIZE, Constants.INVENTORY_TEXT_POSITION);
+            InventoryText.SetTextSizeAndPosition(text: Constants.INVENTORY_TEXT_WITHOUT_ITEMS, Constants.INVENTORY_TEXT_SIZE, Constants.INVENTORY_TEXT_POSITION);
             InventoryText.Color = Color.Black;
+        }
+
+        private void InitializerInstructionText()
+        {
+            InstructionText.SetTextSizeAndPosition(text: Constants.INSTRUCTION_TEXT, Constants.INSTRUCTION_TEXT_SIZE, Constants.INSTRUCTION_TEXT_POSITION);
+            InstructionText.Color = Color.Red;
         }
 
         public void Render()
         {
+            if (ShowHelp)
+                InstructionText.Render();
+            else
+                CommonText.DrawSimpleText(text: "FOR HELP, PRESS F1 KEY", size: Constants.COMMON_TEXT_SIZE, position: Constants.HELP_TEXT_POSITION, color: Color.Red);
+
             if (!ActiveInventory)
             {
                 LifeShark.Render();
@@ -149,10 +190,14 @@ namespace TGC.Group.Model
                 LifeCharacterText.Render();
                 OxygenCharacterText.Render();
                 Pointer.Render();
+                if (ShowInfoExitShip)
+                    CommonText.DrawSimpleText(text: "PRESS E TO EXIT", size: Constants.COMMON_TEXT_SIZE, position: Constants.PRESS_TEXT_POSITION, color: Color.White);
+                if (ShowInfoEnterShip)
+                    CommonText.DrawSimpleText(text: "PRESS E TO ENTER", size: Constants.COMMON_TEXT_SIZE, position: Constants.PRESS_TEXT_POSITION, color: Color.White);
             }
             else
             {
-                MousePointer.Position = new TGCVector2(Cursor.Position.X, Cursor.Position.Y);
+                MousePointer.Position = new TGCVector2(Cursor.Position.X - 16 , Cursor.Position.Y - 16 );
                 MousePointer.Render();
                 InventoryText.Render();
             }
