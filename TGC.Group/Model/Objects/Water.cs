@@ -10,9 +10,9 @@ namespace TGC.Group.Model.Objects
         {
             Position = waterPosition;
             FILE_HEIGHTMAPS = @"Heightmaps\oceano.jpg";
-            FILE_TEXTURES = @"Textures\agua.jpg";
-            FILE_EFFECT = "Varios.fx";
-            Technique = "PositionTextured";
+            FILE_TEXTURES = @"Textures\water.png";
+            FILE_EFFECT = "WaterShader.fx";
+            Technique = "Default";
             SCALEY = 1;
             LoadWorld();
         }

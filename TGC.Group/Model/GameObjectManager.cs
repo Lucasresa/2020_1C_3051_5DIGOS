@@ -103,8 +103,8 @@ namespace TGC.Group.Model
             {
                 Ship.RenderOutdoorShip();
                 Skybox.Render(Terrain.SizeWorld());
-                Terrain.Render();
                 Water.Render();
+                Terrain.Render();
                 Shark.Render();
                 Fish.Render();
                 Vegetation.Render();
