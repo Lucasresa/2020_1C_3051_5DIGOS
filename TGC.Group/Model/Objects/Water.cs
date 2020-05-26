@@ -12,7 +12,7 @@ namespace TGC.Group.Model.Objects
             FILE_HEIGHTMAPS = @"Heightmaps\oceano.jpg";
             FILE_TEXTURES = @"Textures\agua.jpg";
             FILE_EFFECT = "Varios.fx";
-            tecnica = "PositionTextured";
+            Technique = "PositionTextured";
             SCALEY = 1;
             LoadWorld();
         }

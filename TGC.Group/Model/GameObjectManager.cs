@@ -47,7 +47,7 @@ namespace TGC.Group.Model
         {
             /* Initializer object */
 
-            Skybox = new Skybox(MediaDir, ShadersDir, Camera);
+            Skybox = new Skybox(MediaDir, Camera);
             Terrain = new Terrain(MediaDir, ShadersDir);
             Water = new Water(MediaDir, ShadersDir);
             MeshBuilder = new MeshBuilder(Terrain, Water);
@@ -60,11 +60,11 @@ namespace TGC.Group.Model
 
             /* Location */
 
-            MeshBuilder.LocateMeshesInWorld(meshes: ref Fish.ListFishes, area: Skybox.currentPerimeter);
-            MeshBuilder.LocateMeshesInWorld(meshes: ref Vegetation.ListAlgas, area: Skybox.currentPerimeter);
-            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListCorals, area: Skybox.currentPerimeter);
-            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListOres, area: Skybox.currentPerimeter);
-            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListRock, area: Skybox.currentPerimeter);
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Fish.ListFishes, area: Skybox.CurrentPerimeter);
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Vegetation.ListAlgas, area: Skybox.CurrentPerimeter);
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListCorals, area: Skybox.CurrentPerimeter);
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListOres, area: Skybox.CurrentPerimeter);
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListRock, area: Skybox.CurrentPerimeter);
 
             Fish.UpdateBoundingBox();
             Common.LocateBody();
@@ -115,6 +115,7 @@ namespace TGC.Group.Model
         public void Update(float elapsedTime, float timeBeetweenUpdate)
         {
             PhysicalWorld.dynamicsWorld.StepSimulation(elapsedTime, maxSubSteps: 10, timeBeetweenUpdate);
+            Skybox.Update();
             Fish.Update(elapsedTime, Camera);
             Character.LooksAtTheHatch = Ray.intersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
             Character.CanAtack = Ray.intersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);

@@ -42,7 +42,6 @@ namespace TGC.Group.Model
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
         {
             FixedTickEnable = true;
-            D3DDevice.Instance.ZFarPlaneDistance = 12000f;
         }
 
         public override void Init()

@@ -18,7 +18,7 @@ namespace TGC.Group.Model.Objects
             FILE_HEIGHTMAPS = "Heightmaps\\suelo.jpg";
             FILE_TEXTURES = "Textures\\sand.jpg";
             FILE_EFFECT = "TerrainShader.fx";
-            tecnica = "Default";
+            Technique = "Default";
             LoadWorld();
             Body = RigidBodyFactory.CreateSurfaceFromHeighMap(world.getVertices());
         }

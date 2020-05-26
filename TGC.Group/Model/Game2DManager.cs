@@ -64,7 +64,7 @@ namespace TGC.Group.Model
                                                     "\nTo open and close help, press F1 key.";
             public static TGCVector2 PRESS_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 145) /2 ,(SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y - 30) /2);
             public static TGCVector2 COLLECT_TEXT_SIZE = new TGCVector2(320, 50);
-            public static TGCVector2 COLLECT_TEXT_POSITION = new TGCVector2(SCREEN_WIDTH - COLLECT_TEXT_SIZE.X, SCREEN_HEIGHT - COLLECT_TEXT_SIZE.Y);
+            public static TGCVector2 COLLECT_TEXT_POSITION = new TGCVector2(SCREEN_WIDTH - COLLECT_TEXT_SIZE.X, SCREEN_HEIGHT - COLLECT_TEXT_SIZE.Y - 100);
         }
         
         private readonly string MediaDir;
@@ -239,7 +239,7 @@ namespace TGC.Group.Model
                     {
                        index++;
                        ItemsHistoryText.Text = "COLLECTED " + item + " + 1";
-                       ItemsHistoryText.Position = new TGCVector2(Constants.COLLECT_TEXT_POSITION.X, Constants.COLLECT_TEXT_POSITION.Y - index * 20);
+                       ItemsHistoryText.Position = new TGCVector2(Constants.COLLECT_TEXT_POSITION.X, Constants.COLLECT_TEXT_POSITION.Y + index * 20);
                        ItemsHistoryText.Render();
                     });
                 }
