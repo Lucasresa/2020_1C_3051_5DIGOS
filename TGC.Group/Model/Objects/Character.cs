@@ -30,7 +30,7 @@ namespace TGC.Group.Model.Objects
         private float Gravity => Body.CenterOfMassPosition.Y < 0 ? -200 : -5;
 
         public RigidBody Body { get; set; }
-        public bool DamageReceived { get; set; }
+        
         public bool IsInsideShip => Camera.Position.Y < 0;
         public bool IsOutsideShip => !IsInsideShip; 
         public bool IsOutOfWater => Camera.Position.Y > 3505;
@@ -43,7 +43,9 @@ namespace TGC.Group.Model.Objects
         public bool HasWeapon { get; set; }
         public bool HasDivingHelmet { get; set; }
         public bool CanFish { get; set; }
-        
+
+        public bool AttackedShark { get; set; }
+
         public Character(CameraFPS camera, TgcD3dInput input)
         {
             Camera = camera;

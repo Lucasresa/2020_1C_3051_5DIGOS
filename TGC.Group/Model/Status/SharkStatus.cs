@@ -18,6 +18,7 @@ namespace TGC.Group.Model.Status
 
         public float Life { get; set; } = Constants.LIFE_MAX;
         public bool IsDead => Life == 0;
+        public bool DamageReceived { get; set; }
 
         public SharkStatus(Shark shark) => Shark = shark;
 
@@ -31,13 +32,10 @@ namespace TGC.Group.Model.Status
 
         public void Update()
         {
-            if (IsDead)
-                return;
-
-            if (Shark.DamageReceived)
+            if (DamageReceived)
             {
                 TakeDamage();
-                Shark.DamageReceived = false;
+                DamageReceived = false;
             }
 
             if (DamageAcumulated > 0)

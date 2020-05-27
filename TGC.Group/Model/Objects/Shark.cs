@@ -39,7 +39,7 @@ namespace TGC.Group.Model.Objects
         private float acumulatedZRotation;
         private float deathTimeCounter;
         private float eventTimeCounter;
-        public bool DamageReceived { get; set; }
+        public bool AttackedCharacter { get; set; }
         private GameEventsManager Events { get; set; }
         private TGCMatrix TotalRotation;
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
@@ -111,6 +111,7 @@ namespace TGC.Group.Model.Objects
                 PerformStalkerMove(elapsedTime, speed, rotationAngle, rotationAxis);
                 if (IsCollapsinWithPlayer())
                 {
+                    AttackedCharacter = true;
                     ChangeSharkWay();
                 }
             }
@@ -249,11 +250,7 @@ namespace TGC.Group.Model.Objects
             return new TGCVector3(outOfSkyboxPosition.X, Y + 600, outOfSkyboxPosition.Z);
         }
 
-        private bool IsCollapsinWithPlayer()
-        {
-            var distanceToPlayer = (Camera.Position - GetHeadPosition()).Length();
-            return distanceToPlayer < 100;
-        }
+        private bool IsCollapsinWithPlayer() => FastUtils.IsDistanceBetweenVectorsLessThan(distance: 100, Camera.Position, GetHeadPosition());
 
         private void ChangeSharkWay()
         {
@@ -295,9 +292,6 @@ namespace TGC.Group.Model.Objects
             return normalVector.Y > 0 ? 1 : -1;
         }
 
-        private TGCVector3 GetHeadPosition()
-        {
-            return new TGCVector3(Body.CenterOfMassPosition) + director * -560;
-        }
+        private TGCVector3 GetHeadPosition() => new TGCVector3(Body.CenterOfMassPosition) + director * -560;
     }
 }

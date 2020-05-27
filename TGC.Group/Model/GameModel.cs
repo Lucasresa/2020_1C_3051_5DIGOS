@@ -96,8 +96,12 @@ namespace TGC.Group.Model
                 InventoryManager.AddItem(ObjectManager.ItemSelected);
                 Draw2DManager.ItemHistory = InventoryManager.ItemHistory;
                 ObjectManager.ItemSelected = null;
+                CharacterStatus.DamageReceived = ObjectManager.Shark.AttackedCharacter;
                 CharacterStatus.Update();
+                ObjectManager.Shark.AttackedCharacter = CharacterStatus.DamageReceived;
+                SharkStatus.DamageReceived = ObjectManager.Character.AttackedShark;
                 SharkStatus.Update();
+                ObjectManager.Character.AttackedShark = SharkStatus.DamageReceived;
                 Draw2DManager.Update();
                 Draw2DManager.UpdateItems(InventoryManager.Items);
             }
