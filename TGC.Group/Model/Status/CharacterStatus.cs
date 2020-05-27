@@ -49,6 +49,7 @@ namespace TGC.Group.Model.Status
             Life = Constants.LIFE_MAX;
             Oxygen = Constants.OXYGEN_MAX;
             DamageAcumulated = 0;
+            ActiveAlarmForDamageReceived = false;
         }
 
         public void Update()

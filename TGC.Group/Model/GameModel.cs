@@ -81,7 +81,7 @@ namespace TGC.Group.Model
                 else
                 {
                     CharacterStatus.Respawn();
-                    FullQuad.RenderTeleportEffect = false;
+                    FullQuad.RenderTeleportEffect = FullQuad.RenderAlarmEffect = false;
                 }
                 return;
             }
@@ -107,8 +107,7 @@ namespace TGC.Group.Model
                     TimeToAlarm += ElapsedTime;
                     if (TimeToAlarm > 2)
                     {
-                        FullQuad.RenderAlarmEffect = false;
-                        CharacterStatus.ActiveAlarmForDamageReceived = false;
+                        FullQuad.RenderAlarmEffect = CharacterStatus.ActiveAlarmForDamageReceived = false;
                         TimeToAlarm = 0;
                     }
                 }
