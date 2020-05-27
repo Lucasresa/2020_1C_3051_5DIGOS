@@ -14,13 +14,12 @@ namespace TGC.Group.Model.Status
         }
 
         private float DamageAcumulated = 0;
-        private Shark Shark { get; set; }
 
         public float Life { get; set; } = Constants.LIFE_MAX;
         public bool IsDead => Life == 0;
         public bool DamageReceived { get; set; }
 
-        public SharkStatus(Shark shark) => Shark = shark;
+        public SharkStatus() { }
 
         public float GetLifeMax() => Constants.LIFE_MAX;
 

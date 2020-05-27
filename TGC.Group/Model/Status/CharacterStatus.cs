@@ -33,6 +33,7 @@ namespace TGC.Group.Model.Status
         public bool IsDead => Oxygen == 0 || Life == 0;
         public bool HasDivingHelmet { get; set; }
         public bool DamageReceived { get; set; }
+        public bool LowLife => Life < 20 || Oxygen < 95;
 
         public CharacterStatus(Character character) => Character = character;
 
@@ -75,17 +76,9 @@ namespace TGC.Group.Model.Status
                     UpdateOxygen(Constants.OXYGEN_REDUCE_STEP);
         }
 
-        private void UpdateLife(float value)
-        {
-            Life += value;
-            Life = FastMath.Clamp(Life, Constants.LIFE_MIN, Constants.LIFE_MAX);
-        }
+        private void UpdateLife(float value) => Life = FastMath.Clamp(Life + value, Constants.LIFE_MIN, Constants.LIFE_MAX);
 
-        private void UpdateOxygen(float value)
-        {
-            Oxygen += value;
-            Oxygen = FastMath.Clamp(Oxygen, Constants.OXYGEN_MIN, Constants.OXYGEN_MAX);
-        }
+        private void UpdateOxygen(float value) => Oxygen = FastMath.Clamp(Oxygen + value, Constants.OXYGEN_MIN, Constants.OXYGEN_MAX);
 
         private void TakeDamage() => DamageAcumulated = Constants.DAMAGE_RECEIVED;
 

@@ -1,6 +1,7 @@
 ﻿using Microsoft.DirectX.Direct3D;
 using System.Drawing;
 using TGC.Core.Direct3D;
+using TGC.Core.Interpolation;
 using TGC.Core.Mathematica;
 using TGC.Core.Shaders;
 using TGC.Core.Textures;
@@ -16,13 +17,24 @@ namespace TGC.Group.Utils
         private Surface Surf { get; set; }
         private VertexBuffer FullScreenQuad { get; set; }
         private Texture RenderTarget2D { get; set; }
+        private TgcTexture AlarmTexture { get; set; }
+        private InterpoladorVaiven IntVaivenAlarm;
+
         private readonly Device Device = D3DDevice.Instance.Device;
         private float Time = 0;
 
         public string ShadersDir { get; set; }
+        public string MediaDir { get; set; }
         public bool RenderEffectTeleport { get; set; }
+        public bool RenderLowLifeEffect { get; set; }
+        private readonly float ElapsedTime;
 
-        public FullQuad(string shadersDir) => ShadersDir = shadersDir;
+        public FullQuad(string mediaDir, string shadersDir, float elapsedTime)
+        {
+            MediaDir = mediaDir;
+            ShadersDir = shadersDir;
+            ElapsedTime = elapsedTime;
+        }
 
         public void Initializer(string nameEffect)
         {
@@ -41,7 +53,15 @@ namespace TGC.Group.Utils
             DepthStencil = Device.CreateDepthStencilSurface(Device.PresentationParameters.BackBufferWidth, Device.PresentationParameters.BackBufferHeight, DepthFormat.D24S8, MultiSampleType.None, 0, true);
 
             Effect = TGCShaders.Instance.LoadEffect(ShadersDir + nameEffect + ".fx");
-            Effect.Technique = "OndasTechnique";
+            Effect.Technique = "DefaultTechnique";
+            AlarmTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Textures\alarm.png");
+            IntVaivenAlarm = new InterpoladorVaiven
+            {
+                Min = 0,
+                Max = 1,
+                Speed = 5
+            };
+            IntVaivenAlarm.reset();
         }
 
         public void SetTime(float value) => Time = FastMath.Clamp(Time + value, 0, 10);
@@ -72,17 +92,26 @@ namespace TGC.Group.Utils
             Device.BeginScene();
             Device.VertexFormat = CustomVertex.PositionTextured.Format;
 
-            if (RenderEffectTeleport)
-                Effect.Technique = "OscurecerTechnique";
-            else
-            {
-                Effect.Technique = "DefaultTechnique";
-                Time = 0;
-            }
-
             Device.SetStreamSource(0, FullScreenQuad, 0);
             Effect.SetValue("render_target2D", RenderTarget2D);
-            Effect.SetValue("time", Time);
+
+            if (RenderEffectTeleport)
+            {
+                Effect.Technique = "DarkenTechnique";
+                Effect.SetValue("time", Time);
+            }
+            else
+            {
+                Time = 0;
+                if (RenderLowLifeEffect)
+                {
+                    Effect.Technique = "AlarmTechnique";
+                    Effect.SetValue("texture_alarm", AlarmTexture.D3dTexture);
+                    Effect.SetValue("alarmScaleFactor", IntVaivenAlarm.update(ElapsedTime));
+                }
+                else
+                    Effect.Technique = "DefaultTechnique";
+            }
 
             Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1f, 0);
 
@@ -98,6 +127,7 @@ namespace TGC.Group.Utils
             FullScreenQuad.Dispose();
             if (Effect != null && !Effect.Disposed)
                 Effect.Dispose();
+            AlarmTexture.dispose();
             RenderTarget2D.Dispose();
             DepthStencil.Dispose();
             OldDepthStencil.Dispose();

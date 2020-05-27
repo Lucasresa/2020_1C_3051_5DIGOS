@@ -155,7 +155,7 @@ namespace TGC.Group.Model
                 ShowInfoItemCollect = true;
                 ItemSelected = item.Name;
                 PhysicalWorld.RemoveBodyToTheWorld(item.Body);
-                if (FastUtils.Contains(item.Name, "CORAL")) Common.ListCorals.Remove(item);
+                if (item.Name.Contains("CORAL")) Common.ListCorals.Remove(item);
                 else Common.ListOres.Remove(item);
             }
         }

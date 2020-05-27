@@ -7,6 +7,7 @@ using TGC.Core.Example;
 using TGC.Group.Model.Objects;
 using TGC.Group.Model.Status;
 using TGC.Group.Utils;
+using System.Threading;
 
 namespace TGC.Group.Model
 {
@@ -48,12 +49,12 @@ namespace TGC.Group.Model
         {
             Camera = new CameraFPS(Input);
             camera = (CameraFPS)Camera;
-            FullQuad = new FullQuad(ShadersDir);
+            FullQuad = new FullQuad(MediaDir, ShadersDir, ElapsedTime);
             FullQuad.Initializer("PostProcess");
             Ray = new Ray(Input);
             ObjectManager = new GameObjectManager(MediaDir, ShadersDir, camera, Input, Ray);
             CharacterStatus = new CharacterStatus(ObjectManager.Character);
-            SharkStatus = new SharkStatus(ObjectManager.Shark);
+            SharkStatus = new SharkStatus();
             Draw2DManager = new Game2DManager(MediaDir, CharacterStatus, SharkStatus);
             EventsManager = new GameEventsManager(ObjectManager.Shark, ObjectManager.Character);
             InventoryManager = new GameInventoryManager();
@@ -99,6 +100,7 @@ namespace TGC.Group.Model
                 CharacterStatus.DamageReceived = ObjectManager.Shark.AttackedCharacter;
                 CharacterStatus.Update();
                 ObjectManager.Shark.AttackedCharacter = CharacterStatus.DamageReceived;
+                FullQuad.RenderLowLifeEffect = CharacterStatus.LowLife;
                 SharkStatus.DamageReceived = ObjectManager.Character.AttackedShark;
                 SharkStatus.Update();
                 ObjectManager.Character.AttackedShark = SharkStatus.DamageReceived;

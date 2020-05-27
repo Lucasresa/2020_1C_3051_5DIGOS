@@ -73,7 +73,7 @@ technique DefaultTechnique
 float time;
 
 //Pixel Shader de Oscurecer
-float4 ps_oscurecer(PS_INPUT_DEFAULT Input) : COLOR0
+float4 ps_darken(PS_INPUT_DEFAULT Input) : COLOR0
 {
 	//Obtener color segun textura
     float4 color = tex2D(RenderTarget, Input.Texcoord);
@@ -84,12 +84,12 @@ float4 ps_oscurecer(PS_INPUT_DEFAULT Input) : COLOR0
     return color + value;
 }
 
-technique OscurecerTechnique
+technique DarkenTechnique
 {
     pass Pass_0
     {
         VertexShader = compile vs_3_0 vs_default();
-        PixelShader = compile ps_3_0 ps_oscurecer();
+        PixelShader = compile ps_3_0 ps_darken();
     }
 }
 
@@ -97,34 +97,29 @@ technique OscurecerTechnique
 /* ALARMA */
 /**************************************************************************************/
 
-float alarmaScaleFactor = 0.1;
+float alarmScaleFactor;
 
 //Textura alarma
-texture textura_alarma;
-sampler sampler_alarma = sampler_state
+texture texture_alarm;
+sampler sampler_alarm = sampler_state
 {
-    Texture = (textura_alarma);
+    Texture = (texture_alarm);
 };
 
 //Pixel Shader de Alarma
-float4 ps_alarma(PS_INPUT_DEFAULT Input) : COLOR0
+float4 ps_alarm(PS_INPUT_DEFAULT Input) : COLOR0
 {
-	//Obtener color segun textura
     float4 color = tex2D(RenderTarget, Input.Texcoord);
-
-	//Obtener color de textura de alarma, escalado por un factor
-    float4 color2 = tex2D(sampler_alarma, Input.Texcoord) * alarmaScaleFactor;
-
-	//Mezclar ambos texels
+    float4 color2 = tex2D(sampler_alarm, Input.Texcoord) * alarmScaleFactor;
     return color + color2;
 }
 
-technique AlarmaTechnique
+technique AlarmTechnique
 {
     pass Pass_0
     {
         VertexShader = compile vs_3_0 vs_default();
-        PixelShader = compile ps_3_0 ps_alarma();
+        PixelShader = compile ps_3_0 ps_alarm();
     }
 }
 
