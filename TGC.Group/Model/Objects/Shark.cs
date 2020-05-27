@@ -1,7 +1,6 @@
 ﻿using BulletSharp;
 using BulletSharp.Math;
 using TGC.Core.BulletPhysics;
-using TGC.Core.Direct3D;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
@@ -9,7 +8,7 @@ using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Objects
 {
-    class Shark
+    internal class Shark
     {
         private struct Constants
         {
@@ -48,12 +47,11 @@ namespace TGC.Group.Model.Objects
         public RigidBody Body { get; set; }
         public TgcMesh Mesh;
 
-        private readonly string MediaDir, ShadersDir;
+        private readonly string MediaDir;
 
-        public Shark(string mediaDir, string shadersDir, Skybox skybox, Terrain terrain, CameraFPS camera)
+        public Shark(string mediaDir, Skybox skybox, Terrain terrain, CameraFPS camera)
         {
             MediaDir = mediaDir;
-            ShadersDir = shadersDir;
             Skybox = skybox;
             Terrain = terrain;
             Camera = camera;
@@ -95,7 +93,7 @@ namespace TGC.Group.Model.Objects
             Body = RigidBodyFactory.CreateBox(Constants.sharkBodySize, Constants.sharkMass, Constants.startPosition, 0, 0, 0, 0, false);
         }
 
-        public void Update(TgcD3dInput input, float elapsedTime)
+        public void Update(float elapsedTime)
         {
             var speed = 1000f;
             var headPosition = GetHeadPosition();
@@ -143,7 +141,7 @@ namespace TGC.Group.Model.Objects
         {
             var XRotation = 0f;
             var YRotation = 0f;
-            Terrain.world.interpoledHeight(headPosition.X, headPosition.Z, out float floorHeight);
+            Terrain.world.InterpoledHeight(headPosition.X, headPosition.Z, out float floorHeight);
             var distanceToFloor = Body.CenterOfMassPosition.Y - floorHeight;
             var XRotationStep = FastMath.PI * 0.1f * elapsedTime;
             var YRotationStep = FastMath.PI * 0.4f * elapsedTime;
@@ -247,7 +245,7 @@ namespace TGC.Group.Model.Objects
         private TGCVector3 CalculateInitialPosition()
         {
             var outOfSkyboxPosition = Camera.Position + TGCVector3.Mul(director, new TGCVector3(0, 0, Skybox.Radius + 300));
-            Terrain.world.interpoledHeight(outOfSkyboxPosition.X, outOfSkyboxPosition.Z, out float Y);
+            Terrain.world.InterpoledHeight(outOfSkyboxPosition.X, outOfSkyboxPosition.Z, out float Y);
             return new TGCVector3(outOfSkyboxPosition.X, Y + 600, outOfSkyboxPosition.Z);
         }
 

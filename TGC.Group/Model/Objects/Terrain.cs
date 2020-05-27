@@ -3,15 +3,12 @@ using TGC.Core.BulletPhysics;
 
 namespace TGC.Group.Model.Objects
 {
-    class Terrain : World
+    internal class Terrain : World
     {
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
         public RigidBody Body { get; set; }
 
-        public Terrain(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
-        {
-            Init();
-        }
+        public Terrain(string mediaDir, string shadersDir) : base(mediaDir, shadersDir) => Init();
 
         private void Init()
         {
@@ -20,7 +17,7 @@ namespace TGC.Group.Model.Objects
             FILE_EFFECT = "TerrainShader.fx";
             Technique = "Default";
             LoadWorld();
-            Body = RigidBodyFactory.CreateSurfaceFromHeighMap(world.getVertices());
+            Body = RigidBodyFactory.CreateSurfaceFromHeighMap(world.GetVertices());
         }
 
         public override void Dispose()

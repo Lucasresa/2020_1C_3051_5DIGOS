@@ -7,7 +7,7 @@ using static TGC.Group.Model.GameModel;
 
 namespace TGC.Group.Model.Objects
 {
-    class Skybox
+    internal class Skybox
     {
         private struct Constants
         {
@@ -26,7 +26,8 @@ namespace TGC.Group.Model.Objects
         private readonly TgcSkyBox skybox;
         private readonly CameraFPS Camera;
         public Perimeter CurrentPerimeter;
-        public float Radius { get { return Constants.SKYBOX_SIZE.X / 2; } }
+        public float Radius => Constants.SKYBOX_SIZE.X / 2;
+        public bool IsNearSkybox => !InPerimeterSkyBox(Camera.Position.X, Camera.Position.Z);
 
         public Skybox(string mediaDir, CameraFPS camera)
         {
@@ -40,7 +41,7 @@ namespace TGC.Group.Model.Objects
             Camera = camera;
             LoadSkyBox();
         }
-        
+
         private void LoadSkyBox()
         {
             var texturesPath = MediaDir + Constants.SKYBOX_TEXTURE_FOLDER;
@@ -56,10 +57,7 @@ namespace TGC.Group.Model.Objects
             CalculatePerimeter();
         }
 
-        public void Update()
-        {
-            CalculatePerimeter();
-        }
+        public void Update() => CalculatePerimeter();
 
         public void Render(Perimeter worldSize)
         {
@@ -69,10 +67,7 @@ namespace TGC.Group.Model.Objects
             skybox.Render();
         }
 
-        public virtual void Dispose()
-        {
-            skybox.Dispose();
-        }
+        public void Dispose() => skybox.Dispose();
 
         public bool Contains(RigidBody rigidBody)
         {
@@ -89,20 +84,11 @@ namespace TGC.Group.Model.Objects
             return InPerimeterSkyBox(posX, posZ);
         }
 
-        public TGCVector3 GetSkyboxCenter()
-        {
-            return skybox.Center;
-        }
+        public TGCVector3 GetSkyboxCenter() => skybox.Center;
 
-        public bool InPerimeterSkyBox(float posX, float posZ)
-        {
-            return posX < CurrentPerimeter.xMax && posX > CurrentPerimeter.xMin && posZ < CurrentPerimeter.zMax && posZ > CurrentPerimeter.zMin;
-        }
-
-        public bool CameraIsNearBorder(CameraFPS camera)
-        {
-            return !InPerimeterSkyBox(camera.Position.X, camera.Position.Z);
-        }
+        public bool InPerimeterSkyBox(float posX, float posZ) =>
+            FastUtils.IsNumberBetweenInterval(posX, (CurrentPerimeter.xMin, CurrentPerimeter.xMax)) &&
+            FastUtils.IsNumberBetweenInterval(posZ, (CurrentPerimeter.zMin, CurrentPerimeter.zMax));
 
         private void CalculatePerimeter()
         {

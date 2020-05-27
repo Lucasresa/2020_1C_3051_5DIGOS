@@ -5,8 +5,8 @@ using Font = System.Drawing.Font;
 
 namespace TGC.Group.Utils
 {
-    class DrawText
-    { 
+    internal class DrawText
+    {
         private TgcText2D Text2D { get; set; }
         private string text;
         private Color color;
@@ -31,7 +31,7 @@ namespace TGC.Group.Utils
         public void Dispose()
         {
             if (Text2D != null) Text2D.Dispose();
-        }        
+        }
 
         private void Initializer()
         {
@@ -44,10 +44,7 @@ namespace TGC.Group.Utils
             UpdateTextSettings();
         }
 
-        public void Render()
-        {
-            Text2D.render();
-        }
+        public void Render() => Text2D.render();
 
         public void SetTextSizeAndPosition(string text, TGCVector2 size, TGCVector2 position)
         {

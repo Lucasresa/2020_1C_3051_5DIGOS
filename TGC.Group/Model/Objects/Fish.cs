@@ -6,13 +6,13 @@ using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Objects
 {
-    class Fish
+    internal class Fish
     {
         public struct TypeFish
         {
-            public int ID;
-            public string name;
-            public TgcMesh mesh;
+            public int Quantity;
+            public string Name;
+            public TgcMesh Mesh;
         }
 
         private struct Constants
@@ -28,9 +28,9 @@ namespace TGC.Group.Model.Objects
             public static float ScapeFromPlayerCooldown = 3;
         }
 
-        private string MediaDir, ShadersDir;
+        private readonly string MediaDir;
         private TGCVector3 director;
-        private float acumulatedXRotation  = 0;
+        private float acumulatedXRotation = 0;
         private float acumulatedYRotation = 0;
         private TGCMatrix TotalRotation;
         private float time;
@@ -43,20 +43,16 @@ namespace TGC.Group.Model.Objects
         public bool ActivateMove { get; set; }
         public List<TypeFish> ListFishes = new List<TypeFish>();
 
-        public Fish(string mediaDir, string shadersDir, Skybox skybox, Terrain terrain)
+        public Fish(string mediaDir, Skybox skybox, Terrain terrain)
         {
             MediaDir = mediaDir;
-            ShadersDir = shadersDir;
             director = new TGCVector3(0, 0, 1);
             Skybox = skybox;
             Terrain = terrain;
             Init();
         }
 
-        public void Dispose()
-        {
-            ListFishes.ForEach(fish => fish.mesh.Dispose());
-        }
+        public void Dispose() => ListFishes.ForEach(fish => fish.Mesh.Dispose());
 
         private void Init()
         {
@@ -69,32 +65,32 @@ namespace TGC.Group.Model.Objects
 
         private void InitializerFishes()
         {
-            normalFish.name = Constants.NAME_FISH_NORMAL;
-            normalFish.ID = Constants.QUANTITY_FISH_NORMAL;
+            normalFish.Name = Constants.NAME_FISH_NORMAL;
+            normalFish.Quantity = Constants.QUANTITY_FISH_NORMAL;
             LoadInitial(ref normalFish);
 
-            yellowFish.name = Constants.NAME_FISH_YELLOW;
-            yellowFish.ID = Constants.QUANTITY_FISH_YELLOW;
+            yellowFish.Name = Constants.NAME_FISH_YELLOW;
+            yellowFish.Quantity = Constants.QUANTITY_FISH_YELLOW;
             LoadInitial(ref yellowFish);
         }
 
         private void LoadInitial(ref TypeFish fish)
         {
-            fish.mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + fish.name + "-TgcScene.xml").Meshes[0];
-            fish.mesh.Name = fish.name;
+            fish.Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + fish.Name + "-TgcScene.xml").Meshes[0];
+            fish.Mesh.Name = fish.Name;
         }
 
         public void GenerateDuplicates(TypeFish fish, ref List<TypeFish> fishes)
         {
-            foreach (int index in Enumerable.Range(0, fish.ID))
+            foreach (int index in Enumerable.Range(0, fish.Quantity))
             {
                 TypeFish newFish = new TypeFish
                 {
-                    ID = index,
-                    name = fish.name + "_" + index
+                    Quantity = index,
+                    Name = fish.Name + "_" + index
                 };
-                newFish.mesh = fish.mesh.createMeshInstance(newFish.name);
-                newFish.mesh.Transform = TGCMatrix.Scaling(Constants.Scale);                
+                newFish.Mesh = fish.Mesh.createMeshInstance(newFish.Name);
+                newFish.Mesh.Transform = TGCMatrix.Scaling(Constants.Scale);
                 fishes.Add(newFish);
             }
         }
@@ -103,7 +99,7 @@ namespace TGC.Group.Model.Objects
         {
             ListFishes.ForEach(fish =>
             {
-                currentMesh = fish.mesh;
+                currentMesh = fish.Mesh;
                 if (IsNearFromPlayer(camera.Position) && time <= 0)
                     ChangeFishWay();
                 else if (ActivateMove)
@@ -111,24 +107,18 @@ namespace TGC.Group.Model.Objects
             });
         }
 
-        public void UpdateBoundingBox()
-        {
-            ListFishes.ForEach(fish => fish.mesh.BoundingBox.scaleTranslate(fish.mesh.Position, Constants.Scale));
-        }
+        public void UpdateBoundingBox() => ListFishes.ForEach(fish => fish.Mesh.BoundingBox.scaleTranslate(fish.Mesh.Position, Constants.Scale));
 
-        public void Render()
-        {
-            ListFishes.ForEach(fish => fish.mesh.Render());
-        }
-               
+        public void Render() => ListFishes.ForEach(fish => fish.Mesh.Render());
+
         private void PerformNormalMove(float elapsedTime, float speed, TGCVector3 headPosition)
         {
             time -= elapsedTime;
-            
+
             float XRotation = 0f, YRotation = 0f;
             var meshPosition = GetMeshPosition();
 
-            Terrain.world.interpoledHeight(headPosition.X, headPosition.Z, out float floorHeight);
+            Terrain.world.InterpoledHeight(headPosition.X, headPosition.Z, out float floorHeight);
             var distanceToFloor = FastUtils.Distance(meshPosition.Y, floorHeight);
 
             var XRotationStep = FastMath.PI * 0.1f * elapsedTime;
@@ -172,10 +162,7 @@ namespace TGC.Group.Model.Objects
             currentMesh.BoundingBox.transform(currentMesh.Transform);
         }
 
-        private bool IsNearFromPlayer(TGCVector3 cameraPosition)
-        {
-            return FastUtils.IsDistanceBetweenVectorsLessThan(distance: 1000, vectorA: cameraPosition, vectorB: GetFishHeadPosition());
-        }
+        private bool IsNearFromPlayer(TGCVector3 cameraPosition) => FastUtils.IsDistanceBetweenVectorsLessThan(distance: 1000, vectorA: cameraPosition, vectorB: GetFishHeadPosition());
 
         private void ChangeFishWay()
         {

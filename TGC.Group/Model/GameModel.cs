@@ -66,6 +66,26 @@ namespace TGC.Group.Model
             if (Input.keyDown(Key.F2)) D3DDevice.Instance.Device.RenderState.FillMode = FillMode.WireFrame;
             else D3DDevice.Instance.Device.RenderState.FillMode = FillMode.Solid;
 
+            if (Input.keyPressed(Key.F1)) Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
+
+            if (CharacterStatus.IsDead)
+            {
+                TimeToRevive += ElapsedTime;
+                if (TimeToRevive < 5)
+                {
+                    FullQuad.SetTime(ElapsedTime);
+                    FullQuad.RenderEffectTeleport = true;
+                }
+                else
+                {
+                    CharacterStatus.Respawn();
+                    FullQuad.RenderEffectTeleport = false;
+                }
+                return;
+            }
+
+            TimeToRevive = 0;
+
             if (Input.keyPressed(Key.I)) Draw2DManager.ActiveInventory = camera.Lock = ActiveInventory = !ActiveInventory;
 
             if (!ActiveInventory)
@@ -91,30 +111,12 @@ namespace TGC.Group.Model
                 if (Input.keyPressed(Key.B)) ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
             }
 
-            if (Input.keyPressed(Key.F1)) Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
-
             Draw2DManager.ShowInfoExitShip = ObjectManager.Character.LooksAtTheHatch;
             Draw2DManager.ShowInfoEnterShip = ObjectManager.Character.NearShip;
             Draw2DManager.NearObjectForSelect = ObjectManager.NearObjectForSelect;
             Draw2DManager.ShowInfoItemCollect = ObjectManager.ShowInfoItemCollect;
 
             UpdateInfoItemCollect();
-
-            if (CharacterStatus.IsDead)
-            {
-                TimeToRevive += ElapsedTime;
-                if (TimeToRevive < 5)
-                {
-                    FullQuad.SetTime(ElapsedTime);
-                    FullQuad.RenderEffectTeleport = true;
-                }
-                else
-                {
-                    CharacterStatus.Respawn();
-                    FullQuad.RenderEffectTeleport = false;
-                }
-            }
-            else TimeToRevive = 0;
         }
 
         private void UpdateInfoItemCollect()

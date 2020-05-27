@@ -51,12 +51,12 @@ namespace TGC.Group.Model
             Terrain = new Terrain(MediaDir, ShadersDir);
             Water = new Water(MediaDir, ShadersDir);
             MeshBuilder = new MeshBuilder(Terrain, Water);
-            Ship = new Ship(MediaDir, ShadersDir);
-            Shark = new Shark(MediaDir, ShadersDir, Skybox, Terrain, Camera);
+            Ship = new Ship(MediaDir);
+            Shark = new Shark(MediaDir, Skybox, Terrain, Camera);
             Character = new Character(Camera, Input);
-            Fish = new Fish(MediaDir, ShadersDir, Skybox, Terrain);
-            Vegetation = new Vegetation(MediaDir, ShadersDir);
-            Common = new Common(MediaDir, ShadersDir);
+            Fish = new Fish(MediaDir, Skybox, Terrain);
+            Vegetation = new Vegetation(MediaDir);
+            Common = new Common(MediaDir);
 
             /* Location */
 
@@ -117,16 +117,15 @@ namespace TGC.Group.Model
             PhysicalWorld.dynamicsWorld.StepSimulation(elapsedTime, maxSubSteps: 10, timeBeetweenUpdate);
             Skybox.Update();
             Fish.Update(elapsedTime, Camera);
+            Shark.Update(elapsedTime);
             Character.LooksAtTheHatch = Ray.intersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
             Character.CanAtack = Ray.intersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
             Character.NearShip = Ray.intersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);
+            Character.IsNearSkybox = Skybox.IsNearSkybox;
             DetectSelectedItem();
         }
 
-        public void UpdateCharacter()
-        {
-            Character.Update(Skybox);
-        }
+        public void UpdateCharacter() => Character.Update();
 
         private void DetectSelectedItem()
         {
@@ -134,43 +133,39 @@ namespace TGC.Group.Model
             bool NearOreForSelect = false;
             bool NearFishForSelect = false;
                         
-            TypeCommon Coral = Common.ListCorals.Find(coral => NearCoralForSelect = Ray.intersectsWithObject(objectAABB: coral.mesh.BoundingBox, distance: 500));
-            TypeCommon Ore = Common.ListOres.Find(ore => NearOreForSelect = Ray.intersectsWithObject(objectAABB: ore.mesh.BoundingBox, distance: 500));
+            TypeCommon Coral = Common.ListCorals.Find(coral => NearCoralForSelect = Ray.intersectsWithObject(objectAABB: coral.Mesh.BoundingBox, distance: 500));
+            TypeCommon Ore = Common.ListOres.Find(ore => NearOreForSelect = Ray.intersectsWithObject(objectAABB: ore.Mesh.BoundingBox, distance: 500));
 
-            if (Character.CanFish && Coral.mesh is null && Ore.mesh is null)
+            if (Character.CanFish && Coral.Mesh is null && Ore.Mesh is null)
             {
-                TypeFish itemFish = Fish.ListFishes.Find(fish => NearFishForSelect = Ray.intersectsWithObject(objectAABB: fish.mesh.BoundingBox, distance: 500));
+                TypeFish itemFish = Fish.ListFishes.Find(fish => NearFishForSelect = Ray.intersectsWithObject(objectAABB: fish.Mesh.BoundingBox, distance: 500));
                 if (NearFishForSelect) SelectItem(itemFish);
             }
             
             NearObjectForSelect = NearCoralForSelect || NearOreForSelect || NearFishForSelect;
 
-            if (NearCoralForSelect)
-                SelectItem(Coral);
-            else if (NearOreForSelect)
-                SelectItem(Ore);
+            if (NearCoralForSelect) SelectItem(Coral);
+            else if (NearOreForSelect) SelectItem(Ore);
         }
 
         private void SelectItem(TypeCommon item)
         {
-            if (item.mesh != null && Input.keyPressed(Key.E))
+            if (item.Mesh != null && Input.keyPressed(Key.E))
             {
                 ShowInfoItemCollect = true;
-                ItemSelected = item.name;
+                ItemSelected = item.Name;
                 PhysicalWorld.RemoveBodyToTheWorld(item.Body);
-                if (item.name.ToUpper().Contains("CORAL"))
-                    Common.ListCorals.Remove(item);
-                else
-                    Common.ListOres.Remove(item);
+                if (FastUtils.Contains(item.Name, "CORAL")) Common.ListCorals.Remove(item);
+                else Common.ListOres.Remove(item);
             }
         }
 
         private void SelectItem(TypeFish item)
         {
-            if (item.mesh != null && Input.keyPressed(Key.E))
+            if (item.Mesh != null && Input.keyPressed(Key.E))
             {
                 ShowInfoItemCollect = true;
-                ItemSelected = item.name;
+                ItemSelected = item.Name;
                 Fish.ListFishes.Remove(item);
             }
         }

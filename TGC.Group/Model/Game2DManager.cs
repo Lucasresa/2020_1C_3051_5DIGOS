@@ -1,9 +1,6 @@
-﻿using Microsoft.DirectX.DirectInput;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Reflection;
-using System.Security.AccessControl;
 using System.Windows.Forms;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
@@ -12,7 +9,7 @@ using TGC.Group.Utils;
 
 namespace TGC.Group.Model
 {
-    class Game2DManager
+    internal class Game2DManager
     {
         private struct Constants
         {
@@ -32,10 +29,10 @@ namespace TGC.Group.Model
             public static TGCVector2 LIFE_SHARK_TEXT_POSITION = new TGCVector2(LIFE_SHARK_POSITION.X - LIFE_SHARK_TEXT_SIZE.X, 20f);
             public static TGCVector2 POINTER_SCALE = new TGCVector2(1, 1);
             public static TGCVector2 POINTER_SIZE = new TGCVector2(64 * POINTER_SCALE.X, 64 * POINTER_SCALE.Y);
-            public static TGCVector2 POINTER_POSITION = new TGCVector2((SCREEN_WIDTH - POINTER_SIZE.X) / 2, (SCREEN_HEIGHT - POINTER_SIZE.Y) /2);
+            public static TGCVector2 POINTER_POSITION = new TGCVector2((SCREEN_WIDTH - POINTER_SIZE.X) / 2, (SCREEN_HEIGHT - POINTER_SIZE.Y) / 2);
             public static TGCVector2 MOUSE_POINTER_SCALE = new TGCVector2(1, 1);
             public static TGCVector2 MOUSE_POINTER_SIZE = new TGCVector2(32 * POINTER_SCALE.X, 32 * POINTER_SCALE.Y);
-            public static TGCVector2 MOUSE_POINTER_POSITION = new TGCVector2((SCREEN_WIDTH - MOUSE_POINTER_SIZE.X) / 2, (SCREEN_HEIGHT - MOUSE_POINTER_SIZE.Y) /2);
+            public static TGCVector2 MOUSE_POINTER_POSITION = new TGCVector2((SCREEN_WIDTH - MOUSE_POINTER_SIZE.X) / 2, (SCREEN_HEIGHT - MOUSE_POINTER_SIZE.Y) / 2);
             public static TGCVector2 INVENTORY_TEXT_SIZE = new TGCVector2(300, 300);
             public static TGCVector2 INVENTORY_TEXT_POSITION = new TGCVector2(10, SCREEN_HEIGHT - INVENTORY_TEXT_SIZE.Y);
             public static string INVENTORY_TEXT_WITHOUT_ITEMS = "Inventory without items!";
@@ -62,11 +59,11 @@ namespace TGC.Group.Model
                                                     "\n\t- Diving Helmet: Press the B key." +
                                                     "\n\t- Ability to collect fish: ¨Press the N key." +
                                                     "\nTo open and close help, press F1 key.";
-            public static TGCVector2 PRESS_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 145) /2 ,(SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y - 30) /2);
+            public static TGCVector2 PRESS_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 145) / 2, (SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y - 30) / 2);
             public static TGCVector2 COLLECT_TEXT_SIZE = new TGCVector2(320, 50);
             public static TGCVector2 COLLECT_TEXT_POSITION = new TGCVector2(SCREEN_WIDTH - COLLECT_TEXT_SIZE.X, SCREEN_HEIGHT - COLLECT_TEXT_SIZE.Y - 100);
         }
-        
+
         private readonly string MediaDir;
         private readonly CharacterStatus Character;
         private readonly SharkStatus Shark;
@@ -85,7 +82,7 @@ namespace TGC.Group.Model
         private readonly DrawText CollectText;
         private readonly DrawText ItemsHistoryText;
 
-        public float ItemHistoryTime { get => Constants.TIME_HISTORY_TEXT; }
+        public float ItemHistoryTime => Constants.TIME_HISTORY_TEXT;
         public bool ActiveInventory { get; set; }
         public bool ShowHelp { get; set; }
         public bool ShowInfoExitShip { get; set; }
@@ -167,7 +164,7 @@ namespace TGC.Group.Model
             OxygenCharacterText.SetTextAndPosition(text: "OXYGEN", position: Constants.OXYGEN_CHARACTER_TEXT_POSITION);
             OxygenCharacterText.Color = Color.DeepSkyBlue;
         }
-        
+
         private void InitializerPointer()
         {
             Pointer.SetImage("Pointer.png");
@@ -237,10 +234,10 @@ namespace TGC.Group.Model
                     var index = 0;
                     ItemHistory.ForEach(item =>
                     {
-                       index++;
-                       ItemsHistoryText.Text = "COLLECTED " + item + " + 1";
-                       ItemsHistoryText.Position = new TGCVector2(Constants.COLLECT_TEXT_POSITION.X, Constants.COLLECT_TEXT_POSITION.Y + index * 20);
-                       ItemsHistoryText.Render();
+                        index++;
+                        ItemsHistoryText.Text = "COLLECTED " + item + " + 1";
+                        ItemsHistoryText.Position = new TGCVector2(Constants.COLLECT_TEXT_POSITION.X, Constants.COLLECT_TEXT_POSITION.Y + index * 20);
+                        ItemsHistoryText.Render();
                     });
                 }
             }
@@ -261,7 +258,7 @@ namespace TGC.Group.Model
 
         public void UpdateItems(Dictionary<string, List<string>> items)
         {
-            var hasItems = items.Values.ToList().Any(listItems => listItems.Count > 0 );
+            var hasItems = items.Values.ToList().Any(listItems => listItems.Count > 0);
 
             if (hasItems)
                 InventoryText.Text = "Inventory: " + "\n\nGold: " + items["GOLD"].Count + "\nSilver: " + items["SILVER"].Count +
@@ -273,7 +270,6 @@ namespace TGC.Group.Model
                 InventoryText.Text = Constants.INVENTORY_TEXT_WITHOUT_ITEMS;
         }
 
-        private void UpdateSprite(DrawSprite sprite, float percentage, float max) => 
-            sprite.Scaling = new TGCVector2((percentage / max) * sprite.ScalingInitial.X, sprite.ScalingInitial.Y);
+        private void UpdateSprite(DrawSprite sprite, float percentage, float max) => sprite.Scaling = new TGCVector2((percentage / max) * sprite.ScalingInitial.X, sprite.ScalingInitial.Y);
     }
 }

@@ -13,35 +13,28 @@ namespace TGC.Group.Model.Objects
     {
         struct Constants
         {
-            public static TGCVector3 outdoorPosition = new TGCVector3(1300, 3505, 20);
-            public static TGCVector3 indoorPosition = new TGCVector3(515, -2340, -40);
-            public static float speed = 550f;
-            public static TGCVector3 cameraHeight = new TGCVector3(0, 85, 0);
-            public static TGCVector3 planeDirector
-            {
-                get
-                {
-                    var director = new TGCVector3(-1, 0, 0);
-                    director.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
-                    return director;
-                }
-            }
-            public static float capsuleSize = 160f;
-            public static float capsuleRadius = 40f;
+            public static TGCVector3 OUTDOOR_POSITION = new TGCVector3(1300, 3505, 20);
+            public static TGCVector3 INDOOR_POSITION = new TGCVector3(515, -2340, -40);
+            public static float MOVEMENT_SPEED = 850f;
+            public static TGCVector3 CAMERA_HEIGHT = new TGCVector3(0, 85, 0);
+            public static TGCVector3 PLANE_DIRECTOR => TGCVector3.TransformCoordinate(new TGCVector3(-1, 0, 0), TGCMatrix.RotationY(FastMath.PI_HALF));
+            public static float CAPSULE_SIZE = 160f;
+            public static float CAPSULE_RADIUS = 40f;
         }
 
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
-        private TGCVector3 movementDirection;
-        private readonly CameraFPS Camera;
         private readonly TgcD3dInput Input;
+        private readonly CameraFPS Camera;
+        private TGCVector3 MovementDirection;
         private float prevLatitude;
-        private float Gravity { get { return Body.CenterOfMassPosition.Y < 0 ? -200 : -5; } }
+        private float Gravity => Body.CenterOfMassPosition.Y < 0 ? -200 : -5;
 
         public RigidBody Body { get; set; }
         public bool DamageReceived { get; set; }
-        public bool IsInsideShip { get { return Camera.Position.Y < 0; } }
-        public bool IsOutsideShip { get => !IsInsideShip; }
-        public bool IsOutOfWater { get { return Camera.Position.Y > 3505; } }
+        public bool IsInsideShip => Camera.Position.Y < 0;
+        public bool IsOutsideShip => !IsInsideShip; 
+        public bool IsOutOfWater => Camera.Position.Y > 3505;
+        public bool IsNearSkybox { get; set; }
 
         public bool LooksAtTheHatch { get; set; }
         public bool CanAtack { get; set; }
@@ -50,7 +43,6 @@ namespace TGC.Group.Model.Objects
         public bool HasWeapon { get; set; }
         public bool HasDivingHelmet { get; set; }
         public bool CanFish { get; set; }
-        public bool IsDead { get; set; }
         
         public Character(CameraFPS camera, TgcD3dInput input)
         {
@@ -59,79 +51,68 @@ namespace TGC.Group.Model.Objects
             Init();
         }
 
-        public void ChangePosition(TGCVector3 newPosition)
+        private void ChangePosition(TGCVector3 newPosition)
         {
             Body.CenterOfMassTransform = TGCMatrix.Translation(newPosition).ToBulletMatrix();
             Camera.Position = new TGCVector3(Body.CenterOfMassPosition);
             RestartBodySpeed();
         }
 
-        public void Dispose()
-        {
-            Body.Dispose();
-        }
+        public void Dispose() => Body.Dispose();
 
         private void Init()
         {
             prevLatitude = Camera.Latitude;
-            Constants.planeDirector.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
-            Body = RigidBodyFactory.CreateCapsule(Constants.capsuleRadius, Constants.capsuleSize, Constants.indoorPosition, 1f, false);
-            Body.CenterOfMassTransform = TGCMatrix.Translation(Constants.indoorPosition).ToBulletMatrix();
+            Constants.PLANE_DIRECTOR.TransformCoordinate(TGCMatrix.RotationY(FastMath.PI_HALF));
+            Body = RigidBodyFactory.CreateCapsule(Constants.CAPSULE_RADIUS, Constants.CAPSULE_SIZE, Constants.INDOOR_POSITION, 1f, false);
+            Body.CenterOfMassTransform = TGCMatrix.Translation(Constants.INDOOR_POSITION).ToBulletMatrix();
         }
 
         private void InsideMovement(TGCVector3 director, TGCVector3 sideDirector, float speed)
         {
-            if (Input.keyDown(Key.W))
-                Body.LinearVelocity = director.ToBulletVector3() * speed;
-
-            if (Input.keyDown(Key.S))
-                Body.LinearVelocity = director.ToBulletVector3() * -speed;
-
-            if (Input.keyDown(Key.A))
-                Body.LinearVelocity = sideDirector.ToBulletVector3() * -speed;
-
-            if (Input.keyDown(Key.D))
-                Body.LinearVelocity = sideDirector.ToBulletVector3() * speed;
+            if (Input.keyDown(Key.W)) Body.LinearVelocity = director.ToBulletVector3() * speed;
+            if (Input.keyDown(Key.S)) Body.LinearVelocity = director.ToBulletVector3() * -speed;
+            if (Input.keyDown(Key.A)) Body.LinearVelocity = sideDirector.ToBulletVector3() * -speed;
+            if (Input.keyDown(Key.D)) Body.LinearVelocity = sideDirector.ToBulletVector3() * speed;
         }
 
-        private void OutsideMovement(TGCVector3 director, TGCVector3 sideDirector, float speed, Skybox skybox)
+        private void OutsideMovement(TGCVector3 director, TGCVector3 sideDirector, float speed)
         {
-            if (skybox.CameraIsNearBorder(Camera))
+            if (IsNearSkybox) 
             {
-                Body.ApplyCentralImpulse(movementDirection.ToBulletVector3() * -100);
+                Body.ApplyCentralImpulse(MovementDirection.ToBulletVector3() * -100);
                 return;
             }
 
             if (Input.keyDown(Key.W))
             {
                 Body.LinearVelocity = director.ToBulletVector3() * speed;
-                movementDirection = director;
+                MovementDirection = director;
             }
 
             if (Input.keyDown(Key.S))
             {
                 Body.LinearVelocity = director.ToBulletVector3() * -speed;
-                movementDirection = -director;
+                MovementDirection = -director;
             }
 
             if (Input.keyDown(Key.A))
             {
                 Body.LinearVelocity = sideDirector.ToBulletVector3() * -speed;
-                movementDirection = -sideDirector;
+                MovementDirection = -sideDirector;
             }
 
             if (Input.keyDown(Key.D))
             {
                 Body.LinearVelocity = sideDirector.ToBulletVector3() * speed;
-                movementDirection = sideDirector;
+                MovementDirection = sideDirector;
             }
 
-            if (Input.keyDown(Key.Space))
-                Body.LinearVelocity = Vector3.UnitY * speed;
-
-            if (Input.keyDown(Key.LeftControl))
-                Body.LinearVelocity = Vector3.UnitY * -speed;
+            if (Input.keyDown(Key.LeftControl)) Body.LinearVelocity = Vector3.UnitY * -speed;
+            if (Input.keyDown(Key.Space)) Body.LinearVelocity = Vector3.UnitY * speed;
         }
+        
+        public void Respawn() => ChangePosition(Constants.INDOOR_POSITION);
 
         private void RestartBodySpeed()
         {
@@ -145,46 +126,34 @@ namespace TGC.Group.Model.Objects
                     Input.keyUp(Key.Space) || Input.keyUp(Key.LeftControl) )
                 RestartBodySpeed();
         }
-        
-        public void Update(Skybox skybox)
+
+        public void Teleport()
         {
-            Camera.Lock = IsDead ;
+            if ( LooksAtTheHatch ) ChangePosition(Constants.OUTDOOR_POSITION);
+            if ( NearShip ) ChangePosition(Constants.INDOOR_POSITION);
+        }
 
-            if (IsDead)
-                return;
-
-            var speed = Constants.speed;
+        public void Update()
+        {
+            var speed = Constants.MOVEMENT_SPEED;
             var director = Camera.Direction;
             var sideRotation = Camera.Latitude - prevLatitude;
-            var sideDirector = Constants.planeDirector;
-            sideDirector.TransformCoordinate(TGCMatrix.RotationY(sideRotation));
+            var sideDirector = TGCVector3.TransformCoordinate(Constants.PLANE_DIRECTOR, TGCMatrix.RotationY(sideRotation));
 
             Body.ActivationState = ActivationState.ActiveTag;
             Body.AngularVelocity = Vector3.Zero;
 
-            if (IsOutOfWater)
+            if (IsOutOfWater) 
                 Body.ApplyCentralImpulse(Vector3.UnitY * -3);
             else if (!IsInsideShip)
-                OutsideMovement(director, sideDirector, speed, skybox);
+                OutsideMovement(director, sideDirector, speed);
             else
                 InsideMovement(director, sideDirector, speed);
 
             RestartSpeedForKeyUp();
 
             Body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * Gravity;
-            Camera.Position = new TGCVector3(Body.CenterOfMassPosition) + Constants.cameraHeight;
-
-        }
-
-        public void Teleport()
-        {
-            if ( LooksAtTheHatch ) ChangePosition(Constants.outdoorPosition);
-            if ( NearShip ) ChangePosition(Constants.indoorPosition);
-        }
-
-        public void Respawn()
-        {
-            ChangePosition(Constants.indoorPosition);
+            Camera.Position = new TGCVector3(Body.CenterOfMassPosition) + Constants.CAMERA_HEIGHT;
         }
     }
 }

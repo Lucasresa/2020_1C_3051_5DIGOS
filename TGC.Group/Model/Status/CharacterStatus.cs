@@ -19,7 +19,7 @@ namespace TGC.Group.Model.Status
             public static float LIFE_REDUCE_STEP = -0.3f;
             public static float LIFE_INCREMENT_STEP = 0.01f;
             public static float OXYGEN_INCREMENT_STEP = 1f;
-            public static float OXYGEN_REDUCE_STEP = -2f; //-0.05f;
+            public static float OXYGEN_REDUCE_STEP = -0.05f;
             public static float OXYGEN_REDUCE_STEP_WHIT_DIVING_HELMET = -0.0025f;
             public static float DAMAGE_RECEIVED = 30f;
         }
@@ -50,10 +50,6 @@ namespace TGC.Group.Model.Status
 
         public void Update()
         {
-            Character.IsDead = IsDead;
-
-            if (IsDead) return;
-
             if (Character.DamageReceived)
             {
                 TakeDamage();
@@ -76,7 +72,6 @@ namespace TGC.Group.Model.Status
                     UpdateOxygen(Constants.OXYGEN_REDUCE_STEP_WHIT_DIVING_HELMET);
                 else
                     UpdateOxygen(Constants.OXYGEN_REDUCE_STEP);
-
         }
 
         private void UpdateLife(float value)

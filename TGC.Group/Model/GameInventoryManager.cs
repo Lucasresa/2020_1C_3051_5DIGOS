@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using TGC.Group.Utils;
 
 namespace TGC.Group.Model
 {
-    class GameInventoryManager
+    internal class GameInventoryManager
     {
         public Dictionary<string, List<string>> Items;
         public readonly List<string> CoralNormal = new List<string>();
@@ -21,10 +16,10 @@ namespace TGC.Group.Model
         public readonly List<string> OreSilver = new List<string>();
         public readonly List<string> Rock = new List<string>();
         public readonly List<string> ItemHistory = new List<string>();
-        
+
         private string Name { get; set; }
 
-        public GameInventoryManager() => Init();   
+        public GameInventoryManager() => Init();
 
         private void Init()
         {

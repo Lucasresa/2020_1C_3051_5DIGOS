@@ -2,7 +2,7 @@
 
 namespace TGC.Group.Model.Objects
 {
-    class Water : World
+    internal class Water : World
     {
         private TGCVector3 waterPosition = new TGCVector3(0, 3500, 0);
 
