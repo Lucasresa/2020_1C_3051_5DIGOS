@@ -127,6 +127,7 @@
     <Compile Include="Utils\DrawSprite.cs" />
     <Compile Include="Utils\DrawText.cs" />
     <Compile Include="Utils\FastUtils.cs" />
+    <Compile Include="Utils\FullQuad.cs" />
     <Compile Include="Utils\Ray.cs" />
     <Compile Include="Utils\SmartTerrain.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
@@ -156,6 +157,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Shaders\PostProcess.fx" />
     <None Include="Shaders\TgcKeyFrameMeshShader.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

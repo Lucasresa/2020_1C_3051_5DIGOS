@@ -20,14 +20,11 @@ namespace TGC.Group.Model
         public readonly List<string> OreIron = new List<string>();
         public readonly List<string> OreSilver = new List<string>();
         public readonly List<string> Rock = new List<string>();
-        
         public readonly List<string> ItemHistory = new List<string>();
-        public string Name { get; set; }
+        
+        private string Name { get; set; }
 
-        public GameInventoryManager()
-        {
-            Init();   
-        }
+        public GameInventoryManager() => Init();   
 
         private void Init()
         {
@@ -46,14 +43,12 @@ namespace TGC.Group.Model
 
         public void AddItem(string itemSelected)
         {
-            if ( itemSelected is null )
-                return;
+            if (itemSelected is null) return;
 
             Name = itemSelected.Substring(0, itemSelected.IndexOf('_'));
             ItemHistory.Add(Name);
             Items[Name].Add(itemSelected);
-            if (ItemHistory.Count == 6)
-                ItemHistory.Remove(ItemHistory.First());
+            if (ItemHistory.Count == 6) ItemHistory.Remove(ItemHistory.First());
         }
     }
 }

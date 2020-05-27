@@ -1,4 +1,5 @@
-﻿using Microsoft.DirectX.DirectInput;
+﻿using Microsoft.DirectX.Direct3D;
+using Microsoft.DirectX.DirectInput;
 using System.Collections.Generic;
 using System.Security.Policy;
 using TGC.Core.Direct3D;
@@ -32,22 +33,23 @@ namespace TGC.Group.Model
         private CharacterStatus CharacterStatus;
         private SharkStatus SharkStatus;
         private Ray Ray;
+        private FullQuad FullQuad;
         
         private bool ActiveInventory { get; set; }
-        private bool CanCraftObjects { get { return ObjectManager.Character.IsInsideShip; } }
+        private bool CanCraftObjects => ObjectManager.Character.IsInsideShip;
 
         public float Time { get; set; }
+        public float TimeToRevive { get; set; }
         public float ItemHistoryTime { get; set; }
 
-        public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir)
-        {
-            FixedTickEnable = true;
-        }
+        public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir) => FixedTickEnable = true;
 
         public override void Init()
         {
             Camera = new CameraFPS(Input);
             camera = (CameraFPS)Camera;
+            FullQuad = new FullQuad(ShadersDir);
+            FullQuad.Initializer("PostProcess");
             Ray = new Ray(Input);
             ObjectManager = new GameObjectManager(MediaDir, ShadersDir, camera, Input, Ray);
             CharacterStatus = new CharacterStatus(ObjectManager.Character);
@@ -60,9 +62,11 @@ namespace TGC.Group.Model
         public override void Update()
         {
             Time += ElapsedTime;
+                        
+            if (Input.keyDown(Key.F2)) D3DDevice.Instance.Device.RenderState.FillMode = FillMode.WireFrame;
+            else D3DDevice.Instance.Device.RenderState.FillMode = FillMode.Solid;
 
-            if (Input.keyPressed(Key.I))
-                Draw2DManager.ActiveInventory = camera.Lock = ActiveInventory = !ActiveInventory;
+            if (Input.keyPressed(Key.I)) Draw2DManager.ActiveInventory = camera.Lock = ActiveInventory = !ActiveInventory;
 
             if (!ActiveInventory)
             {
@@ -78,24 +82,16 @@ namespace TGC.Group.Model
                 Draw2DManager.UpdateItems(InventoryManager.Items);
             }
 
-            if (Input.keyPressed(Key.E))
-                ObjectManager.Character.Teleport();
+            if (Input.keyPressed(Key.E)) ObjectManager.Character.Teleport();
 
             if (CanCraftObjects)
             {
-                if (Input.keyPressed(Key.M))
-                    ObjectManager.Character.HasWeapon = GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
-                if (Input.keyPressed(Key.N))
-                    ObjectManager.Character.HasDivingHelmet = CharacterStatus.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
-                if (Input.keyPressed(Key.B))
-                    ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
+                if (Input.keyPressed(Key.M)) ObjectManager.Character.HasWeapon = GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
+                if (Input.keyPressed(Key.N)) ObjectManager.Character.HasDivingHelmet = CharacterStatus.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
+                if (Input.keyPressed(Key.B)) ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
             }
 
-            if (Input.keyPressed(Key.F1))
-                Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
-
-            if (CharacterStatus.IsDead && Input.keyPressed(Key.R))
-                CharacterStatus.Respawn();
+            if (Input.keyPressed(Key.F1)) Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
 
             Draw2DManager.ShowInfoExitShip = ObjectManager.Character.LooksAtTheHatch;
             Draw2DManager.ShowInfoEnterShip = ObjectManager.Character.NearShip;
@@ -103,12 +99,27 @@ namespace TGC.Group.Model
             Draw2DManager.ShowInfoItemCollect = ObjectManager.ShowInfoItemCollect;
 
             UpdateInfoItemCollect();
+
+            if (CharacterStatus.IsDead)
+            {
+                TimeToRevive += ElapsedTime;
+                if (TimeToRevive < 5)
+                {
+                    FullQuad.SetTime(ElapsedTime);
+                    FullQuad.RenderEffectTeleport = true;
+                }
+                else
+                {
+                    CharacterStatus.Respawn();
+                    FullQuad.RenderEffectTeleport = false;
+                }
+            }
+            else TimeToRevive = 0;
         }
 
         private void UpdateInfoItemCollect()
         {
-            if (!Draw2DManager.ShowInfoItemCollect)
-                return;
+            if (!Draw2DManager.ShowInfoItemCollect) return;
             
             ItemHistoryTime += ElapsedTime;
             if (ItemHistoryTime > Draw2DManager.ItemHistoryTime)
@@ -121,14 +132,16 @@ namespace TGC.Group.Model
 
         public override void Render()
         {
-            PreRender();
+            FullQuad.PreRenderMeshes();
             ObjectManager.Render();
             Draw2DManager.Render();
+            FullQuad.Render();
             PostRender();
         }
 
         public override void Dispose()
         {
+            FullQuad.Dispose();
             ObjectManager.Dispose();
             Draw2DManager.Dispose();
         }

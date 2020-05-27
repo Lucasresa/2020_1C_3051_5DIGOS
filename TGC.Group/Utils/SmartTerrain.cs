@@ -195,10 +195,10 @@ namespace TGC.Group.Utils
             if (terrainTexture != null) terrainTexture.Dispose();
         }
 
-        public void loadEffect(string effectPath, string tecnica)
+        public void loadEffect(string effectPath, string technique)
         {
             effect = TGCShaders.Instance.LoadEffect(effectPath);
-            effect.Technique = tecnica;
+            effect.Technique = technique;
             effect.SetValue("texDiffuseMap", terrainTexture);
         }
 

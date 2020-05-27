@@ -273,9 +273,7 @@ namespace TGC.Group.Model
                 InventoryText.Text = Constants.INVENTORY_TEXT_WITHOUT_ITEMS;
         }
 
-        private void UpdateSprite(DrawSprite sprite, float percentage, float max)
-        {
+        private void UpdateSprite(DrawSprite sprite, float percentage, float max) => 
             sprite.Scaling = new TGCVector2((percentage / max) * sprite.ScalingInitial.X, sprite.ScalingInitial.Y);
-        }
     }
 }
