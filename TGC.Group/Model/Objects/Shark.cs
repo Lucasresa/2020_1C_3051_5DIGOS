@@ -110,10 +110,7 @@ namespace TGC.Group.Model.Objects
             {
                 PerformStalkerMove(elapsedTime, speed, rotationAngle, rotationAxis);
                 if (IsCollapsinWithPlayer())
-                {
-                    AttackedCharacter = true;
                     ChangeSharkWay();
-                }
             }
             else if (normalMove)
                 PerformNormalMove(elapsedTime, speed, headPosition);
@@ -250,7 +247,7 @@ namespace TGC.Group.Model.Objects
             return new TGCVector3(outOfSkyboxPosition.X, Y + 600, outOfSkyboxPosition.Z);
         }
 
-        private bool IsCollapsinWithPlayer() => FastUtils.IsDistanceBetweenVectorsLessThan(distance: 100, Camera.Position, GetHeadPosition());
+        private bool IsCollapsinWithPlayer() => AttackedCharacter = FastUtils.IsDistanceBetweenVectorsLessThan(distance: 100, Camera.Position, GetHeadPosition());
 
         private void ChangeSharkWay()
         {

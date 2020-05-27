@@ -41,6 +41,7 @@ namespace TGC.Group.Model
 
         public float Time { get; set; }
         public float TimeToRevive { get; set; }
+        public float TimeToAlarm { get; set; }
         public float ItemHistoryTime { get; set; }
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir) => FixedTickEnable = true;
@@ -75,12 +76,12 @@ namespace TGC.Group.Model
                 if (TimeToRevive < 5)
                 {
                     FullQuad.SetTime(ElapsedTime);
-                    FullQuad.RenderEffectTeleport = true;
+                    FullQuad.RenderTeleportEffect = true;
                 }
                 else
                 {
                     CharacterStatus.Respawn();
-                    FullQuad.RenderEffectTeleport = false;
+                    FullQuad.RenderTeleportEffect = false;
                 }
                 return;
             }
@@ -99,8 +100,20 @@ namespace TGC.Group.Model
                 ObjectManager.ItemSelected = null;
                 CharacterStatus.DamageReceived = ObjectManager.Shark.AttackedCharacter;
                 CharacterStatus.Update();
+                FullQuad.RenderAlarmEffect = CharacterStatus.ActiveRenderAlarm;
+
+                if (CharacterStatus.ActiveAlarmForDamageReceived)
+                {
+                    TimeToAlarm += ElapsedTime;
+                    if (TimeToAlarm > 2)
+                    {
+                        FullQuad.RenderAlarmEffect = false;
+                        CharacterStatus.ActiveAlarmForDamageReceived = false;
+                        TimeToAlarm = 0;
+                    }
+                }
+
                 ObjectManager.Shark.AttackedCharacter = CharacterStatus.DamageReceived;
-                FullQuad.RenderLowLifeEffect = CharacterStatus.LowLife;
                 SharkStatus.DamageReceived = ObjectManager.Character.AttackedShark;
                 SharkStatus.Update();
                 ObjectManager.Character.AttackedShark = SharkStatus.DamageReceived;

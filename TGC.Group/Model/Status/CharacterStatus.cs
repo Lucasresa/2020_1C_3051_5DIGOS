@@ -27,13 +27,14 @@ namespace TGC.Group.Model.Status
         private Character Character { get; set; }
         private bool CanBreathe => (Character.IsInsideShip || Character.IsOutOfWater) && !IsDead; 
         private float DamageAcumulated = 0;
+        public bool ActiveAlarmForDamageReceived { get; set; }
 
         public float Life { get; set; } = Constants.LIFE_MAX;
         public float Oxygen { get; set; } = Constants.OXYGEN_MAX;
         public bool IsDead => Oxygen == 0 || Life == 0;
         public bool HasDivingHelmet { get; set; }
         public bool DamageReceived { get; set; }
-        public bool LowLife => Life < 20 || Oxygen < 95;
+        public bool ActiveRenderAlarm => Life < 20 || Oxygen < 30 || ActiveAlarmForDamageReceived;
 
         public CharacterStatus(Character character) => Character = character;
 
@@ -55,7 +56,8 @@ namespace TGC.Group.Model.Status
             if (DamageReceived)
             {
                 TakeDamage();
-                DamageReceived = false;
+                DamageReceived = !DamageReceived;
+                ActiveAlarmForDamageReceived = true;
             }
 
             if (DamageAcumulated > 0)

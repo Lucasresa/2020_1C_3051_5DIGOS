@@ -25,8 +25,8 @@ namespace TGC.Group.Utils
 
         public string ShadersDir { get; set; }
         public string MediaDir { get; set; }
-        public bool RenderEffectTeleport { get; set; }
-        public bool RenderLowLifeEffect { get; set; }
+        public bool RenderTeleportEffect { get; set; }
+        public bool RenderAlarmEffect { get; set; }
         private readonly float ElapsedTime;
 
         public FullQuad(string mediaDir, string shadersDir, float elapsedTime)
@@ -59,9 +59,10 @@ namespace TGC.Group.Utils
             {
                 Min = 0,
                 Max = 1,
-                Speed = 5
+                Speed = 0.04f
             };
             IntVaivenAlarm.reset();
+            Effect.SetValue("texture_alarm", AlarmTexture.D3dTexture);
         }
 
         public void SetTime(float value) => Time = FastMath.Clamp(Time + value, 0, 10);
@@ -95,7 +96,7 @@ namespace TGC.Group.Utils
             Device.SetStreamSource(0, FullScreenQuad, 0);
             Effect.SetValue("render_target2D", RenderTarget2D);
 
-            if (RenderEffectTeleport)
+            if (RenderTeleportEffect)
             {
                 Effect.Technique = "DarkenTechnique";
                 Effect.SetValue("time", Time);
@@ -103,10 +104,9 @@ namespace TGC.Group.Utils
             else
             {
                 Time = 0;
-                if (RenderLowLifeEffect)
+                if (RenderAlarmEffect)
                 {
                     Effect.Technique = "AlarmTechnique";
-                    Effect.SetValue("texture_alarm", AlarmTexture.D3dTexture);
                     Effect.SetValue("alarmScaleFactor", IntVaivenAlarm.update(ElapsedTime));
                 }
                 else
