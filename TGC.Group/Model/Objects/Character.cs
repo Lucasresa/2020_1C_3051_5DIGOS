@@ -25,7 +25,7 @@ namespace TGC.Group.Model.Objects
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
         private readonly TgcD3dInput Input;
         private readonly CameraFPS Camera;
-        private TGCVector3 MovementDirection;
+        private Vector3 MovementDirection;
         private float prevLatitude;
         private float Gravity => Body.CenterOfMassPosition.Y < 0 ? -200 : -5;
 
@@ -37,7 +37,7 @@ namespace TGC.Group.Model.Objects
         public bool IsNearSkybox { get; set; }
 
         public bool LooksAtTheHatch { get; set; }
-        public bool CanAtack { get; set; }
+        public bool CanAttack { get; set; }
         public bool NearShip { get; set; }
 
         public bool HasWeapon { get; set; }
@@ -70,46 +70,23 @@ namespace TGC.Group.Model.Objects
             Body.CenterOfMassTransform = TGCMatrix.Translation(Constants.INDOOR_POSITION).ToBulletMatrix();
         }
 
-        private void InsideMovement(TGCVector3 director, TGCVector3 sideDirector, float speed)
+        private void Movement(Vector3 director, Vector3 sideDirector, float speed)
         {
-            if (Input.keyDown(Key.W)) Body.LinearVelocity = director.ToBulletVector3() * speed;
-            if (Input.keyDown(Key.S)) Body.LinearVelocity = director.ToBulletVector3() * -speed;
-            if (Input.keyDown(Key.A)) Body.LinearVelocity = sideDirector.ToBulletVector3() * -speed;
-            if (Input.keyDown(Key.D)) Body.LinearVelocity = sideDirector.ToBulletVector3() * speed;
+            if (Input.keyDown(Key.W)) Body.LinearVelocity = MovementDirection = director * speed;
+            if (Input.keyDown(Key.S)) Body.LinearVelocity = MovementDirection = director * -speed;
+            if (Input.keyDown(Key.A)) Body.LinearVelocity = MovementDirection = sideDirector * -speed;
+            if (Input.keyDown(Key.D)) Body.LinearVelocity = MovementDirection = sideDirector * speed;
         }
 
-        private void OutsideMovement(TGCVector3 director, TGCVector3 sideDirector, float speed)
+        private void OutsideMovement(Vector3 director, Vector3 sideDirector, float speed)
         {
             if (IsNearSkybox) 
             {
-                Body.ApplyCentralImpulse(MovementDirection.ToBulletVector3() * -100);
+                Body.ApplyCentralImpulse((TGCVector3.Normalize(new TGCVector3(MovementDirection) * -100)).ToBulletVector3());
                 return;
             }
 
-            if (Input.keyDown(Key.W))
-            {
-                Body.LinearVelocity = director.ToBulletVector3() * speed;
-                MovementDirection = director;
-            }
-
-            if (Input.keyDown(Key.S))
-            {
-                Body.LinearVelocity = director.ToBulletVector3() * -speed;
-                MovementDirection = -director;
-            }
-
-            if (Input.keyDown(Key.A))
-            {
-                Body.LinearVelocity = sideDirector.ToBulletVector3() * -speed;
-                MovementDirection = -sideDirector;
-            }
-
-            if (Input.keyDown(Key.D))
-            {
-                Body.LinearVelocity = sideDirector.ToBulletVector3() * speed;
-                MovementDirection = sideDirector;
-            }
-
+            Movement(director, sideDirector, speed);
             if (Input.keyDown(Key.LeftControl)) Body.LinearVelocity = Vector3.UnitY * -speed;
             if (Input.keyDown(Key.Space)) Body.LinearVelocity = Vector3.UnitY * speed;
         }
@@ -138,19 +115,19 @@ namespace TGC.Group.Model.Objects
         public void Update()
         {
             var speed = Constants.MOVEMENT_SPEED;
-            var director = Camera.Direction;
+            var director = Camera.Direction.ToBulletVector3();
             var sideRotation = Camera.Latitude - prevLatitude;
-            var sideDirector = TGCVector3.TransformCoordinate(Constants.PLANE_DIRECTOR, TGCMatrix.RotationY(sideRotation));
+            var sideDirector = TGCVector3.TransformCoordinate(Constants.PLANE_DIRECTOR, TGCMatrix.RotationY(sideRotation)).ToBulletVector3();
 
             Body.ActivationState = ActivationState.ActiveTag;
             Body.AngularVelocity = Vector3.Zero;
 
             if (IsOutOfWater) 
                 Body.ApplyCentralImpulse(Vector3.UnitY * -3);
-            else if (!IsInsideShip)
-                OutsideMovement(director, sideDirector, speed);
+            else if (IsInsideShip)
+                Movement(director, sideDirector, speed);
             else
-                InsideMovement(director, sideDirector, speed);
+                OutsideMovement(director, sideDirector, speed);
 
             RestartSpeedForKeyUp();
 

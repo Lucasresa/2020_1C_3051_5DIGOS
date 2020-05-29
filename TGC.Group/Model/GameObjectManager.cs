@@ -119,7 +119,7 @@ namespace TGC.Group.Model
             Fish.Update(elapsedTime, Camera);
             Shark.Update(elapsedTime);
             Character.LooksAtTheHatch = Ray.intersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
-            Character.CanAtack = Ray.intersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
+            Character.CanAttack = Ray.intersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
             Character.NearShip = Ray.intersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);
             Character.IsNearSkybox = Skybox.IsNearSkybox;
             DetectSelectedItem();
