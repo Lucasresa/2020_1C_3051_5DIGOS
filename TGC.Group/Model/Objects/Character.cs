@@ -124,8 +124,8 @@ namespace TGC.Group.Model.Objects
             Body.ActivationState = ActivationState.ActiveTag;
             Body.AngularVelocity = Vector3.Zero;
 
-            if (IsOutOfWater)
-                Body.ApplyCentralImpulse(Vector3.UnitY * -2);
+            if (IsOutOfWater) 
+                Body.ApplyCentralImpulse(Vector3.UnitY * -3);
             else if (IsInsideShip)
                 Movement(director, sideDirector, speed);
             else
