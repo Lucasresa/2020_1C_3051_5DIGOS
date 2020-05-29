@@ -10,8 +10,8 @@ namespace TGC.Group.Model.Objects
         protected float SCALEXZ = 300f, SCALEY = 12f;
         private readonly string MediaDir, ShadersDir;
         protected TGCVector3 Position = TGCVector3.Empty;
-        public SmartTerrain world = new SmartTerrain();
         protected string Technique;
+        public SmartTerrain world = new SmartTerrain();
 
         public World(string mediaDir, string shadersDir)
         {

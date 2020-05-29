@@ -30,7 +30,7 @@ sampler2D diffuseMap = sampler_state
     MIPFILTER = LINEAR;
 };
 
-
+float time;
 //Input del Vertex Shader
 struct VS_INPUT
 {
@@ -81,8 +81,6 @@ float4 psDefault(VS_OUTPUT input) : COLOR0
 	
     return textureColor;
 }
-
-
 
 technique Default
 {

@@ -23,6 +23,7 @@ namespace TGC.Group.Utils
         private Texture Texture;
         private int TotalVertices { get; set; }
         private Effect Effect { get; set; }
+        private float TimeForWaves = 0;
         public float ScaleXZ { get; set; }
         public float ScaleY { get; set; }
 
@@ -151,12 +152,14 @@ namespace TGC.Group.Utils
             var d3dDevice = D3DDevice.Instance.Device;
             var texturesManager = TexturesManager.Instance;
             var shader = TGCShaders.Instance;
+            
+            Effect.SetValue("time", TimeForWaves);
 
             texturesManager.clear(1);
             shader.SetShaderMatrix(Effect, TGCMatrix.Identity);
             d3dDevice.VertexDeclaration = shader.VdecPositionTextured;
             d3dDevice.SetStreamSource(0, VertexTerrain, 0);
-
+            
             var p = Effect.Begin(0);
             for (var i = 0; i < p; i++)
             {
@@ -179,6 +182,8 @@ namespace TGC.Group.Utils
             Effect.Technique = technique;
             Effect.SetValue("texDiffuseMap", Texture);
         }
+
+        public void SetTimeForWaves(float elapsedTime) => TimeForWaves += elapsedTime;
 
         public CustomVertex.PositionTextured[] GetVertices() => Vertex;
 

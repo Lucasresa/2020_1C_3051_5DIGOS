@@ -1,4 +1,5 @@
-﻿using TGC.Core.Mathematica;
+﻿using System;
+using TGC.Core.Mathematica;
 
 namespace TGC.Group.Model.Objects
 {
@@ -12,9 +13,11 @@ namespace TGC.Group.Model.Objects
             FILE_HEIGHTMAPS = @"Heightmaps\oceano.jpg";
             FILE_TEXTURES = @"Textures\water.png";
             FILE_EFFECT = "WaterShader.fx";
-            Technique = "Default";
+            Technique = "Olas";
             SCALEY = 1;
             LoadWorld();
         }
+
+        public void Update(float elapsedTime) => world.SetTimeForWaves(elapsedTime);
     }
 }
