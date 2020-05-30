@@ -242,10 +242,7 @@
     <Content Include="Media\Textures\red.jpg" />
     <Content Include="Media\Textures\rock_wall.jpg" />
     <Content Include="Media\Textures\sand.jpg" />
-    <None Include="Shaders\WaterShader.fx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Shaders\TerrainShader.fx">
+    <None Include="Shaders\SmartTerrain.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
