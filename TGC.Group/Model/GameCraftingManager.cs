@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Forms;
-using TGC.Group.Model.Objects;
-using TGC.Group.Utils;
 
 namespace TGC.Group.Model
 {
-    static class GameCraftingManager
+    internal static class GameCraftingManager
     {
         private struct Constants
         {
@@ -39,10 +32,9 @@ namespace TGC.Group.Model
 
         public static bool CanCraftWeapon(Dictionary<string, List<string>> items)
         {
-            if (HasWeapon)
-                return false;
+            if (HasWeapon) return false;
 
-            if ( items["SILVER"].Count >= Constants.WEAPON_COUNT_ORE_SILVER &&
+            if (items["SILVER"].Count >= Constants.WEAPON_COUNT_ORE_SILVER &&
                  items["NORMALCORAL"].Count >= Constants.WEAPON_COUNT_CORAL_NORMAL &&
                  items["TREECORAL"].Count >= Constants.WEAPON_COUNT_CORAL_TREE &&
                  items["NORMALFISH"].Count >= Constants.WEAPON_COUNT_FISH_NORMAL &&
@@ -62,10 +54,9 @@ namespace TGC.Group.Model
 
         public static bool CanCraftDivingHelmet(Dictionary<string, List<string>> items)
         {
-            if (HasDivingHelmet)
-                return false;
+            if (HasDivingHelmet) return false;
 
-            if ( items["GOLD"].Count >= Constants.DIVING_HELMET_COUNT_ORE_GOLD &&
+            if (items["GOLD"].Count >= Constants.DIVING_HELMET_COUNT_ORE_GOLD &&
                  items["IRON"].Count >= Constants.DIVING_HELMET_COUNT_ORE_IRON &&
                  items["SPIRALCORAL"].Count >= Constants.DIVING_HELMET_COUNT_CORAL_SPIRAL &&
                  items["TREECORAL"].Count >= Constants.DIVING_HELMET_COUNT_CORAL_TREE &&
@@ -86,10 +77,9 @@ namespace TGC.Group.Model
 
         public static bool CanCatchFish(Dictionary<string, List<string>> items)
         {
-            if (CanFish)
-                return false;
+            if (CanFish) return false;
 
-            if ( items["IRON"].Count >= Constants.CATCH_FISH_COUNT_ORE_IRON &&
+            if (items["IRON"].Count >= Constants.CATCH_FISH_COUNT_ORE_IRON &&
                  items["SILVER"].Count >= Constants.CATCH_FISH_COUNT_ORE_SILVER &&
                  items["NORMALCORAL"].Count >= Constants.CATCH_FISH_COUNT_CORAL_NORMAL &&
                  items["TREECORAL"].Count >= Constants.CATCH_FISH_COUNT_CORAL_TREE)

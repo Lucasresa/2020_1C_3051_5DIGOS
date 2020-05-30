@@ -8,9 +8,9 @@ using TGC.Core.Textures;
 
 namespace TGC.Group.Model.Objects
 {
-    class Ship
+    internal class Ship
     {
-        struct Constants
+        private struct Constants
         {
             public static string FILE_NAME = "ship-TgcScene.xml";
             public static TGCVector3 PositionIndoorShip = new TGCVector3(515, -2340, -40);
@@ -25,13 +25,12 @@ namespace TGC.Group.Model.Objects
         public RigidBody BodyOutdoorShip;
         public TgcPlane Plane { get; set; }
 
-        private readonly string MediaDir, ShadersDir;
+        private readonly string MediaDir;
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
 
-        public Ship(string mediaDir, string shadersDir)
+        public Ship(string mediaDir)
         {
             MediaDir = mediaDir;
-            ShadersDir = shadersDir;
             Init();
         }
 
@@ -41,6 +40,7 @@ namespace TGC.Group.Model.Objects
             IndoorMesh.Dispose();
             BodyIndoorShip.Dispose();
             BodyOutdoorShip.Dispose();
+            Plane.Dispose();
         }
 
         public void Init()
@@ -60,6 +60,10 @@ namespace TGC.Group.Model.Objects
             IndoorMesh = OutdoorMesh.createMeshInstance("InsideRoom");
         }
 
+        public void RenderIndoorShip() => IndoorMesh.Render();
+
+        public void RenderOutdoorShip() => OutdoorMesh.Render();
+
         private void TransformMesh(TgcMesh mesh, TGCVector3 position, TGCVector3 scale, TGCVector3 rotation)
         {
             mesh.Transform = TGCMatrix.Scaling(scale) * TGCMatrix.RotationYawPitchRoll(rotation.X, rotation.Y, rotation.Z) * TGCMatrix.Translation(position);
@@ -72,16 +76,6 @@ namespace TGC.Group.Model.Objects
             rigidBody.CenterOfMassTransform = Matrix.RotationYawPitchRoll(rotation.X, rotation.Y, rotation.Z) * Matrix.Translation(position.ToBulletVector3());
             rigidBody.CollisionShape.LocalScaling = scale.ToBulletVector3();
             return rigidBody;
-        }
-
-        public void RenderIndoorShip()
-        {
-            IndoorMesh.Render();
-        }
-
-        public void RenderOutdoorShip()
-        {
-            OutdoorMesh.Render();
         }
     }
 }

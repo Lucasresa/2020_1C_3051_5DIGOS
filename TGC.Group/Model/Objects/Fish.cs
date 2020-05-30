@@ -8,7 +8,7 @@ using static TGC.Group.Model.Objects.Common;
 
 namespace TGC.Group.Model.Objects
 {
-    class Fish
+    internal class Fish
     {
         private struct Constants
         {
@@ -23,9 +23,9 @@ namespace TGC.Group.Model.Objects
             public static float ScapeFromPlayerCooldown = 3;
         }
 
-        private string ShadersDir;
+        private readonly string MediaDir;
         private TGCVector3 director;
-        private float acumulatedXRotation  = 0;
+        private float acumulatedXRotation = 0;
         private float acumulatedYRotation = 0;
         private TGCMatrix TotalRotation;
         private float time;
@@ -34,11 +34,11 @@ namespace TGC.Group.Model.Objects
 
         public bool ActivateMove { get; set; }
         public TypeCommon Mesh { get; private set; }
-        public TgcBoundingAxisAlignBox BoundingBox { get { return Mesh.mesh.BoundingBox; } }
+        public TgcBoundingAxisAlignBox BoundingBox { get { return Mesh.Mesh.BoundingBox; } }
 
-        public Fish(string shadersDir, Skybox skybox, Terrain terrain, TypeCommon mesh)
+        public Fish(string mediaDir, Skybox skybox, Terrain terrain, TypeCommon mesh)
         {
-            ShadersDir = shadersDir;
+            MediaDir = mediaDir;
             director = new TGCVector3(0, 0, 1);
             Skybox = skybox;
             Terrain = terrain;
@@ -46,10 +46,7 @@ namespace TGC.Group.Model.Objects
             Init();
         }
 
-        public void Dispose()
-        {
-            Mesh.mesh.Dispose();
-        }
+        public void Dispose() => Mesh.Mesh.Dispose();
 
         private void Init()
         {
@@ -65,19 +62,16 @@ namespace TGC.Group.Model.Objects
                 PerformNormalMove(elapsedTime, speed: 500, GetFishHeadPosition());
         }
 
-        public void Render()
-        {
-            Mesh.mesh.Render();
-        }
-               
+        public void Render() => Mesh.Mesh.Render();
+
         private void PerformNormalMove(float elapsedTime, float speed, TGCVector3 headPosition)
         {
             time -= elapsedTime;
-            
+
             float XRotation = 0f, YRotation = 0f;
             var meshPosition = GetMeshPosition();
 
-            Terrain.world.interpoledHeight(headPosition.X, headPosition.Z, out float floorHeight);
+            Terrain.world.InterpoledHeight(headPosition.X, headPosition.Z, out float floorHeight);
             var distanceToFloor = FastUtils.Distance(meshPosition.Y, floorHeight);
 
             var XRotationStep = FastMath.PI * 0.1f * elapsedTime;
@@ -117,21 +111,18 @@ namespace TGC.Group.Model.Objects
 
             TotalRotation *= rotation;
             TGCMatrix traslation = TGCMatrix.Translation(meshPosition + director * -speed * elapsedTime);
-            Mesh.mesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * traslation;
-            Mesh.mesh.BoundingBox.transform(Mesh.mesh.Transform);
+            Mesh.Mesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * traslation;
+            Mesh.Mesh.BoundingBox.transform(Mesh.Mesh.Transform);
         }
 
-        private bool IsNearFromPlayer(TGCVector3 cameraPosition)
-        {
-            return FastUtils.IsDistanceBetweenVectorsLessThan(distance: 1000, vectorA: cameraPosition, vectorB: GetFishHeadPosition());
-        }
+        private bool IsNearFromPlayer(TGCVector3 cameraPosition) => FastUtils.IsDistanceBetweenVectorsLessThan(distance: 1000, vectorA: cameraPosition, vectorB: GetFishHeadPosition());
 
         private void ChangeFishWay()
         {
             TGCMatrix Rotation = TGCMatrix.RotationY(-RotationYSign() * FastMath.PI_HALF);
             director.TransformCoordinate(Rotation);
             TotalRotation *= Rotation;
-            Mesh.mesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * TGCMatrix.Translation(GetMeshPosition());
+            Mesh.Mesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * TGCMatrix.Translation(GetMeshPosition());
             time = Constants.ScapeFromPlayerCooldown;
         }
 
@@ -145,13 +136,13 @@ namespace TGC.Group.Model.Objects
 
         private TGCVector3 GetMeshPosition()
         {
-            var transform = Mesh.mesh.Transform.ToBulletMatrix();
+            var transform = Mesh.Mesh.Transform.ToBulletMatrix();
             return new TGCVector3(transform.Row4.X, transform.Row4.Y, transform.Row4.Z);
         }
 
         private TGCVector3 GetFishHeadPosition()
         {
-            var distanceToHead = Mesh.mesh.BoundingBox.calculateBoxRadius();
+            var distanceToHead = Mesh.Mesh.BoundingBox.calculateBoxRadius();
             return GetMeshPosition() + director * -distanceToHead;
         }
     }

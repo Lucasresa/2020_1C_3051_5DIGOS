@@ -7,17 +7,17 @@ using TGC.Core.SceneLoader;
 
 namespace TGC.Group.Model.Objects
 {
-    class Common
+    internal class Common
     {
         public struct TypeCommon
         {
-            public int ID;
-            public string name;
-            public TgcMesh mesh;
+            public string Name;
+            public TgcMesh Mesh;
+            public int Quantity;
             public RigidBody Body { get; set; }
         }
 
-        struct Constants
+        private struct Constants
         {
             public static string NAME_CORAL_NORMAL = "NORMALCORAL";
             public static string NAME_CORAL_TREE = "TREECORAL";
@@ -49,7 +49,8 @@ namespace TGC.Group.Model.Objects
         private TgcMesh rock;
         private TgcMesh normalFish;
         private TgcMesh yellowFish;
-        private readonly string MediaDir, ShadersDir;
+        private readonly string MediaDir;
+
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
 
         public List<TypeCommon> ListCorals = new List<TypeCommon>();
@@ -57,18 +58,17 @@ namespace TGC.Group.Model.Objects
         public List<TypeCommon> ListRock = new List<TypeCommon>();
         public List<TypeCommon> ListFishes = new List<TypeCommon>();
 
-        public Common(string mediaDir, string shadersDir)
+        public Common(string mediaDir)
         {
             MediaDir = mediaDir;
-            ShadersDir = shadersDir;
             Init();
         }
 
         public void Dispose()
         {
-            ListCorals.ForEach(coral => coral.mesh.Dispose());
-            ListOres.ForEach(ore => ore.mesh.Dispose());
-            ListRock.ForEach(rock => rock.mesh.Dispose());
+            ListCorals.ForEach(coral => coral.Mesh.Dispose());
+            ListOres.ForEach(ore => ore.Mesh.Dispose());
+            ListRock.ForEach(rock => rock.Mesh.Dispose());
         }
 
         private void Init()
@@ -105,16 +105,25 @@ namespace TGC.Group.Model.Objects
 
         public void LocateObjects()
         {
-            ListCorals.ForEach(coral => { coral.Body.Translate(coral.mesh.Position.ToBulletVector3()); coral.mesh.BoundingBox.scaleTranslate(coral.mesh.Position, Constants.Scale); });
-            ListOres.ForEach(ore => { ore.Body.Translate(ore.mesh.Position.ToBulletVector3()); ore.mesh.BoundingBox.scaleTranslate(ore.mesh.Position, Constants.Scale); });
-            ListRock.ForEach(rock => { rock.Body.Translate(rock.mesh.Position.ToBulletVector3()); rock.mesh.BoundingBox.scaleTranslate(rock.mesh.Position, Constants.Scale); });
-            ListFishes.ForEach(fish => fish.mesh.BoundingBox.scaleTranslate(fish.mesh.Position, Constants.Scale));
+            ListCorals.ForEach(coral => {
+                coral.Body.Translate(coral.Mesh.Position.ToBulletVector3()); 
+                coral.Mesh.BoundingBox.scaleTranslate(coral.Mesh.Position, Constants.Scale); });
+            
+            ListOres.ForEach(ore => { 
+                ore.Body.Translate(ore.Mesh.Position.ToBulletVector3()); 
+                ore.Mesh.BoundingBox.scaleTranslate(ore.Mesh.Position, Constants.Scale); });
+            
+            ListRock.ForEach(rock => { 
+                rock.Body.Translate(rock.Mesh.Position.ToBulletVector3()); 
+                rock.Mesh.BoundingBox.scaleTranslate(rock.Mesh.Position, Constants.Scale); });
+            
+            ListFishes.ForEach(fish => fish.Mesh.BoundingBox.scaleTranslate(fish.Mesh.Position, Constants.Scale));
         }
 
         private void CreateRigidBody(ref TypeCommon common)
         {
-            common.Body = RigidBodyFactory.CreateRigidBodyFromTgcMesh(common.mesh);
-            common.Body.CenterOfMassTransform = TGCMatrix.Translation(common.mesh.Position).ToBulletMatrix();
+            common.Body = RigidBodyFactory.CreateRigidBodyFromTgcMesh(common.Mesh);
+            common.Body.CenterOfMassTransform = TGCMatrix.Translation(common.Mesh.Position).ToBulletMatrix();
             common.Body.CollisionShape.LocalScaling = Constants.Scale.ToBulletVector3();
         }
 
@@ -124,11 +133,11 @@ namespace TGC.Group.Model.Objects
             {
                 TypeCommon newCommon = new TypeCommon
                 {
-                    ID = index,
-                    name = common.Name + "_" + index
+                    Quantity = index,
+                    Name = common.Name + "_" + index
                 };
-                newCommon.mesh = common.createMeshInstance(newCommon.name);
-                newCommon.mesh.Transform = TGCMatrix.Scaling(Constants.Scale);
+                newCommon.Mesh = common.createMeshInstance(newCommon.Name);
+                newCommon.Mesh.Transform = TGCMatrix.Scaling(Constants.Scale);
                 if (createRB)
                     CreateRigidBody(ref newCommon);
                 commons.Add(newCommon);
@@ -137,9 +146,9 @@ namespace TGC.Group.Model.Objects
 
         public void Render()
         {
-            ListCorals.ForEach(coral => coral.mesh.Render());
-            ListOres.ForEach(ore => ore.mesh.Render());
-            ListRock.ForEach(rock => rock.mesh.Render());
+            ListCorals.ForEach(coral => coral.Mesh.Render());
+            ListOres.ForEach(ore => ore.Mesh.Render());
+            ListRock.ForEach(rock => rock.Mesh.Render());
         }
     }
 }

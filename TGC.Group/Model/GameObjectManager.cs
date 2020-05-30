@@ -3,6 +3,7 @@ using Microsoft.DirectX.DirectInput;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Windows.Forms;
 using TGC.Core.Input;
 using TGC.Group.Model.Objects;
 using TGC.Group.Utils;
@@ -32,6 +33,7 @@ namespace TGC.Group.Model
 
         public string ItemSelected { get; set; }
         public bool NearObjectForSelect { get; set; }
+        public bool ShowInfoItemCollect { get; set; }
 
         public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input, Ray ray)
         {
@@ -47,24 +49,25 @@ namespace TGC.Group.Model
         {
             /* Initializer object */
 
-            Skybox = new Skybox(MediaDir, ShadersDir, Camera);
+            Skybox = new Skybox(MediaDir, Camera);
             Terrain = new Terrain(MediaDir, ShadersDir);
             Water = new Water(MediaDir, ShadersDir);
             MeshBuilder = new MeshBuilder(Terrain, Water);
-            Ship = new Ship(MediaDir, ShadersDir);
-            Shark = new Shark(MediaDir, ShadersDir, Skybox, Terrain, Camera);
+            Ship = new Ship(MediaDir);
+            Shark = new Shark(MediaDir, Skybox, Terrain, Camera);
             Character = new Character(Camera, Input);
-            Vegetation = new Vegetation(MediaDir, ShadersDir);
-            Common = new Common(MediaDir, ShadersDir);
-            Fishes = Common.ListFishes.Select(mesh => new Fish(ShadersDir, Skybox, Terrain, mesh)).ToList();
+
+            Vegetation = new Vegetation(MediaDir);
+            Common = new Common(MediaDir);
+            Fishes = Common.ListFishes.Select(mesh => new Fish(MediaDir, Skybox, Terrain, mesh)).ToList();
 
             /* Location */
 
-            MeshBuilder.LocateMeshesInWorld(meshes: ref Vegetation.ListAlgas, area: Skybox.currentPerimeter);
-            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListCorals, area: Skybox.currentPerimeter);
-            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListOres, area: Skybox.currentPerimeter);
-            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListRock, area: Skybox.currentPerimeter);
-            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListFishes, area: Skybox.currentPerimeter);
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Vegetation.ListAlgas, area: Skybox.CurrentPerimeter);
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListCorals, area: Skybox.CurrentPerimeter);
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListOres, area: Skybox.CurrentPerimeter);
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListRock, area: Skybox.CurrentPerimeter);
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListFishes, area: Skybox.CurrentPerimeter);
 
             Common.LocateObjects();
 
@@ -102,8 +105,8 @@ namespace TGC.Group.Model
             {
                 Ship.RenderOutdoorShip();
                 Skybox.Render(Terrain.SizeWorld());
-                Terrain.Render();
                 Water.Render();
+                Terrain.Render();
                 Shark.Render();
                 Fishes.ForEach(fish => fish.Render());
                 Vegetation.Render();
@@ -114,19 +117,20 @@ namespace TGC.Group.Model
         public void Update(float elapsedTime, float timeBeetweenUpdate)
         {
             PhysicalWorld.dynamicsWorld.StepSimulation(elapsedTime, maxSubSteps: 10, timeBeetweenUpdate);
-            Shark.Update(Input, elapsedTime);
-            Skybox.Update();
+
             Fishes.ForEach(fish => fish.Update(elapsedTime, Camera));
+            Skybox.Update();
+            Shark.Update(elapsedTime);
+            Water.Update(elapsedTime);
+
             Character.LooksAtTheHatch = Ray.intersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
-            Character.CanAtack = Ray.intersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
+            Character.CanAttack = Ray.intersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
             Character.NearShip = Ray.intersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);
+            Character.IsNearSkybox = Skybox.IsNearSkybox;
             DetectSelectedItem();
         }
 
-        public void UpdateCharacter()
-        {
-            Character.Update(Skybox);
-        }
+        public void UpdateCharacter() => Character.Update();
 
         private void DetectSelectedItem()
         {
@@ -134,10 +138,10 @@ namespace TGC.Group.Model
             bool NearOreForSelect = false;
             bool NearFishForSelect = false;
                         
-            TypeCommon Coral = Common.ListCorals.Find(coral => NearCoralForSelect = Ray.intersectsWithObject(objectAABB: coral.mesh.BoundingBox, distance: 500));
-            TypeCommon Ore = Common.ListOres.Find(ore => NearOreForSelect = Ray.intersectsWithObject(objectAABB: ore.mesh.BoundingBox, distance: 500));
+            TypeCommon Coral = Common.ListCorals.Find(coral => NearCoralForSelect = Ray.intersectsWithObject(objectAABB: coral.Mesh.BoundingBox, distance: 500));
+            TypeCommon Ore = Common.ListOres.Find(ore => NearOreForSelect = Ray.intersectsWithObject(objectAABB: ore.Mesh.BoundingBox, distance: 500));
 
-            if (Character.CanFish && Coral.mesh is null && Ore.mesh is null)
+            if (Character.CanFish && Coral.Mesh is null && Ore.Mesh is null)
             {
                 Fish itemFish = Fishes.Find(fish => NearFishForSelect = Ray.intersectsWithObject(objectAABB: fish.BoundingBox, distance: 500));
                 if (NearFishForSelect) SelectItem(itemFish);
@@ -145,22 +149,19 @@ namespace TGC.Group.Model
             
             NearObjectForSelect = NearCoralForSelect || NearOreForSelect || NearFishForSelect;
 
-            if (NearCoralForSelect)
-                SelectItem(Coral);
-            else if (NearOreForSelect)
-                SelectItem(Ore);
+            if (NearCoralForSelect) SelectItem(Coral);
+            else if (NearOreForSelect) SelectItem(Ore);
         }
 
         private void SelectItem(TypeCommon item)
         {
-            if (item.mesh != null && Input.keyPressed(Key.E))
+            if (item.Mesh != null && Input.keyPressed(Key.E))
             {
-                ItemSelected = item.name;
+                ShowInfoItemCollect = true;
+                ItemSelected = item.Name;
                 PhysicalWorld.RemoveBodyToTheWorld(item.Body);
-                if (item.name.ToUpper().Contains("CORAL"))
-                    Common.ListCorals.Remove(item);
-                else
-                    Common.ListOres.Remove(item);
+                if (item.Name.Contains("CORAL")) Common.ListCorals.Remove(item);
+                else Common.ListOres.Remove(item);
             }
         }
 
@@ -168,7 +169,7 @@ namespace TGC.Group.Model
         {
             if (Input.keyPressed(Key.E))
             {
-                ItemSelected = item.Mesh.name;
+                ItemSelected = item.Mesh.Name;
                 Fishes.Remove(item);
                 Common.ListFishes.Remove(item.Mesh);
             }

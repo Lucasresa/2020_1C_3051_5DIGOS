@@ -3,7 +3,7 @@ using TGC.Group.Model.Objects;
 
 namespace TGC.Group.Model.Status
 {
-    class SharkStatus
+    internal class SharkStatus
     {
         public struct Constants
         {
@@ -14,20 +14,14 @@ namespace TGC.Group.Model.Status
         }
 
         private float DamageAcumulated = 0;
-        private Shark Shark { get; set; }
 
         public float Life { get; set; } = Constants.LIFE_MAX;
-        public bool IsDead { get { return Life == 0; } }
+        public bool IsDead => Life == 0;
+        public bool DamageReceived { get; set; }
 
-        public SharkStatus(Shark shark)
-        {
-            Shark = shark;
-        }
+        public SharkStatus() { }
 
-        public float GetLifeMax()
-        {
-            return Constants.LIFE_MAX;
-        }
+        public float GetLifeMax() => Constants.LIFE_MAX;
 
         public void Reset()
         {
@@ -37,13 +31,10 @@ namespace TGC.Group.Model.Status
 
         public void Update()
         {
-            if (IsDead)
-                return;
-
-            if (Shark.DamageReceived)
+            if (DamageReceived)
             {
                 TakeDamage();
-                Shark.DamageReceived = false;
+                DamageReceived = false;
             }
 
             if (DamageAcumulated > 0)
@@ -53,15 +44,8 @@ namespace TGC.Group.Model.Status
             }
         }
 
-        private void UpdateLife(float value)
-        {
-            Life += value;
-            Life = FastMath.Clamp(Life, Constants.LIFE_MIN, Constants.LIFE_MAX);
-        }
+        private void UpdateLife(float value) => Life = FastMath.Clamp(Life + value, Constants.LIFE_MIN, Constants.LIFE_MAX);
 
-        private void TakeDamage()
-        {
-            DamageAcumulated = Constants.DAMAGE_RECEIVED;
-        }
+        private void TakeDamage() => DamageAcumulated = Constants.DAMAGE_RECEIVED;
     }
 }

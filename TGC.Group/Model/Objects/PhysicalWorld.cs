@@ -3,7 +3,7 @@ using BulletSharp.Math;
 
 namespace TGC.Group.Model.Objects
 {
-    class PhysicalWorld
+    internal class PhysicalWorld
     {
         private Vector3 gravityZero = Vector3.Zero;
         private CollisionDispatcher dispatcher;
@@ -12,16 +12,9 @@ namespace TGC.Group.Model.Objects
         private BroadphaseInterface overlappingPairCache;
         public DiscreteDynamicsWorld dynamicsWorld;
 
-        public PhysicalWorld()
-        {
-            Init();
-        }
+        public PhysicalWorld() => Init();
 
-        public void AddBodyToTheWorld(RigidBody Body)
-        {
-            dynamicsWorld.AddRigidBody(Body);
-            dynamicsWorld.UpdateSingleAabb(Body);
-        }
+        public void AddBodyToTheWorld(RigidBody Body) => dynamicsWorld.AddRigidBody(Body);
 
         public void Dispose()
         {
@@ -42,9 +35,6 @@ namespace TGC.Group.Model.Objects
             dynamicsWorld = new DiscreteDynamicsWorld(dispatcher, overlappingPairCache, constraintSolver, collisionConfiguration) { Gravity = gravityZero };
         }
 
-        public void RemoveBodyToTheWorld(RigidBody Body)
-        {
-            dynamicsWorld.RemoveRigidBody(Body);
-        }
+        public void RemoveBodyToTheWorld(RigidBody Body) => dynamicsWorld.RemoveRigidBody(Body);
     }
 }

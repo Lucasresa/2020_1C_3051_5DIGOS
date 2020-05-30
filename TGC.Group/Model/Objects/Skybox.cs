@@ -7,58 +7,57 @@ using static TGC.Group.Model.GameModel;
 
 namespace TGC.Group.Model.Objects
 {
-    class Skybox
+    internal class Skybox
     {
-        #region Atributos
         private struct Constants
         {
-            public static TGCVector3 size = new TGCVector3(9000, 9000, 9000);
-            public static TGCVector3 center = new TGCVector3(0, 1800, 0);
+            public static TGCVector3 SKYBOX_SIZE = new TGCVector3(30000, 30000, 30000);
+            public static TGCVector3 SKYBOX_CENTER = new TGCVector3(0, 1750, 0);
+            public static string SKYBOX_TEXTURE_FOLDER = @"SkyBox\";
+            public static string SKYBOX_FACE_TEXTURE_UP = "Daylight Box_Top.bmp";
+            public static string SKYBOX_FACE_TEXTURE_DOWN = "Daylight Box_Bottom.bmp";
+            public static string SKYBOX_FACE_TEXTURE_LEFT = "Daylight Box_Left.bmp";
+            public static string SKYBOX_FACE_TEXTURE_RIGHT = "Daylight Box_Right.bmp";
+            public static string SKYBOX_FACE_TEXTURE_FRONT = "Daylight Box_Front.bmp";
+            public static string SKYBOX_FACE_TEXTURE_BACK = "Daylight Box_Back.bmp";
         }
 
-        private TgcSkyBox skybox;
-        private string MediaDir, ShadersDir;
-        private CameraFPS Camera;
-        public Perimeter currentPerimeter;
-        public float Radius { get { return Constants.size.X / 2; } }
-        #endregion
+        private readonly string MediaDir;
+        private readonly TgcSkyBox skybox;
+        private readonly CameraFPS Camera;
+        public Perimeter CurrentPerimeter;
+        public float Radius => Constants.SKYBOX_SIZE.X / 2;
+        public bool IsNearSkybox => !InPerimeterSkyBox(Camera.Position.X, Camera.Position.Z);
 
-        #region Constructor
-        public Skybox(string mediaDir, string shadersDir, CameraFPS camera)
+        public Skybox(string mediaDir, CameraFPS camera)
         {
             skybox = new TgcSkyBox
             {
-                Size = Constants.size,
-                Center = Constants.center
+                Size = Constants.SKYBOX_SIZE,
+                Center = Constants.SKYBOX_CENTER
             };
 
             MediaDir = mediaDir;
-            ShadersDir = shadersDir;
             Camera = camera;
             LoadSkyBox();
         }
-        #endregion
 
-        #region Metodos
         private void LoadSkyBox()
         {
-            var texturesPath = MediaDir + "SkyBox\\";
-            skybox.setFaceTexture(TgcSkyBox.SkyFaces.Up, texturesPath + "sup.jpg");
-            skybox.setFaceTexture(TgcSkyBox.SkyFaces.Down, texturesPath + "inf.jpg");
-            skybox.setFaceTexture(TgcSkyBox.SkyFaces.Left, texturesPath + "izq.jpg");
-            skybox.setFaceTexture(TgcSkyBox.SkyFaces.Right, texturesPath + "der.jpg");
-            skybox.setFaceTexture(TgcSkyBox.SkyFaces.Front, texturesPath + "front.jpg");
-            skybox.setFaceTexture(TgcSkyBox.SkyFaces.Back, texturesPath + "post.jpg");
-            skybox.SkyEpsilon = 30f;
+            var texturesPath = MediaDir + Constants.SKYBOX_TEXTURE_FOLDER;
+            skybox.setFaceTexture(TgcSkyBox.SkyFaces.Up, texturesPath + Constants.SKYBOX_FACE_TEXTURE_UP);
+            skybox.setFaceTexture(TgcSkyBox.SkyFaces.Down, texturesPath + Constants.SKYBOX_FACE_TEXTURE_DOWN);
+            skybox.setFaceTexture(TgcSkyBox.SkyFaces.Left, texturesPath + Constants.SKYBOX_FACE_TEXTURE_LEFT);
+            skybox.setFaceTexture(TgcSkyBox.SkyFaces.Right, texturesPath + Constants.SKYBOX_FACE_TEXTURE_RIGHT);
+            skybox.setFaceTexture(TgcSkyBox.SkyFaces.Front, texturesPath + Constants.SKYBOX_FACE_TEXTURE_FRONT);
+            skybox.setFaceTexture(TgcSkyBox.SkyFaces.Back, texturesPath + Constants.SKYBOX_FACE_TEXTURE_BACK);
+            skybox.SkyEpsilon = 60f;
 
             skybox.Init();
             CalculatePerimeter();
         }
 
-        public void Update()
-        {
-            CalculatePerimeter();
-        }
+        public void Update() => CalculatePerimeter();
 
         public void Render(Perimeter worldSize)
         {
@@ -68,10 +67,7 @@ namespace TGC.Group.Model.Objects
             skybox.Render();
         }
 
-        public virtual void Dispose()
-        {
-            skybox.Dispose();
-        }
+        public void Dispose() => skybox.Dispose();
 
         public bool Contains(RigidBody rigidBody)
         {
@@ -88,31 +84,20 @@ namespace TGC.Group.Model.Objects
             return InPerimeterSkyBox(posX, posZ);
         }
 
-        public TGCVector3 GetSkyboxCenter()
-        {
-            return skybox.Center;
-        }
+        public TGCVector3 GetSkyboxCenter() => skybox.Center;
 
-        public bool InPerimeterSkyBox(float posX, float posZ)
-        {
-            return posX < currentPerimeter.xMax && posX > currentPerimeter.xMin && posZ < currentPerimeter.zMax && posZ > currentPerimeter.zMin;
-        }
-
-        public bool CameraIsNearBorder(CameraFPS camera)
-        {
-            return !InPerimeterSkyBox(camera.Position.X, camera.Position.Z);
-        }
+        public bool InPerimeterSkyBox(float posX, float posZ) =>
+            FastUtils.IsNumberBetweenInterval(posX, (CurrentPerimeter.xMin, CurrentPerimeter.xMax)) &&
+            FastUtils.IsNumberBetweenInterval(posZ, (CurrentPerimeter.zMin, CurrentPerimeter.zMax));
 
         private void CalculatePerimeter()
         {
             var size = skybox.Size.X / 2;
 
-            currentPerimeter.xMin = skybox.Center.X - size;
-            currentPerimeter.xMax = skybox.Center.X + size;
-            currentPerimeter.zMin = skybox.Center.Z - size;
-            currentPerimeter.zMax = skybox.Center.Z + size;
+            CurrentPerimeter.xMin = skybox.Center.X - size;
+            CurrentPerimeter.xMax = skybox.Center.X + size;
+            CurrentPerimeter.zMin = skybox.Center.Z - size;
+            CurrentPerimeter.zMax = skybox.Center.Z + size;
         }
-
-        #endregion
     }
 }

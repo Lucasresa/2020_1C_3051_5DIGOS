@@ -9,9 +9,6 @@ namespace TGC.Group.Utils
 {
     class CameraFPS : TgcCamera
     {
-        public new TGCVector3 Position;
-        public TGCVector3 Direction { get { return TGCVector3.Normalize(LookAt - Position); } }
-
         private struct Constants
         {
             public static float LIIMIT_MAX = FastMath.ToRad(60);
@@ -20,9 +17,12 @@ namespace TGC.Group.Utils
             public static float ROTATION_SPEED = 0.1f;
             public static TGCVector3 DIRECTION_VIEW = new TGCVector3(0, 0.1f, -1);
         }
-
+        
         private readonly TgcD3dInput Input;
         private TGCMatrix CameraRotation;
+
+        public new TGCVector3 Position;
+        public TGCVector3 Direction => TGCVector3.Normalize(LookAt - Position);
         public float Longitude { get; private set; } = -FastMath.PI / 10.0f;
         public float Latitude { get; private set; } = FastMath.PI_HALF;
         public bool Lock { get; set; }
@@ -30,12 +30,14 @@ namespace TGC.Group.Utils
         public CameraFPS(TgcD3dInput input)
         {
             Input = input;
+            var d3Instance = D3DDevice.Instance;
+            d3Instance.Device.Transform.Projection = TGCMatrix.PerspectiveFovLH(d3Instance.FieldOfView, d3Instance.AspectRatio,
+                                                     d3Instance.ZNearPlaneDistance, d3Instance.ZFarPlaneDistance * 3f).ToMatrix();
         }
 
         public override void UpdateCamera(float elapsedTime)
         {
-            if (Lock)
-                return;
+            if (Lock) return;
 
             Cursor.Hide();
             Rotation();

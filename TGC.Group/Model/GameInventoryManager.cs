@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using TGC.Group.Utils;
 
 namespace TGC.Group.Model
 {
-    class GameInventoryManager
+    internal class GameInventoryManager
     {
         public Dictionary<string, List<string>> Items;
         public readonly List<string> CoralNormal = new List<string>();
@@ -20,11 +15,11 @@ namespace TGC.Group.Model
         public readonly List<string> OreIron = new List<string>();
         public readonly List<string> OreSilver = new List<string>();
         public readonly List<string> Rock = new List<string>();
+        public readonly List<string> ItemHistory = new List<string>();
 
-        public GameInventoryManager()
-        {
-            Init();   
-        }
+        private string Name { get; set; }
+
+        public GameInventoryManager() => Init();
 
         private void Init()
         {
@@ -43,11 +38,12 @@ namespace TGC.Group.Model
 
         public void AddItem(string itemSelected)
         {
-            if ( itemSelected is null )
-                return;
+            if (itemSelected is null) return;
 
-            var name = itemSelected.Substring(0, itemSelected.IndexOf('_'));
-            Items[name].Add(itemSelected);
+            Name = itemSelected.Substring(0, itemSelected.IndexOf('_'));
+            ItemHistory.Add(Name);
+            Items[Name].Add(itemSelected);
+            if (ItemHistory.Count == 6) ItemHistory.Remove(ItemHistory.First());
         }
     }
 }

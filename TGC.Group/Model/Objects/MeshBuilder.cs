@@ -7,19 +7,20 @@ using static TGC.Group.Model.GameModel;
 using static TGC.Group.Model.Objects.Common;
 using static TGC.Group.Model.Objects.Fish;
 using static TGC.Group.Model.Objects.Vegetation;
+
 namespace TGC.Group.Model.Objects
 {
-    class MeshBuilder
+    internal class MeshBuilder
     {
         private struct Constants
         {
-            public static int meshTerrainOffset = 300;
-            public static int maxYPosition = 200;
+            public static int MESH_TERRAIN_OFFSET = 300;
+            public static int MAX_POSITION_Y = 200;
         }
 
-        private Random random;
-        private Terrain Terrain;
-        private Water Water;
+        private readonly Random random;
+        private readonly Terrain Terrain;
+        private readonly Water Water;
 
         public MeshBuilder(Terrain terrain, Water water)
         {
@@ -28,28 +29,15 @@ namespace TGC.Group.Model.Objects
             Water = water;
         }
 
-        public void LocateMeshInWorld(ref TgcMesh mesh, Perimeter area)
+        private TGCVector3 CalculateRotation(TGCVector3 normalObjeto)
         {
-            var pairXZ = getXZPositionByPerimeter(area);
-            Terrain.world.interpoledHeight(pairXZ.XPosition, pairXZ.ZPosition, out float YPosition);
-
-            if (IsFish(mesh.Name))
-                LocateFish(ref mesh, pairXZ, (int)Water.world.Center.Y, YPosition);
-            else
-                LocateMeshesTypeTerrain(ref mesh, pairXZ, Terrain.world, YPosition);
+            var objectInclinationX = FastMath.Atan2(normalObjeto.X, normalObjeto.Y);
+            var objectInclinationZ = FastMath.Atan2(normalObjeto.X, normalObjeto.Y);
+            var rotation = new TGCVector3(-objectInclinationX, 0, -objectInclinationZ);
+            return rotation;
         }
 
-        public void LocateMeshesInWorld(ref List<TypeCommon> meshes, Perimeter area)
-        {
-            meshes.ForEach(common => LocateMeshInWorld(ref common.mesh, area));
-        }
-
-        public void LocateMeshesInWorld(ref List<TypeVegetation> meshes, Perimeter area)
-        {
-            meshes.ForEach(vegetation => LocateMeshInWorld(ref vegetation.mesh, area));
-        }
-
-        private (int XPosition, int ZPosition) getXZPositionByPerimeter(Perimeter perimeter)
+        private (int XPosition, int ZPosition) GetXZPositionByPerimeter(Perimeter perimeter)
         {
             var XMin = (int)perimeter.xMin;
             var XMax = (int)perimeter.xMax;
@@ -61,34 +49,37 @@ namespace TGC.Group.Model.Objects
 
             return (XPosition: xPosition, ZPosition: zPosition);
         }
+        
+        private bool IsFish(string name) => FastUtils.Contains(name, "fish");
 
-        private TGCVector3 CalculateRotation(TGCVector3 normalObjeto)
+        private void LocateFish(ref TgcMesh mesh, (int XPosition, int ZPosition) pairXZ, float YPosition)
         {
-            var objectInclinationX = FastMath.Atan2(normalObjeto.X, normalObjeto.Y);
-            var objectInclinationZ = FastMath.Atan2(normalObjeto.X, normalObjeto.Y);
-            var rotation = new TGCVector3(-objectInclinationX, 0, -objectInclinationZ);
-            return rotation;
-        }
-
-        private void LocateMeshesTypeTerrain(ref TgcMesh mesh, (int XPosition, int ZPosition) pairXZ, SmartTerrain terrain, float YPosition)
-        {
-            var position = new TGCVector3(pairXZ.XPosition, YPosition, pairXZ.ZPosition);
-            var rotation = CalculateRotation(terrain.NormalVectorGivenXZ(position.X, position.Z));
-            mesh.Transform *= TGCMatrix.RotationYawPitchRoll(rotation.Y, rotation.X, rotation.Z) * TGCMatrix.Translation(position);
-            mesh.Position = position;
-        }
-
-        private void LocateFish(ref TgcMesh mesh, (int XPosition, int ZPosition) pairXZ, int heightWater, float YPosition)
-        {
-            YPosition = random.Next((int)YPosition + Constants.meshTerrainOffset, heightWater - Constants.maxYPosition);
+            YPosition = random.Next((int)YPosition + Constants.MESH_TERRAIN_OFFSET, (int)Water.world.Center.Y - Constants.MAX_POSITION_Y);
             var position = new TGCVector3(pairXZ.XPosition, YPosition, pairXZ.ZPosition);
             mesh.Transform *= TGCMatrix.Translation(pairXZ.XPosition, YPosition, pairXZ.ZPosition);
             mesh.Position = position;
         }
 
-        private bool IsFish(string name)
+        public void LocateMeshInWorld(ref TgcMesh mesh, Perimeter area)
         {
-            return FastUtils.Contains(name, "fish");
+            var pairXZ = GetXZPositionByPerimeter(area);
+            Terrain.world.InterpoledHeight(pairXZ.XPosition, pairXZ.ZPosition, out float YPosition);
+
+            if (IsFish(mesh.Name))
+                LocateFish(ref mesh, pairXZ, YPosition);
+            else
+                LocateMeshesTypeTerrain(ref mesh, pairXZ, YPosition);
+        }
+
+        public void LocateMeshesInWorld(ref List<TypeCommon> meshes, Perimeter area) => meshes.ForEach(common => LocateMeshInWorld(ref common.Mesh, area));
+        public void LocateMeshesInWorld(ref List<TypeVegetation> meshes, Perimeter area) => meshes.ForEach(vegetation => LocateMeshInWorld(ref vegetation.Mesh, area));
+
+        private void LocateMeshesTypeTerrain(ref TgcMesh mesh, (int XPosition, int ZPosition) pairXZ, float YPosition)
+        {
+            var position = new TGCVector3(pairXZ.XPosition, YPosition, pairXZ.ZPosition);
+            var rotation = CalculateRotation(Terrain.world.NormalVectorGivenXZ(position.X, position.Z));
+            mesh.Transform *= TGCMatrix.RotationYawPitchRoll(rotation.Y, rotation.X, rotation.Z) * TGCMatrix.Translation(position);
+            mesh.Position = position;
         }
     }
 }
