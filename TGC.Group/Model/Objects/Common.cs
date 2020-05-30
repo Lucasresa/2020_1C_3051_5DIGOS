@@ -26,6 +26,8 @@ namespace TGC.Group.Model.Objects
             public static string NAME_ORE_IRON = "IRON";
             public static string NAME_ORE_SILVER = "SILVER";
             public static string NAME_ROCK = "ROCK";
+            public static string NAME_NORMAL_FISH = "NORMALFISH";
+            public static string NAME_YELLOW_FISH = "YELLOWFISH";
             public static int QUANTITY_CORAL_NORMAL = 20;
             public static int QUANTITY_CORAL_TREE = 20;
             public static int QUANTITY_CORAL_SPIRAL = 20;
@@ -33,22 +35,28 @@ namespace TGC.Group.Model.Objects
             public static int QUANTITY_ORE_SILVER = 20;
             public static int QUANTITY_ORE_GOLD = 20;
             public static int QUANTITY_ROCK = 20;
+            public static int QUANTITY_NORMAL_FISH = 20;
+            public static int QUANTITY_YELLOW_FISH = 20;
             public static TGCVector3 Scale = new TGCVector3(10, 10, 10);
         }
 
-        private TypeCommon coralNormal;
-        private TypeCommon coralTree;
-        private TypeCommon coralSpiral;
-        private TypeCommon oreIron;
-        private TypeCommon oreSilver;
-        private TypeCommon oreGold;
-        private TypeCommon rock;
+        private TgcMesh coralNormal;
+        private TgcMesh coralTree;
+        private TgcMesh coralSpiral;
+        private TgcMesh oreIron;
+        private TgcMesh oreSilver;
+        private TgcMesh oreGold;
+        private TgcMesh rock;
+        private TgcMesh normalFish;
+        private TgcMesh yellowFish;
         private readonly string MediaDir;
+
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
 
         public List<TypeCommon> ListCorals = new List<TypeCommon>();
         public List<TypeCommon> ListOres = new List<TypeCommon>();
         public List<TypeCommon> ListRock = new List<TypeCommon>();
+        public List<TypeCommon> ListFishes = new List<TypeCommon>();
 
         public Common(string mediaDir)
         {
@@ -66,58 +74,50 @@ namespace TGC.Group.Model.Objects
         private void Init()
         {
             InitializerFishes();
-            GenerateDuplicates(coralNormal, ref ListCorals);
-            GenerateDuplicates(coralTree, ref ListCorals);
-            GenerateDuplicates(coralSpiral, ref ListCorals);
-            GenerateDuplicates(oreIron, ref ListOres);
-            GenerateDuplicates(oreSilver, ref ListOres);
-            GenerateDuplicates(oreGold, ref ListOres);
-            GenerateDuplicates(rock, ref ListRock);
+            GenerateDuplicates(coralNormal, ref ListCorals, quantity: Constants.QUANTITY_CORAL_NORMAL);
+            GenerateDuplicates(coralTree, ref ListCorals, quantity: Constants.QUANTITY_CORAL_TREE);
+            GenerateDuplicates(coralSpiral, ref ListCorals, quantity: Constants.QUANTITY_CORAL_SPIRAL);
+            GenerateDuplicates(oreIron, ref ListOres, quantity: Constants.QUANTITY_ORE_IRON);
+            GenerateDuplicates(oreSilver, ref ListOres, quantity: Constants.QUANTITY_ORE_SILVER);
+            GenerateDuplicates(oreGold, ref ListOres, quantity: Constants.QUANTITY_ORE_GOLD);
+            GenerateDuplicates(normalFish, ref ListFishes, quantity: Constants.QUANTITY_NORMAL_FISH, createRB: false);
+            GenerateDuplicates(yellowFish, ref ListFishes, quantity: Constants.QUANTITY_YELLOW_FISH, createRB: false);
         }
 
         private void InitializerFishes()
         {
-            coralNormal.Name = Constants.NAME_CORAL_NORMAL;
-            coralNormal.Quantity = Constants.QUANTITY_CORAL_NORMAL;
-            LoadInitial(ref coralNormal);
-
-            coralSpiral.Name = Constants.NAME_CORAL_SPIRAL;
-            coralSpiral.Quantity = Constants.QUANTITY_CORAL_SPIRAL;
-            LoadInitial(ref coralSpiral);
-
-            coralTree.Name = Constants.NAME_CORAL_TREE;
-            coralTree.Quantity = Constants.QUANTITY_CORAL_TREE;
-            LoadInitial(ref coralTree);
-
-            oreGold.Name = Constants.NAME_ORE_GOLD;
-            oreGold.Quantity = Constants.QUANTITY_ORE_GOLD;
-            LoadInitial(ref oreGold);
-
-            oreIron.Name = Constants.NAME_ORE_IRON;
-            oreIron.Quantity = Constants.QUANTITY_ORE_IRON;
-            LoadInitial(ref oreIron);
-
-            oreSilver.Name = Constants.NAME_ORE_SILVER;
-            oreSilver.Quantity = Constants.QUANTITY_ORE_SILVER;
-            LoadInitial(ref oreSilver);
-
-            rock.Name = Constants.NAME_ROCK;
-            rock.Quantity = Constants.QUANTITY_ROCK;
-            LoadInitial(ref rock);
+            LoadInitial(ref coralNormal, Constants.NAME_CORAL_NORMAL);
+            LoadInitial(ref coralSpiral, Constants.NAME_CORAL_SPIRAL);
+            LoadInitial(ref coralTree, Constants.NAME_CORAL_TREE);
+            LoadInitial(ref oreGold, Constants.NAME_ORE_GOLD);
+            LoadInitial(ref oreIron, Constants.NAME_ORE_IRON);
+            LoadInitial(ref oreSilver, Constants.NAME_ORE_SILVER);
+            LoadInitial(ref rock, Constants.NAME_ROCK);
+            LoadInitial(ref normalFish, Constants.NAME_NORMAL_FISH);
+            LoadInitial(ref yellowFish, Constants.NAME_YELLOW_FISH);
         }
 
-        private void LoadInitial(ref TypeCommon common)
+        private void LoadInitial(ref TgcMesh mesh, string meshName)
         {
-            common.Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + common.Name + "-TgcScene.xml").Meshes[0];
-            common.Mesh.Name = common.Name;
-            CreateRigidBody(ref common);
+            mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + meshName + "-TgcScene.xml").Meshes[0];
+            mesh.Name = meshName;
         }
 
-        public void LocateBody()
+        public void LocateObjects()
         {
-            ListCorals.ForEach(coral => { coral.Body.Translate(coral.Mesh.Position.ToBulletVector3()); coral.Mesh.BoundingBox.scaleTranslate(coral.Mesh.Position, Constants.Scale); });
-            ListOres.ForEach(ore => { ore.Body.Translate(ore.Mesh.Position.ToBulletVector3()); ore.Mesh.BoundingBox.scaleTranslate(ore.Mesh.Position, Constants.Scale); });
-            ListRock.ForEach(rock => { rock.Body.Translate(rock.Mesh.Position.ToBulletVector3()); rock.Mesh.BoundingBox.scaleTranslate(rock.Mesh.Position, Constants.Scale); });
+            ListCorals.ForEach(coral => {
+                coral.Body.Translate(coral.Mesh.Position.ToBulletVector3()); 
+                coral.Mesh.BoundingBox.scaleTranslate(coral.Mesh.Position, Constants.Scale); });
+            
+            ListOres.ForEach(ore => { 
+                ore.Body.Translate(ore.Mesh.Position.ToBulletVector3()); 
+                ore.Mesh.BoundingBox.scaleTranslate(ore.Mesh.Position, Constants.Scale); });
+            
+            ListRock.ForEach(rock => { 
+                rock.Body.Translate(rock.Mesh.Position.ToBulletVector3()); 
+                rock.Mesh.BoundingBox.scaleTranslate(rock.Mesh.Position, Constants.Scale); });
+            
+            ListFishes.ForEach(fish => fish.Mesh.BoundingBox.scaleTranslate(fish.Mesh.Position, Constants.Scale));
         }
 
         private void CreateRigidBody(ref TypeCommon common)
@@ -127,18 +127,19 @@ namespace TGC.Group.Model.Objects
             common.Body.CollisionShape.LocalScaling = Constants.Scale.ToBulletVector3();
         }
 
-        public void GenerateDuplicates(TypeCommon common, ref List<TypeCommon> commons)
+        public void GenerateDuplicates(TgcMesh common, ref List<TypeCommon> commons, int quantity, bool createRB = true)
         {
-            foreach (int index in Enumerable.Range(0, common.Quantity))
+            foreach (int index in Enumerable.Range(0, quantity))
             {
                 TypeCommon newCommon = new TypeCommon
                 {
                     Quantity = index,
                     Name = common.Name + "_" + index
                 };
-                newCommon.Mesh = common.Mesh.createMeshInstance(newCommon.Name);
+                newCommon.Mesh = common.createMeshInstance(newCommon.Name);
                 newCommon.Mesh.Transform = TGCMatrix.Scaling(Constants.Scale);
-                CreateRigidBody(ref newCommon);
+                if (createRB)
+                    CreateRigidBody(ref newCommon);
                 commons.Add(newCommon);
             }
         }

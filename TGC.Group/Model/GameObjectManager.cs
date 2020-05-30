@@ -1,5 +1,7 @@
 ﻿using BulletSharp;
 using Microsoft.DirectX.DirectInput;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using System.Windows.Forms;
 using TGC.Core.Input;
@@ -25,7 +27,7 @@ namespace TGC.Group.Model
         public Skybox Skybox { get; set; }
         public Terrain Terrain { get; set; }
         public Water Water { get; set; }
-        public Fish Fish { get; set; }
+        public List<Fish> Fishes { get; set; }
         public Vegetation Vegetation { get; set; }
         public Common Common { get; set; }
 
@@ -54,20 +56,20 @@ namespace TGC.Group.Model
             Ship = new Ship(MediaDir);
             Shark = new Shark(MediaDir, Skybox, Terrain, Camera);
             Character = new Character(Camera, Input);
-            Fish = new Fish(MediaDir, Skybox, Terrain);
+
             Vegetation = new Vegetation(MediaDir);
             Common = new Common(MediaDir);
+            Fishes = Common.ListFishes.Select(mesh => new Fish(MediaDir, Skybox, Terrain, mesh)).ToList();
 
             /* Location */
 
-            MeshBuilder.LocateMeshesInWorld(meshes: ref Fish.ListFishes, area: Skybox.CurrentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Vegetation.ListAlgas, area: Skybox.CurrentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListCorals, area: Skybox.CurrentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListOres, area: Skybox.CurrentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListRock, area: Skybox.CurrentPerimeter);
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListFishes, area: Skybox.CurrentPerimeter);
 
-            Fish.UpdateBoundingBox();
-            Common.LocateBody();
+            Common.LocateObjects();
 
             /* Add rigidBody to the world */
 
@@ -90,7 +92,7 @@ namespace TGC.Group.Model
             Ship.Dispose();
             Shark.Dispose();
             Character.Dispose();
-            Fish.Dispose();
+            Fishes.ForEach(fish => fish.Dispose());
             Vegetation.Dispose();
             Common.Dispose();
         }
@@ -106,7 +108,7 @@ namespace TGC.Group.Model
                 Water.Render();
                 Terrain.Render();
                 Shark.Render();
-                Fish.Render();
+                Fishes.ForEach(fish => fish.Render());
                 Vegetation.Render();
                 Common.Render();
             }
@@ -115,10 +117,12 @@ namespace TGC.Group.Model
         public void Update(float elapsedTime, float timeBeetweenUpdate)
         {
             PhysicalWorld.dynamicsWorld.StepSimulation(elapsedTime, maxSubSteps: 10, timeBeetweenUpdate);
+
+            Fishes.ForEach(fish => fish.Update(elapsedTime, Camera));
             Skybox.Update();
-            Fish.Update(elapsedTime, Camera);
             Shark.Update(elapsedTime);
             Water.Update(elapsedTime);
+
             Character.LooksAtTheHatch = Ray.intersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
             Character.CanAttack = Ray.intersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
             Character.NearShip = Ray.intersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);
@@ -139,7 +143,7 @@ namespace TGC.Group.Model
 
             if (Character.CanFish && Coral.Mesh is null && Ore.Mesh is null)
             {
-                TypeFish itemFish = Fish.ListFishes.Find(fish => NearFishForSelect = Ray.intersectsWithObject(objectAABB: fish.Mesh.BoundingBox, distance: 500));
+                Fish itemFish = Fishes.Find(fish => NearFishForSelect = Ray.intersectsWithObject(objectAABB: fish.BoundingBox, distance: 500));
                 if (NearFishForSelect) SelectItem(itemFish);
             }
             
@@ -161,13 +165,13 @@ namespace TGC.Group.Model
             }
         }
 
-        private void SelectItem(TypeFish item)
+        private void SelectItem(Fish item)
         {
-            if (item.Mesh != null && Input.keyPressed(Key.E))
+            if (Input.keyPressed(Key.E))
             {
-                ShowInfoItemCollect = true;
-                ItemSelected = item.Name;
-                Fish.ListFishes.Remove(item);
+                ItemSelected = item.Mesh.Name;
+                Fishes.Remove(item);
+                Common.ListFishes.Remove(item.Mesh);
             }
         }
     }

@@ -72,7 +72,6 @@ namespace TGC.Group.Model.Objects
         }
 
         public void LocateMeshesInWorld(ref List<TypeCommon> meshes, Perimeter area) => meshes.ForEach(common => LocateMeshInWorld(ref common.Mesh, area));
-        public void LocateMeshesInWorld(ref List<TypeFish> meshes, Perimeter area) => meshes.ForEach(fish => LocateMeshInWorld(ref fish.Mesh, area));
         public void LocateMeshesInWorld(ref List<TypeVegetation> meshes, Perimeter area) => meshes.ForEach(vegetation => LocateMeshInWorld(ref vegetation.Mesh, area));
 
         private void LocateMeshesTypeTerrain(ref TgcMesh mesh, (int XPosition, int ZPosition) pairXZ, float YPosition)

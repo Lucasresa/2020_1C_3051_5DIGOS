@@ -1,20 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Utils;
+using static TGC.Group.Model.Objects.Common;
 
 namespace TGC.Group.Model.Objects
 {
     internal class Fish
     {
-        public struct TypeFish
-        {
-            public int Quantity;
-            public string Name;
-            public TgcMesh Mesh;
-        }
-
         private struct Constants
         {
             public static string NAME_FISH_NORMAL = "NORMALFISH";
@@ -36,80 +31,38 @@ namespace TGC.Group.Model.Objects
         private float time;
         private readonly Skybox Skybox;
         private readonly Terrain Terrain;
-        private TypeFish normalFish;
-        private TypeFish yellowFish;
-        private TgcMesh currentMesh;
 
         public bool ActivateMove { get; set; }
-        public List<TypeFish> ListFishes = new List<TypeFish>();
+        public TypeCommon Mesh { get; private set; }
+        public TgcBoundingAxisAlignBox BoundingBox { get { return Mesh.Mesh.BoundingBox; } }
 
-        public Fish(string mediaDir, Skybox skybox, Terrain terrain)
+        public Fish(string mediaDir, Skybox skybox, Terrain terrain, TypeCommon mesh)
         {
             MediaDir = mediaDir;
             director = new TGCVector3(0, 0, 1);
             Skybox = skybox;
             Terrain = terrain;
+            Mesh = mesh;
             Init();
         }
 
-        public void Dispose() => ListFishes.ForEach(fish => fish.Mesh.Dispose());
+        public void Dispose() => Mesh.Mesh.Dispose();
 
         private void Init()
         {
             time = Constants.ScapeFromPlayerCooldown;
             TotalRotation = TGCMatrix.Identity;
-            InitializerFishes();
-            GenerateDuplicates(normalFish, ref ListFishes);
-            GenerateDuplicates(yellowFish, ref ListFishes);
-        }
-
-        private void InitializerFishes()
-        {
-            normalFish.Name = Constants.NAME_FISH_NORMAL;
-            normalFish.Quantity = Constants.QUANTITY_FISH_NORMAL;
-            LoadInitial(ref normalFish);
-
-            yellowFish.Name = Constants.NAME_FISH_YELLOW;
-            yellowFish.Quantity = Constants.QUANTITY_FISH_YELLOW;
-            LoadInitial(ref yellowFish);
-        }
-
-        private void LoadInitial(ref TypeFish fish)
-        {
-            fish.Mesh = new TgcSceneLoader().loadSceneFromFile(MediaDir + fish.Name + "-TgcScene.xml").Meshes[0];
-            fish.Mesh.Name = fish.Name;
-        }
-
-        public void GenerateDuplicates(TypeFish fish, ref List<TypeFish> fishes)
-        {
-            foreach (int index in Enumerable.Range(0, fish.Quantity))
-            {
-                TypeFish newFish = new TypeFish
-                {
-                    Quantity = index,
-                    Name = fish.Name + "_" + index
-                };
-                newFish.Mesh = fish.Mesh.createMeshInstance(newFish.Name);
-                newFish.Mesh.Transform = TGCMatrix.Scaling(Constants.Scale);
-                fishes.Add(newFish);
-            }
         }
 
         public void Update(float elapsedTime, CameraFPS camera)
         {
-            ListFishes.ForEach(fish =>
-            {
-                currentMesh = fish.Mesh;
-                if (IsNearFromPlayer(camera.Position) && time <= 0)
-                    ChangeFishWay();
-                else if (ActivateMove)
-                    PerformNormalMove(elapsedTime, speed: 500, GetFishHeadPosition());
-            });
+            if (IsNearFromPlayer(camera.Position) && time <= 0)
+                ChangeFishWay();
+            else if (ActivateMove)
+                PerformNormalMove(elapsedTime, speed: 500, GetFishHeadPosition());
         }
 
-        public void UpdateBoundingBox() => ListFishes.ForEach(fish => fish.Mesh.BoundingBox.scaleTranslate(fish.Mesh.Position, Constants.Scale));
-
-        public void Render() => ListFishes.ForEach(fish => fish.Mesh.Render());
+        public void Render() => Mesh.Mesh.Render();
 
         private void PerformNormalMove(float elapsedTime, float speed, TGCVector3 headPosition)
         {
@@ -158,8 +111,8 @@ namespace TGC.Group.Model.Objects
 
             TotalRotation *= rotation;
             TGCMatrix traslation = TGCMatrix.Translation(meshPosition + director * -speed * elapsedTime);
-            currentMesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * traslation;
-            currentMesh.BoundingBox.transform(currentMesh.Transform);
+            Mesh.Mesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * traslation;
+            Mesh.Mesh.BoundingBox.transform(Mesh.Mesh.Transform);
         }
 
         private bool IsNearFromPlayer(TGCVector3 cameraPosition) => FastUtils.IsDistanceBetweenVectorsLessThan(distance: 1000, vectorA: cameraPosition, vectorB: GetFishHeadPosition());
@@ -169,7 +122,7 @@ namespace TGC.Group.Model.Objects
             TGCMatrix Rotation = TGCMatrix.RotationY(-RotationYSign() * FastMath.PI_HALF);
             director.TransformCoordinate(Rotation);
             TotalRotation *= Rotation;
-            currentMesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * TGCMatrix.Translation(GetMeshPosition());
+            Mesh.Mesh.Transform = TGCMatrix.Scaling(Constants.Scale) * TotalRotation * TGCMatrix.Translation(GetMeshPosition());
             time = Constants.ScapeFromPlayerCooldown;
         }
 
@@ -183,13 +136,13 @@ namespace TGC.Group.Model.Objects
 
         private TGCVector3 GetMeshPosition()
         {
-            var transform = currentMesh.Transform.ToBulletMatrix();
+            var transform = Mesh.Mesh.Transform.ToBulletMatrix();
             return new TGCVector3(transform.Row4.X, transform.Row4.Y, transform.Row4.Z);
         }
 
         private TGCVector3 GetFishHeadPosition()
         {
-            var distanceToHead = currentMesh.BoundingBox.calculateBoxRadius();
+            var distanceToHead = Mesh.Mesh.BoundingBox.calculateBoxRadius();
             return GetMeshPosition() + director * -distanceToHead;
         }
     }
