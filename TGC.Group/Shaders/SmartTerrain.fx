@@ -54,7 +54,7 @@ float4 ps_main_water(VS_OUTPUT input) : COLOR0
     float2 waterDirection = float2(0.03, 0.03) * time;
     float4 textureColor = tex2D(diffuseMap, input.Texcoord * textureScale + waterDirection);
 
-    textureColor.a = 0.6;
+    textureColor.a = 0.8;
     return textureColor;
 }
 

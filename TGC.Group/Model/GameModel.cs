@@ -64,7 +64,9 @@ namespace TGC.Group.Model
         public override void Update()
         {
             Time += ElapsedTime;
-                        
+
+            ObjectManager.CreateBulletCallbacks(CharacterStatus);
+
             if (Input.keyDown(Key.F2)) D3DDevice.Instance.Device.RenderState.FillMode = FillMode.WireFrame;
             else D3DDevice.Instance.Device.RenderState.FillMode = FillMode.Solid;
 
@@ -98,7 +100,6 @@ namespace TGC.Group.Model
                 InventoryManager.AddItem(ObjectManager.ItemSelected);
                 Draw2DManager.ItemHistory = InventoryManager.ItemHistory;
                 ObjectManager.ItemSelected = null;
-                CharacterStatus.DamageReceived = ObjectManager.Shark.AttackedCharacter;
                 CharacterStatus.Update();
                 FullQuad.RenderAlarmEffect = CharacterStatus.ActiveRenderAlarm;
 
@@ -112,7 +113,6 @@ namespace TGC.Group.Model
                     }
                 }
 
-                ObjectManager.Shark.AttackedCharacter = CharacterStatus.DamageReceived;
                 SharkStatus.DamageReceived = ObjectManager.Character.AttackedShark;
                 SharkStatus.Update();
                 ObjectManager.Character.AttackedShark = SharkStatus.DamageReceived;

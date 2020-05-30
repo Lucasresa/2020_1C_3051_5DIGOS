@@ -1,14 +1,13 @@
-﻿using BulletSharp;
-using Microsoft.DirectX.DirectInput;
+﻿using Microsoft.DirectX.DirectInput;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Windows.Forms;
 using TGC.Core.Input;
+using TGC.Group.Model.Callbacks;
 using TGC.Group.Model.Objects;
+using TGC.Group.Model.Status;
 using TGC.Group.Utils;
 using static TGC.Group.Model.Objects.Common;
-using static TGC.Group.Model.Objects.Fish;
 
 namespace TGC.Group.Model
 {
@@ -84,6 +83,11 @@ namespace TGC.Group.Model
             Common.ListRock.ForEach(rock => PhysicalWorld.AddBodyToTheWorld(rock.Body));
         }
 
+        internal void CreateBulletCallbacks(CharacterStatus characterStatus)
+        {
+            PhysicalWorld.AddContactPairTest(Shark.Body, Character.Body, new SharkAttackCallback(Shark, characterStatus));
+        }
+
         public void Dispose()
         {
             Skybox.Dispose();
@@ -105,12 +109,12 @@ namespace TGC.Group.Model
             {
                 Ship.RenderOutdoorShip();
                 Skybox.Render(Terrain.SizeWorld());
-                Water.Render();
                 Terrain.Render();
                 Shark.Render();
                 Fishes.ForEach(fish => fish.Render());
                 Vegetation.Render();
                 Common.Render();
+                Water.Render();
             }
         }
 

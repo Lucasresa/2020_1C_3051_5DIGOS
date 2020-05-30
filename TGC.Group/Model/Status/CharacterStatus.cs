@@ -21,7 +21,6 @@ namespace TGC.Group.Model.Status
             public static float OXYGEN_INCREMENT_STEP = 1f;
             public static float OXYGEN_REDUCE_STEP = -0.05f;
             public static float OXYGEN_REDUCE_STEP_WHIT_DIVING_HELMET = -0.0025f;
-            public static float DAMAGE_RECEIVED = 30f;
         }
 
         private Character Character { get; set; }
@@ -33,7 +32,7 @@ namespace TGC.Group.Model.Status
         public float Oxygen { get; set; } = Constants.OXYGEN_MAX;
         public bool IsDead => Oxygen == 0 || Life == 0;
         public bool HasDivingHelmet { get; set; }
-        public bool DamageReceived { get; set; }
+        public float DamageReceived { get; set; }
         public bool ActiveRenderAlarm => Life < 20 || Oxygen < 30 || ActiveAlarmForDamageReceived;
 
         public CharacterStatus(Character character) => Character = character;
@@ -54,10 +53,10 @@ namespace TGC.Group.Model.Status
 
         public void Update()
         {
-            if (DamageReceived)
+            if (DamageReceived > 0)
             {
                 TakeDamage();
-                DamageReceived = !DamageReceived;
+                DamageReceived = 0;
                 ActiveAlarmForDamageReceived = true;
             }
 
@@ -83,7 +82,7 @@ namespace TGC.Group.Model.Status
 
         private void UpdateOxygen(float value) => Oxygen = FastMath.Clamp(Oxygen + value, Constants.OXYGEN_MIN, Constants.OXYGEN_MAX);
 
-        private void TakeDamage() => DamageAcumulated = Constants.DAMAGE_RECEIVED;
+        private void TakeDamage() => DamageAcumulated += FastMath.Min(DamageReceived, Life);
 
         public void Respawn()
         {

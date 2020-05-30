@@ -101,6 +101,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
+    <Compile Include="Model\Callbacks\SharkAttackCallback.cs" />
     <Compile Include="Model\Game2DManager.cs" />
     <Compile Include="Model\GameCraftingManager.cs" />
     <Compile Include="Model\GameEventsManager.cs" />
