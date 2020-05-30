@@ -66,25 +66,52 @@ technique DefaultTechnique
     }
 }
 
+//Textura casco
+texture texture_diving_helmet;
+sampler DivingHelmet2D = sampler_state
+{
+    Texture = (texture_diving_helmet);
+};
+
+float time;
+
+/**************************************************************************************/
+/* CASCO DE BUCEO */
+/**************************************************************************************/
+
+//Pixel Shader de Oscurecer
+float4 ps_diving_helmet(PS_INPUT_DEFAULT Input) : COLOR0
+{
+    float4 renderTarget = tex2D(RenderTarget, Input.Texcoord);
+    float4 divingHelmet = tex2D(DivingHelmet2D, Input.Texcoord);
+    
+    return divingHelmet.a < 1 ? renderTarget : divingHelmet;
+}
+
+technique DivingHelmet
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 vs_default();
+        PixelShader = compile ps_3_0 ps_diving_helmet();
+    }
+}
+
 /**************************************************************************************/
 /* OSCURECER */
 /**************************************************************************************/
 
-float time;
-
 //Pixel Shader de Oscurecer
 float4 ps_darken(PS_INPUT_DEFAULT Input) : COLOR0
 {
-	//Obtener color segun textura
-    float4 color = tex2D(RenderTarget, Input.Texcoord);
-
-	//Escalar el color para oscurecerlo
-    float4 value = -abs(sin(0.4 * time));
-
-    return color + value;
+    float4 renderTarget = tex2D(RenderTarget, Input.Texcoord);
+    float4 dark = -abs(sin(0.4 * time));
+    float4 divingHelmet = tex2D(DivingHelmet2D, Input.Texcoord);
+    
+    return divingHelmet.a < 1 ? renderTarget + dark : divingHelmet + dark;
 }
 
-technique DarkenTechnique
+technique Darken
 {
     pass Pass_0
     {
@@ -109,9 +136,11 @@ sampler sampler_alarm = sampler_state
 //Pixel Shader de Alarma
 float4 ps_alarm(PS_INPUT_DEFAULT Input) : COLOR0
 {
-    float4 color = tex2D(RenderTarget, Input.Texcoord);
-    float4 color2 = tex2D(sampler_alarm, Input.Texcoord) * alarmScaleFactor;
-    return color + color2;
+    float4 renderTarget = tex2D(RenderTarget, Input.Texcoord);
+    float4 alarm = tex2D(sampler_alarm, Input.Texcoord) * alarmScaleFactor;
+    float4 divingHelmet = tex2D(DivingHelmet2D, Input.Texcoord);
+    
+    return divingHelmet.a < 1 ? renderTarget + alarm : divingHelmet + alarm;
 }
 
 technique AlarmTechnique

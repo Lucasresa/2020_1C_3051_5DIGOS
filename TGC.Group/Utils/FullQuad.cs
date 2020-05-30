@@ -18,6 +18,7 @@ namespace TGC.Group.Utils
         private VertexBuffer FullScreenQuad { get; set; }
         private Texture RenderTarget2D { get; set; }
         private TgcTexture AlarmTexture { get; set; }
+        private TgcTexture DivingHelmetTexture { get; set; }
         private InterpoladorVaiven IntVaivenAlarm;
 
         private readonly Device Device = D3DDevice.Instance.Device;
@@ -55,6 +56,7 @@ namespace TGC.Group.Utils
             Effect = TGCShaders.Instance.LoadEffect(ShadersDir + nameEffect + ".fx");
             Effect.Technique = "DefaultTechnique";
             AlarmTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Textures\alarm.png");
+            DivingHelmetTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Imagenes\divingHelmet.png");
             IntVaivenAlarm = new InterpoladorVaiven
             {
                 Min = 0,
@@ -63,6 +65,7 @@ namespace TGC.Group.Utils
             };
             IntVaivenAlarm.reset();
             Effect.SetValue("texture_alarm", AlarmTexture.D3dTexture);
+            Effect.SetValue("texture_diving_helmet", DivingHelmetTexture.D3dTexture);
         }
 
         public void SetTime(float value) => Time = FastMath.Clamp(Time + value, 0, 10);
@@ -98,7 +101,7 @@ namespace TGC.Group.Utils
 
             if (RenderTeleportEffect)
             {
-                Effect.Technique = "DarkenTechnique";
+                Effect.Technique = "Darken";
                 Effect.SetValue("time", Time);
             }
             else
@@ -110,7 +113,7 @@ namespace TGC.Group.Utils
                     Effect.SetValue("alarmScaleFactor", IntVaivenAlarm.update(ElapsedTime));
                 }
                 else
-                    Effect.Technique = "DefaultTechnique";
+                    Effect.Technique = "DivingHelmet";
             }
 
             Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1f, 0);

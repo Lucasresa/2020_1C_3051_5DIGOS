@@ -154,8 +154,8 @@ namespace TGC.Group.Model
         {
             FullQuad.PreRenderMeshes();
             ObjectManager.Render();
-            Draw2DManager.Render();
             FullQuad.Render();
+            Draw2DManager.Render();
             PostRender();
         }
 
