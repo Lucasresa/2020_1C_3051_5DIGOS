@@ -25,7 +25,7 @@ namespace TGC.Group.Model.Status
         }
 
         private Character Character { get; set; }
-        private bool CanBreathe => (Character.IsInsideShip || Character.IsOutOfWater) && !IsDead; 
+        private bool CanBreathe => (Character.IsInsideShip || Character.CanBreathe) && !IsDead; 
         private float DamageAcumulated = 0;
         public bool ActiveAlarmForDamageReceived { get; set; }
 

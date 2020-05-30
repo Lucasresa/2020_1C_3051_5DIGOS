@@ -28,14 +28,15 @@ namespace TGC.Group.Model.Objects
         private readonly CameraFPS Camera;
         private Vector3 MovementDirection;
         private float prevLatitude;
-        private float Gravity => Body.CenterOfMassPosition.Y < 0 ? -200 : -5;
+        private float Gravity => Body.CenterOfMassPosition.Y < 0 ? -200 : 0;
 
         public RigidBody Body { get; set; }
 
         public bool IsInsideShip => Camera.Position.Y < 0;
         public bool IsOutsideShip => !IsInsideShip;
-        public bool IsOutOfWater => Camera.Position.Y > 3505;
+        public bool IsOutOfWater => Camera.Position.Y > 3605;
         public bool IsNearSkybox { get; set; }
+        public bool CanBreathe => Camera.Position.Y > 3505;
 
         public bool LooksAtTheHatch { get; set; }
         public bool CanAttack { get; set; }
@@ -124,8 +125,11 @@ namespace TGC.Group.Model.Objects
             Body.ActivationState = ActivationState.ActiveTag;
             Body.AngularVelocity = Vector3.Zero;
 
-            if (IsOutOfWater) 
-                Body.ApplyCentralImpulse(Vector3.UnitY * -3);
+            if (IsOutOfWater)
+            {
+                Body.LinearVelocity = Vector3.Zero;
+                Body.ApplyCentralImpulse(Vector3.UnitY * -100);
+            }
             else if (IsInsideShip)
                 Movement(director, sideDirector, speed);
             else
