@@ -115,6 +115,11 @@ VS_OUTPUT_VERTEX vs_main_fog(VS_INPUT input)
     return output;
 }
 
+float get_fog_amount(float3 viewDirection, float fogStart, float fogRange)
+{
+    return saturate((length(viewDirection) - fogStart) / fogRange);
+}
+
 //Pixel Shader
 float4 ps_main_fog(VS_OUTPUT_VERTEX input) : COLOR0
 {
@@ -123,28 +128,27 @@ float4 ps_main_fog(VS_OUTPUT_VERTEX input) : COLOR0
 
     float4 fvBaseColor = tex2D(fogMap, input.Texture);
     
-    if (input.TexturePosition.y > 3505)
+    if (input.TexturePosition.y > 3550)
         return fvBaseColor;
     else
     {
+        float3 viewDirection = CameraPos.xyz - input.TexturePosition.xyz;
+        float FogAmount = get_fog_amount(viewDirection, StartFogDistance, (EndFogDistance - StartFogDistance));
+        
         if (input.PosView.z < zn)
             return fvBaseColor;
         else if (input.PosView.z > zf)
             return ColorFog;
         else
-        {
-            float total = zf - zn;
-            float resto = input.PosView.z - zn;
-            float proporcion = resto / total;
-            return fvBaseColor * (1 - proporcion)+ ColorFog * proporcion;
+            return lerp(fvBaseColor, ColorFog, FogAmount);
         }
     }
-}
 
 technique Fog
 {
     pass Pass_0
     {
+        AlphaBlendEnable = true;
         VertexShader = compile vs_3_0 vs_main_fog();
         PixelShader = compile ps_3_0 ps_main_fog();
     }

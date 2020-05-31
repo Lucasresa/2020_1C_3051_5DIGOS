@@ -49,9 +49,9 @@ namespace TGC.Group.Model
         {
             FogShader = TGCShaders.Instance.LoadEffect(ShadersDir + "SmartTerrain.fx");
 
-            FogShader.SetValue("ColorFog", Color.RoyalBlue.ToArgb());
-            FogShader.SetValue("StartFogDistance", 2000);
-            FogShader.SetValue("EndFogDistance", 8000);
+            FogShader.SetValue("ColorFog", Color.SteelBlue.ToArgb());
+            FogShader.SetValue("StartFogDistance", 5000);
+            FogShader.SetValue("EndFogDistance", 10000);
 
             /* Initializer object */
 
@@ -89,11 +89,10 @@ namespace TGC.Group.Model
             Common.ListOres.ForEach(ore => PhysicalWorld.AddBodyToTheWorld(ore.Body));
             Common.ListRock.ForEach(rock => PhysicalWorld.AddBodyToTheWorld(rock.Body));
 
-            Common.SetShader(FogShader, "Fog");
-            Ship.SetShader(FogShader, "Fog");
-            Vegetation.SetShader(FogShader, "Fog");
             Skybox.SetShader(FogShader, "Fog");
+            Common.SetShader(FogShader, "Fog");
             Shark.SetShader(FogShader, "Fog");
+            Vegetation.SetShader(FogShader, "Fog");
         }
 
         public void Dispose()
@@ -121,9 +120,9 @@ namespace TGC.Group.Model
                 Terrain.Render();
                 Shark.Render();
                 Fishes.ForEach(fish => fish.Render());
-                Vegetation.Render();
                 Common.Render();
                 Water.Render();
+                Vegetation.Render();
             }
         }
 

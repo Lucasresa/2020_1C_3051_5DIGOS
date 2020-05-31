@@ -10,7 +10,7 @@
         <diffuse>[0,0,0,0]</diffuse>
         <specular>[0,0,0,0]</specular>
         <opacity>1</opacity>
-        <alphaBlendEnable>True</alphaBlendEnable>
+        <alphaBlendEnable>true</alphaBlendEnable>
         <bitmap uvTiling="[1,1]" uvOffset="[1,1]">Alga.png</bitmap>
       </subM>
       <subM name="Standardmaterial" type="Standardmaterial">
@@ -18,7 +18,7 @@
         <diffuse>[0,0,0,0]</diffuse>
         <specular>[0,0,0,0]</specular>
         <opacity>1</opacity>
-        <alphaBlendEnable>True</alphaBlendEnable>
+        <alphaBlendEnable>true</alphaBlendEnable>
         <bitmap uvTiling="[1,1]" uvOffset="[1,1]">Alga.png</bitmap>
       </subM>
     </m>
