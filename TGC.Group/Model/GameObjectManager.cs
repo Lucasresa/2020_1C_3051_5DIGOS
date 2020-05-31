@@ -60,7 +60,7 @@ namespace TGC.Group.Model
 
             Skybox = new Skybox(MediaDir, Camera);
             Terrain = new Terrain(MediaDir, ShadersDir);
-            Water = new Water(MediaDir, ShadersDir);
+            Water = new Water(MediaDir, ShadersDir, new TGCVector3(0, 3500, 0));
             MeshBuilder = new MeshBuilder(Terrain, Water);
             Ship = new Ship(MediaDir);
             Shark = new Shark(MediaDir, Skybox, Terrain, Camera);
