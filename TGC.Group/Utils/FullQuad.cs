@@ -19,6 +19,7 @@ namespace TGC.Group.Utils
         private Texture RenderTarget2D { get; set; }
         private TgcTexture AlarmTexture { get; set; }
         private TgcTexture DivingHelmetTexture { get; set; }
+        private TgcTexture PDA { get; set; }
         private InterpoladorVaiven IntVaivenAlarm;
 
         private readonly Device Device = D3DDevice.Instance.Device;
@@ -28,6 +29,7 @@ namespace TGC.Group.Utils
         public string MediaDir { get; set; }
         public bool RenderTeleportEffect { get; set; }
         public bool RenderAlarmEffect { get; set; }
+        public bool RenderPDA { get; set; }
         private readonly float ElapsedTime;
 
         public FullQuad(string mediaDir, string shadersDir, float elapsedTime)
@@ -57,6 +59,7 @@ namespace TGC.Group.Utils
             Effect.Technique = "DefaultTechnique";
             AlarmTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Textures\alarm.png");
             DivingHelmetTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Imagenes\divingHelmet.png");
+            PDA = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Imagenes\PDA.png");
             IntVaivenAlarm = new InterpoladorVaiven
             {
                 Min = 0,
@@ -66,6 +69,7 @@ namespace TGC.Group.Utils
             IntVaivenAlarm.reset();
             Effect.SetValue("texture_alarm", AlarmTexture.D3dTexture);
             Effect.SetValue("texture_diving_helmet", DivingHelmetTexture.D3dTexture);
+            Effect.SetValue("texture_PDA", PDA.D3dTexture);
         }
 
         public void SetTime(float value) => Time = FastMath.Clamp(Time + value, 0, 10);
@@ -115,6 +119,9 @@ namespace TGC.Group.Utils
                 else
                     Effect.Technique = "DivingHelmet";
             }
+
+            if (RenderPDA)
+                Effect.Technique = "PDA";
 
             Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1f, 0);
 

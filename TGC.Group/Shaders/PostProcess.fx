@@ -210,3 +210,32 @@ technique BlurTechnique
         PixelShader = compile ps_3_0 ps_blur();
     }
 }
+
+/**************************************************************************************/
+                                    /* PDA */
+/**************************************************************************************/
+
+//Textura casco
+texture texture_PDA;
+sampler PDA2D = sampler_state
+{
+    Texture = (texture_PDA);
+};
+
+float4 ps_PDA(PS_INPUT_DEFAULT Input) : COLOR0
+{
+    float4 renderTarget = tex2D(RenderTarget, Input.Texcoord);
+    float4 pda = tex2D(PDA2D, Input.Texcoord);
+    float4 divingHelmet = tex2D(DivingHelmet2D, Input.Texcoord);
+    
+    return divingHelmet.a < 1 && pda.a < 1? renderTarget : divingHelmet + pda;
+}
+
+technique PDA
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 vs_default();
+        PixelShader = compile ps_3_0 ps_PDA();
+    }
+}

@@ -1,15 +1,9 @@
 ﻿using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX.DirectInput;
-using System.Collections.Generic;
-using System.Security.Policy;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
-using TGC.Group.Model.Objects;
 using TGC.Group.Model.Status;
 using TGC.Group.Utils;
-using System.Threading;
-using TGC.Core.Mathematica;
-using System;
 
 namespace TGC.Group.Model
 {
@@ -90,7 +84,8 @@ namespace TGC.Group.Model
 
             TimeToRevive = 0;
 
-            if (Input.keyPressed(Key.I)) Draw2DManager.ActiveInventory = camera.Lock = ActiveInventory = !ActiveInventory;
+            if (Input.keyPressed(Key.I)) Draw2DManager.ActiveInventory = camera.Lock =
+                    FullQuad.RenderPDA = ActiveInventory = !ActiveInventory;
 
             if (!ActiveInventory)
             {
@@ -104,7 +99,7 @@ namespace TGC.Group.Model
                 CharacterStatus.Update();
                 FullQuad.RenderAlarmEffect = CharacterStatus.ActiveRenderAlarm;
                 Draw2DManager.DistanceWithShip = FastUtils.DistanceBetweenVectors(camera.Position, ObjectManager.Ship.PositionShip);
-                Draw2DManager.ShowIndicatorShip = Draw2DManager.DistanceWithShip > 15000 && !ObjectManager.Character.IsInsideShip ;
+                Draw2DManager.ShowIndicatorShip = Draw2DManager.DistanceWithShip > 15000 && !ObjectManager.Character.IsInsideShip;
                 if (CharacterStatus.ActiveAlarmForDamageReceived)
                 {
                     TimeToAlarm += ElapsedTime;
@@ -121,9 +116,7 @@ namespace TGC.Group.Model
                 ObjectManager.Character.AttackedShark = SharkStatus.DamageReceived;
                 Draw2DManager.Update();
                 Draw2DManager.UpdateItems(InventoryManager.Items);
-
-
-            }
+            }            
 
             if (Input.keyPressed(Key.E)) ObjectManager.Character.Teleport();
 

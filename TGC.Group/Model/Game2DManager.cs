@@ -36,7 +36,7 @@ namespace TGC.Group.Model
             public static TGCVector2 MOUSE_POINTER_POSITION = new TGCVector2((SCREEN_WIDTH - MOUSE_POINTER_SIZE.X) / 2, (SCREEN_HEIGHT - MOUSE_POINTER_SIZE.Y) / 2);
             public static TGCVector2 INVENTORY_TEXT_SIZE = new TGCVector2(300, 300);
             public static TGCVector2 INVENTORY_TEXT_POSITION = new TGCVector2(10, SCREEN_HEIGHT - INVENTORY_TEXT_SIZE.Y);
-            public static string INVENTORY_TEXT_WITHOUT_ITEMS = "Inventory without items!";
+           // public static string INVENTORY_TEXT_WITHOUT_ITEMS = "Inventory without items!";
             public static string HELP_TEXT = "FOR HELP, PRESS F1 KEY";
             public static string SHIP_EXIT_TEXT = "PRESS E TO EXIT";
             public static string SHIP_ENTER_TEXT = "PRESS E TO ENTER";
@@ -199,7 +199,8 @@ namespace TGC.Group.Model
 
         private void InitializerInventoryText()
         {
-            InventoryText.SetTextSizeAndPosition(text: Constants.INVENTORY_TEXT_WITHOUT_ITEMS, Constants.INVENTORY_TEXT_SIZE, Constants.INVENTORY_TEXT_POSITION);
+            //InventoryText.SetTextSizeAndPosition(text: Constants.INVENTORY_TEXT_WITHOUT_ITEMS, Constants.INVENTORY_TEXT_SIZE, Constants.INVENTORY_TEXT_POSITION);
+            InventoryText.SetTextSizeAndPosition(text: "", Constants.INVENTORY_TEXT_SIZE, Constants.INVENTORY_TEXT_POSITION);
             InventoryText.Color = Color.Black;
         }
 
@@ -267,12 +268,12 @@ namespace TGC.Group.Model
                     DistanceShipLocation.Text = DistanceWithShip.ToString();
                     DistanceShipLocation.Render();
                 }
+                InventoryText.Render();
             }
             else
             {
                 MousePointer.Position = new TGCVector2(Cursor.Position.X - 16, Cursor.Position.Y - 16);
                 MousePointer.Render();
-                InventoryText.Render();
             }
         }
 
@@ -293,8 +294,8 @@ namespace TGC.Group.Model
                                      "\nFish: " + items["NORMALFISH"].Count + "\nYellow Fish: " + items["YELLOWFISH"].Count +
                                      "\nSpiral Coral: " + items["SPIRALCORAL"].Count + "\nNormal Coral: " + items["NORMALCORAL"].Count +
                                      "\nTree Coral: " + items["TREECORAL"].Count;
-            else
-                InventoryText.Text = Constants.INVENTORY_TEXT_WITHOUT_ITEMS;
+            //else
+            //    InventoryText.Text = Constants.INVENTORY_TEXT_WITHOUT_ITEMS;
         }
 
         private void UpdateSprite(DrawSprite sprite, float percentage, float max) => sprite.Scaling = new TGCVector2((percentage / max) * sprite.ScalingInitial.X, sprite.ScalingInitial.Y);
