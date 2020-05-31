@@ -12,7 +12,7 @@ namespace TGC.Group.Model.Objects
 {
     internal class Ship
     {
-        private struct Constants
+        public struct Constants
         {
             public static string FILE_NAME = "ship-TgcScene.xml";
             public static TGCVector3 PositionIndoorShip = new TGCVector3(515, -2340, -40);
@@ -22,6 +22,7 @@ namespace TGC.Group.Model.Objects
             public static TGCVector3 HACHT_POSITION = new TGCVector3(-200, 300, -100);
         }
 
+        public TGCVector3 PositionShip { get; set; } = Constants.PositionOutdoorShip;
         public TgcMesh OutdoorMesh, IndoorMesh;
         public RigidBody BodyIndoorShip;
         public RigidBody BodyOutdoorShip;

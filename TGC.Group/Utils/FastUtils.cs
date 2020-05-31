@@ -1,4 +1,6 @@
-﻿using TGC.Core.Mathematica;
+﻿using BulletSharp;
+using System;
+using TGC.Core.Mathematica;
 
 namespace TGC.Group.Utils
 {
@@ -16,7 +18,8 @@ namespace TGC.Group.Utils
         public static bool GreaterThan(float numberA, float numberB) => numberA > numberB;
         public static bool Contains(string expression, string searchExpression) => expression.ToLower().Contains(searchExpression);
         public static bool IsDistanceBetweenVectorsLessThan(float distance, TGCVector3 vectorA, TGCVector3 vectorB) => DistanceBetweenVectors(vectorA, vectorB) < distance;
-        public static float DistanceBetweenVectors(TGCVector3 vectorA, TGCVector3 vectorB) => (vectorA - vectorB).Length();
         public static float Distance(float numberA, float numberB) => FastMath.Abs(numberB - numberA);
+        public static float DistanceBetweenVectors(TGCVector3 vectorA, TGCVector3 vectorB) =>
+            (float)Math.Round((vectorA - vectorB).Length(), 2);
     }
 }

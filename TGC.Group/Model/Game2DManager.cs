@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -16,12 +17,12 @@ namespace TGC.Group.Model
             public static float TIME_HISTORY_TEXT = 10f;
             public static int SCREEN_WIDTH = D3DDevice.Instance.Device.Viewport.Width;
             public static int SCREEN_HEIGHT = D3DDevice.Instance.Device.Viewport.Height;
-            public static TGCVector2 LIFE_CHARACTER_POSITION = new TGCVector2(100, 0);
-            public static TGCVector2 LIFE_CHARACTER_SCALE = new TGCVector2(0.4f, 0.5f);
-            public static TGCVector2 LIFE_CHARACTER_TEXT_POSITION = new TGCVector2(10f, 20f);
-            public static TGCVector2 OXYGEN_CHARACTER_POSITION = new TGCVector2(100, 30);
-            public static TGCVector2 OXYGEN_CHARACTER_SCALE = new TGCVector2(0.4f, 0.5f);
-            public static TGCVector2 OXYGEN_CHARACTER_TEXT_POSITION = new TGCVector2(10f, 50f);
+            public static TGCVector2 LIFE_CHARACTER_SCALE = new TGCVector2(0.3f, 0.4f);
+            public static TGCVector2 LIFE_CHARACTER_POSITION = new TGCVector2(100, SCREEN_HEIGHT - 80);
+            public static TGCVector2 LIFE_CHARACTER_TEXT_POSITION = new TGCVector2(10f, LIFE_CHARACTER_POSITION.Y + 10);
+            public static TGCVector2 OXYGEN_CHARACTER_POSITION = new TGCVector2(100, LIFE_CHARACTER_POSITION.Y + 25);
+            public static TGCVector2 OXYGEN_CHARACTER_SCALE = new TGCVector2(0.3f, 0.4f);
+            public static TGCVector2 OXYGEN_CHARACTER_TEXT_POSITION = new TGCVector2(10f, OXYGEN_CHARACTER_POSITION.Y + 10);
             public static TGCVector2 LIFE_SHARK_SCALE = new TGCVector2(0.4f, 0.5f);
             public static TGCVector2 LIFE_SHARK_SIZE = new TGCVector2(1000 * LIFE_SHARK_SCALE.X, 100 * LIFE_SHARK_SCALE.Y);
             public static TGCVector2 LIFE_SHARK_POSITION = new TGCVector2(SCREEN_WIDTH - LIFE_SHARK_SIZE.X - 20, 0);
@@ -62,6 +63,9 @@ namespace TGC.Group.Model
             public static TGCVector2 PRESS_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 145) / 2, (SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y - 30) / 2);
             public static TGCVector2 COLLECT_TEXT_SIZE = new TGCVector2(320, 50);
             public static TGCVector2 COLLECT_TEXT_POSITION = new TGCVector2(SCREEN_WIDTH - COLLECT_TEXT_SIZE.X, SCREEN_HEIGHT - COLLECT_TEXT_SIZE.Y - 100);
+            public static TGCVector2 SHIP_INDICATOR_SCALE = new TGCVector2(1, 1);
+            public static TGCVector2 SHIP_INDICATOR_POSITION = new TGCVector2((SCREEN_WIDTH - 128) / 2, 20);
+            public static TGCVector2 SHIP_INDICATOR_TEXT_POSITION = new TGCVector2(SHIP_INDICATOR_POSITION.X + 23, SHIP_INDICATOR_POSITION.Y + 84);
         }
 
         private readonly string MediaDir;
@@ -81,14 +85,18 @@ namespace TGC.Group.Model
         private readonly DrawText ShipText;
         private readonly DrawText CollectText;
         private readonly DrawText ItemsHistoryText;
+        private readonly DrawSprite ShipLocationIndicator;
+        private readonly DrawText DistanceShipLocation;
 
         public float ItemHistoryTime => Constants.TIME_HISTORY_TEXT;
+        public float DistanceWithShip { get; set; }
         public bool ActiveInventory { get; set; }
         public bool ShowHelp { get; set; }
         public bool ShowInfoExitShip { get; set; }
         public bool ShowInfoEnterShip { get; set; }
         public bool NearObjectForSelect { get; set; }
         public bool ShowInfoItemCollect { get; set; }
+        public bool ShowIndicatorShip { get; set; }
 
         public List<string> ItemHistory { get; set; }
 
@@ -111,6 +119,8 @@ namespace TGC.Group.Model
             ShipText = new DrawText();
             CollectText = new DrawText();
             ItemsHistoryText = new DrawText();
+            ShipLocationIndicator = new DrawSprite(MediaDir);
+            DistanceShipLocation = new DrawText();
             Init();
         }
 
@@ -127,6 +137,8 @@ namespace TGC.Group.Model
             OxygenCharacter.Dispose();
             OxygenCharacterText.Dispose();
             Pointer.Dispose();
+            ShipLocationIndicator.Dispose();
+            DistanceShipLocation.Dispose();
         }
 
         private void Init()
@@ -139,6 +151,14 @@ namespace TGC.Group.Model
             InitializerInventoryText();
             InitializerInstructionText();
             InitializerSimpleText();
+            InitializerIndicatorShip();
+        }
+
+        private void InitializerIndicatorShip()
+        {
+            ShipLocationIndicator.SetImage("fund_ship.png");
+            ShipLocationIndicator.SetInitialScallingAndPosition(Constants.SHIP_INDICATOR_SCALE, Constants.SHIP_INDICATOR_POSITION);
+            DistanceShipLocation.SetTextAndPosition(text: DistanceWithShip.ToString(), position: Constants.SHIP_INDICATOR_TEXT_POSITION);
         }
 
         private void InitializerLifeCharacter()
@@ -239,6 +259,13 @@ namespace TGC.Group.Model
                         ItemsHistoryText.Position = new TGCVector2(Constants.COLLECT_TEXT_POSITION.X, Constants.COLLECT_TEXT_POSITION.Y + index * 20);
                         ItemsHistoryText.Render();
                     });
+                }
+
+                if (ShowIndicatorShip)
+                {
+                    ShipLocationIndicator.Render();
+                    DistanceShipLocation.Text = DistanceWithShip.ToString();
+                    DistanceShipLocation.Render();
                 }
             }
             else

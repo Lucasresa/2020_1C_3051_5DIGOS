@@ -8,6 +8,8 @@ using TGC.Group.Model.Objects;
 using TGC.Group.Model.Status;
 using TGC.Group.Utils;
 using System.Threading;
+using TGC.Core.Mathematica;
+using System;
 
 namespace TGC.Group.Model
 {
@@ -101,7 +103,8 @@ namespace TGC.Group.Model
                 CharacterStatus.DamageReceived = ObjectManager.Shark.AttackedCharacter;
                 CharacterStatus.Update();
                 FullQuad.RenderAlarmEffect = CharacterStatus.ActiveRenderAlarm;
-
+                Draw2DManager.DistanceWithShip = FastUtils.DistanceBetweenVectors(camera.Position, ObjectManager.Ship.PositionShip);
+                Draw2DManager.ShowIndicatorShip = Draw2DManager.DistanceWithShip > 15000 && !ObjectManager.Character.IsInsideShip ;
                 if (CharacterStatus.ActiveAlarmForDamageReceived)
                 {
                     TimeToAlarm += ElapsedTime;
@@ -118,6 +121,8 @@ namespace TGC.Group.Model
                 ObjectManager.Character.AttackedShark = SharkStatus.DamageReceived;
                 Draw2DManager.Update();
                 Draw2DManager.UpdateItems(InventoryManager.Items);
+
+
             }
 
             if (Input.keyPressed(Key.E)) ObjectManager.Character.Teleport();

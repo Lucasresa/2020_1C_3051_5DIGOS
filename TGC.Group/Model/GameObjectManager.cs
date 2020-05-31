@@ -2,11 +2,9 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using TGC.Core.Fog;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Shaders;
-using TGC.Core.Textures;
 using TGC.Group.Model.Objects;
 using TGC.Group.Utils;
 using static TGC.Group.Model.Objects.Common;
@@ -54,7 +52,6 @@ namespace TGC.Group.Model
             FogShader.SetValue("ColorFog", Color.RoyalBlue.ToArgb());
             FogShader.SetValue("StartFogDistance", 2000);
             FogShader.SetValue("EndFogDistance", 8000);
-            FogShader.SetValue("Density", 0.0025f);
 
             /* Initializer object */
 
@@ -140,9 +137,9 @@ namespace TGC.Group.Model
             Water.Update(elapsedTime);
             Terrain.Update(elapsedTime);
 
-            Character.LooksAtTheHatch = Ray.intersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
-            Character.CanAttack = Ray.intersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
-            Character.NearShip = Ray.intersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);
+            Character.LooksAtTheHatch = Ray.IntersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
+            Character.CanAttack = Ray.IntersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
+            Character.NearShip = Ray.IntersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);
             Character.IsNearSkybox = Skybox.IsNearSkybox;
             DetectSelectedItem();
         }
@@ -155,12 +152,12 @@ namespace TGC.Group.Model
             bool NearOreForSelect = false;
             bool NearFishForSelect = false;
                         
-            TypeCommon Coral = Common.ListCorals.Find(coral => NearCoralForSelect = Ray.intersectsWithObject(objectAABB: coral.Mesh.BoundingBox, distance: 500));
-            TypeCommon Ore = Common.ListOres.Find(ore => NearOreForSelect = Ray.intersectsWithObject(objectAABB: ore.Mesh.BoundingBox, distance: 500));
+            TypeCommon Coral = Common.ListCorals.Find(coral => NearCoralForSelect = Ray.IntersectsWithObject(objectAABB: coral.Mesh.BoundingBox, distance: 500));
+            TypeCommon Ore = Common.ListOres.Find(ore => NearOreForSelect = Ray.IntersectsWithObject(objectAABB: ore.Mesh.BoundingBox, distance: 500));
 
             if (Character.CanFish && Coral.Mesh is null && Ore.Mesh is null)
             {
-                Fish itemFish = Fishes.Find(fish => NearFishForSelect = Ray.intersectsWithObject(objectAABB: fish.BoundingBox, distance: 500));
+                Fish itemFish = Fishes.Find(fish => NearFishForSelect = Ray.IntersectsWithObject(objectAABB: fish.BoundingBox, distance: 500));
                 if (NearFishForSelect) SelectItem(itemFish);
             }
             
