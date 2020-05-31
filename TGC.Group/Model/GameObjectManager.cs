@@ -105,12 +105,12 @@ namespace TGC.Group.Model
             {
                 Ship.RenderOutdoorShip();
                 Skybox.Render(Terrain.SizeWorld());
-                Water.Render();
                 Terrain.Render();
                 Shark.Render();
                 Fishes.ForEach(fish => fish.Render());
                 Vegetation.Render();
                 Common.Render();
+                Water.Render();
             }
         }
 
@@ -122,6 +122,7 @@ namespace TGC.Group.Model
             Skybox.Update();
             Shark.Update(elapsedTime);
             Water.Update(elapsedTime);
+            Terrain.Update(elapsedTime);
 
             Character.LooksAtTheHatch = Ray.intersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
             Character.CanAttack = Ray.intersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);

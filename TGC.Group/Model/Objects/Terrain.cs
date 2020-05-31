@@ -1,5 +1,6 @@
 ﻿using BulletSharp;
 using TGC.Core.BulletPhysics;
+using TGC.Core.Textures;
 
 namespace TGC.Group.Model.Objects
 {
@@ -12,12 +13,14 @@ namespace TGC.Group.Model.Objects
 
         private void Init()
         {
-            FILE_HEIGHTMAPS = "Heightmaps\\suelo.jpg";
-            FILE_TEXTURES = "Textures\\sand.jpg";
+            FILE_HEIGHTMAPS = @"Heightmaps\suelo.jpg";
+            FILE_TEXTURES = @"Textures\sand.jpg";
             FILE_EFFECT = "SmartTerrain.fx";
             Technique = "DiffuseMap";
             LoadWorld();
             Body = RigidBodyFactory.CreateSurfaceFromHeighMap(world.GetVertices());
+            var texture = TgcTexture.createTexture(MediaDir + @"Textures\reflex.jpg");
+            world.Effect.SetValue("texReflex", texture.D3dTexture);
         }
 
         public override void Dispose()

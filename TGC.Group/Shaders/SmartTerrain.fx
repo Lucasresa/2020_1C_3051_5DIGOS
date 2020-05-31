@@ -35,12 +35,16 @@ struct VS_OUTPUT
     float3 WorldNormal : TEXCOORD2;
 };
 
+/**************************************************************************************/
+                                        /* Mar */
+/**************************************************************************************/
+
 //Vertex Shader
 VS_OUTPUT vs_main_water(VS_INPUT Input)
 {
     VS_OUTPUT Output;
     Output.MeshPosition = Input.Position;
-    Input.Position.y += 30 * sin(time + Input.Position.x) + 25 * cos( 5 * time + Input.Position.z);
+    Input.Position.y += 40 * sin(1/20 * (time + Input.Position.x)) + 35 * cos(3 * (time + Input.Position.z));
     Output.Position = mul(Input.Position, matWorldViewProj);
     Output.Texcoord = Input.Texcoord;
     Output.WorldNormal = mul(float4(Input.Normal, 1.0), matInverseTransposeWorld);
@@ -50,11 +54,11 @@ VS_OUTPUT vs_main_water(VS_INPUT Input)
 //Pixel Shader
 float4 ps_main_water(VS_OUTPUT input) : COLOR0
 {
-    float textureScale = 60;
-    float2 waterDirection = float2(0.03, 0.03) * time;
+    float textureScale = 10;
+    float2 waterDirection = float2(0.003, 0.003) * time;
     float4 textureColor = tex2D(diffuseMap, input.Texcoord * textureScale + waterDirection);
 
-    textureColor.a = 0.6;
+    textureColor.a = 0.7;
     return textureColor;
 }
 
@@ -69,8 +73,19 @@ technique Olas
 }
 
 /**************************************************************************************/
-/* Terreno */
+                                    /* Terreno */
 /**************************************************************************************/
+
+texture texReflex;
+sampler2D reflex = sampler_state
+{
+    Texture = (texReflex);
+    ADDRESSU = WRAP;
+    ADDRESSV = WRAP;
+    MINFILTER = LINEAR;
+    MAGFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+};
 
 //Vertex Shader
 VS_OUTPUT vs_main_terrain(VS_INPUT Input)
@@ -88,16 +103,16 @@ float4 ps_main_terrain(VS_OUTPUT Input) : COLOR0
 {
     float3 Nn = normalize(Input.WorldNormal);
     float3 Ln = normalize(float3(0, -2, 1));
-
     float n_dot_l = abs(dot(Nn, Ln));
-
     float textureScale = 200;
     float4 textureColor = tex2D(diffuseMap, Input.Texcoord * textureScale);
-	
     float3 diffuseColor = 0.4 * float3(0.5, 0.4, 0.2) * n_dot_l;
     textureColor += float4(diffuseColor, 1);
     
-    return textureColor;
+    float movement = 0.002 * sin(time * 2);
+    float4 reflexTexture = tex2D(reflex, (Input.Texcoord + float2(1, 1) * movement) * 50);
+    
+    return textureColor + reflexTexture * 0.4;
 }
 
 technique DiffuseMap

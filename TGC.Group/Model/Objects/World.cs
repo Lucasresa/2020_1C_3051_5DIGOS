@@ -8,7 +8,7 @@ namespace TGC.Group.Model.Objects
     {
         protected string FILE_HEIGHTMAPS, FILE_TEXTURES, FILE_EFFECT;
         protected float SCALEXZ = 300f, SCALEY = 12f;
-        private readonly string MediaDir, ShadersDir;
+        protected readonly string MediaDir, ShadersDir;
         protected TGCVector3 Position = TGCVector3.Empty;
         protected string Technique;
         public SmartTerrain world = new SmartTerrain();
@@ -46,5 +46,6 @@ namespace TGC.Group.Model.Objects
             return perimeter;
         }
 
+        public void Update(float elapsedTime) => world.SetTimeForWaves(elapsedTime);
     }
 }

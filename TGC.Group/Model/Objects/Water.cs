@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using TGC.Core.Mathematica;
 using TGC.Core.Textures;
 
@@ -17,8 +18,6 @@ namespace TGC.Group.Model.Objects
             Technique = "Olas";
             SCALEY = 1;
             LoadWorld();
-        }
-
-        public void Update(float elapsedTime) => world.SetTimeForWaves(elapsedTime);
+        }        
     }
 }

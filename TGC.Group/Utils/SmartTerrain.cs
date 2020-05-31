@@ -22,7 +22,7 @@ namespace TGC.Group.Utils
         private CustomVertex.PositionTextured[] Vertex;
         private Texture Texture;
         private int TotalVertices { get; set; }
-        private Effect Effect { get; set; }
+        public Effect Effect { get; set; }
         private float TimeForWaves = 0;
         public float ScaleXZ { get; set; }
         public float ScaleY { get; set; }
