@@ -62,6 +62,9 @@
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Release\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>subnautica_icono_original.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BulletSharp, Version=0.11.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\BulletSharp.0.11.1\lib\net40-client\BulletSharp.dll</HintPath>
@@ -242,6 +245,7 @@
     <Content Include="Media\Textures\red.jpg" />
     <Content Include="Media\Textures\rock_wall.jpg" />
     <Content Include="Media\Textures\sand.jpg" />
+    <Content Include="subnautica_icono_original.ico" />
     <None Include="Shaders\SmartTerrain.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
