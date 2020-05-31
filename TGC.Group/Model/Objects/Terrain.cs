@@ -24,7 +24,7 @@ namespace TGC.Group.Model.Objects
             Body = RigidBodyFactory.CreateSurfaceFromHeighMap(world.GetVertices());
             var texture = TgcTexture.createTexture(MediaDir + @"Textures\reflex.jpg");
             world.Effect.SetValue("texReflex", texture.D3dTexture);
-            world.Effect.SetValue("ColorFog", Color.MidnightBlue.ToArgb());
+            world.Effect.SetValue("ColorFog", Color.RoyalBlue.ToArgb());
             world.Effect.SetValue("StartFogDistance", 2000);
             world.Effect.SetValue("EndFogDistance", 8000);
         }

@@ -51,7 +51,7 @@ namespace TGC.Group.Model
         {
             FogShader = TGCShaders.Instance.LoadEffect(ShadersDir + "SmartTerrain.fx");
 
-            FogShader.SetValue("ColorFog", Color.MidnightBlue.ToArgb());
+            FogShader.SetValue("ColorFog", Color.RoyalBlue.ToArgb());
             FogShader.SetValue("StartFogDistance", 2000);
             FogShader.SetValue("EndFogDistance", 8000);
             FogShader.SetValue("Density", 0.0025f);

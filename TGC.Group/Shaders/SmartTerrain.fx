@@ -183,7 +183,7 @@ float4 ps_main_terrain(VS_OUTPUT_VERTEX Input) : COLOR0
     
     float zn = StartFogDistance;
     float zf = EndFogDistance;
-    
+        
     if (Input.PosView.z < zn)
         return fvBaseColor;
     else if (Input.PosView.z > zf)
