@@ -1,33 +1,22 @@
-﻿using Microsoft.DirectX.Direct3D;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using TGC.Core.Direct3D;
+﻿using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Objects;
 using TGC.Group.Utils;
-
 namespace TGC.Group.Model
 {
     public class GameMenu : TGCExample
     {
-        readonly Water Water;
-        readonly Skybox Skybox;
-        readonly CameraFPS CameraFPS;
         readonly DXGui Gui;
+        Water Water;
+        Skybox Skybox;
+        CameraFPS CameraFPS;
+        Ship Ship;
 
         public GameMenu(string mediaDir, string shadersDir): base(mediaDir, shadersDir)
         {
             FixedTickEnable = true;
             Gui = new DXGui();
-            CameraFPS = new CameraFPS(Input);
-            Camera = CameraFPS;
-            Water = new Water(mediaDir, shadersDir, TGCVector3.Empty);
-            Skybox = new Skybox(mediaDir, CameraFPS);
         }
 
         public override void Dispose()
@@ -35,10 +24,17 @@ namespace TGC.Group.Model
             Gui.Dispose();
             Water.Dispose();
             Skybox.Dispose();
+            Ship.Dispose();
         }
 
         public override void Init()
         {
+            CameraFPS = new CameraFPS(Input);
+            Camera = CameraFPS;
+            Water = new Water(MediaDir, ShadersDir, new TGCVector3(0, 3500, 0));
+            Skybox = new Skybox(MediaDir, CameraFPS);
+            Ship = new Ship(MediaDir);
+
             Gui.Create(MediaDir);
             // menu principal
             Gui.InitDialog(trapezoidal: false);
@@ -54,9 +50,8 @@ namespace TGC.Group.Model
             Gui.InsertMenuItem(3, "   Controls", "navegar.png", x0, y0 += dy2, MediaDir, dx, dy);
             Gui.InsertMenuItem(4, "     Exit", "salir.png", x0, y0 += dy2, MediaDir, dx, dy);
 
-            CameraFPS.Position = new TGCVector3(0, 200, 0);
-            CameraFPS.Lock = false;
-            //Camera.SetCamera(new TGCVector3(0, 3000, 0), new TGCVector3(0, 0, -1));
+            ((CameraFPS)Camera).Position = new TGCVector3(1030, 3900, 2500);
+            ((CameraFPS)Camera).Lock = true;
         }
 
         public void gui_render(float elapsedTime)
@@ -94,6 +89,7 @@ namespace TGC.Group.Model
 
             Water.Render();
             Skybox.Render(Water.SizeWorld());
+            Ship.RenderOutdoorShip();
             gui_render(ElapsedTime);
 
             PostRender();
