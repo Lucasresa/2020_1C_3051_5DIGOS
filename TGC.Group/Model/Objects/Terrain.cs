@@ -1,4 +1,7 @@
 ﻿using BulletSharp;
+using Microsoft.DirectX.Direct3D;
+using System;
+using System.Drawing;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Textures;
 
@@ -21,12 +24,21 @@ namespace TGC.Group.Model.Objects
             Body = RigidBodyFactory.CreateSurfaceFromHeighMap(world.GetVertices());
             var texture = TgcTexture.createTexture(MediaDir + @"Textures\reflex.jpg");
             world.Effect.SetValue("texReflex", texture.D3dTexture);
+            world.Effect.SetValue("ColorFog", Color.MidnightBlue.ToArgb());
+            world.Effect.SetValue("StartFogDistance", 2000);
+            world.Effect.SetValue("EndFogDistance", 8000);
         }
 
         public override void Dispose()
         {
             Body.Dispose();
             base.Dispose();
+        }
+
+        public void SetShader(Effect fogShader, string technique)
+        {
+            world.Effect = fogShader;
+            world.Effect.Technique = technique;
         }
     }
 }

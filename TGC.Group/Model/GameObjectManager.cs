@@ -52,8 +52,8 @@ namespace TGC.Group.Model
             FogShader = TGCShaders.Instance.LoadEffect(ShadersDir + "SmartTerrain.fx");
 
             FogShader.SetValue("ColorFog", Color.MidnightBlue.ToArgb());
-            FogShader.SetValue("StartFogDistance", 1000);
-            FogShader.SetValue("EndFogDistance", 3000);
+            FogShader.SetValue("StartFogDistance", 2000);
+            FogShader.SetValue("EndFogDistance", 8000);
             FogShader.SetValue("Density", 0.0025f);
 
             /* Initializer object */
@@ -91,6 +91,12 @@ namespace TGC.Group.Model
             Common.ListCorals.ForEach(coral => PhysicalWorld.AddBodyToTheWorld(coral.Body));
             Common.ListOres.ForEach(ore => PhysicalWorld.AddBodyToTheWorld(ore.Body));
             Common.ListRock.ForEach(rock => PhysicalWorld.AddBodyToTheWorld(rock.Body));
+
+            Common.SetShader(FogShader, "Fog");
+            Ship.SetShader(FogShader, "Fog");
+            Vegetation.SetShader(FogShader, "Fog");
+            Skybox.SetShader(FogShader, "Fog");
+            Shark.SetShader(FogShader, "Fog");
         }
 
         public void Dispose()
@@ -112,7 +118,6 @@ namespace TGC.Group.Model
                 Ship.RenderIndoorShip();
             else
             {
-                Skybox.SetShader(FogShader, "Fog");
                 FogShader.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
                 Ship.RenderOutdoorShip();
                 Skybox.Render(Terrain.SizeWorld());

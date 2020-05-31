@@ -1,5 +1,7 @@
 ﻿using BulletSharp;
 using BulletSharp.Math;
+using Microsoft.DirectX.Direct3D;
+using System;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
@@ -120,6 +122,12 @@ namespace TGC.Group.Model.Objects
 
             if (deathTimeCounter <= 0)
                 ManageEndOfDeath();
+        }
+
+        public void SetShader(Effect fogShader, string technique)
+        {
+            Mesh.Effect = fogShader;
+            Mesh.Technique = technique;
         }
 
         public void Render()

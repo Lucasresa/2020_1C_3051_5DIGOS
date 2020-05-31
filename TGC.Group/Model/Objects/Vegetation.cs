@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.DirectX.Direct3D;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
@@ -96,5 +98,8 @@ namespace TGC.Group.Model.Objects
         }
 
         public void Render() => ListAlgas.ForEach(vegetation => vegetation.Mesh.Render());
+
+        public void SetShader(Effect fogShader, string technique) =>
+            ListAlgas.ForEach(alga => { alga.Mesh.Effect = fogShader; alga.Mesh.Technique = technique; });
     }
 }

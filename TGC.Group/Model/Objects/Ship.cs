@@ -1,5 +1,7 @@
 ﻿using BulletSharp;
 using BulletSharp.Math;
+using Microsoft.DirectX.Direct3D;
+using System;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Geometry;
 using TGC.Core.Mathematica;
@@ -76,6 +78,12 @@ namespace TGC.Group.Model.Objects
             rigidBody.CenterOfMassTransform = Matrix.RotationYawPitchRoll(rotation.X, rotation.Y, rotation.Z) * Matrix.Translation(position.ToBulletVector3());
             rigidBody.CollisionShape.LocalScaling = scale.ToBulletVector3();
             return rigidBody;
+        }
+
+        public void SetShader(Effect fogShader, string technique)
+        {
+            OutdoorMesh.Effect = fogShader;
+            OutdoorMesh.Technique = technique;
         }
     }
 }
