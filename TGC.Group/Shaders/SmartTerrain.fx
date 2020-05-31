@@ -62,7 +62,7 @@ float4 ps_main_water(VS_OUTPUT input) : COLOR0
     return textureColor;
 }
 
-technique Olas
+technique Waves
 {
     pass Pass_0
     {
@@ -121,5 +121,87 @@ technique DiffuseMap
     {
         VertexShader = compile vs_3_0 vs_main_terrain();
         PixelShader = compile ps_3_0 ps_main_terrain();
+    }
+}
+
+
+/**************************************************************************************/
+                                        /* Niebla */
+/**************************************************************************************/
+
+texture texFogMap;
+sampler2D fogMap = sampler_state
+{
+    Texture = (texDiffuseMap);
+    ADDRESSU = WRAP;
+    ADDRESSV = WRAP;
+    MINFILTER = LINEAR;
+    MAGFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+};
+
+// variable de fogs
+float4 ColorFog;
+float4 CameraPos;
+float StartFogDistance;
+float EndFogDistance;
+float Density;
+
+//Output del Vertex Shader
+struct VS_OUTPUT_VERTEX
+{
+    float4 Position : POSITION0;
+    float2 Texture : TEXCOORD0;
+    float4 PosView : COLOR0;
+    float4 TexturePosition : TEXCOORD1;
+};
+
+VS_OUTPUT_VERTEX vs_main_fog(VS_INPUT input)
+{
+    VS_OUTPUT_VERTEX output;
+    output.Position = mul(input.Position, matWorldViewProj);
+    output.Texture = input.Texcoord;
+    output.PosView = mul(input.Position, matWorldView);
+    output.TexturePosition = mul(input.Position, matWorld);
+    return output;
+}
+
+//Pixel Shader
+float4 ps_main_fog(VS_OUTPUT_VERTEX input) : COLOR0
+{
+    float zn = StartFogDistance;
+    float zf = EndFogDistance;
+
+    float4 fvBaseColor = tex2D(fogMap, input.Texture);
+    
+    if (input.TexturePosition.y > 3505)
+        return fvBaseColor;
+    else
+    {
+        if (input.PosView.z < zn)
+            return fvBaseColor;
+        else if (input.PosView.z > zf)
+        {
+            fvBaseColor = ColorFog;
+            return fvBaseColor;
+        }
+        else
+        {
+	    	// combino fog y textura
+            float1 total = zf - zn;
+            float1 resto = input.PosView.z - zn;
+            float1 proporcion = resto / total;
+            fvBaseColor = lerp(fvBaseColor, ColorFog, proporcion);
+            return fvBaseColor;
+        }
+    }
+}
+
+technique Fog
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 vs_main_fog();
+        PixelShader = compile ps_3_0 ps_main_fog();
     }
 }

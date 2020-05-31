@@ -1,14 +1,16 @@
-﻿using BulletSharp;
-using Microsoft.DirectX.DirectInput;
+﻿using Microsoft.DirectX.DirectInput;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Windows.Forms;
+using TGC.Core.Fog;
 using TGC.Core.Input;
+using TGC.Core.Mathematica;
+using TGC.Core.Shaders;
+using TGC.Core.Textures;
 using TGC.Group.Model.Objects;
 using TGC.Group.Utils;
 using static TGC.Group.Model.Objects.Common;
-using static TGC.Group.Model.Objects.Fish;
+using Effect = Microsoft.DirectX.Direct3D.Effect;
 
 namespace TGC.Group.Model
 {
@@ -17,6 +19,7 @@ namespace TGC.Group.Model
         private readonly string MediaDir, ShadersDir;
         private MeshBuilder MeshBuilder;
         private readonly Ray Ray;
+        private Effect FogShader;
 
         public PhysicalWorld PhysicalWorld { get; set; }
         public TgcD3dInput Input { get; set; }
@@ -30,7 +33,6 @@ namespace TGC.Group.Model
         public List<Fish> Fishes { get; set; }
         public Vegetation Vegetation { get; set; }
         public Common Common { get; set; }
-
         public string ItemSelected { get; set; }
         public bool NearObjectForSelect { get; set; }
         public bool ShowInfoItemCollect { get; set; }
@@ -47,6 +49,13 @@ namespace TGC.Group.Model
 
         private void InitializerObjects()
         {
+            FogShader = TGCShaders.Instance.LoadEffect(ShadersDir + "SmartTerrain.fx");
+
+            FogShader.SetValue("ColorFog", Color.MidnightBlue.ToArgb());
+            FogShader.SetValue("StartFogDistance", 1000);
+            FogShader.SetValue("EndFogDistance", 3000);
+            FogShader.SetValue("Density", 0.0025f);
+
             /* Initializer object */
 
             Skybox = new Skybox(MediaDir, Camera);
@@ -103,6 +112,8 @@ namespace TGC.Group.Model
                 Ship.RenderIndoorShip();
             else
             {
+                Skybox.SetShader(FogShader, "Fog");
+                FogShader.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
                 Ship.RenderOutdoorShip();
                 Skybox.Render(Terrain.SizeWorld());
                 Terrain.Render();

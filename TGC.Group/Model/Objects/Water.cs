@@ -15,7 +15,7 @@ namespace TGC.Group.Model.Objects
             FILE_HEIGHTMAPS = @"Heightmaps\oceano.jpg";
             FILE_TEXTURES = @"Textures\water.png";
             FILE_EFFECT = "SmartTerrain.fx";
-            Technique = "Olas";
+            Technique = "Waves";
             SCALEY = 1;
             LoadWorld();
         }        
