@@ -96,7 +96,7 @@ namespace TGC.Group.Model
                 Draw2DManager.ItemHistory = InventoryManager.ItemHistory;
                 ObjectManager.ItemSelected = null;
                 CharacterStatus.DamageReceived = ObjectManager.Shark.AttackedCharacter;
-                CharacterStatus.Update();
+                CharacterStatus.Update(ElapsedTime);
                 FullQuad.RenderAlarmEffect = CharacterStatus.ActiveRenderAlarm;
                 Draw2DManager.DistanceWithShip = FastUtils.DistanceBetweenVectors(camera.Position, ObjectManager.Ship.PositionShip);
                 Draw2DManager.ShowIndicatorShip = Draw2DManager.DistanceWithShip > 15000 && !ObjectManager.Character.IsInsideShip;

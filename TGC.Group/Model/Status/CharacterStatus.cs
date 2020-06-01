@@ -14,18 +14,17 @@ namespace TGC.Group.Model.Status
         {
             public static int LIFE_MAX = 100;
             public static int LIFE_MIN = 0;
-            public static int OXYGEN_MAX = 100;
+            public static int OXYGEN_MAX = 40;
             public static int OXYGEN_MIN = 0;
             public static float LIFE_REDUCE_STEP = -0.3f;
             public static float LIFE_INCREMENT_STEP = 0.01f;
             public static float OXYGEN_INCREMENT_STEP = 1f;
-            public static float OXYGEN_REDUCE_STEP = -0.05f;
-            public static float OXYGEN_REDUCE_STEP_WHIT_DIVING_HELMET = -0.0025f;
+            public static float OXYGEN_INCREASE_BY_CRAFT = 20;
             public static float DAMAGE_RECEIVED = 30f;
         }
 
         private Character Character { get; set; }
-        private bool CanBreathe => (Character.IsInsideShip || Character.CanBreathe) && !IsDead; 
+        private bool CanBreathe => (Character.IsInsideShip || Character.CanBreathe) && !IsDead;
         private float DamageAcumulated = 0;
         public bool ActiveAlarmForDamageReceived { get; set; }
 
@@ -35,6 +34,8 @@ namespace TGC.Group.Model.Status
         public bool HasDivingHelmet { get; set; }
         public bool DamageReceived { get; set; }
         public bool ActiveRenderAlarm => Life < 20 || Oxygen < 30 || ActiveAlarmForDamageReceived;
+        public int ShowLife { get => (int)Math.Round(Life, 0); }
+        public int ShowOxygen { get => (int)Math.Round(Oxygen, 0); }
 
         public CharacterStatus(Character character) => Character = character;
 
@@ -52,7 +53,7 @@ namespace TGC.Group.Model.Status
             ActiveAlarmForDamageReceived = false;
         }
 
-        public void Update()
+        public void Update(float elapsedTime)
         {
             if (DamageReceived)
             {
@@ -73,10 +74,7 @@ namespace TGC.Group.Model.Status
             if (CanBreathe)
                 UpdateOxygen(Constants.OXYGEN_INCREMENT_STEP);
             else
-                if (HasDivingHelmet)
-                    UpdateOxygen(Constants.OXYGEN_REDUCE_STEP_WHIT_DIVING_HELMET);
-                else
-                    UpdateOxygen(Constants.OXYGEN_REDUCE_STEP);
+                UpdateOxygen(-elapsedTime);
         }
 
         private void UpdateLife(float value) => Life = FastMath.Clamp(Life + value, Constants.LIFE_MIN, Constants.LIFE_MAX);

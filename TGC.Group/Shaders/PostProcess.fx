@@ -228,7 +228,7 @@ float4 ps_PDA(PS_INPUT_DEFAULT Input) : COLOR0
     float4 pda = tex2D(PDA2D, Input.Texcoord);
     float4 divingHelmet = tex2D(DivingHelmet2D, Input.Texcoord);
     
-    return divingHelmet.a < 1 && pda.a < 1? renderTarget : divingHelmet + pda;
+    return pda.a < 1 ? renderTarget : divingHelmet + pda;
 }
 
 technique PDA
