@@ -2,6 +2,7 @@
 using Microsoft.DirectX.DirectInput;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
+using TGC.Group.Model.Objects;
 using TGC.Group.Model.Status;
 using TGC.Group.Utils;
 
@@ -133,6 +134,8 @@ namespace TGC.Group.Model
             Draw2DManager.ShowInfoItemCollect = ObjectManager.ShowInfoItemCollect;
 
             UpdateInfoItemCollect();
+
+            if (Input.keyPressed(Key.P)) ObjectManager.Character.HasDivingHelmet = true;
         }
 
         private void UpdateInfoItemCollect()

@@ -182,7 +182,7 @@ namespace TGC.Group.Model
         {
             OxygenCharacter.SetImage("OxygenBar.png");
             OxygenCharacter.SetInitialScallingAndPosition(Constants.OXYGEN_CHARACTER_SCALE, Constants.OXYGEN_CHARACTER_POSITION);
-            OxygenCharacterText.Size = Constants.OXYGEN_CHARACTER_TEXT_SIZE;
+            OxygenCharacterText.Size = new TGCVector2(Constants.OXYGEN_CHARACTER_TEXT_SIZE.X + 300, Constants.OXYGEN_CHARACTER_TEXT_SIZE.Y);
         }
 
         private void InitializerPointer()

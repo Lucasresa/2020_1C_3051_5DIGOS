@@ -14,12 +14,11 @@ namespace TGC.Group.Model.Status
         {
             public static int LIFE_MAX = 100;
             public static int LIFE_MIN = 0;
-            public static int OXYGEN_MAX = 40;
             public static int OXYGEN_MIN = 0;
+            public static int OXYGEN_INCREASE_BY_CRAFT = 20;
             public static float LIFE_REDUCE_STEP = -0.3f;
             public static float LIFE_INCREMENT_STEP = 0.01f;
             public static float OXYGEN_INCREMENT_STEP = 1f;
-            public static float OXYGEN_INCREASE_BY_CRAFT = 20;
             public static float DAMAGE_RECEIVED = 30f;
         }
 
@@ -28,27 +27,32 @@ namespace TGC.Group.Model.Status
         private float DamageAcumulated = 0;
         public bool ActiveAlarmForDamageReceived { get; set; }
 
+        public int OxygenMax = 40;
         public float Life { get; set; } = Constants.LIFE_MAX;
-        public float Oxygen { get; set; } = Constants.OXYGEN_MAX;
+        public float Oxygen { get; set; }
         public bool IsDead => Oxygen == 0 || Life == 0;
-        public bool HasDivingHelmet { get; set; }
+        public bool HasDivingHelmet { set => OxygenMax += Constants.OXYGEN_INCREASE_BY_CRAFT; }
         public bool DamageReceived { get; set; }
-        public bool ActiveRenderAlarm => Life < 20 || Oxygen < 30 || ActiveAlarmForDamageReceived;
+        public bool ActiveRenderAlarm => Life < 20 || Oxygen < 15 || ActiveAlarmForDamageReceived;
         public int ShowLife { get => (int)Math.Round(Life, 0); }
         public int ShowOxygen { get => (int)Math.Round(Oxygen, 0); }
 
-        public CharacterStatus(Character character) => Character = character;
+        public CharacterStatus(Character character)
+        {
+            Character = character;
+            Oxygen = OxygenMax;
+        }
 
         public float GetLifeMax() => Constants.LIFE_MAX;
 
-        public float GetOxygenMax() => Constants.OXYGEN_MAX;
+        public float GetOxygenMax() => OxygenMax;
 
         private void RecoverLife() => UpdateLife(Constants.LIFE_INCREMENT_STEP);
-        
+
         public void Reset()
         {
             Life = Constants.LIFE_MAX;
-            Oxygen = Constants.OXYGEN_MAX;
+            Oxygen = OxygenMax;
             DamageAcumulated = 0;
             ActiveAlarmForDamageReceived = false;
         }
@@ -70,7 +74,7 @@ namespace TGC.Group.Model.Status
 
             if (Character.IsInsideShip)
                 RecoverLife();
-
+                        
             if (CanBreathe)
                 UpdateOxygen(Constants.OXYGEN_INCREMENT_STEP);
             else
@@ -79,7 +83,7 @@ namespace TGC.Group.Model.Status
 
         private void UpdateLife(float value) => Life = FastMath.Clamp(Life + value, Constants.LIFE_MIN, Constants.LIFE_MAX);
 
-        private void UpdateOxygen(float value) => Oxygen = FastMath.Clamp(Oxygen + value, Constants.OXYGEN_MIN, Constants.OXYGEN_MAX);
+        private void UpdateOxygen(float value) => Oxygen = FastMath.Clamp(Oxygen + value, Constants.OXYGEN_MIN, OxygenMax);
 
         private void TakeDamage() => DamageAcumulated = Constants.DAMAGE_RECEIVED;
 
