@@ -70,6 +70,7 @@ namespace TGC.Group.Utils
             Effect.SetValue("texture_alarm", AlarmTexture.D3dTexture);
             Effect.SetValue("texture_diving_helmet", DivingHelmetTexture.D3dTexture);
             Effect.SetValue("texture_PDA", PDA.D3dTexture);
+            Effect.SetValue("Color", Color.DarkSlateBlue.ToArgb());
         }
 
         public void SetTime(float value) => Time = FastMath.Clamp(Time + value, 0, 10);
