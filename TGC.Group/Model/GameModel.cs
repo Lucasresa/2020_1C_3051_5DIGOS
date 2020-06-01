@@ -116,7 +116,7 @@ namespace TGC.Group.Model
                 SharkStatus.Update();
                 ObjectManager.Character.AttackedShark = SharkStatus.DamageReceived;
                 Draw2DManager.Update();
-                Draw2DManager.UpdateItems(InventoryManager.Items);
+                Draw2DManager.Inventory.UpdateItems(InventoryManager.Items);
             }            
 
             if (Input.keyPressed(Key.E)) ObjectManager.Character.Teleport();
@@ -135,7 +135,9 @@ namespace TGC.Group.Model
 
             UpdateInfoItemCollect();
 
-            if (Input.keyPressed(Key.P)) ObjectManager.Character.HasDivingHelmet = true;
+            if (Input.keyPressed(Key.P))
+                ObjectManager.Character.CanFish = ObjectManager.Character.HasWeapon =
+                    ObjectManager.Character.HasDivingHelmet = true;
         }
 
         private void UpdateInfoItemCollect()
