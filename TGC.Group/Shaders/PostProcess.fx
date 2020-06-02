@@ -229,8 +229,6 @@ float4 ps_PDA(PS_INPUT_DEFAULT Input) : COLOR0
     float4 renderTarget = tex2D(RenderTarget, Input.Texcoord);
     float4 pda = tex2D(PDA2D, Input.Texcoord);
     
-    //return (pda.r + pda.g + pda.b) / 3 >= 1 || pda.a < 1? renderTarget : pda;
-    
     if ((pda.r + pda.g + pda.b) / 3 >= 1)
     {
         pda.a = 0.7;

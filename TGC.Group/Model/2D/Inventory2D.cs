@@ -45,5 +45,45 @@ namespace TGC.Group.Model._2D
             else
                 InventoryText.Text = Constants.INVENTORY_TEXT_WITHOUT_ITEMS;
         }
+        /*
+        public struct Perimeter
+        {
+            public float xMin;
+            public float xMax;
+            public float zMin;
+            public float zMax;
+        }
+
+        Perimeter square = new Perimeter();
+
+        private readonly float COLUMNS = 3;
+        private readonly float ROWS = 3;
+        private readonly int SideX = 100;
+        private readonly int SideY = 100;
+
+        Dictionary<(int, int), Perimeter> Areas = new Dictionary<(int, int), Perimeter>();
+
+        public void SplitToArea()
+        {
+            for (int row = 1; row <= ROWS; row++)
+            {
+                square.xMin = (((row - 1) * SideX + 20) / ROWS) + 20;
+                square.xMax = (row * SideX + 20)/ ROWS + 20;
+
+                for (int column = 1; column <= COLUMNS; column++)
+                {
+                    square.zMin = (((column - 1) * SideY + 20) / COLUMNS) + 20;
+                    square.zMax = (column * SideY + 20) / COLUMNS + 20;
+                    Areas.Add((row, column), square);
+                }
+            }
+        }
+
+        public Perimeter GetArea(float posX, float posZ)
+        {
+            return Areas.FirstOrDefault(pair => posX > pair.Value.xMin && posX < pair.Value.xMax &&
+                                                posZ > pair.Value.zMin && posZ < pair.Value.zMax)
+                                        .Value;
+        }*/
     }
 }
