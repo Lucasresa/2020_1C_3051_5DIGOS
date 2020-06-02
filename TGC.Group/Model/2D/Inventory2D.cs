@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Windows.Forms;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Group.Utils;
@@ -15,28 +17,90 @@ namespace TGC.Group.Model._2D
             public static TGCVector2 INVENTORY_TEXT_SIZE = new TGCVector2(300, 300);
             public static TGCVector2 INVENTORY_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - INVENTORY_TEXT_SIZE.X) / 2, (SCREEN_HEIGHT - INVENTORY_TEXT_SIZE.Y) / 2);
             public static string INVENTORY_TEXT_WITHOUT_ITEMS = "Inventory without items!";
+            public static TGCVector2 ITEM_SCALE = new TGCVector2(1f, 1f);
+            public static TGCVector2 ITEM_SIZE = new TGCVector2(100 * ITEM_SCALE.X, 100 * ITEM_SCALE.Y);
+            public static TGCVector2 ITEM_INITIAL_POSITION = new TGCVector2(SCREEN_WIDTH * 0.415f, SCREEN_HEIGHT * 0.35f); // 0.36 x 0.3
         }
 
+        private readonly string MediaDir;
+        private bool HasItems;
         private readonly DrawText InventoryText;
+        private List<DrawSprite> InventoryItems;
 
-        public Inventory2D()
+        public Inventory2D(string mediaDir)
         {
+            MediaDir = mediaDir;
             InventoryText = new DrawText();
+            InventoryItems = new List<DrawSprite>();
             Init();
         }
-        
-        public void Dispose() => InventoryText.Dispose();
 
-        public void Init() =>
+        public void Dispose()
+        {
+            InventoryText.Dispose();
+            InventoryItems.ForEach(item => item.Dispose());
+        }
+
+        public void Init()
+        {
             InventoryText.SetTextSizeAndPosition(text: "", Constants.INVENTORY_TEXT_SIZE, Constants.INVENTORY_TEXT_POSITION);
+            InventoryItems.Add(InitializerItems("Normal_Coral"));
+            InventoryItems.Add(InitializerItems("Spiral_Coral"));
+            InventoryItems.Add(InitializerItems("Tree_Coral"));
+            InventoryItems.Add(InitializerItems("Gold"));
+            InventoryItems.Add(InitializerItems("Silver"));
+            InventoryItems.Add(InitializerItems("Iron"));
+            InventoryItems.Add(InitializerItems("Normal_Fish"));
+            InventoryItems.Add(InitializerItems("Yellow_Fish"));
+            CalculateItemPosition(ref InventoryItems);
+        }        
 
-        public void Render() => InventoryText.Render();
+        private DrawSprite InitializerItems(string sprite)
+        {
+            var item = new DrawSprite(MediaDir);
+            item.SetImage(sprite + ".png");
+            return item;
+        }
+
+        private void CalculateItemPosition(ref List<DrawSprite> inventory)
+        {
+            var columns = 4;
+            var count = 1;
+            var position = Constants.ITEM_INITIAL_POSITION;
+            inventory[0].SetInitialScallingAndPosition(Constants.ITEM_SCALE, position);
+
+            for (int index = 1; index < inventory.Count; index++)
+            {
+                if (count < columns)
+                {
+                    position.X = inventory[index - 1].Position.X + Constants.ITEM_SIZE.X + 80;
+                    position.Y = inventory[index - 1].Position.Y;
+                }
+                else
+                {
+                    position.X = Constants.ITEM_INITIAL_POSITION.X;
+                    position.Y = Constants.ITEM_INITIAL_POSITION.Y + Constants.ITEM_SIZE.Y + 80;
+                    count = 0;
+                }
+                    
+                count++;
+                inventory[index].SetInitialScallingAndPosition(Constants.ITEM_SCALE, position);
+            }
+
+        }
+        public void Render()
+        {
+            if (HasItems)
+                InventoryItems.ForEach(item => item.Render());
+            else
+                InventoryText.Render();
+        }
 
         public void UpdateItems(Dictionary<string, List<string>> items)
         {
-            var hasItems = items.Values.ToList().Any(listItems => listItems.Count > 0);
+            HasItems = items.Values.ToList().Any(listItems => listItems.Count > 0);
 
-            if (hasItems)
+            if (HasItems)
                 InventoryText.Text = "Inventory: " + "\n\nGold: " + items["GOLD"].Count + "\nSilver: " + items["SILVER"].Count +
                                      "\nIron: " + items["IRON"].Count +
                                      "\nFish: " + items["NORMALFISH"].Count + "\nYellow Fish: " + items["YELLOWFISH"].Count +
@@ -45,45 +109,5 @@ namespace TGC.Group.Model._2D
             else
                 InventoryText.Text = Constants.INVENTORY_TEXT_WITHOUT_ITEMS;
         }
-        /*
-        public struct Perimeter
-        {
-            public float xMin;
-            public float xMax;
-            public float zMin;
-            public float zMax;
-        }
-
-        Perimeter square = new Perimeter();
-
-        private readonly float COLUMNS = 3;
-        private readonly float ROWS = 3;
-        private readonly int SideX = 100;
-        private readonly int SideY = 100;
-
-        Dictionary<(int, int), Perimeter> Areas = new Dictionary<(int, int), Perimeter>();
-
-        public void SplitToArea()
-        {
-            for (int row = 1; row <= ROWS; row++)
-            {
-                square.xMin = (((row - 1) * SideX + 20) / ROWS) + 20;
-                square.xMax = (row * SideX + 20)/ ROWS + 20;
-
-                for (int column = 1; column <= COLUMNS; column++)
-                {
-                    square.zMin = (((column - 1) * SideY + 20) / COLUMNS) + 20;
-                    square.zMax = (column * SideY + 20) / COLUMNS + 20;
-                    Areas.Add((row, column), square);
-                }
-            }
-        }
-
-        public Perimeter GetArea(float posX, float posZ)
-        {
-            return Areas.FirstOrDefault(pair => posX > pair.Value.xMin && posX < pair.Value.xMax &&
-                                                posZ > pair.Value.zMin && posZ < pair.Value.zMax)
-                                        .Value;
-        }*/
     }
 }

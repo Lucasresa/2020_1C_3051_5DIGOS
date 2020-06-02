@@ -95,7 +95,7 @@ namespace TGC.Group.Model
 
             Pointer = new DrawSprite(MediaDir);
             MousePointer = new DrawSprite(MediaDir);
-            Inventory = new Inventory2D();
+            Inventory = new Inventory2D(MediaDir);
             InstructionText = new DrawText();
             HelpText = new DrawText();
             ShipText = new DrawText();

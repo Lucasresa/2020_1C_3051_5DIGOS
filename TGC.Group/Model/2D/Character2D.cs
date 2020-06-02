@@ -9,7 +9,6 @@ namespace TGC.Group.Model._2D
 {
     class Character2D
     {
-
         private struct Constants
         {
             public static int SCREEN_WIDTH = D3DDevice.Instance.Device.Viewport.Width;

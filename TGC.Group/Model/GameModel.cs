@@ -1,5 +1,7 @@
 ﻿using Microsoft.DirectX.Direct3D;
 using Microsoft.DirectX.DirectInput;
+using System.Drawing;
+using System.Windows.Forms;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Group.Model.Objects;
@@ -159,6 +161,7 @@ namespace TGC.Group.Model
             ObjectManager.Render();
             FullQuad.Render();
             Draw2DManager.Render();
+            DrawText.drawText(Cursor.Position.X.ToString() + ';' + Cursor.Position.Y.ToString(), 600, 30, Color.Red);
             PostRender();
         }
 
