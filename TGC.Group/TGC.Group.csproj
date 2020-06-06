@@ -113,6 +113,7 @@
     <Compile Include="Model\GameInventoryManager.cs" />
     <Compile Include="Model\GameModel.cs" />
     <Compile Include="Model\GameObjectManager.cs" />
+    <Compile Include="Model\GameMenu.cs" />
     <Compile Include="Model\Objects\Character.cs" />
     <Compile Include="Model\Objects\Common.cs" />
     <Compile Include="Model\Objects\Fish.cs" />
@@ -134,6 +135,8 @@
     <Compile Include="Utils\DrawText.cs" />
     <Compile Include="Utils\FastUtils.cs" />
     <Compile Include="Utils\FullQuad.cs" />
+    <Compile Include="Utils\GUI.cs" />
+    <Compile Include="Utils\GUIItem.cs" />
     <Compile Include="Utils\Ray.cs" />
     <Compile Include="Utils\SmartTerrain.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">

@@ -19,7 +19,7 @@ namespace TGC.Group.Utils
         }
         
         private readonly TgcD3dInput Input;
-        private TGCMatrix CameraRotation;
+        private TGCMatrix CameraRotation = TGCMatrix.Identity;
 
         public new TGCVector3 Position;
         public TGCVector3 Direction => TGCVector3.Normalize(LookAt - Position);
@@ -37,14 +37,18 @@ namespace TGC.Group.Utils
 
         public override void UpdateCamera(float elapsedTime)
         {
-            if (Lock) return;
+            if (Lock) 
+                Cursor.Show();
+            else
+            {
+                Cursor.Hide();
+                Rotation();
+                Cursor.Position = Constants.MOUSE_CENTER;
+            }
 
-            Cursor.Hide();
-            Rotation();
             var target = TGCVector3.TransformNormal(Constants.DIRECTION_VIEW, CameraRotation);
             var targetPosition = Position + target;
             var rotacionVectorUP = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, CameraRotation);
-            Cursor.Position = Constants.MOUSE_CENTER;
             base.SetCamera(Position, targetPosition, rotacionVectorUP);
         }
     
