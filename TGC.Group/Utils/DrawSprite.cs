@@ -1,6 +1,7 @@
 using Microsoft.DirectX.Direct3D;
 using System;
 using System.Drawing;
+using System.Linq;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.Textures;
@@ -22,6 +23,7 @@ namespace TGC.Group.Utils
         private TGCVector2 scalingCenter;
 
         public Color Color { get; set; }
+        public string Name { get; set; }
 
         public TGCVector2 Position { get { return position; } set { position = value; UpdateTransformationMatrix(); } }
         public float Rotation { get { return rotation; } set { rotation = value; UpdateTransformationMatrix(); } }
@@ -67,6 +69,7 @@ namespace TGC.Group.Utils
         {
             try { Texture = TgcTexture.createTexture(MediaDir + @"Imagenes\" + imageNameAndExtension); }
             catch { throw new Exception("Sprite image file, not found!"); }
+            Name = imageNameAndExtension.Split('.')[0].ToUpper();
         }
 
         public void SetInitialScallingAndPosition(TGCVector2 scale, TGCVector2 position)

@@ -16,84 +16,92 @@ namespace TGC.Group.Model._2D
             public static int SCREEN_HEIGHT = D3DDevice.Instance.Device.Viewport.Height;
             public static TGCVector2 INVENTORY_TEXT_SIZE = new TGCVector2(300, 300);
             public static TGCVector2 INVENTORY_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - INVENTORY_TEXT_SIZE.X) / 2, (SCREEN_HEIGHT - INVENTORY_TEXT_SIZE.Y) / 2);
-            public static string INVENTORY_TEXT_WITHOUT_ITEMS = "Inventory without items!";
-            public static TGCVector2 ITEM_SCALE = new TGCVector2(1f, 1f);
-            public static TGCVector2 ITEM_SIZE = new TGCVector2(100 * ITEM_SCALE.X, 100 * ITEM_SCALE.Y);
-            public static TGCVector2 ITEM_INITIAL_POSITION = new TGCVector2(SCREEN_WIDTH * 0.415f, SCREEN_HEIGHT * 0.35f); // 0.36 x 0.3
+            public static string INVENTORY_TEXT_GENERIC = "Inventory without items!";        
         }
 
         private readonly string MediaDir;
         private bool HasItems;
         private readonly DrawText InventoryText;
-        private List<DrawSprite> InventoryItems;
+        private List<(DrawSprite sprite, DrawText text)> InventoryItems;
+
+        private TGCVector2 Size;
 
         public Inventory2D(string mediaDir)
         {
             MediaDir = mediaDir;
             InventoryText = new DrawText();
-            InventoryItems = new List<DrawSprite>();
+            InventoryItems = new List<(DrawSprite, DrawText)>();
             Init();
         }
 
         public void Dispose()
         {
             InventoryText.Dispose();
-            InventoryItems.ForEach(item => item.Dispose());
+            InventoryItems.ForEach(item => { item.sprite.Dispose(); item.text.Dispose(); });
         }
 
         public void Init()
         {
             InventoryText.SetTextSizeAndPosition(text: "", Constants.INVENTORY_TEXT_SIZE, Constants.INVENTORY_TEXT_POSITION);
-            InventoryItems.Add(InitializerItems("Normal_Coral"));
-            InventoryItems.Add(InitializerItems("Spiral_Coral"));
-            InventoryItems.Add(InitializerItems("Tree_Coral"));
-            InventoryItems.Add(InitializerItems("Gold"));
-            InventoryItems.Add(InitializerItems("Silver"));
-            InventoryItems.Add(InitializerItems("Iron"));
-            InventoryItems.Add(InitializerItems("Normal_Fish"));
-            InventoryItems.Add(InitializerItems("Yellow_Fish"));
+            InventoryItems.Add(InitializerItems("NORMALCORAL"));
+            InventoryItems.Add(InitializerItems("SPIRALCORAL"));
+            InventoryItems.Add(InitializerItems("TREECORAL"));
+            InventoryItems.Add(InitializerItems("GOLD"));
+            InventoryItems.Add(InitializerItems("SILVER"));
+            InventoryItems.Add(InitializerItems("IRON"));
+            InventoryItems.Add(InitializerItems("NORMALFISH"));
+            InventoryItems.Add(InitializerItems("YELLOWFISH"));            
             CalculateItemPosition(ref InventoryItems);
-        }        
-
-        private DrawSprite InitializerItems(string sprite)
+        }       
+                
+        private (DrawSprite, DrawText) InitializerItems(string sprite)
         {
             var item = new DrawSprite(MediaDir);
             item.SetImage(sprite + ".png");
-            return item;
+            var text = new DrawText();
+            return (item, text);
         }
 
-        private void CalculateItemPosition(ref List<DrawSprite> inventory)
+        private void CalculateItemPosition(ref List<(DrawSprite sprite, DrawText text)> inventory)
         {
+            TGCVector2 scale;
+            if (Constants.SCREEN_WIDTH > 1366)
+                scale = new TGCVector2(1.2f, 1.2f);
+            else
+                scale = new TGCVector2(0.732f, 0.783f);
+
+            Size = new TGCVector2(100 * scale.X, 100 * scale.Y);
+            TGCVector2 initialPosition = new TGCVector2(Constants.SCREEN_WIDTH * 0.39f, Constants.SCREEN_HEIGHT * 0.35f);
+
             var columns = 4;
             var count = 1;
-            var position = Constants.ITEM_INITIAL_POSITION;
-            inventory[0].SetInitialScallingAndPosition(Constants.ITEM_SCALE, position);
+            var position = initialPosition;
+            inventory[0].sprite.SetInitialScallingAndPosition(scale, position);
 
             for (int index = 1; index < inventory.Count; index++)
             {
                 if (count < columns)
                 {
-                    position.X = inventory[index - 1].Position.X + Constants.ITEM_SIZE.X + 80;
-                    position.Y = inventory[index - 1].Position.Y;
+                    position.X = inventory[index - 1].sprite.Position.X + Size.X + 80;
+                    position.Y = inventory[index - 1].sprite.Position.Y;
                 }
                 else
                 {
-                    position.X = Constants.ITEM_INITIAL_POSITION.X;
-                    position.Y = Constants.ITEM_INITIAL_POSITION.Y + Constants.ITEM_SIZE.Y + 80;
+                    position.X = initialPosition.X;
+                    position.Y = initialPosition.Y + Size.Y + 80;
                     count = 0;
                 }
                     
                 count++;
-                inventory[index].SetInitialScallingAndPosition(Constants.ITEM_SCALE, position);
+                inventory[index].sprite.SetInitialScallingAndPosition(scale, position);
             }
 
         }
         public void Render()
         {
+            InventoryText.Render();
             if (HasItems)
-                InventoryItems.ForEach(item => item.Render());
-            else
-                InventoryText.Render();
+                InventoryItems.ForEach(item => { item.sprite.Render(); item.text.Render(); });
         }
 
         public void UpdateItems(Dictionary<string, List<string>> items)
@@ -101,13 +109,18 @@ namespace TGC.Group.Model._2D
             HasItems = items.Values.ToList().Any(listItems => listItems.Count > 0);
 
             if (HasItems)
-                InventoryText.Text = "Inventory: " + "\n\nGold: " + items["GOLD"].Count + "\nSilver: " + items["SILVER"].Count +
-                                     "\nIron: " + items["IRON"].Count +
-                                     "\nFish: " + items["NORMALFISH"].Count + "\nYellow Fish: " + items["YELLOWFISH"].Count +
-                                     "\nSpiral Coral: " + items["SPIRALCORAL"].Count + "\nNormal Coral: " + items["NORMALCORAL"].Count +
-                                     "\nTree Coral: " + items["TREECORAL"].Count;
+            { 
+                InventoryText.SetTextAndPosition("Inventory:", position: new TGCVector2(InventoryItems[0].sprite.Position.X, 
+                                                  InventoryItems[0].sprite.Position.Y - 60));
+                InventoryItems.ForEach(item =>
+                {
+                    item.text.SetTextAndPosition("x" + items[item.sprite.Name].Count,
+                        position: new TGCVector2( item.sprite.Position.X + Size.X, 
+                                                  item.sprite.Position.Y + Size.Y + 10));
+                });
+            }
             else
-                InventoryText.Text = Constants.INVENTORY_TEXT_WITHOUT_ITEMS;
+                InventoryText.Text = Constants.INVENTORY_TEXT_GENERIC;
         }
     }
 }
