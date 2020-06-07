@@ -34,7 +34,8 @@ namespace TGC.Group.Model
         public string ItemSelected { get; set; }
         public bool NearObjectForSelect { get; set; }
         public bool ShowInfoItemCollect { get; set; }
-
+        public bool ShowScene { get; set; }
+        
         public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input)
         {
             MediaDir = mediaDir;
@@ -56,10 +57,11 @@ namespace TGC.Group.Model
             /* Initializer object */
 
             Skybox = new Skybox(MediaDir, Camera);
-            Terrain = new Terrain(MediaDir, ShadersDir);
             Water = new Water(MediaDir, ShadersDir, new TGCVector3(0, 3500, 0));
-            MeshBuilder = new MeshBuilder(Terrain, Water);
             Ship = new Ship(MediaDir);
+            ShowScene = true;
+            Terrain = new Terrain(MediaDir, ShadersDir);
+            MeshBuilder = new MeshBuilder(Terrain, Water);
             Shark = new Shark(MediaDir, Skybox, Terrain, Camera);
             Character = new Character(Camera, Input);
 

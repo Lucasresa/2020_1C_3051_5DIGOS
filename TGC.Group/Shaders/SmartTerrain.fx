@@ -180,7 +180,7 @@ float4 ps_main_terrain(VS_OUTPUT_VERTEX Input) : COLOR0
     float3 diffuseColor = 0.4 * float3(0.5, 0.4, 0.2) * n_dot_l;
     textureColor += float4(diffuseColor, 1);
     
-    float movement = 0.002 * sin(time * 2);
+    float movement = 0.001 * sin(time * 2);
     float4 reflexTexture = tex2D(reflex, (Input.Texture + float2(1, 1) * movement) * 50);
     
     float4 fvBaseColor = textureColor + reflexTexture * 0.4;

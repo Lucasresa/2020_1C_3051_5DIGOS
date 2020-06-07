@@ -69,6 +69,7 @@ namespace TGC.Group.Model.Objects
         }
 
         public void Update() => CalculatePerimeter();
+        public void Render() => skybox.Render();
 
         public void Render(Perimeter worldSize)
         {

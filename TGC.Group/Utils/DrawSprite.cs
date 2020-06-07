@@ -71,13 +71,13 @@ namespace TGC.Group.Utils
             try { Texture = TgcTexture.createTexture(MediaDir + @"Imagenes\" + imageNameAndExtension); }
             catch { throw new Exception("Sprite image file, not found!"); }
             Name = imageNameAndExtension.Split('.')[0].ToUpper();
-            Size = new TGCVector2(Texture.Size.Width * Scaling.X, Texture.Size.Height * Scaling.Y);
         }
 
         public void SetInitialScallingAndPosition(TGCVector2 scale, TGCVector2 position)
         {
             Scaling = ScalingInitial = scale;
             Position = position;
+            Size = new TGCVector2(Texture.Size.Width * scale.X, Texture.Size.Height * scale.Y);
         }
 
         private void UpdateTransformationMatrix() => TransformationMatrix = TGCMatrix.Transformation2D(scalingCenter, 0, scaling, rotationCenter, rotation, position);

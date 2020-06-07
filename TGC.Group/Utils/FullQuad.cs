@@ -136,14 +136,13 @@ namespace TGC.Group.Utils
 
         public void Dispose()
         {
-            FullScreenQuad.Dispose();
-            if (Effect != null && !Effect.Disposed)
-                Effect.Dispose();
-            AlarmTexture.dispose();
-            RenderTarget2D.Dispose();
-            DepthStencil.Dispose();
-            OldDepthStencil.Dispose();
-            OldRenderTarget.Dispose();
+            if (FullScreenQuad != null && !FullScreenQuad.Disposed) FullScreenQuad.Dispose();
+            if (Effect != null && !Effect.Disposed) Effect.Dispose();
+            if (AlarmTexture != null && !AlarmTexture.D3dTexture.Disposed) AlarmTexture.dispose();
+            if (RenderTarget2D != null && !RenderTarget2D.Disposed) RenderTarget2D.Dispose();
+            if (DepthStencil != null && !DepthStencil.Disposed) DepthStencil.Dispose();
+            if (OldDepthStencil != null && !OldDepthStencil.Disposed) OldDepthStencil.Dispose();
+            if (OldRenderTarget != null && !OldRenderTarget.Disposed) OldRenderTarget.Dispose();
         }
     }
 }

@@ -113,7 +113,7 @@
     <Compile Include="Model\GameInventoryManager.cs" />
     <Compile Include="Model\GameModel.cs" />
     <Compile Include="Model\GameObjectManager.cs" />
-    <Compile Include="Model\GameMenu.cs" />
+    <Compile Include="Model\GameState.cs" />
     <Compile Include="Model\Objects\Character.cs" />
     <Compile Include="Model\Objects\Common.cs" />
     <Compile Include="Model\Objects\Fish.cs" />
@@ -131,7 +131,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CameraFPS.cs" />
-    <Compile Include="Utils\DrawMenu.cs" />
+    <Compile Include="Utils\DrawButton.cs" />
     <Compile Include="Utils\DrawSprite.cs" />
     <Compile Include="Utils\DrawText.cs" />
     <Compile Include="Utils\FastUtils.cs" />

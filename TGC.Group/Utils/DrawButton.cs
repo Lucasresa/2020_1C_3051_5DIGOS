@@ -18,10 +18,11 @@ namespace TGC.Group.Utils
         public DrawSprite UnmarkedButton { get; set; }
         public TGCVector2 Position { get; set; }
         public TGCVector2 Scale { get; set; }
+        public TGCVector2 SizeText { get; set; }
         public TGCVector2 Size { get; set; }
 
         private bool IsMarked;
-        private TgcD3dInput Input;
+        private readonly TgcD3dInput Input;
 
         public DrawButton(string mediaDir, TgcD3dInput input)
         {
@@ -41,8 +42,8 @@ namespace TGC.Group.Utils
             UnmarkedButton.SetImage("unmarked.png");
             UnmarkedButton.SetInitialScallingAndPosition(scale, position);
             Size = MarkedButton.Size;
-            ButtonText.SetTextAndPosition(text, position: new TGCVector2((position.X - Size.X) / 2,
-                                                                        (position.Y - Size.Y) / 2));
+            SizeText = new TGCVector2(335 * scale.X * 0.6f, 66 * scale.Y * 0.5f);
+            ButtonText.SetTextAndPosition(text, position: Position + SizeText);
         }
 
         public void Dispose()
@@ -73,30 +74,5 @@ namespace TGC.Group.Utils
             else
                 IsMarked = false;
         }
-    }
-
-    class DrawMenu
-    {
-        private List<DrawButton> Buttons;
-        private TgcD3dInput Input;
-        private string MediaDir;
-
-        public DrawMenu(string mediaDir, TgcD3dInput input)
-        {
-            MediaDir = mediaDir;
-            Input = input;
-            Buttons = new List<DrawButton>();
-        }
-
-        public void CreateButton(string text, TGCVector2 scale, TGCVector2 position, Action action)
-        {
-            var button = new DrawButton(MediaDir, Input);
-            button.InitializerButton(text, scale, position, action);
-            Buttons.Add(button);
-        }
-
-        public void Dispose() => Buttons.ForEach(button => button.Dispose());
-        public void Update() => Buttons.ForEach(button => button.Update());
-        public void Render() => Buttons.ForEach(button => button.Render());
     }
 }

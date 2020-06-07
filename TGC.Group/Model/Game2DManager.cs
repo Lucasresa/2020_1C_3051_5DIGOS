@@ -60,6 +60,9 @@ namespace TGC.Group.Model
             public static TGCVector2 SHIP_INDICATOR_TEXT_POSITION = new TGCVector2(SHIP_INDICATOR_POSITION.X + 23, SHIP_INDICATOR_POSITION.Y + 84);
         }
 
+        public float ScreenWitdh => Constants.SCREEN_WIDTH;
+        public float ScreenHeight => Constants.SCREEN_HEIGHT;
+
         private readonly string MediaDir;
         private readonly DrawSprite MousePointer;
         private readonly DrawSprite Pointer;
@@ -213,6 +216,13 @@ namespace TGC.Group.Model
                 MousePointer.Position = new TGCVector2(Cursor.Position.X - 16, Cursor.Position.Y - 16);
                 MousePointer.Render();
             }
+        }
+
+        public void RenderHelp()
+        {
+            InstructionText.Render();
+            MousePointer.Position = new TGCVector2(Cursor.Position.X - 16, Cursor.Position.Y - 16);
+            MousePointer.Render();
         }
 
         public void Update()
