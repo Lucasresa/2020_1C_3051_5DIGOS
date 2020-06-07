@@ -40,6 +40,8 @@ namespace TGC.Group.Model
         private DrawButton Help;
         private DrawButton Exit;
 
+        private DrawSprite Title;
+
         private GameObjectManager ObjectManager;
         private GameInventoryManager InventoryManager;
         private GameEventsManager EventsManager;
@@ -49,6 +51,7 @@ namespace TGC.Group.Model
         private SharkStatus SharkStatus;
         
         private bool ActiveInventory { get; set; }
+        private bool ExitGame { get; set; }
         private bool CanCraftObjects => ObjectManager.Character.IsInsideShip;
 
         public float TimeToRevive { get; set; }
@@ -62,10 +65,15 @@ namespace TGC.Group.Model
             FullQuad.Dispose();
             ObjectManager.Dispose();
             Draw2DManager.Dispose();
+            Title.Dispose();
         }
 
         public override void Update() => CurrentState.Update();
-        public override void Render() => CurrentState.Render();
+        public override void Render()
+        {
+            CurrentState.Render();
+            if (ExitGame) Application.Exit();
+        }
 
         public override void Init()
         {
@@ -80,6 +88,10 @@ namespace TGC.Group.Model
         
         private void InitializerMenu()
         {
+            Title = new DrawSprite(MediaDir);
+            Title.SetImage("subnautica.png");
+            Title.SetInitialScallingAndPosition(new TGCVector2(0.8f, 0.8f), new TGCVector2(50, 50));
+
             Play = new DrawButton(MediaDir, Input);
             Play.InitializerButton(text: "Play", scale: new TGCVector2(0.4f, 0.4f), position: new TGCVector2(50, 500),
                            action: () => CurrentState = StateGame);
@@ -163,7 +175,7 @@ namespace TGC.Group.Model
                 ObjectManager.Ship.OutdoorMesh.Render();
                 ObjectManager.Water.Render();
             }
-
+            Title.Render();
             Play.Render();
             Help.Render();
             Exit.Render();
@@ -173,15 +185,16 @@ namespace TGC.Group.Model
         }
 
         private void UpdateMenu()
-        {
+        {            
             Play.Update();
             Help.Update();
             if (CurrentState == StateMenu)
             {
                 Exit.Update();
                 if (CurrentState == StateExit)
-                    Application.Exit();
-            }else
+                    ExitGame = true;
+            }
+            else
                 Exit.Update();
 
             if (ObjectManager.ShowScene)
@@ -201,7 +214,6 @@ namespace TGC.Group.Model
         #endregion
 
         #region Game
-
         private void RenderGame()
         {
             FullQuad.PreRenderMeshes();

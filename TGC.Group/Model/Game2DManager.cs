@@ -129,6 +129,12 @@ namespace TGC.Group.Model
             DistanceShipLocation.Dispose();
         }
 
+        public void DisposePointerAndInstruction()
+        {
+            InstructionText.Dispose();
+            MousePointer.Dispose();
+        }
+
         private void Init()
         {
             InitializerPointer();

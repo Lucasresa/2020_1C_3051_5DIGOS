@@ -62,7 +62,7 @@ namespace TGC.Group.Model.Objects
 
         public void SetShader(Effect effect, string technique)
         {
-            skybox.Faces.ToList().ForEach( face => {
+            skybox.Faces.ToList().ForEach(face => {
                 face.Effect = effect;
                 face.Technique = technique;
             });
