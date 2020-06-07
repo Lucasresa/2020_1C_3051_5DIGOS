@@ -1,14 +1,11 @@
 ﻿using Microsoft.DirectX.DirectInput;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using TGC.Core.Input;
-using TGC.Group.Model.Callbacks;
 using TGC.Core.Mathematica;
 using TGC.Core.Shaders;
 using TGC.Group.Model.Objects;
-using TGC.Group.Model.Status;
 using TGC.Group.Utils;
 using static TGC.Group.Model.Objects.Common;
 using Effect = Microsoft.DirectX.Direct3D.Effect;
@@ -98,11 +95,6 @@ namespace TGC.Group.Model
             Common.SetShader(FogShader, "Fog");
             Shark.SetShader(FogShader, "Fog");
             Vegetation.SetShader(FogShader, "Fog");
-        }
-
-        internal void CreateBulletCallbacks(CharacterStatus characterStatus)
-        {
-            PhysicalWorld.AddContactPairTest(Shark.Body, Character.Body, new SharkAttackCallback(Shark, characterStatus));
         }
 
         public void Dispose()

@@ -109,7 +109,11 @@ namespace TGC.Group.Model.Objects
             if (deathMove)
                 PerformDeathMove(elapsedTime);
             else if (stalkerModeMove && CanSeekPlayer(out float rotationAngle, out TGCVector3 rotationAxis))
+            {
                 PerformStalkerMove(elapsedTime, speed, rotationAngle, rotationAxis);
+                if (IsCollapsinWithPlayer())
+                    ChangeSharkWay();
+            }
             else if (normalMove)
                 PerformNormalMove(elapsedTime, speed, headPosition);
 
@@ -251,7 +255,9 @@ namespace TGC.Group.Model.Objects
             return new TGCVector3(outOfSkyboxPosition.X, Y + 600, outOfSkyboxPosition.Z);
         }
 
-        public void ChangeSharkWay()
+        private bool IsCollapsinWithPlayer() => AttackedCharacter = FastUtils.IsDistanceBetweenVectorsLessThan(distance: 100, Camera.Position, GetHeadPosition());
+
+        private void ChangeSharkWay()
         {
             var rotation = TGCMatrix.RotationY(FastMath.PI_HALF * -RotationYSign());
             director = Constants.directorZ;

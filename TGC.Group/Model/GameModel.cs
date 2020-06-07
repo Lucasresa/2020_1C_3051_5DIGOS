@@ -119,7 +119,6 @@ namespace TGC.Group.Model
 
         private void InitializerState()
         {
-
             StateGame = new GameState()
             {
                 Update = UpdateGame,

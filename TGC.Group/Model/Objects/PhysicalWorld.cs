@@ -15,10 +15,7 @@ namespace TGC.Group.Model.Objects
         public PhysicalWorld() => Init();
 
         public void AddBodyToTheWorld(RigidBody Body) => dynamicsWorld.AddRigidBody(Body);
-        
-        public void AddContactPairTest(RigidBody firstBody, RigidBody secondBody, ContactResultCallback callback) => 
-            dynamicsWorld.ContactPairTest(firstBody, secondBody, callback);
-        
+
         public void Dispose()
         {
             dynamicsWorld.Dispose();

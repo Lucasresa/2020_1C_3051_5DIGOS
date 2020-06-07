@@ -19,6 +19,7 @@ namespace TGC.Group.Model.Status
             public static float LIFE_REDUCE_STEP = -0.3f;
             public static float LIFE_INCREMENT_STEP = 0.01f;
             public static float OXYGEN_INCREMENT_STEP = 1f;
+            public static float DAMAGE_RECEIVED = 30f;
         }
 
         private Character Character { get; set; }
@@ -58,10 +59,10 @@ namespace TGC.Group.Model.Status
 
         public void Update(float elapsedTime)
         {
-            if (DamageReceived > 0)
+            if (DamageReceived)
             {
                 TakeDamage();
-                DamageReceived = 0;
+                DamageReceived = !DamageReceived;
                 ActiveAlarmForDamageReceived = true;
             }
 
@@ -84,7 +85,7 @@ namespace TGC.Group.Model.Status
 
         private void UpdateOxygen(float value) => Oxygen = FastMath.Clamp(Oxygen + value, Constants.OXYGEN_MIN, OxygenMax);
 
-        private void TakeDamage() => DamageAcumulated += FastMath.Min(DamageReceived, Life);
+        private void TakeDamage() => DamageAcumulated = Constants.DAMAGE_RECEIVED;
 
         public void Respawn()
         {
