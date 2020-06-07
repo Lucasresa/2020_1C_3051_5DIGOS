@@ -3,7 +3,7 @@
 */
 
 /**************************************************************************************/
-/* DEFAULT */
+                                    /* DEFAULT */
 /**************************************************************************************/
 
 //Input del Vertex Shader
@@ -76,7 +76,7 @@ sampler DivingHelmet2D = sampler_state
 float time;
 
 /**************************************************************************************/
-/* CASCO DE BUCEO */
+                                /* CASCO DE BUCEO */
 /**************************************************************************************/
 
 //Pixel Shader de Oscurecer
@@ -98,7 +98,7 @@ technique DivingHelmet
 }
 
 /**************************************************************************************/
-/* OSCURECER */
+                                    /* OSCURECER */
 /**************************************************************************************/
 
 //Pixel Shader de Oscurecer
@@ -121,7 +121,7 @@ technique Darken
 }
 
 /**************************************************************************************/
-/* ALARMA */
+                                    /* ALARMA */
 /**************************************************************************************/
 
 float alarmScaleFactor;
@@ -153,7 +153,7 @@ technique AlarmTechnique
 }
 
 /**************************************************************************************/
-/* ONDAS */
+                                        /* ONDAS */
 /**************************************************************************************/
 
 float ondas_vertical_length;
@@ -180,7 +180,7 @@ technique OndasTechnique
 }
 
 /**************************************************************************************/
-/* BLUR */
+                                        /* BLUR */
 /**************************************************************************************/
 
 float blur_intensity;
@@ -208,5 +208,44 @@ technique BlurTechnique
     {
         VertexShader = compile vs_3_0 vs_default();
         PixelShader = compile ps_3_0 ps_blur();
+    }
+}
+
+/**************************************************************************************/
+                                    /* PDA */
+/**************************************************************************************/
+
+//Textura casco
+texture texture_PDA;
+sampler PDA2D = sampler_state
+{
+    Texture = (texture_PDA);
+};
+
+float4 Color;
+
+float4 ps_PDA(PS_INPUT_DEFAULT Input) : COLOR0
+{
+    float4 renderTarget = tex2D(RenderTarget, Input.Texcoord);
+    float4 pda = tex2D(PDA2D, Input.Texcoord);
+    
+    if ((pda.r + pda.g + pda.b) / 3 >= 1)
+    {
+        pda.a = 0.7;
+        return pda * 0.2 + Color * 0.2 + renderTarget * 0.6;
+    }
+    else if (pda.a < 1)
+        return renderTarget;
+    else
+        return pda;
+    
+}
+
+technique PDA
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 vs_default();
+        PixelShader = compile ps_3_0 ps_PDA();
     }
 }

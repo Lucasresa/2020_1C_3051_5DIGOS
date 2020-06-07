@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
+using TGC.Group.Model._2D;
 using TGC.Group.Model.Status;
 using TGC.Group.Utils;
 
@@ -16,12 +18,6 @@ namespace TGC.Group.Model
             public static float TIME_HISTORY_TEXT = 10f;
             public static int SCREEN_WIDTH = D3DDevice.Instance.Device.Viewport.Width;
             public static int SCREEN_HEIGHT = D3DDevice.Instance.Device.Viewport.Height;
-            public static TGCVector2 LIFE_CHARACTER_POSITION = new TGCVector2(100, 0);
-            public static TGCVector2 LIFE_CHARACTER_SCALE = new TGCVector2(0.4f, 0.5f);
-            public static TGCVector2 LIFE_CHARACTER_TEXT_POSITION = new TGCVector2(10f, 20f);
-            public static TGCVector2 OXYGEN_CHARACTER_POSITION = new TGCVector2(100, 30);
-            public static TGCVector2 OXYGEN_CHARACTER_SCALE = new TGCVector2(0.4f, 0.5f);
-            public static TGCVector2 OXYGEN_CHARACTER_TEXT_POSITION = new TGCVector2(10f, 50f);
             public static TGCVector2 LIFE_SHARK_SCALE = new TGCVector2(0.4f, 0.5f);
             public static TGCVector2 LIFE_SHARK_SIZE = new TGCVector2(1000 * LIFE_SHARK_SCALE.X, 100 * LIFE_SHARK_SCALE.Y);
             public static TGCVector2 LIFE_SHARK_POSITION = new TGCVector2(SCREEN_WIDTH - LIFE_SHARK_SIZE.X - 20, 0);
@@ -33,9 +29,6 @@ namespace TGC.Group.Model
             public static TGCVector2 MOUSE_POINTER_SCALE = new TGCVector2(1, 1);
             public static TGCVector2 MOUSE_POINTER_SIZE = new TGCVector2(32 * POINTER_SCALE.X, 32 * POINTER_SCALE.Y);
             public static TGCVector2 MOUSE_POINTER_POSITION = new TGCVector2((SCREEN_WIDTH - MOUSE_POINTER_SIZE.X) / 2, (SCREEN_HEIGHT - MOUSE_POINTER_SIZE.Y) / 2);
-            public static TGCVector2 INVENTORY_TEXT_SIZE = new TGCVector2(300, 300);
-            public static TGCVector2 INVENTORY_TEXT_POSITION = new TGCVector2(10, SCREEN_HEIGHT - INVENTORY_TEXT_SIZE.Y);
-            public static string INVENTORY_TEXT_WITHOUT_ITEMS = "Inventory without items!";
             public static string HELP_TEXT = "FOR HELP, PRESS F1 KEY";
             public static string SHIP_EXIT_TEXT = "PRESS E TO EXIT";
             public static string SHIP_ENTER_TEXT = "PRESS E TO ENTER";
@@ -62,109 +55,102 @@ namespace TGC.Group.Model
             public static TGCVector2 PRESS_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 145) / 2, (SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y - 30) / 2);
             public static TGCVector2 COLLECT_TEXT_SIZE = new TGCVector2(320, 50);
             public static TGCVector2 COLLECT_TEXT_POSITION = new TGCVector2(SCREEN_WIDTH - COLLECT_TEXT_SIZE.X, SCREEN_HEIGHT - COLLECT_TEXT_SIZE.Y - 100);
+            public static TGCVector2 SHIP_INDICATOR_SCALE = new TGCVector2(1, 1);
+            public static TGCVector2 SHIP_INDICATOR_POSITION = new TGCVector2((SCREEN_WIDTH - 128) / 2, 20);
+            public static TGCVector2 SHIP_INDICATOR_TEXT_POSITION = new TGCVector2(SHIP_INDICATOR_POSITION.X + 23, SHIP_INDICATOR_POSITION.Y + 84);
         }
 
+        public float ScreenWitdh => Constants.SCREEN_WIDTH;
+        public float ScreenHeight => Constants.SCREEN_HEIGHT;
+
         private readonly string MediaDir;
-        private readonly CharacterStatus Character;
-        private readonly SharkStatus Shark;
-        private readonly DrawSprite LifeShark;
-        private readonly DrawSprite LifeCharacter;
         private readonly DrawSprite MousePointer;
-        private readonly DrawSprite OxygenCharacter;
         private readonly DrawSprite Pointer;
-        private readonly DrawText LifeCharacterText;
-        private readonly DrawText LifeSharkText;
-        private readonly DrawText OxygenCharacterText;
-        private readonly DrawText InventoryText;
+        
         private readonly DrawText InstructionText;
         private readonly DrawText HelpText;
         private readonly DrawText ShipText;
         private readonly DrawText CollectText;
         private readonly DrawText ItemsHistoryText;
+        private readonly DrawSprite ShipLocationIndicator;
+        private readonly DrawText DistanceShipLocation;
 
+        public Inventory2D Inventory { get; set; }
+        public Character2D Character { get; set; }
+        public Shark2D Shark { get; set; }
         public float ItemHistoryTime => Constants.TIME_HISTORY_TEXT;
+        public float DistanceWithShip { get; set; }
         public bool ActiveInventory { get; set; }
         public bool ShowHelp { get; set; }
         public bool ShowInfoExitShip { get; set; }
         public bool ShowInfoEnterShip { get; set; }
         public bool NearObjectForSelect { get; set; }
         public bool ShowInfoItemCollect { get; set; }
+        public bool ShowIndicatorShip { get; set; }
 
         public List<string> ItemHistory { get; set; }
 
         public Game2DManager(string mediaDir, CharacterStatus character, SharkStatus shark)
         {
             MediaDir = mediaDir;
-            Character = character;
-            Shark = shark;
-            LifeCharacter = new DrawSprite(MediaDir);
-            LifeShark = new DrawSprite(MediaDir);
-            OxygenCharacter = new DrawSprite(MediaDir);
+            Character = new Character2D(mediaDir, character);
+            Shark = new Shark2D(mediaDir, shark);
+
             Pointer = new DrawSprite(MediaDir);
             MousePointer = new DrawSprite(MediaDir);
-            LifeCharacterText = new DrawText();
-            LifeSharkText = new DrawText();
-            OxygenCharacterText = new DrawText();
-            InventoryText = new DrawText();
+            Inventory = new Inventory2D(MediaDir);
             InstructionText = new DrawText();
             HelpText = new DrawText();
             ShipText = new DrawText();
             CollectText = new DrawText();
             ItemsHistoryText = new DrawText();
+            ShipLocationIndicator = new DrawSprite(MediaDir);
+            DistanceShipLocation = new DrawText();
             Init();
+        }
+
+        public Game2DManager(string mediaDir) 
+        {
+            MousePointer = new DrawSprite(mediaDir);
+            InstructionText = new DrawText();
+            InitializerMousePointer();
+            InitializerInstructionText();
         }
 
         public void Dispose()
         {
             InstructionText.Dispose();
             HelpText.Dispose();
-            InventoryText.Dispose();
-            LifeCharacter.Dispose();
-            LifeCharacterText.Dispose();
-            LifeShark.Dispose();
-            LifeSharkText.Dispose();
+            Character.Dispose();
+            Shark.Dispose();
             MousePointer.Dispose();
-            OxygenCharacter.Dispose();
-            OxygenCharacterText.Dispose();
             Pointer.Dispose();
+            ShipLocationIndicator.Dispose();
+            DistanceShipLocation.Dispose();
+        }
+
+        public void DisposePointerAndInstruction()
+        {
+            InstructionText.Dispose();
+            MousePointer.Dispose();
         }
 
         private void Init()
         {
-            InitializerLifeCharacter();
-            InitializerLifeShark();
-            InitializerOxygenCharacter();
             InitializerPointer();
-            InitializerMousePointer();
-            InitializerInventoryText();
+            InitializerMousePointer();           
             InitializerInstructionText();
             InitializerSimpleText();
+            InitializerIndicatorShip();
         }
 
-        private void InitializerLifeCharacter()
+        private void InitializerIndicatorShip()
         {
-            LifeCharacter.SetImage("LifeBar.png");
-            LifeCharacter.SetInitialScallingAndPosition(Constants.LIFE_CHARACTER_SCALE, Constants.LIFE_CHARACTER_POSITION);
-            LifeCharacterText.SetTextAndPosition(text: "LIFE", position: Constants.LIFE_CHARACTER_TEXT_POSITION);
-            LifeCharacterText.Color = Color.MediumVioletRed;
+            ShipLocationIndicator.SetImage("fund_ship.png");
+            ShipLocationIndicator.SetInitialScallingAndPosition(Constants.SHIP_INDICATOR_SCALE, Constants.SHIP_INDICATOR_POSITION);
+            DistanceShipLocation.SetTextAndPosition(text: DistanceWithShip.ToString(), position: Constants.SHIP_INDICATOR_TEXT_POSITION);
         }
-
-        private void InitializerLifeShark()
-        {
-            LifeShark.SetImage("LifeBar.png");
-            LifeShark.SetInitialScallingAndPosition(Constants.LIFE_SHARK_SCALE, Constants.LIFE_SHARK_POSITION);
-            LifeSharkText.SetTextSizeAndPosition(text: "LIFE SHARK", size: Constants.LIFE_SHARK_TEXT_SIZE, position: Constants.LIFE_SHARK_TEXT_POSITION);
-            LifeSharkText.Color = Color.MediumVioletRed;
-        }
-
-        private void InitializerOxygenCharacter()
-        {
-            OxygenCharacter.SetImage("OxygenBar.png");
-            OxygenCharacter.SetInitialScallingAndPosition(Constants.OXYGEN_CHARACTER_SCALE, Constants.OXYGEN_CHARACTER_POSITION);
-            OxygenCharacterText.SetTextAndPosition(text: "OXYGEN", position: Constants.OXYGEN_CHARACTER_TEXT_POSITION);
-            OxygenCharacterText.Color = Color.DeepSkyBlue;
-        }
-
+       
         private void InitializerPointer()
         {
             Pointer.SetImage("Pointer.png");
@@ -175,12 +161,6 @@ namespace TGC.Group.Model
         {
             MousePointer.SetImage("MousePointer.png");
             MousePointer.SetInitialScallingAndPosition(Constants.MOUSE_POINTER_SCALE, Constants.MOUSE_POINTER_POSITION);
-        }
-
-        private void InitializerInventoryText()
-        {
-            InventoryText.SetTextSizeAndPosition(text: Constants.INVENTORY_TEXT_WITHOUT_ITEMS, Constants.INVENTORY_TEXT_SIZE, Constants.INVENTORY_TEXT_POSITION);
-            InventoryText.Color = Color.Black;
         }
 
         private void InitializerInstructionText()
@@ -208,12 +188,8 @@ namespace TGC.Group.Model
 
             if (!ActiveInventory)
             {
-                LifeShark.Render();
-                LifeCharacter.Render();
-                OxygenCharacter.Render();
-                LifeSharkText.Render();
-                LifeCharacterText.Render();
-                OxygenCharacterText.Render();
+                Shark.Render();
+                Character.Render();
                 Pointer.Render();
 
                 if (ShowInfoExitShip)
@@ -240,36 +216,32 @@ namespace TGC.Group.Model
                         ItemsHistoryText.Render();
                     });
                 }
+
+                if (ShowIndicatorShip)
+                {
+                    ShipLocationIndicator.Render();
+                    DistanceShipLocation.Text = DistanceWithShip.ToString();
+                    DistanceShipLocation.Render();
+                }
             }
             else
             {
-                MousePointer.Position = new TGCVector2(Cursor.Position.X - 16, Cursor.Position.Y - 16);
-                MousePointer.Render();
-                InventoryText.Render();
+                Inventory.Render();
+                RenderMousePointer();
             }
+        }
+
+        public void RenderMousePointer()
+        {
+            if(ShowHelp) InstructionText.Render();
+            MousePointer.Position = new TGCVector2(Cursor.Position.X - 16, Cursor.Position.Y - 16);
+            MousePointer.Render();
         }
 
         public void Update()
         {
-            UpdateSprite(LifeShark, Shark.Life, Shark.GetLifeMax());
-            UpdateSprite(LifeCharacter, Character.Life, Character.GetLifeMax());
-            UpdateSprite(OxygenCharacter, Character.Oxygen, Character.GetOxygenMax());
+            Shark.Update();
+            Character.Update();
         }
-
-        public void UpdateItems(Dictionary<string, List<string>> items)
-        {
-            var hasItems = items.Values.ToList().Any(listItems => listItems.Count > 0);
-
-            if (hasItems)
-                InventoryText.Text = "Inventory: " + "\n\nGold: " + items["GOLD"].Count + "\nSilver: " + items["SILVER"].Count +
-                                     "\nIron: " + items["IRON"].Count +
-                                     "\nFish: " + items["NORMALFISH"].Count + "\nYellow Fish: " + items["YELLOWFISH"].Count +
-                                     "\nSpiral Coral: " + items["SPIRALCORAL"].Count + "\nNormal Coral: " + items["NORMALCORAL"].Count +
-                                     "\nTree Coral: " + items["TREECORAL"].Count;
-            else
-                InventoryText.Text = Constants.INVENTORY_TEXT_WITHOUT_ITEMS;
-        }
-
-        private void UpdateSprite(DrawSprite sprite, float percentage, float max) => sprite.Scaling = new TGCVector2((percentage / max) * sprite.ScalingInitial.X, sprite.ScalingInitial.Y);
     }
 }

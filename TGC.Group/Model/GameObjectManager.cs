@@ -1,13 +1,17 @@
 ﻿using Microsoft.DirectX.DirectInput;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using TGC.Core.Input;
 using TGC.Group.Model.Callbacks;
+using TGC.Core.Mathematica;
+using TGC.Core.Shaders;
 using TGC.Group.Model.Objects;
 using TGC.Group.Model.Status;
 using TGC.Group.Utils;
 using static TGC.Group.Model.Objects.Common;
+using Effect = Microsoft.DirectX.Direct3D.Effect;
 
 namespace TGC.Group.Model
 {
@@ -16,6 +20,7 @@ namespace TGC.Group.Model
         private readonly string MediaDir, ShadersDir;
         private MeshBuilder MeshBuilder;
         private readonly Ray Ray;
+        private Effect FogShader;
 
         public PhysicalWorld PhysicalWorld { get; set; }
         public TgcD3dInput Input { get; set; }
@@ -29,30 +34,37 @@ namespace TGC.Group.Model
         public List<Fish> Fishes { get; set; }
         public Vegetation Vegetation { get; set; }
         public Common Common { get; set; }
-
         public string ItemSelected { get; set; }
         public bool NearObjectForSelect { get; set; }
         public bool ShowInfoItemCollect { get; set; }
-
-        public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input, Ray ray)
+        public bool ShowScene { get; set; }
+        
+        public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input)
         {
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
             Camera = camera;
             Input = input;
-            Ray = ray;
+            Ray = new Ray(input);
             InitializerObjects();
         }
 
         private void InitializerObjects()
         {
+            FogShader = TGCShaders.Instance.LoadEffect(ShadersDir + "SmartTerrain.fx");
+
+            FogShader.SetValue("ColorFog", Color.SteelBlue.ToArgb());
+            FogShader.SetValue("StartFogDistance", 5000);
+            FogShader.SetValue("EndFogDistance", 10000);
+
             /* Initializer object */
 
             Skybox = new Skybox(MediaDir, Camera);
-            Terrain = new Terrain(MediaDir, ShadersDir);
-            Water = new Water(MediaDir, ShadersDir);
-            MeshBuilder = new MeshBuilder(Terrain, Water);
+            Water = new Water(MediaDir, ShadersDir, new TGCVector3(0, 3500, 0));
             Ship = new Ship(MediaDir);
+            ShowScene = true;
+            Terrain = new Terrain(MediaDir, ShadersDir);
+            MeshBuilder = new MeshBuilder(Terrain, Water);
             Shark = new Shark(MediaDir, Skybox, Terrain, Camera);
             Character = new Character(Camera, Input);
 
@@ -81,6 +93,11 @@ namespace TGC.Group.Model
             Common.ListCorals.ForEach(coral => PhysicalWorld.AddBodyToTheWorld(coral.Body));
             Common.ListOres.ForEach(ore => PhysicalWorld.AddBodyToTheWorld(ore.Body));
             Common.ListRock.ForEach(rock => PhysicalWorld.AddBodyToTheWorld(rock.Body));
+
+            Skybox.SetShader(FogShader, "Fog");
+            Common.SetShader(FogShader, "Fog");
+            Shark.SetShader(FogShader, "Fog");
+            Vegetation.SetShader(FogShader, "Fog");
         }
 
         internal void CreateBulletCallbacks(CharacterStatus characterStatus)
@@ -107,14 +124,15 @@ namespace TGC.Group.Model
                 Ship.RenderIndoorShip();
             else
             {
+                FogShader.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
                 Ship.RenderOutdoorShip();
                 Skybox.Render(Terrain.SizeWorld());
                 Terrain.Render();
                 Shark.Render();
                 Fishes.ForEach(fish => fish.Render());
-                Vegetation.Render();
                 Common.Render();
                 Water.Render();
+                Vegetation.Render();
             }
         }
 
@@ -126,10 +144,11 @@ namespace TGC.Group.Model
             Skybox.Update();
             Shark.Update(elapsedTime);
             Water.Update(elapsedTime);
+            Terrain.Update(elapsedTime);
 
-            Character.LooksAtTheHatch = Ray.intersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
-            Character.CanAttack = Ray.intersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
-            Character.NearShip = Ray.intersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);
+            Character.LooksAtTheHatch = Ray.IntersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
+            Character.CanAttack = Ray.IntersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
+            Character.NearShip = Ray.IntersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);
             Character.IsNearSkybox = Skybox.IsNearSkybox;
             DetectSelectedItem();
         }
@@ -142,12 +161,12 @@ namespace TGC.Group.Model
             bool NearOreForSelect = false;
             bool NearFishForSelect = false;
                         
-            TypeCommon Coral = Common.ListCorals.Find(coral => NearCoralForSelect = Ray.intersectsWithObject(objectAABB: coral.Mesh.BoundingBox, distance: 500));
-            TypeCommon Ore = Common.ListOres.Find(ore => NearOreForSelect = Ray.intersectsWithObject(objectAABB: ore.Mesh.BoundingBox, distance: 500));
+            TypeCommon Coral = Common.ListCorals.Find(coral => NearCoralForSelect = Ray.IntersectsWithObject(objectAABB: coral.Mesh.BoundingBox, distance: 500));
+            TypeCommon Ore = Common.ListOres.Find(ore => NearOreForSelect = Ray.IntersectsWithObject(objectAABB: ore.Mesh.BoundingBox, distance: 500));
 
             if (Character.CanFish && Coral.Mesh is null && Ore.Mesh is null)
             {
-                Fish itemFish = Fishes.Find(fish => NearFishForSelect = Ray.intersectsWithObject(objectAABB: fish.BoundingBox, distance: 500));
+                Fish itemFish = Fishes.Find(fish => NearFishForSelect = Ray.IntersectsWithObject(objectAABB: fish.BoundingBox, distance: 500));
                 if (NearFishForSelect) SelectItem(itemFish);
             }
             
