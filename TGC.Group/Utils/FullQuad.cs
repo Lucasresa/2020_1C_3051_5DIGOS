@@ -37,9 +37,10 @@ namespace TGC.Group.Utils
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
             ElapsedTime = elapsedTime;
+            Initializer();
         }
 
-        public void Initializer(string nameEffect)
+        private void Initializer()
         {
             CustomVertex.PositionTextured[] vertex =
             {
@@ -55,7 +56,7 @@ namespace TGC.Group.Utils
             RenderTarget2D = new Texture(Device, Device.PresentationParameters.BackBufferWidth, Device.PresentationParameters.BackBufferHeight, 1, Usage.RenderTarget, Format.X8R8G8B8, Pool.Default);
             DepthStencil = Device.CreateDepthStencilSurface(Device.PresentationParameters.BackBufferWidth, Device.PresentationParameters.BackBufferHeight, DepthFormat.D24S8, MultiSampleType.None, 0, true);
 
-            Effect = TGCShaders.Instance.LoadEffect(ShadersDir + nameEffect + ".fx");
+            Effect = TGCShaders.Instance.LoadEffect(ShadersDir + "PostProcess.fx");
             Effect.Technique = "DefaultTechnique";
             AlarmTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Textures\alarm.png");
             DivingHelmetTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Imagenes\divingHelmet.png");

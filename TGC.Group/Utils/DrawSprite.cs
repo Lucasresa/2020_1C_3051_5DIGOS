@@ -31,6 +31,7 @@ namespace TGC.Group.Utils
         public TGCVector2 Scaling { get { return scaling; } set { scaling = value; UpdateTransformationMatrix(); } }
         public TGCVector2 ScalingCenter { get { return scalingCenter; } set { scalingCenter = value; UpdateTransformationMatrix(); } }
         public TGCVector2 ScalingInitial { get; private set; }
+        public TGCVector2 Size { get { return new TGCVector2(Texture.Size.Width * Scaling.X, Texture.Size.Height * Scaling.Y); } private set { } }
 
         public DrawSprite(string mediaDir)
         {
@@ -70,6 +71,7 @@ namespace TGC.Group.Utils
             try { Texture = TgcTexture.createTexture(MediaDir + @"Imagenes\" + imageNameAndExtension); }
             catch { throw new Exception("Sprite image file, not found!"); }
             Name = imageNameAndExtension.Split('.')[0].ToUpper();
+            Size = new TGCVector2(Texture.Size.Width * Scaling.X, Texture.Size.Height * Scaling.Y);
         }
 
         public void SetInitialScallingAndPosition(TGCVector2 scale, TGCVector2 position)

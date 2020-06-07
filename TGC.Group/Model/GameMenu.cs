@@ -7,98 +7,60 @@ namespace TGC.Group.Model
 {
     public class GameMenu : TGCExample
     {
-        readonly DXGui Gui;
-        Water Water;
-        Skybox Skybox;
-        CameraFPS CameraFPS;
-        Ship Ship;
+        private Water Water;
+        private Skybox Skybox;
+        private CameraFPS CameraFPS;
+        private Ship Ship;
 
-        public GameMenu(string mediaDir, string shadersDir): base(mediaDir, shadersDir)
-        {
-            FixedTickEnable = true;
-            Gui = new DXGui();
-        }
+        private DrawMenu Menu;
+        private GameModel Game;
+
+        public GameMenu(string mediaDir, string shadersDir): base(mediaDir, shadersDir) => FixedTickEnable = true;
 
         public override void Dispose()
         {
-            Gui.Dispose();
             Water.Dispose();
             Skybox.Dispose();
             Ship.Dispose();
+            Menu.Dispose();
         }
 
         public override void Init()
         {
-            CameraFPS = new CameraFPS(Input);
-            Camera = CameraFPS;
+            Camera = CameraFPS = new CameraFPS(Input);
             Water = new Water(MediaDir, ShadersDir, new TGCVector3(0, 3500, 0));
             Skybox = new Skybox(MediaDir, CameraFPS);
             Ship = new Ship(MediaDir);
 
-            Gui.Create(MediaDir);
-            // menu principal
-            Gui.InitDialog(trapezoidal: false);
-            int W = D3DDevice.Instance.Width;
-            int H = D3DDevice.Instance.Height;
-            int x0 = 70;
-            int y0 = H/2;
-            int dy = 80;
-            int dy2 = dy;
-            int dx = 200;
-            Gui.InsertMenuItem(1, "     Play", "open.png", x0, y0, MediaDir, dx, dy);
-            Gui.InsertMenuItem(2, "   Settings", "navegar.png", x0, y0 += dy2, MediaDir, dx, dy);
-            Gui.InsertMenuItem(3, "   Controls", "navegar.png", x0, y0 += dy2, MediaDir, dx, dy);
-            Gui.InsertMenuItem(4, "     Exit", "salir.png", x0, y0 += dy2, MediaDir, dx, dy);
+            Menu = new DrawMenu(MediaDir, Input);
+            Game = new GameModel(MediaDir, ShadersDir);
+            CreateMenu();
 
-            ((CameraFPS)Camera).Position = new TGCVector3(1030, 3900, 2500);
-            ((CameraFPS)Camera).Lock = true;
+            CameraFPS.Position = new TGCVector3(1030, 3900, 2500);
+            CameraFPS.Lock = true;
+
+            Game.Init();
         }
 
-        public void gui_render(float elapsedTime)
+        private void CreateMenu()
         {
-            // ------------------------------------------------
-            GuiMessage msg = Gui.Update(elapsedTime, Input);
-
-            // proceso el msg
-            switch (msg.message)
-            {
-                case MessageType.WM_COMMAND:
-                    switch (msg.id)
-                    {
-                        case 1:
-                            break;
-                        case 2:
-                            break;
-                        case 3:
-                            break;
-                        case 4:
-                            break;
-                        default:
-                            break;
-                    }
-                    break;
-                default:
-                    break;
-            }
-            Gui.Render();
+            Menu.CreateButton(text: "Play", scale: new TGCVector2(0.4f, 0.4f), position: new TGCVector2(20, 500), action: Game.Render);
         }
 
         public override void Render()
         {
             PreRender();
-
             Water.Render();
             Skybox.Render(Water.SizeWorld());
             Ship.RenderOutdoorShip();
-            gui_render(ElapsedTime);
-
+            Menu.Render();
             PostRender();
         }
 
         public override void Update()
         {
-            //Mati LPM 
             Water.Update(ElapsedTime);
+            Menu.Update();
         }
     }
 }

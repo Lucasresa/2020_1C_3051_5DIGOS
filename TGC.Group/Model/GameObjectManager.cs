@@ -35,13 +35,13 @@ namespace TGC.Group.Model
         public bool NearObjectForSelect { get; set; }
         public bool ShowInfoItemCollect { get; set; }
 
-        public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input, Ray ray)
+        public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input)
         {
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
             Camera = camera;
             Input = input;
-            Ray = ray;
+            Ray = new Ray(input);
             InitializerObjects();
         }
 
