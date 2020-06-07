@@ -121,6 +121,7 @@ namespace TGC.Group.Form
                     {
                         Modelo.Tick();
                         if (Input.keyDown(Key.Escape)) Close();
+                        Cursor.Hide();
                     }
                     else
                         Thread.Sleep(100);

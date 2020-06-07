@@ -42,7 +42,7 @@ namespace TGC.Group.Utils
         public void Dispose()
         {
             if (Texture != null) Texture.dispose();
-            Sprite.Dispose();
+            if (Sprite != null && !Sprite.Disposed) Sprite.Dispose();
         }
 
         private void Initialize()

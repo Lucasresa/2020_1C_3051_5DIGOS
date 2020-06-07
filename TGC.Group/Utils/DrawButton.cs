@@ -20,6 +20,7 @@ namespace TGC.Group.Utils
         public TGCVector2 Scale { get; set; }
         public TGCVector2 SizeText { get; set; }
         public TGCVector2 Size { get; set; }
+        public bool Invisible { get; set; }
 
         private bool IsMarked;
         private readonly TgcD3dInput Input;
@@ -55,6 +56,9 @@ namespace TGC.Group.Utils
 
         public void Render()
         {
+            if (Invisible)
+                return;
+
             if (IsMarked)
                 MarkedButton.Render();
             else
@@ -64,6 +68,9 @@ namespace TGC.Group.Utils
 
         public void Update()
         {
+            if (Invisible)
+                return;
+
             if (FastUtils.IsNumberBetweenInterval(Input.Xpos, (Position.X, Position.X + Size.X)) &&
                 FastUtils.IsNumberBetweenInterval(Input.Ypos, (Position.Y, Position.Y + Size.Y)))
             {

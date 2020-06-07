@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using TGC.Core.Direct3D;
 using TGC.Core.Example;
 using TGC.Core.Mathematica;
+using TGC.Group.Form;
 using TGC.Group.Model.Objects;
 using TGC.Group.Model.Status;
 using TGC.Group.Utils;
@@ -32,15 +33,18 @@ namespace TGC.Group.Model
         private GameState StateGame;
         private GameState StateMenu;
         private GameState StateHelp;
-        private GameState StateExitHelp;
+        private GameState StateExit;
         private GameState CurrentState;
 
-        private List<DrawButton> Buttons = new List<DrawButton>();
+        private DrawButton Play;
+        private DrawButton Help;
+        private DrawButton Exit;
 
         private GameObjectManager ObjectManager;
         private GameInventoryManager InventoryManager;
         private GameEventsManager EventsManager;
         private Game2DManager Draw2DManager;
+        private Game2DManager PointerAndInstruction;
         private CharacterStatus CharacterStatus;
         private SharkStatus SharkStatus;
         
@@ -60,35 +64,14 @@ namespace TGC.Group.Model
             Draw2DManager.Dispose();
         }
 
+        public override void Update() => CurrentState.Update();
         public override void Render() => CurrentState.Render();
-
-        private void RenderMenu()
-        {
-            PreRender();
-            if (ObjectManager.ShowScene)
-            {
-                ObjectManager.Skybox.Render();
-                ObjectManager.Ship.OutdoorMesh.Render();
-                ObjectManager.Water.Render();
-            }
-            Buttons.ForEach(button => button.Render());
-            PostRender();
-        }
-
-        private void RenderGame()
-        {
-            FullQuad.PreRenderMeshes();
-            ObjectManager.Render();
-            FullQuad.Render();
-            Draw2DManager.Render();
-            PostRender();
-        }
 
         public override void Init()
         {
             Camera = camera = new CameraFPS(Input);
             FullQuad = new FullQuad(MediaDir, ShadersDir, ElapsedTime);
-            Draw2DManager = new Game2DManager(MediaDir, CharacterStatus, SharkStatus);
+            PointerAndInstruction = new Game2DManager(MediaDir);
             InitializerState();
 
             InitializerMenu();
@@ -97,19 +80,16 @@ namespace TGC.Group.Model
         
         private void InitializerMenu()
         {
-            var play = new DrawButton(MediaDir, Input);
-            play.InitializerButton(text: "Play", scale: new TGCVector2(0.4f, 0.4f), position: new TGCVector2(20, 500),
+            Play = new DrawButton(MediaDir, Input);
+            Play.InitializerButton(text: "Play", scale: new TGCVector2(0.4f, 0.4f), position: new TGCVector2(50, 500),
                            action: () => CurrentState = StateGame);
-            var help = new DrawButton(MediaDir, Input);
-            help.InitializerButton(text: "Help", scale: new TGCVector2(0.4f, 0.4f), position: new TGCVector2(20, 580),
+            Help = new DrawButton(MediaDir, Input);
+            Help.InitializerButton(text: "Help", scale: new TGCVector2(0.4f, 0.4f), position: new TGCVector2(50, 580),
                            action: () => CurrentState = StateHelp);
-            var exitHelp = new DrawButton(MediaDir, Input);
-            exitHelp.InitializerButton(text: "Exit", scale: new TGCVector2(0.4f, 0.4f), 
-                                   position: new TGCVector2(Draw2DManager.ScreenWitdh - help.Size.X - 50, Draw2DManager.ScreenHeight - help.Size.Y - 50),
-                                   action: () => CurrentState = StateExitHelp);
-            Buttons.Add(play);
-            Buttons.Add(help);
-            Buttons.Add(exitHelp);
+            Exit = new DrawButton(MediaDir, Input);
+            Exit.InitializerButton(text: "Exit", scale: new TGCVector2(0.4f, 0.4f), 
+                                   position: new TGCVector2(PointerAndInstruction.ScreenWitdh - Help.Size.X - 50, PointerAndInstruction.ScreenHeight - Help.Size.Y - 50),
+                                   action: () => CurrentState = StateExit);
 
             camera.Position = new TGCVector3(1030, 3900, 2500);
             camera.Lock = true;
@@ -121,6 +101,7 @@ namespace TGC.Group.Model
             CharacterStatus = new CharacterStatus(ObjectManager.Character);
             SharkStatus = new SharkStatus();
             EventsManager = new GameEventsManager(ObjectManager.Shark, ObjectManager.Character);
+            Draw2DManager = new Game2DManager(MediaDir, CharacterStatus, SharkStatus);
             InventoryManager = new GameInventoryManager();
         }
 
@@ -140,66 +121,109 @@ namespace TGC.Group.Model
 
             StateHelp = new GameState()
             {
-                Update = UpdateHelp,
-                Render = Draw2DManager.RenderHelp
+                Update = UpdateInstructionHelp,
+                Render = RenderMenu
             };
 
-            StateExitHelp = new GameState()
+            StateExit = new GameState()
             {
-                Update = UpdateExitHelp,
-                Render = Draw2DManager.RenderHelp
+                Update = UpdateExit,
+                Render = RenderMenu
             };
 
             CurrentState = StateMenu;
         }
 
-        private void UpdateHelp() => Buttons.ForEach(button => { if (button.ButtonText.Text == "Help") button.Update(); });
-        private void UpdateExitHelp() => Buttons.ForEach(button => { if (button.ButtonText.Text == "Exit") button.Update(); });
+        #region Help
+        private void UpdateInstructionHelp()
+        {
+            Play.Invisible = true;
+            Help.Invisible = true;
+            PointerAndInstruction.ShowHelp = true;
+            UpdateMenu();
+        }
+
+        private void UpdateExit()
+        {
+            Play.Invisible = false;
+            Help.Invisible = false;
+            PointerAndInstruction.ShowHelp = false;
+            CurrentState = StateMenu;
+            UpdateMenu();
+        }
+        #endregion
+
+        #region Menu
+        private void RenderMenu()
+        {
+            PreRender();
+            if (ObjectManager.ShowScene)
+            {
+                ObjectManager.Skybox.Render();
+                ObjectManager.Ship.OutdoorMesh.Render();
+                ObjectManager.Water.Render();
+            }
+
+            Play.Render();
+            Help.Render();
+            Exit.Render();
+
+            PointerAndInstruction.RenderMousePointer();
+            PostRender();
+        }
 
         private void UpdateMenu()
         {
-            Buttons.ForEach(button => button.Update());
-            
+            Play.Update();
+            Help.Update();
+            if (CurrentState == StateMenu)
+            {
+                Exit.Update();
+                if (CurrentState == StateExit)
+                    Application.Exit();
+            }else
+                Exit.Update();
+
             if (ObjectManager.ShowScene)
             {
                 ObjectManager.Skybox.Update();
                 ObjectManager.Water.Update(ElapsedTime);
             }
 
-            if (CurrentState != StateMenu)
+            if (CurrentState == StateGame)
             {
-                Buttons.ForEach(button => button.Dispose());
+                Play.Dispose();
+                Help.Dispose();
+                Exit.Dispose();
                 camera.Lock = false;
             }
         }
+        #endregion
 
-        public override void Update() => CurrentState.Update();
+        #region Game
 
-        #region UpdateGame
+        private void RenderGame()
+        {
+            FullQuad.PreRenderMeshes();
+            ObjectManager.Render();
+            FullQuad.Render();
+            Draw2DManager.Render();
+            PostRender();
+        }
 
         private void UpdateGame()
         {          
             if (Input.keyPressed(Key.F1)) Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
-
-            if (CharacterStatus.IsDead)
-                UpdateCharacterIsDead();
+            if (CharacterStatus.IsDead) UpdateCharacterIsDead();
             TimeToRevive = 0;
-
             if (Input.keyPressed(Key.I)) Draw2DManager.ActiveInventory = camera.Lock =
                     FullQuad.RenderPDA = ActiveInventory = !ActiveInventory;
-
-            if (!ActiveInventory)
-                UpdateEvents();
-
+            if (!ActiveInventory) UpdateEvents();
             if (Input.keyPressed(Key.E)) ObjectManager.Character.Teleport();
-
             UpdateFlags();
-
             UpdateInfoItemCollect();
-
-            if (Input.keyPressed(Key.P))
-                ObjectManager.Character.CanFish = ObjectManager.Character.HasWeapon =
-                    ObjectManager.Character.HasDivingHelmet = true;
+            if (Input.keyPressed(Key.P)) ObjectManager.Character.CanFish = ObjectManager.Character.HasWeapon =
+                ObjectManager.Character.HasDivingHelmet = true;
         }
 
         private void UpdateEvents()
@@ -276,6 +300,6 @@ namespace TGC.Group.Model
             Draw2DManager.ShowInfoItemCollect = ObjectManager.ShowInfoItemCollect;
         }
 
-        #endregion UpdateGame
+        #endregion
     }
 }

@@ -37,11 +37,8 @@ namespace TGC.Group.Utils
 
         public override void UpdateCamera(float elapsedTime)
         {
-            if (Lock) 
-                Cursor.Show();
-            else
-            {
-                Cursor.Hide();
+            if (!Lock) 
+            {                
                 Rotation();
                 Cursor.Position = Constants.MOUSE_CENTER;
             }

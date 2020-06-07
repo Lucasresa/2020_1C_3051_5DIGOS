@@ -109,6 +109,14 @@ namespace TGC.Group.Model
             Init();
         }
 
+        public Game2DManager(string mediaDir) 
+        {
+            MousePointer = new DrawSprite(mediaDir);
+            InstructionText = new DrawText();
+            InitializerMousePointer();
+            InitializerInstructionText();
+        }
+
         public void Dispose()
         {
             InstructionText.Dispose();
@@ -213,14 +221,13 @@ namespace TGC.Group.Model
             else
             {
                 Inventory.Render();
-                MousePointer.Position = new TGCVector2(Cursor.Position.X - 16, Cursor.Position.Y - 16);
-                MousePointer.Render();
+                RenderMousePointer();
             }
         }
 
-        public void RenderHelp()
+        public void RenderMousePointer()
         {
-            InstructionText.Render();
+            if(ShowHelp) InstructionText.Render();
             MousePointer.Position = new TGCVector2(Cursor.Position.X - 16, Cursor.Position.Y - 16);
             MousePointer.Render();
         }
