@@ -312,13 +312,6 @@ namespace TGC.Group.Model
             Draw2DManager.ShowInfoItemCollect = ObjectManager.ShowInfoItemCollect;
         }
 
-        private void RenderHand()
-        {
-            if (ObjectManager.Character.InHand == 1)
-            {
-                ObjectManager.Weapon.Render()
-            }
-        }
 
         #endregion
     }

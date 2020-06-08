@@ -6,6 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Shaders;
+using TGC.Group.Model.Meshes;
 using TGC.Group.Model.Objects;
 using TGC.Group.Utils;
 using static TGC.Group.Model.Objects.Common;
@@ -31,6 +32,7 @@ namespace TGC.Group.Model
         public Water Water { get; set; }
         public List<Fish> Fishes { get; set; }
         public Vegetation Vegetation { get; set; }
+        public Weapon Weapon { get; set; }
         public Common Common { get; set; }
         public string ItemSelected { get; set; }
         public bool NearObjectForSelect { get; set; }
@@ -65,6 +67,7 @@ namespace TGC.Group.Model
             MeshBuilder = new MeshBuilder(Terrain, Water);
             Shark = new Shark(MediaDir, Skybox, Terrain, Camera);
             Character = new Character(Camera, Input);
+            Weapon = new Weapon(MediaDir, ShadersDir, Camera);
 
             Vegetation = new Vegetation(MediaDir);
             Common = new Common(MediaDir);
@@ -109,6 +112,7 @@ namespace TGC.Group.Model
             Fishes.ForEach(fish => fish.Dispose());
             Vegetation.Dispose();
             Common.Dispose();
+            Weapon.Dispose();
         }
 
         public void Render()
@@ -140,10 +144,15 @@ namespace TGC.Group.Model
             Water.Update(elapsedTime);
             Terrain.Update(elapsedTime);
 
+            UpdateCharacterHand();
+
             Character.LooksAtTheHatch = Ray.IntersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
             Character.CanAttack = Ray.IntersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
             Character.NearShip = Ray.IntersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);
             Character.IsNearSkybox = Skybox.IsNearSkybox;
+
+            Weapon.Update(elapsedTime);
+
             DetectSelectedItem();
         }
 
@@ -194,8 +203,8 @@ namespace TGC.Group.Model
 
         private void RenderCharacterHand()
         {
-            //if (Character.InHand == 1)
-                //Weapon.Render();
+            if (Character.InHand == 1)
+                Weapon.Render();
             //if(Character.InHand == 2)
                 //Render para pescar
         }
