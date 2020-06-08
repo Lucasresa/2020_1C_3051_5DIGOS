@@ -43,7 +43,7 @@ namespace TGC.Group.Model._2D
         {
             LifeShark.SetImage("LifeBar.png");
             LifeShark.SetInitialScallingAndPosition(Constants.LIFE_SHARK_SCALE, Constants.LIFE_SHARK_POSITION);
-            LifeSharkText.SetTextSizeAndPosition(text: "LIFE SHARK", size: Constants.LIFE_SHARK_TEXT_SIZE, position: Constants.LIFE_SHARK_TEXT_POSITION);
+            LifeSharkText.SetTextSizeAndPosition(text: "SHARK LIFE", size: Constants.LIFE_SHARK_TEXT_SIZE, position: Constants.LIFE_SHARK_TEXT_POSITION);
             LifeSharkText.Color = Color.MediumVioletRed;
         }
 

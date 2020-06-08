@@ -7,6 +7,7 @@ using TGC.Core.BulletPhysics;
 using TGC.Core.Input;
 using TGC.Core.Interpolation;
 using TGC.Core.Mathematica;
+using TGC.Core.SceneLoader;
 using TGC.Group.Utils;
 
 namespace TGC.Group.Model.Objects
@@ -117,7 +118,7 @@ namespace TGC.Group.Model.Objects
             if (NearShip) ChangePosition(Constants.INDOOR_POSITION);
         }
 
-        public void Update(float elapsedTime)
+        public void Update(Ray ray, TgcMesh shark)
         {
             var speed = Constants.MOVEMENT_SPEED;
             var director = Camera.Direction.ToBulletVector3();
@@ -138,7 +139,10 @@ namespace TGC.Group.Model.Objects
                 OutsideMovement(director, sideDirector, speed);
 
             if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT) && HasWeapon)
+            {
                 Weapon.ActivateAtackMove();
+                AttackedShark = ray.IntersectsWithObject(shark.BoundingBox, 150);
+            }
 
             RestartSpeedForKeyUp();
 

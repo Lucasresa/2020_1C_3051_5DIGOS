@@ -255,7 +255,7 @@ namespace TGC.Group.Model
 
         private void UpdateEvents()
         {
-            ObjectManager.UpdateCharacter(ElapsedTime);
+            ObjectManager.UpdateCharacter();
             ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
             EventsManager.Update(ElapsedTime, ObjectManager.Fishes);
             InventoryManager.AddItem(ObjectManager.ItemSelected);

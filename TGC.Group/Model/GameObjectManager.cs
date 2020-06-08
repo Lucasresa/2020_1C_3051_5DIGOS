@@ -71,7 +71,7 @@ namespace TGC.Group.Model
             Vegetation = new Vegetation(MediaDir);
             Common = new Common(MediaDir);
             Fishes = Common.ListFishes.Select(mesh => new Fish(MediaDir, Skybox, Terrain, mesh)).ToList();
-            Character.Weapon = Weapon;
+            AddWeaponToCharacter();
             /* Location */
 
             MeshBuilder.LocateMeshesInWorld(meshes: ref Vegetation.ListAlgas, area: Skybox.CurrentPerimeter);
@@ -164,7 +164,7 @@ namespace TGC.Group.Model
             Character.Weapon = Weapon;
         }
 
-        public void UpdateCharacter(float elapsedTime) => Character.Update(elapsedTime);
+        public void UpdateCharacter() => Character.Update(Ray, Shark.Mesh);
 
         private void DetectSelectedItem()
         {
