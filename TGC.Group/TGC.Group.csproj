@@ -119,6 +119,7 @@
     <Compile Include="Model\Objects\Terrain.cs" />
     <Compile Include="Model\Objects\Vegetation.cs" />
     <Compile Include="Model\Objects\Water.cs" />
+    <Compile Include="Model\Objects\Weapon.cs" />
     <Compile Include="Model\Objects\World.cs" />
     <Compile Include="Model\Status\CharacterStatus.cs" />
     <Compile Include="Model\Status\SharkStatus.cs" />

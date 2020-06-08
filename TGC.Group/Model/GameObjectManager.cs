@@ -29,7 +29,7 @@ namespace TGC.Group.Model
         public List<Fish> Fishes { get; set; }
         public Vegetation Vegetation { get; set; }
         public Common Common { get; set; }
-
+        public Weapon Weapon { get; set; }
         public string ItemSelected { get; set; }
         public bool NearObjectForSelect { get; set; }
         public bool ShowInfoItemCollect { get; set; }
@@ -55,11 +55,11 @@ namespace TGC.Group.Model
             Ship = new Ship(MediaDir);
             Shark = new Shark(MediaDir, Skybox, Terrain, Camera);
             Character = new Character(Camera, Input);
-
+            Weapon = new Weapon(MediaDir, ShadersDir);
             Vegetation = new Vegetation(MediaDir);
             Common = new Common(MediaDir);
             Fishes = Common.ListFishes.Select(mesh => new Fish(MediaDir, Skybox, Terrain, mesh)).ToList();
-
+            Character.Weapon = Weapon;
             /* Location */
 
             MeshBuilder.LocateMeshesInWorld(meshes: ref Vegetation.ListAlgas, area: Skybox.CurrentPerimeter);
@@ -99,10 +99,13 @@ namespace TGC.Group.Model
             Fishes.ForEach(fish => fish.Dispose());
             Vegetation.Dispose();
             Common.Dispose();
+            Weapon.Dispose();
         }
 
         public void Render()
         {
+            if (Character.HasWeapon)
+                Weapon.Render();
             if (Character.IsInsideShip)
                 Ship.RenderIndoorShip();
             else
@@ -134,7 +137,12 @@ namespace TGC.Group.Model
             DetectSelectedItem();
         }
 
-        public void UpdateCharacter() => Character.Update();
+        public void AddWeaponToCharacter()
+        {
+            Character.Weapon = Weapon;
+        }
+
+        public void UpdateCharacter(float elapsedTime) => Character.Update(elapsedTime);
 
         private void DetectSelectedItem()
         {

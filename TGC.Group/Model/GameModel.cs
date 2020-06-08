@@ -94,7 +94,7 @@ namespace TGC.Group.Model
 
             if (!ActiveInventory)
             {
-                ObjectManager.UpdateCharacter();
+                ObjectManager.UpdateCharacter(ElapsedTime);
                 ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
                 EventsManager.Update(ElapsedTime, ObjectManager.Fishes);
                 InventoryManager.AddItem(ObjectManager.ItemSelected);
@@ -128,6 +128,9 @@ namespace TGC.Group.Model
                 if (Input.keyPressed(Key.N)) ObjectManager.Character.HasDivingHelmet = CharacterStatus.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
                 if (Input.keyPressed(Key.B)) ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
             }
+
+            if (ObjectManager.Character.HasWeapon && ObjectManager.Character.Weapon == null)
+                ObjectManager.AddWeaponToCharacter();
 
             Draw2DManager.ShowInfoExitShip = ObjectManager.Character.LooksAtTheHatch;
             Draw2DManager.ShowInfoEnterShip = ObjectManager.Character.NearShip;

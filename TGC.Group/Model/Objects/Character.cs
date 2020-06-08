@@ -2,6 +2,7 @@
 using BulletSharp.Math;
 using Microsoft.DirectX.DirectInput;
 using System;
+using System.Windows.Forms;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Input;
 using TGC.Core.Interpolation;
@@ -28,10 +29,10 @@ namespace TGC.Group.Model.Objects
         private readonly CameraFPS Camera;
         private Vector3 MovementDirection;
         private float prevLatitude;
-        private float Gravity => Body.CenterOfMassPosition.Y < 0 ? -200 : -5;
+        private float Gravity => Body.CenterOfMassPosition.Y < 0 ? -200 : 0;
 
         public RigidBody Body { get; set; }
-
+        public Weapon Weapon { get; set; }
         public bool IsInsideShip => Camera.Position.Y < 0;
         public bool IsOutsideShip => !IsInsideShip;
         public bool IsOutOfWater => Camera.Position.Y > 3505;
@@ -114,7 +115,7 @@ namespace TGC.Group.Model.Objects
             if (NearShip) ChangePosition(Constants.INDOOR_POSITION);
         }
 
-        public void Update()
+        public void Update(float elapsedTime)
         {
             var speed = Constants.MOVEMENT_SPEED;
             var director = Camera.Direction.ToBulletVector3();
@@ -130,6 +131,11 @@ namespace TGC.Group.Model.Objects
                 Movement(director, sideDirector, speed);
             else
                 OutsideMovement(director, sideDirector, speed);
+
+            if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT) && HasWeapon)
+                Weapon.ActivateAtackMove();
+            if (HasWeapon)
+                Weapon.Update(Camera, elapsedTime);
 
             RestartSpeedForKeyUp();
 

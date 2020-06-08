@@ -7,7 +7,7 @@ namespace TGC.Group.Model
     {
         private struct Constants
         {
-            public static float TIME_BETWEEN_ATTACKS = 20;
+            public static float TIME_BETWEEN_ATTACKS = 5;
         }
 
         private readonly Shark Shark;

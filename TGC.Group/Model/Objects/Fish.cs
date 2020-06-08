@@ -18,9 +18,10 @@ namespace TGC.Group.Model.Objects
             public static int QUANTITY_FISH_YELLOW = 20;
             public static TGCVector2 FishHeight = new TGCVector2(700, 2000);
             public static TGCVector3 Scale = new TGCVector3(10, 10, 10);
-            public static float MaxYRotation = FastMath.PI - FastMath.QUARTER_PI;
+            public static float MaxYRotation = FastMath.PI_HALF / 1.3f;
             public static float MaxAxisRotation = FastMath.QUARTER_PI;
             public static float ScapeFromPlayerCooldown = 3;
+            public static float CHANGE_DIRECTION_TIME = 3;
         }
 
         private readonly string MediaDir;
@@ -29,6 +30,7 @@ namespace TGC.Group.Model.Objects
         private float acumulatedYRotation = 0;
         private TGCMatrix TotalRotation;
         private float time;
+        private float ChangeDirectionTimeCounter;
         private readonly Skybox Skybox;
         private readonly Terrain Terrain;
 
@@ -50,6 +52,7 @@ namespace TGC.Group.Model.Objects
 
         private void Init()
         {
+            ChangeDirectionTimeCounter = Constants.CHANGE_DIRECTION_TIME;
             time = Constants.ScapeFromPlayerCooldown;
             TotalRotation = TGCMatrix.Identity;
         }
@@ -67,6 +70,7 @@ namespace TGC.Group.Model.Objects
         private void PerformNormalMove(float elapsedTime, float speed, TGCVector3 headPosition)
         {
             time -= elapsedTime;
+            ChangeDirectionTimeCounter -= elapsedTime;
 
             float XRotation = 0f, YRotation = 0f;
             var meshPosition = GetMeshPosition();
@@ -75,7 +79,7 @@ namespace TGC.Group.Model.Objects
             var distanceToFloor = FastUtils.Distance(meshPosition.Y, floorHeight);
 
             var XRotationStep = FastMath.PI * 0.1f * elapsedTime;
-            var YRotationStep = FastMath.PI * 0.3f * elapsedTime;
+            var YRotationStep = FastMath.PI * 0.03f * elapsedTime;
 
             if (FastUtils.LessThan(distanceToFloor, Constants.FishHeight.X - 40) && FastUtils.LessThan(acumulatedXRotation, Constants.MaxAxisRotation))
                 XRotation = XRotationStep;
@@ -86,8 +90,11 @@ namespace TGC.Group.Model.Objects
             else if (FastUtils.IsNumberBetweenInterval(distanceToFloor, Constants.FishHeight) && FastUtils.LessThan(acumulatedXRotation, -0.0012f))
                 XRotation = XRotationStep;
 
-            if (!Skybox.InPerimeterSkyBox(meshPosition.X, meshPosition.Z) && FastUtils.LessThan(FastMath.Abs(acumulatedYRotation), Constants.MaxYRotation))
-                YRotation = YRotationStep * RotationYSign();
+            if (ChangeDirectionTimeCounter <= 0)
+                if (FastUtils.LessThan(FastMath.Abs(acumulatedYRotation), Constants.MaxYRotation))
+                    YRotation = YRotationStep * RotationYSign();
+                else
+                    ChangeDirectionTimeCounter = Constants.CHANGE_DIRECTION_TIME;
             else
                 acumulatedYRotation = 0;
 
