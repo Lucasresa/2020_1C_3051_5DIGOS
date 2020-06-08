@@ -36,7 +36,7 @@ namespace TGC.Group.Model
             public static TGCVector2 COMMON_TEXT_SIZE = new TGCVector2(300, 50);
             public static TGCVector2 HELP_TEXT_POSITION = new TGCVector2(SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 30, SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y + 20);
             public static TGCVector2 INSTRUCTION_TEXT_SIZE = new TGCVector2(860, 450);
-            public static TGCVector2 INSTRUCTION_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - INSTRUCTION_TEXT_SIZE.X) / 2, (SCREEN_HEIGHT - INSTRUCTION_TEXT_SIZE.Y) / 2);
+            public static TGCVector2 INSTRUCTION_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - INSTRUCTION_TEXT_SIZE.X) / 2, (SCREEN_HEIGHT - INSTRUCTION_TEXT_SIZE.Y) / 2 + 20);
             public static string INSTRUCTION_TEXT = "Movement: W(↑) | A(←) | S(↓) | D(→) " +
                                                     "\nInstructions for leaving and entering the ship: " +
                                                     "\n\t- To exit the ship look towards the hatch and press the E key." +

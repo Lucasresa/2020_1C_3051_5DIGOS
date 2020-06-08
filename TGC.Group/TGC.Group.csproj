@@ -136,8 +136,6 @@
     <Compile Include="Utils\DrawText.cs" />
     <Compile Include="Utils\FastUtils.cs" />
     <Compile Include="Utils\FullQuad.cs" />
-    <Compile Include="Utils\GUI.cs" />
-    <Compile Include="Utils\GUIItem.cs" />
     <Compile Include="Utils\Ray.cs" />
     <Compile Include="Utils\SmartTerrain.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
