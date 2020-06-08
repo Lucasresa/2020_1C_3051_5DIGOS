@@ -226,7 +226,21 @@ namespace TGC.Group.Model
         private void UpdateGame()
         {          
             if (Input.keyPressed(Key.F1)) Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
-            if (CharacterStatus.IsDead) UpdateCharacterIsDead();
+            if (CharacterStatus.IsDead)
+            {
+                TimeToRevive += ElapsedTime;
+                if (TimeToRevive < 5)
+                {
+                    FullQuad.SetTime(ElapsedTime);
+                    FullQuad.RenderTeleportEffect = true;
+                }
+                else
+                {
+                    CharacterStatus.Respawn();
+                    FullQuad.RenderTeleportEffect = FullQuad.RenderAlarmEffect = false;
+                }
+                return;
+            }
             TimeToRevive = 0;
             if (Input.keyPressed(Key.I)) Draw2DManager.ActiveInventory = camera.Lock =
                     FullQuad.RenderPDA = ActiveInventory = !ActiveInventory;
@@ -279,22 +293,6 @@ namespace TGC.Group.Model
                 InventoryManager.ItemHistory.RemoveRange(0, InventoryManager.ItemHistory.Count);
                 ItemHistoryTime = 0;
             }
-        }
-
-        private void UpdateCharacterIsDead()
-        {
-            TimeToRevive += ElapsedTime;
-            if (TimeToRevive < 5)
-            {
-                FullQuad.SetTime(ElapsedTime);
-                FullQuad.RenderTeleportEffect = true;
-            }
-            else
-            {
-                CharacterStatus.Respawn();
-                FullQuad.RenderTeleportEffect = FullQuad.RenderAlarmEffect = false;
-            }
-            return;
         }
 
         private void UpdateFlags()
