@@ -94,7 +94,7 @@ namespace TGC.Group.Model
             Skybox.SetShader(FogShader, "Fog");
             Common.SetShader(FogShader, "Fog");
             Shark.SetShader(FogShader, "Fog");
-            Vegetation.SetShader(FogShader, "Fog");
+            Vegetation.SetShader(FogShader, "FogVegetation");
         }
 
         public void Dispose()
