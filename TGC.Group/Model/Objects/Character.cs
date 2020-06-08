@@ -35,8 +35,9 @@ namespace TGC.Group.Model.Objects
         public Weapon Weapon { get; set; }
         public bool IsInsideShip => Camera.Position.Y < 0;
         public bool IsOutsideShip => !IsInsideShip;
-        public bool IsOutOfWater => Camera.Position.Y > 3505;
+        public bool IsOutOfWater => Camera.Position.Y > 3605;
         public bool IsNearSkybox { get; set; }
+        public bool CanBreathe => Camera.Position.Y > 3505;
 
         public bool LooksAtTheHatch { get; set; }
         public bool CanAttack { get; set; }
@@ -45,6 +46,7 @@ namespace TGC.Group.Model.Objects
         public bool HasWeapon { get; set; }
         public bool HasDivingHelmet { get; set; }
         public bool CanFish { get; set; }
+        public int InHand = 0; // 0-Nada 1-Arma
 
         public bool AttackedShark { get; set; }
 
@@ -125,8 +127,11 @@ namespace TGC.Group.Model.Objects
             Body.ActivationState = ActivationState.ActiveTag;
             Body.AngularVelocity = Vector3.Zero;
 
-            if (IsOutOfWater) 
-                Body.ApplyCentralImpulse(Vector3.UnitY * -3);
+            if (IsOutOfWater)
+            {
+                Body.LinearVelocity = Vector3.Zero;
+                Body.ApplyCentralImpulse(Vector3.UnitY * -100);
+            }
             else if (IsInsideShip)
                 Movement(director, sideDirector, speed);
             else
@@ -134,8 +139,6 @@ namespace TGC.Group.Model.Objects
 
             if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT) && HasWeapon)
                 Weapon.ActivateAtackMove();
-            if (HasWeapon)
-                Weapon.Update(Camera, elapsedTime);
 
             RestartSpeedForKeyUp();
 

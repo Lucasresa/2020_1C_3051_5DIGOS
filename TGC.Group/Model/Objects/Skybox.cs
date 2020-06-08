@@ -1,4 +1,7 @@
 using BulletSharp;
+using Microsoft.DirectX.Direct3D;
+using System;
+using System.Linq;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Terrain;
@@ -57,7 +60,16 @@ namespace TGC.Group.Model.Objects
             CalculatePerimeter();
         }
 
+        public void SetShader(Effect effect, string technique)
+        {
+            skybox.Faces.ToList().ForEach(face => {
+                face.Effect = effect;
+                face.Technique = technique;
+            });
+        }
+
         public void Update() => CalculatePerimeter();
+        public void Render() => skybox.Render();
 
         public void Render(Perimeter worldSize)
         {

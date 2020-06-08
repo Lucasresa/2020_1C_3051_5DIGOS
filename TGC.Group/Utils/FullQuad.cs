@@ -19,6 +19,7 @@ namespace TGC.Group.Utils
         private Texture RenderTarget2D { get; set; }
         private TgcTexture AlarmTexture { get; set; }
         private TgcTexture DivingHelmetTexture { get; set; }
+        private TgcTexture PDA { get; set; }
         private InterpoladorVaiven IntVaivenAlarm;
 
         private readonly Device Device = D3DDevice.Instance.Device;
@@ -28,6 +29,7 @@ namespace TGC.Group.Utils
         public string MediaDir { get; set; }
         public bool RenderTeleportEffect { get; set; }
         public bool RenderAlarmEffect { get; set; }
+        public bool RenderPDA { get; set; }
         private readonly float ElapsedTime;
 
         public FullQuad(string mediaDir, string shadersDir, float elapsedTime)
@@ -35,9 +37,10 @@ namespace TGC.Group.Utils
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
             ElapsedTime = elapsedTime;
+            Initializer();
         }
 
-        public void Initializer(string nameEffect)
+        private void Initializer()
         {
             CustomVertex.PositionTextured[] vertex =
             {
@@ -53,10 +56,11 @@ namespace TGC.Group.Utils
             RenderTarget2D = new Texture(Device, Device.PresentationParameters.BackBufferWidth, Device.PresentationParameters.BackBufferHeight, 1, Usage.RenderTarget, Format.X8R8G8B8, Pool.Default);
             DepthStencil = Device.CreateDepthStencilSurface(Device.PresentationParameters.BackBufferWidth, Device.PresentationParameters.BackBufferHeight, DepthFormat.D24S8, MultiSampleType.None, 0, true);
 
-            Effect = TGCShaders.Instance.LoadEffect(ShadersDir + nameEffect + ".fx");
+            Effect = TGCShaders.Instance.LoadEffect(ShadersDir + "PostProcess.fx");
             Effect.Technique = "DefaultTechnique";
             AlarmTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Textures\alarm.png");
             DivingHelmetTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Imagenes\divingHelmet.png");
+            PDA = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Imagenes\PDA.png");
             IntVaivenAlarm = new InterpoladorVaiven
             {
                 Min = 0,
@@ -66,6 +70,8 @@ namespace TGC.Group.Utils
             IntVaivenAlarm.reset();
             Effect.SetValue("texture_alarm", AlarmTexture.D3dTexture);
             Effect.SetValue("texture_diving_helmet", DivingHelmetTexture.D3dTexture);
+            Effect.SetValue("texture_PDA", PDA.D3dTexture);
+            Effect.SetValue("Color", Color.DarkSlateBlue.ToArgb());
         }
 
         public void SetTime(float value) => Time = FastMath.Clamp(Time + value, 0, 10);
@@ -116,6 +122,9 @@ namespace TGC.Group.Utils
                     Effect.Technique = "DivingHelmet";
             }
 
+            if (RenderPDA)
+                Effect.Technique = "PDA";
+
             Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1f, 0);
 
             Effect.Begin(FX.None);
@@ -127,14 +136,13 @@ namespace TGC.Group.Utils
 
         public void Dispose()
         {
-            FullScreenQuad.Dispose();
-            if (Effect != null && !Effect.Disposed)
-                Effect.Dispose();
-            AlarmTexture.dispose();
-            RenderTarget2D.Dispose();
-            DepthStencil.Dispose();
-            OldDepthStencil.Dispose();
-            OldRenderTarget.Dispose();
+            if (FullScreenQuad != null && !FullScreenQuad.Disposed) FullScreenQuad.Dispose();
+            if (Effect != null && !Effect.Disposed) Effect.Dispose();
+            if (AlarmTexture != null && !AlarmTexture.D3dTexture.Disposed) AlarmTexture.dispose();
+            if (RenderTarget2D != null && !RenderTarget2D.Disposed) RenderTarget2D.Dispose();
+            if (DepthStencil != null && !DepthStencil.Disposed) DepthStencil.Dispose();
+            if (OldDepthStencil != null && !OldDepthStencil.Disposed) OldDepthStencil.Dispose();
+            if (OldRenderTarget != null && !OldRenderTarget.Disposed) OldRenderTarget.Dispose();
         }
     }
 }

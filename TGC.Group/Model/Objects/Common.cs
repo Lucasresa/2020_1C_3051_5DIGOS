@@ -1,4 +1,5 @@
 ﻿using BulletSharp;
+using Microsoft.DirectX.Direct3D;
 using System.Collections.Generic;
 using System.Linq;
 using TGC.Core.BulletPhysics;
@@ -149,6 +150,14 @@ namespace TGC.Group.Model.Objects
             ListCorals.ForEach(coral => coral.Mesh.Render());
             ListOres.ForEach(ore => ore.Mesh.Render());
             ListRock.ForEach(rock => rock.Mesh.Render());
+        }
+
+        public void SetShader(Effect fogShader, string technique)
+        {
+            ListCorals.ForEach(coral => { coral.Mesh.Effect = fogShader; coral.Mesh.Technique = technique; });
+            ListOres.ForEach(ore => { ore.Mesh.Effect = fogShader; ore.Mesh.Technique = technique; });
+            ListRock.ForEach(rock => { rock.Mesh.Effect = fogShader; rock.Mesh.Technique = technique; });
+            ListFishes.ForEach(fish => { fish.Mesh.Effect = fogShader; fish.Mesh.Technique = technique; });
         }
     }
 }

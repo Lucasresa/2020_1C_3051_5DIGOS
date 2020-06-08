@@ -21,8 +21,8 @@ namespace TGC.Group.Utils
         private VertexBuffer VertexTerrain;
         private CustomVertex.PositionTextured[] Vertex;
         private Texture Texture;
-        private int TotalVertices { get; set; }
-        private Effect Effect { get; set; }
+        private int VertexTotal { get; set; }
+        public Effect Effect { get; set; }
         private float TimeForWaves = 0;
         public float ScaleXZ { get; set; }
         public float ScaleY { get; set; }
@@ -80,9 +80,9 @@ namespace TGC.Group.Utils
             Width = HeightmapData.GetLength(0);
             Length = HeightmapData.GetLength(1);
             var totalvertices = 2 * 3 * (Width - 1) * (Length - 1);
-            TotalVertices = (int)totalvertices;
+            VertexTotal = (int)totalvertices;
 
-            VertexTerrain = new VertexBuffer(typeof(CustomVertex.PositionTextured), TotalVertices,
+            VertexTerrain = new VertexBuffer(typeof(CustomVertex.PositionTextured), VertexTotal,
                                          D3DDevice.Instance.Device,
                                          Usage.Dynamic | Usage.WriteOnly, CustomVertex.PositionTextured.Format, Pool.Default);
 
@@ -97,7 +97,7 @@ namespace TGC.Group.Utils
 
             var dataIdx = 0;
 
-            Vertex = new CustomVertex.PositionTextured[TotalVertices];
+            Vertex = new CustomVertex.PositionTextured[VertexTotal];
 
             for (var i = 0; i < Width - 1; i++)
             {
@@ -164,7 +164,7 @@ namespace TGC.Group.Utils
             for (var i = 0; i < p; i++)
             {
                 Effect.BeginPass(i);
-                d3dDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, TotalVertices / 3);
+                d3dDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, VertexTotal / 3);
                 Effect.EndPass();
             }
             Effect.End();
