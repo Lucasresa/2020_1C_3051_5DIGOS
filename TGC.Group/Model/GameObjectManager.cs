@@ -123,8 +123,8 @@ namespace TGC.Group.Model
                 Shark.Render();
                 Fishes.ForEach(fish => fish.Render());
                 Common.Render();
-                Water.Render();
                 Vegetation.Render();
+                Water.Render();
             }
         }
 
