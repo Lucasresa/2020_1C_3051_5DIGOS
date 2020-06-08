@@ -117,11 +117,12 @@ namespace TGC.Group.Model
 
         public void Render()
         {
+            RenderCharacterHand();
+            
             if (Character.IsInsideShip)
                 Ship.RenderIndoorShip();
             else
             {
-                RenderCharacterHand();
                 FogShader.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
                 Ship.RenderOutdoorShip();
                 Skybox.Render(Terrain.SizeWorld());
@@ -144,7 +145,7 @@ namespace TGC.Group.Model
             Water.Update(elapsedTime);
             Terrain.Update(elapsedTime);
 
-            UpdateCharacterHand();
+            UpdateCharacterHand(elapsedTime);
 
             Character.LooksAtTheHatch = Ray.IntersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
             Character.CanAttack = Ray.IntersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
@@ -209,13 +210,17 @@ namespace TGC.Group.Model
                 //Render para pescar
         }
 
-        private void UpdateCharacterHand()
+        private void UpdateCharacterHand(float elapsedTime)
         {
+            if (Character.InHand == 1)
+                Weapon.Update(elapsedTime);
+
             if (Input.keyPressed(Key.D0))
                 Character.InHand = 0;
 
             if (Character.HasWeapon && Input.keyPressed(Key.D1))
                 Character.InHand = 1;
         }
+
     }
 }
