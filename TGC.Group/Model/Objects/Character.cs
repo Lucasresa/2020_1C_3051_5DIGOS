@@ -45,6 +45,7 @@ namespace TGC.Group.Model.Objects
         public bool HasWeapon { get; set; }
         public bool HasDivingHelmet { get; set; }
         public bool CanFish { get; set; }
+        public int InHand = 0; // 0-Nada 1-Arma
 
         public bool AttackedShark { get; set; }
 

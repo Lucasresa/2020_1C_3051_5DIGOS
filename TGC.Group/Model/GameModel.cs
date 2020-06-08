@@ -299,7 +299,7 @@ namespace TGC.Group.Model
 
         private void UpdateFlags()
         {
-            if (CanCraftObjects)
+            if (CanCraftObjects && Draw2DManager.ActiveInventory)
             {
                 if (Input.keyPressed(Key.M)) ObjectManager.Character.HasWeapon = GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
                 if (Input.keyPressed(Key.N)) ObjectManager.Character.HasDivingHelmet = CharacterStatus.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
@@ -311,6 +311,7 @@ namespace TGC.Group.Model
             Draw2DManager.NearObjectForSelect = ObjectManager.NearObjectForSelect;
             Draw2DManager.ShowInfoItemCollect = ObjectManager.ShowInfoItemCollect;
         }
+
 
         #endregion
     }
