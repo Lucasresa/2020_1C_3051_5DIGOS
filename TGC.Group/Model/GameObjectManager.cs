@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.Shaders;
@@ -116,6 +117,7 @@ namespace TGC.Group.Model
                 Ship.RenderIndoorShip();
             else
             {
+                RenderCharacterHand();
                 FogShader.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
                 Ship.RenderOutdoorShip();
                 Skybox.Render(Terrain.SizeWorld());
@@ -188,6 +190,23 @@ namespace TGC.Group.Model
                 Fishes.Remove(item);
                 Common.ListFishes.Remove(item.Mesh);
             }
+        }
+
+        private void RenderCharacterHand()
+        {
+            //if (Character.InHand == 1)
+                //Weapon.Render();
+            //if(Character.InHand == 2)
+                //Render para pescar
+        }
+
+        private void UpdateCharacterHand()
+        {
+            if (Input.keyPressed(Key.D0))
+                Character.InHand = 0;
+
+            if (Character.HasWeapon && Input.keyPressed(Key.D1))
+                Character.InHand = 1;
         }
     }
 }
