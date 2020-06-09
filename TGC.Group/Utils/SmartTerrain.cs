@@ -1,5 +1,6 @@
 ﻿using Microsoft.DirectX.Direct3D;
 using System.Drawing;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
@@ -21,14 +22,17 @@ namespace TGC.Group.Utils
         private VertexBuffer VertexTerrain;
         private CustomVertex.PositionTextured[] Vertex;
         private Texture Texture;
+        private readonly TgcBoundingAxisAlignBox aabb;
         private int VertexTotal { get; set; }
         public Effect Effect { get; set; }
         private float TimeForWaves = 0;
         public float ScaleXZ { get; set; }
         public float ScaleY { get; set; }
 
-        public SmartTerrain() { }
-
+        public SmartTerrain()
+        {
+            aabb = new TgcBoundingAxisAlignBox();
+        }
         public void LoadTexture(string path)
         {
             if (Texture != null && !Texture.Disposed)
@@ -131,6 +135,16 @@ namespace TGC.Group.Utils
                     dataIdx += 6;
                 }
                 VertexTerrain.SetData(Vertex, 0, LockFlags.None);
+
+                var pMin = new TGCVector3(HeightmapData.GetLength(0)/2 * -ScaleXZ,
+                                            MinIntensity * ScaleY,
+                                            HeightmapData.GetLength(1)/2 * -ScaleXZ);
+                var pMax = new TGCVector3(HeightmapData.GetLength(0)/2 * ScaleXZ,
+                                            MaxIntensity * ScaleY,
+                                            HeightmapData.GetLength(1)/2 * ScaleXZ);
+
+                aabb.setExtremes(pMin, pMax);
+
             }
         }
 
