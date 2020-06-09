@@ -22,10 +22,10 @@ namespace TGC.Group.Model.Objects
             public static string NAME_ALGA_2 = "alga2";
             public static string NAME_ALGA_3 = "alga3";
             public static string NAME_ALGA_4 = "alga4";
-            public static int QUANTITY_ALGA_1 = 20;
-            public static int QUANTITY_ALGA_2 = 20;
-            public static int QUANTITY_ALGA_3 = 20;
-            public static int QUANTITY_ALGA_4 = 20;
+            public static int QUANTITY_ALGA_1 = 75;
+            public static int QUANTITY_ALGA_2 = 75;
+            public static int QUANTITY_ALGA_3 = 75;
+            public static int QUANTITY_ALGA_4 = 75;
             public static TGCVector3 Scale = new TGCVector3(7, 7, 7);
         }
 
