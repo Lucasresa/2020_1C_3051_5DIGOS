@@ -87,6 +87,7 @@ namespace TGC.Group.Model
         public bool NearObjectForSelect { get; set; }
         public bool ShowInfoItemCollect { get; set; }
         public bool ShowIndicatorShip { get; set; }
+        public bool ShowSharkLife { get; set; }
 
         public List<string> ItemHistory { get; set; }
 
@@ -188,7 +189,7 @@ namespace TGC.Group.Model
 
             if (!ActiveInventory)
             {
-                Shark.Render();
+                if (ShowSharkLife) Shark.Render();
                 Character.Render();
                 Pointer.Render();
 

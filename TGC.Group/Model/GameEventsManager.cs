@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TGC.Group.Model.Objects;
+using TGC.Group.Model.Status;
 
 namespace TGC.Group.Model
 {
@@ -22,11 +23,11 @@ namespace TGC.Group.Model
             Character = character;
         }
 
-        public void Update(float elapsedTime, List<Fish> fishes)
+        public void Update(float elapsedTime, List<Fish> fishes, SharkStatus status)
         {
             if (Character.IsOutsideShip)
             {
-                CheckIfSharkCanAttack(elapsedTime);
+                CheckIfSharkCanAttack(elapsedTime, status);
             }
             else
             {
@@ -39,13 +40,14 @@ namespace TGC.Group.Model
 
         public void InformFinishFromAttack() => SharkIsAttacking = false;
 
-        private void CheckIfSharkCanAttack(float elapsedTime)
+        private void CheckIfSharkCanAttack(float elapsedTime, SharkStatus status)
         {
             if (!SharkIsAttacking)
             {
                 timeBetweenAttacks -= elapsedTime;
                 if (timeBetweenAttacks <= 0)
                 {
+                    status.Reset();
                     Shark.ActivateShark(this);
                     SharkIsAttacking = true;
                     timeBetweenAttacks = Constants.TIME_BETWEEN_ATTACKS;

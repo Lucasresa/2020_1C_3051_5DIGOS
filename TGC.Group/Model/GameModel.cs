@@ -257,7 +257,7 @@ namespace TGC.Group.Model
         {
             ObjectManager.UpdateCharacter();
             ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
-            EventsManager.Update(ElapsedTime, ObjectManager.Fishes);
+            EventsManager.Update(ElapsedTime, ObjectManager.Fishes, SharkStatus);
             InventoryManager.AddItem(ObjectManager.ItemSelected);
             Draw2DManager.ItemHistory = InventoryManager.ItemHistory;
             ObjectManager.ItemSelected = null;
@@ -265,6 +265,7 @@ namespace TGC.Group.Model
             FullQuad.RenderAlarmEffect = CharacterStatus.ActiveRenderAlarm;
             Draw2DManager.DistanceWithShip = FastUtils.DistanceBetweenVectors(camera.Position, ObjectManager.Ship.PositionShip);
             Draw2DManager.ShowIndicatorShip = Draw2DManager.DistanceWithShip > 15000 && !ObjectManager.Character.IsInsideShip;
+            Draw2DManager.ShowSharkLife = EventsManager.SharkIsAttacking && !SharkStatus.IsDead;
             if (CharacterStatus.ActiveAlarmForDamageReceived)
             {
                 TimeToAlarm += ElapsedTime;
@@ -276,6 +277,7 @@ namespace TGC.Group.Model
             }
             SharkStatus.DamageReceived = ObjectManager.Character.AttackedShark;
             SharkStatus.Update();
+            ObjectManager.Shark.DeathMove = SharkStatus.IsDead;
             ObjectManager.Character.AttackedShark = SharkStatus.DamageReceived;
             Draw2DManager.Update();
             Draw2DManager.Inventory.UpdateItems(InventoryManager.Items);

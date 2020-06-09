@@ -38,7 +38,7 @@ namespace TGC.Group.Model.Objects
         private readonly CameraFPS Camera;
         private bool NormalMove;
         private bool StalkerModeMove;
-        private bool DeathMove;
+        public bool DeathMove { get; set; }
         private float AcumulatedYRotation;
         private float AcumulatedXRotation;
         private float AcumulatedZRotation;
@@ -47,6 +47,7 @@ namespace TGC.Group.Model.Objects
         private float ChangeDirectionTimeCounter;
         public bool AttackedCharacter { get; set; }
         private GameEventsManager Events { get; set; }
+        public bool CharacterOnSight { get; set; }
         private TGCMatrix TotalRotation;
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
 
@@ -166,6 +167,7 @@ namespace TGC.Group.Model.Objects
 
         private void PerformNormalMove(float elapsedTime, float speed, TGCVector3 headPosition)
         {
+            CharacterOnSight = false;
             var XRotation = 0f;
             var YRotation = 0f;
             ChangeDirectionTimeCounter -= elapsedTime;
@@ -218,6 +220,7 @@ namespace TGC.Group.Model.Objects
 
         private void PerformStalkerMove(float elapsedTime, float speed, float rotationAngle, TGCVector3 rotationAxis)
         {
+            CharacterOnSight = true;
             var actualDirector = -1 * director;
             EventTimeCounter -= elapsedTime;
             var RotationStep = FastMath.PI * 0.3f * elapsedTime;
@@ -237,6 +240,7 @@ namespace TGC.Group.Model.Objects
 
         private void PerformDeathMove(float elapsedTime)
         {
+            CharacterOnSight = false;
             DeathTimeCounter -= elapsedTime;
             var RotationStep = FastMath.PI * 0.4f * elapsedTime;
             if (FastUtils.GreaterThan(AcumulatedZRotation, Constants.MaxZRotation))

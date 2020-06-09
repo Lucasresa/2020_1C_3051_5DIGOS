@@ -7,7 +7,7 @@ namespace TGC.Group.Model
     {
         private struct Constants
         {
-            public static int WEAPON_COUNT_ORE_SILVER = 5;
+            public static int WEAPON_COUNT_ORE_SILVER = 1;
             public static int WEAPON_COUNT_CORAL_NORMAL = 3;
             public static int WEAPON_COUNT_CORAL_TREE = 2;
             public static int WEAPON_COUNT_FISH_NORMAL = 4;
@@ -34,17 +34,17 @@ namespace TGC.Group.Model
         {
             if (HasWeapon) return false;
 
-            if (items["SILVER"].Count >= Constants.WEAPON_COUNT_ORE_SILVER &&
-                 items["NORMALCORAL"].Count >= Constants.WEAPON_COUNT_CORAL_NORMAL &&
-                 items["TREECORAL"].Count >= Constants.WEAPON_COUNT_CORAL_TREE &&
-                 items["NORMALFISH"].Count >= Constants.WEAPON_COUNT_FISH_NORMAL &&
-                 items["YELLOWFISH"].Count >= Constants.WEAPON_COUNT_FISH_YELLOW)
+            if (items["SILVER"].Count >= Constants.WEAPON_COUNT_ORE_SILVER) //&&
+                 //items["NORMALCORAL"].Count >= Constants.WEAPON_COUNT_CORAL_NORMAL &&
+                 //items["TREECORAL"].Count >= Constants.WEAPON_COUNT_CORAL_TREE &&
+                 //items["NORMALFISH"].Count >= Constants.WEAPON_COUNT_FISH_NORMAL &&
+                 //items["YELLOWFISH"].Count >= Constants.WEAPON_COUNT_FISH_YELLOW)
             {
                 items["SILVER"].RemoveRange(0, Constants.WEAPON_COUNT_ORE_SILVER);
-                items["NORMALCORAL"].RemoveRange(0, Constants.WEAPON_COUNT_CORAL_NORMAL);
-                items["TREECORAL"].RemoveRange(0, Constants.WEAPON_COUNT_CORAL_TREE);
-                items["NORMALFISH"].RemoveRange(0, Constants.WEAPON_COUNT_FISH_NORMAL);
-                items["YELLOWFISH"].RemoveRange(0, Constants.WEAPON_COUNT_FISH_YELLOW);
+                //items["NORMALCORAL"].RemoveRange(0, Constants.WEAPON_COUNT_CORAL_NORMAL);
+                //items["TREECORAL"].RemoveRange(0, Constants.WEAPON_COUNT_CORAL_TREE);
+                //items["NORMALFISH"].RemoveRange(0, Constants.WEAPON_COUNT_FISH_NORMAL);
+                //items["YELLOWFISH"].RemoveRange(0, Constants.WEAPON_COUNT_FISH_YELLOW);
                 MessageBox.Show("Weapon crafted!");
                 HasWeapon = true;
             }
