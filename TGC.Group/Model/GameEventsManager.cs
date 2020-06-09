@@ -47,7 +47,7 @@ namespace TGC.Group.Model
                 timeBetweenAttacks -= elapsedTime;
                 if (timeBetweenAttacks <= 0)
                 {
-                    status.Reset();
+                    if (status.IsDead) status.Reset();
                     Shark.ActivateShark(this);
                     SharkIsAttacking = true;
                     timeBetweenAttacks = Constants.TIME_BETWEEN_ATTACKS;
