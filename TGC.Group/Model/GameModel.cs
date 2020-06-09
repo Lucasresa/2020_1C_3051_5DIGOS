@@ -246,6 +246,7 @@ namespace TGC.Group.Model
             if (Input.keyPressed(Key.I)) Draw2DManager.ActiveInventory = camera.Lock =
                     FullQuad.RenderPDA = ActiveInventory = !ActiveInventory;
             if (!ActiveInventory) UpdateEvents();
+            ObjectManager.Character.RestartBodySpeed();
             if (Input.keyPressed(Key.E)) ObjectManager.Character.Teleport();
             UpdateFlags();
             UpdateInfoItemCollect();

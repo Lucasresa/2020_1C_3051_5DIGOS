@@ -98,7 +98,7 @@ namespace TGC.Group.Model.Objects
 
         public void Respawn() => ChangePosition(Constants.INDOOR_POSITION);
 
-        private void RestartBodySpeed()
+        public void RestartBodySpeed()
         {
             Body.LinearVelocity = Vector3.Zero;
             Body.AngularVelocity = Vector3.Zero;
