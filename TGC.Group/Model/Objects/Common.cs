@@ -1,8 +1,11 @@
 ﻿using BulletSharp;
 using Microsoft.DirectX.Direct3D;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.BulletPhysics;
+using TGC.Core.Collision;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 
@@ -158,6 +161,15 @@ namespace TGC.Group.Model.Objects
             ListOres.ForEach(ore => { ore.Mesh.Effect = fogShader; ore.Mesh.Technique = technique; });
             ListRock.ForEach(rock => { rock.Mesh.Effect = fogShader; rock.Mesh.Technique = technique; });
             ListFishes.ForEach(fish => { fish.Mesh.Effect = fogShader; fish.Mesh.Technique = technique; });
+        }
+
+        public List<TgcMesh> AllMeshes()
+        {
+            var meshes = new List<TypeCommon>();
+            meshes.AddRange(ListCorals);
+            meshes.AddRange(ListOres);
+            meshes.AddRange(ListRock);
+            return meshes.Select(mesh => mesh.Mesh).ToList();
         }
     }
 }

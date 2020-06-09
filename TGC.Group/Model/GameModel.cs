@@ -256,7 +256,7 @@ namespace TGC.Group.Model
         private void UpdateEvents()
         {
             ObjectManager.UpdateCharacter();
-            ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
+            ObjectManager.Update(ElapsedTime, TimeBetweenUpdates, Frustum);
             EventsManager.Update(ElapsedTime, ObjectManager.Fishes, SharkStatus);
             InventoryManager.AddItem(ObjectManager.ItemSelected);
             Draw2DManager.ItemHistory = InventoryManager.ItemHistory;
