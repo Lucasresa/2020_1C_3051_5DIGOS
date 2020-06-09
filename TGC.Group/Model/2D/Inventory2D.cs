@@ -65,10 +65,12 @@ namespace TGC.Group.Model._2D
         private void CalculateItemPosition(ref List<(DrawSprite sprite, DrawText text)> inventory)
         {
             TGCVector2 scale;
-            if (Constants.SCREEN_WIDTH > 1366)
-                scale = new TGCVector2(1.2f, 1.2f);
-            else
+            if (Constants.SCREEN_WIDTH < 1366)
                 scale = new TGCVector2(0.732f, 0.783f);
+            else if (FastUtils.IsNumberBetweenInterval(Constants.SCREEN_WIDTH, (1366, 1700)))
+                scale = new TGCVector2(0.9f, 0.9f);
+            else
+                scale = new TGCVector2(1.2f, 1.2f);
 
             Size = new TGCVector2(100 * scale.X, 100 * scale.Y);
             TGCVector2 initialPosition = new TGCVector2(Constants.SCREEN_WIDTH * 0.39f, Constants.SCREEN_HEIGHT * 0.35f);
