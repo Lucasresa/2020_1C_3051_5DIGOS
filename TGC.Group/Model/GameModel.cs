@@ -255,7 +255,7 @@ namespace TGC.Group.Model
 
         private void UpdateEvents()
         {
-            ObjectManager.UpdateCharacter();
+            ObjectManager.UpdateCharacter(ElapsedTime);
             ObjectManager.Update(ElapsedTime, TimeBetweenUpdates, Frustum);
             EventsManager.Update(ElapsedTime, ObjectManager.Fishes, SharkStatus);
             InventoryManager.AddItem(ObjectManager.ItemSelected);
@@ -310,8 +310,6 @@ namespace TGC.Group.Model
             Draw2DManager.NearObjectForSelect = ObjectManager.NearObjectForSelect;
             Draw2DManager.ShowInfoItemCollect = ObjectManager.ShowInfoItemCollect;
         }
-
-
         #endregion
     }
 }

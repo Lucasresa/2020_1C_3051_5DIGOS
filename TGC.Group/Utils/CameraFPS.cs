@@ -33,6 +33,7 @@ namespace TGC.Group.Utils
             var d3Instance = D3DDevice.Instance;
             d3Instance.Device.Transform.Projection = TGCMatrix.PerspectiveFovLH(d3Instance.FieldOfView, d3Instance.AspectRatio,
                                                      d3Instance.ZNearPlaneDistance, d3Instance.ZFarPlaneDistance * 3f).ToMatrix();
+            Position.Y = -1;
         }
 
         public override void UpdateCamera(float elapsedTime)

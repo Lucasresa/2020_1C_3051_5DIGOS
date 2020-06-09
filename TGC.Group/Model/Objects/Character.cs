@@ -94,7 +94,6 @@ namespace TGC.Group.Model.Objects
             Movement(director, sideDirector, speed);
             if (Input.keyDown(Key.LeftControl)) Body.LinearVelocity = Vector3.UnitY * -speed;
             if (Input.keyDown(Key.Space)) Body.LinearVelocity = Vector3.UnitY * speed;
-               
         }
 
         public void Respawn() => ChangePosition(Constants.INDOOR_POSITION);
@@ -118,7 +117,7 @@ namespace TGC.Group.Model.Objects
             if (NearShip) ChangePosition(Constants.INDOOR_POSITION);
         }
 
-        public void Update(Ray ray, TgcMesh shark)
+        public void Update(Ray ray, TgcMesh shark, float elapsedTime)
         {
             var speed = Constants.MOVEMENT_SPEED;
             var director = Camera.Direction.ToBulletVector3();
@@ -148,6 +147,17 @@ namespace TGC.Group.Model.Objects
 
             Body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * Gravity;
             Camera.Position = new TGCVector3(Body.CenterOfMassPosition) + Constants.CAMERA_HEIGHT;
+
+            if (InHand == 1)
+                Weapon.Update(new TGCVector3(director), elapsedTime);
+
+            if (Input.keyPressed(Key.D0))
+                InHand = 0;
+
+            if (HasWeapon && Input.keyPressed(Key.D1))
+                InHand = 1;
         }
+
+        public void Render() { if(InHand == 1) Weapon.Render(); }
     }
 }

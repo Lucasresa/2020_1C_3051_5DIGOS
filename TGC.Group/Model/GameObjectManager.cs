@@ -71,7 +71,7 @@ namespace TGC.Group.Model
             MeshBuilder = new MeshBuilder(Terrain, Water);
             Shark = new Shark(MediaDir, Skybox, Terrain, Camera);
             Character = new Character(Camera, Input);
-            Weapon = new Weapon(MediaDir, ShadersDir, Camera);
+            Weapon = new Weapon(MediaDir, Camera);
             Vegetation = new Vegetation(MediaDir);
             Common = new Common(MediaDir);
             Fishes = Common.ListFishes.Select(mesh => new Fish(MediaDir, Skybox, Terrain, mesh)).ToList();
@@ -106,10 +106,8 @@ namespace TGC.Group.Model
             MeshesToRender = new List<TgcMesh>();
         }
 
-        internal void CreateBulletCallbacks(CharacterStatus characterStatus)
-        {
+        public void CreateBulletCallbacks(CharacterStatus characterStatus) =>
             PhysicalWorld.AddContactPairTest(Shark.Body, Character.Body, new SharkAttackCallback(Shark, characterStatus));
-        }
 
         public void Dispose()
         {
@@ -127,7 +125,7 @@ namespace TGC.Group.Model
 
         public void Render()
         {
-            RenderCharacterHand();
+            Character.Render();
             
             if (Character.IsInsideShip)
                 Ship.RenderIndoorShip();
@@ -140,8 +138,6 @@ namespace TGC.Group.Model
                 Shark.Render();
                 MeshesToRender.ForEach(mesh => mesh.Render());
                 Fishes.ForEach(fish => fish.Render());
-                //Common.Render();
-                //Vegetation.Render();
                 Water.Render();
             }
         }
@@ -155,9 +151,7 @@ namespace TGC.Group.Model
             Skybox.Update();
             Shark.Update(elapsedTime);
             Water.Update(elapsedTime);
-            Terrain.Update(elapsedTime);
-
-            UpdateCharacterHand(elapsedTime);
+            Terrain.Update(elapsedTime);           
 
             Character.LooksAtTheHatch = Ray.IntersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
             Character.CanAttack = Ray.IntersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
@@ -167,12 +161,9 @@ namespace TGC.Group.Model
             DetectSelectedItem();
         }
 
-        public void AddWeaponToCharacter()
-        {
-            Character.Weapon = Weapon;
-        }
+        public void AddWeaponToCharacter() => Character.Weapon = Weapon;
 
-        public void UpdateCharacter() => Character.Update(Ray, Shark.Mesh);
+        public void UpdateCharacter(float elapsedTime) => Character.Update(Ray, Shark.Mesh, elapsedTime);
 
         private void DetectSelectedItem()
         {
@@ -215,27 +206,7 @@ namespace TGC.Group.Model
                 Fishes.Remove(item);
                 Common.ListFishes.Remove(item.Mesh);
             }
-        }
-
-        private void RenderCharacterHand()
-        {
-            if (Character.InHand == 1)
-                Weapon.Render();
-            //if(Character.InHand == 2)
-                //Render para pescar
-        }
-
-        private void UpdateCharacterHand(float elapsedTime)
-        {
-            if (Character.InHand == 1)
-                Weapon.Update(elapsedTime);
-
-            if (Input.keyPressed(Key.D0))
-                Character.InHand = 0;
-
-            if (Character.HasWeapon && Input.keyPressed(Key.D1))
-                Character.InHand = 1;
-        }
+        }       
 
         private List<TgcMesh> FilterMeshes(TgcFrustum frustum)
         {
@@ -250,6 +221,5 @@ namespace TGC.Group.Model
                         TgcCollisionUtils.classifyFrustumAABB(frustum, mesh.BoundingBox) != 0).ToList());
             return meshes;
         }
-
     }
 }
