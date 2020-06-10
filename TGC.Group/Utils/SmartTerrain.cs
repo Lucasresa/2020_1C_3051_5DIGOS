@@ -22,7 +22,7 @@ namespace TGC.Group.Utils
         private VertexBuffer VertexTerrain;
         private CustomVertex.PositionTextured[] Vertex;
         private Texture Texture;
-        private readonly TgcBoundingAxisAlignBox aabb;
+        public TgcBoundingAxisAlignBox BoundingBox { get; private set; }
         private int VertexTotal { get; set; }
         public Effect Effect { get; set; }
         private float TimeForWaves = 0;
@@ -31,7 +31,7 @@ namespace TGC.Group.Utils
 
         public SmartTerrain()
         {
-            aabb = new TgcBoundingAxisAlignBox();
+            BoundingBox = new TgcBoundingAxisAlignBox();
         }
         public void LoadTexture(string path)
         {
@@ -136,15 +136,15 @@ namespace TGC.Group.Utils
                 }
                 VertexTerrain.SetData(Vertex, 0, LockFlags.None);
 
-                var pMin = new TGCVector3(HeightmapData.GetLength(0)/2 * -ScaleXZ,
+                var size = HeightmapData.GetLength(0) / 2;
+                var pMin = new TGCVector3(size * -ScaleXZ,
                                             MinIntensity * ScaleY,
-                                            HeightmapData.GetLength(1)/2 * -ScaleXZ);
-                var pMax = new TGCVector3(HeightmapData.GetLength(0)/2 * ScaleXZ,
+                                            size * -ScaleXZ);
+                var pMax = new TGCVector3(size * ScaleXZ,
                                             MaxIntensity * ScaleY,
-                                            HeightmapData.GetLength(1)/2 * ScaleXZ);
+                                            size * ScaleXZ);
 
-                aabb.setExtremes(pMin, pMax);
-
+                BoundingBox.setExtremes(pMin, pMax);
             }
         }
 

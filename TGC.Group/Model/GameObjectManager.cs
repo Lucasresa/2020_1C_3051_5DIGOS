@@ -14,6 +14,7 @@ using Effect = Microsoft.DirectX.Direct3D.Effect;
 using TGC.Core.SceneLoader;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Collision;
+using TGC.Examples.Optimization.Quadtree;
 
 namespace TGC.Group.Model
 {
@@ -41,7 +42,7 @@ namespace TGC.Group.Model
         public bool NearObjectForSelect { get; set; }
         public bool ShowInfoItemCollect { get; set; }
         public bool ShowScene { get; set; }
-        public List<TgcMesh> MeshesToRender { get; private set; }
+        public Quadtree QuadTree { get; private set; } = new Quadtree();
 
         public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input)
         {
@@ -103,7 +104,9 @@ namespace TGC.Group.Model
             Common.SetShader(FogShader, "Fog");
             Shark.SetShader(FogShader, "Fog");
             Vegetation.SetShader(FogShader, "FogVegetation");
-            MeshesToRender = new List<TgcMesh>();
+
+            QuadTree.create(GetStaticMeshes(), Terrain.world.BoundingBox);
+            
         }
 
         public void CreateBulletCallbacks(CharacterStatus characterStatus) =>
@@ -123,7 +126,7 @@ namespace TGC.Group.Model
             Weapon.Dispose();
         }
 
-        public void Render()
+        public void Render(TgcFrustum frustum)
         {
             Character.Render();
             
@@ -136,17 +139,15 @@ namespace TGC.Group.Model
                 Skybox.Render(Terrain.SizeWorld());
                 Terrain.Render();
                 Shark.Render();
-                MeshesToRender.ForEach(mesh => mesh.Render());
+                QuadTree.render(frustum, false);
                 Fishes.ForEach(fish => fish.Render());
                 Water.Render();
             }
         }
 
-        public void Update(float elapsedTime, float timeBeetweenUpdate, TgcFrustum frustum)
+        public void Update(float elapsedTime, float timeBeetweenUpdate)
         {
             PhysicalWorld.dynamicsWorld.StepSimulation(elapsedTime, maxSubSteps: 10, timeBeetweenUpdate);
-            if (Character.IsOutsideShip)
-                MeshesToRender = FilterMeshes(frustum);
             Fishes.ForEach(fish => fish.Update(elapsedTime, Camera));
             Skybox.Update();
             Shark.Update(elapsedTime);
@@ -193,6 +194,7 @@ namespace TGC.Group.Model
                 ShowInfoItemCollect = true;
                 ItemSelected = item.Name;
                 PhysicalWorld.RemoveBodyToTheWorld(item.Body);
+                QuadTree.RemoveMesh(item.Mesh);
                 if (item.Name.Contains("CORAL")) Common.ListCorals.Remove(item);
                 else Common.ListOres.Remove(item);
             }
@@ -208,17 +210,11 @@ namespace TGC.Group.Model
             }
         }       
 
-        private List<TgcMesh> FilterMeshes(TgcFrustum frustum)
+        private List<TgcMesh> GetStaticMeshes()
         {
             var meshes = new List<TgcMesh>();
-            meshes.AddRange(Common.AllMeshes().Where(mesh => 
-                                    TGCVector3.Length(mesh.Position - Camera.Position) < 10000 &&
-                                    TgcCollisionUtils.classifyFrustumAABB(frustum, mesh.BoundingBox) != 0).ToList());
-
-            meshes.AddRange(Vegetation.ListAlgas.Select(mesh => mesh.Mesh).
-                    Where(mesh =>
-                        TGCVector3.Length(mesh.Position - Camera.Position) < 10000 &&
-                        TgcCollisionUtils.classifyFrustumAABB(frustum, mesh.BoundingBox) != 0).ToList());
+            meshes.AddRange(Common.AllMeshes());
+            meshes.AddRange(Vegetation.ListAlgas.Select(mesh => mesh.Mesh));
             return meshes;
         }
     }
