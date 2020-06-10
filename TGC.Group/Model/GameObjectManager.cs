@@ -14,7 +14,7 @@ using Effect = Microsoft.DirectX.Direct3D.Effect;
 using TGC.Core.SceneLoader;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Collision;
-using TGC.Examples.Optimization.Quadtree;
+using TGC.Model.Optimization.Quadtree;
 
 namespace TGC.Group.Model
 {
@@ -42,7 +42,7 @@ namespace TGC.Group.Model
         public bool NearObjectForSelect { get; set; }
         public bool ShowInfoItemCollect { get; set; }
         public bool ShowScene { get; set; }
-        public Quadtree QuadTree { get; private set; } = new Quadtree();
+        public Quadtree QuadTree { get; private set; }
 
         public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input)
         {
@@ -51,6 +51,7 @@ namespace TGC.Group.Model
             Camera = camera;
             Input = input;
             Ray = new Ray(input);
+            QuadTree = new Quadtree();
             InitializerObjects();
         }
 
@@ -105,6 +106,7 @@ namespace TGC.Group.Model
             Shark.SetShader(FogShader, "Fog");
             Vegetation.SetShader(FogShader, "FogVegetation");
 
+            QuadTree.Camera = Camera;
             QuadTree.create(GetStaticMeshes(), Terrain.world.BoundingBox);
             
         }
@@ -139,7 +141,7 @@ namespace TGC.Group.Model
                 Skybox.Render(Terrain.SizeWorld());
                 Terrain.Render();
                 Shark.Render();
-                QuadTree.render(frustum, false);
+                QuadTree.Render(frustum, false);
                 Fishes.ForEach(fish => fish.Render());
                 Water.Render();
             }

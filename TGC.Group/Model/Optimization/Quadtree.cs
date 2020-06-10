@@ -1,11 +1,13 @@
 using System.Collections.Generic;
 using TGC.Core.BoundingVolumes;
+using TGC.Core.Camara;
 using TGC.Core.Collision;
 using TGC.Core.Geometry;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
+using TGC.Group.Utils;
 
-namespace TGC.Examples.Optimization.Quadtree
+namespace TGC.Model.Optimization.Quadtree
 {
     /// <summary>
     ///     Herramienta para crear y utilizar un Quadtree para renderizar por Frustum Culling
@@ -17,6 +19,7 @@ namespace TGC.Examples.Optimization.Quadtree
         private List<TgcMesh> modelos;
         private QuadtreeNode quadtreeRootNode;
         private TgcBoundingAxisAlignBox sceneBounds;
+        public CameraFPS Camera { get; set; }
 
         public Quadtree()
         {
@@ -54,7 +57,7 @@ namespace TGC.Examples.Optimization.Quadtree
         /// <summary>
         ///     Renderizar en forma optimizado utilizando el Quadtree para hacer FrustumCulling
         /// </summary>
-        public void render(TgcFrustum frustum, bool debugEnabled)
+        public void Render(TgcFrustum frustum, bool debugEnabled)
         {
             var pMax = sceneBounds.PMax;
             var pMin = sceneBounds.PMin;
@@ -130,6 +133,11 @@ namespace TGC.Examples.Optimization.Quadtree
             var caja = new TgcBoundingAxisAlignBox(
                 new TGCVector3(boxLowerX, boxLowerY, boxLowerZ),
                 new TGCVector3(boxUpperX, boxUpperY, boxUpperZ));
+
+            var distanceToCamera = caja.calculateBoxCenter() - Camera.Position;
+            if (TGCVector3.Length(distanceToCamera) > 10000 + caja.calculateBoxRadius())
+                return;
+
             var c = TgcCollisionUtils.classifyFrustumAABB(frustum, caja);
 
             //complementamente adentro: cargar todos los hijos directamente, sin testeos

@@ -1,6 +1,6 @@
 using TGC.Core.SceneLoader;
 
-namespace TGC.Examples.Optimization.Quadtree
+namespace TGC.Model.Optimization.Quadtree
 {
     /// <summary>
     ///     Nodo del árbol Quadtree

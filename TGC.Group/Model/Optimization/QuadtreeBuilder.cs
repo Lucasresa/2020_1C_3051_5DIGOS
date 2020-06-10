@@ -8,7 +8,7 @@ using TGC.Core.Geometry;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 
-namespace TGC.Examples.Optimization.Quadtree
+namespace TGC.Model.Optimization.Quadtree
 {
     /// <summary>
     ///     Herramienta para construir un Quadtree
