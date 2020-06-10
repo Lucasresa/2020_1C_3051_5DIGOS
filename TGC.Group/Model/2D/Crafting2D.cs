@@ -88,14 +88,14 @@ namespace TGC.Group.Model._2D
         {
             TGCVector2 scale;
             if (Constants.SCREEN_WIDTH < 1366)
-                scale = new TGCVector2(0.732f / 2, 0.783f / 2);
+                scale = new TGCVector2(0.8f / 1.85f, 0.8f / 1.85f);
             else if (FastUtils.IsNumberBetweenInterval(Constants.SCREEN_WIDTH, (1366, 1700)))
-                scale = new TGCVector2(0.9f / 2, 0.9f / 2);
+                scale = new TGCVector2(0.9f / 1.85f, 0.9f / 1.85f);
             else
-                scale = new TGCVector2(1.2f / 2, 1.2f / 2);
+                scale = new TGCVector2(1.2f / 1.85f, 1.2f / 1.85f);
 
             Size = new TGCVector2(100 * scale.X, 100 * scale.Y);
-            TGCVector2 initialPosition = new TGCVector2(Constants.SCREEN_WIDTH * 0.39f, Constants.SCREEN_HEIGHT * 0.35f);
+            TGCVector2 initialPosition = new TGCVector2(Constants.SCREEN_WIDTH * 0.39f, Constants.SCREEN_HEIGHT * 0.30f);
 
             var columns = 8;
             var count = 1;
@@ -122,7 +122,7 @@ namespace TGC.Group.Model._2D
                 InventoryItems[index].text.Position = new TGCVector2(InventoryItems[index].sprite.Position.X + Size.X, InventoryItems[index].sprite.Position.Y + Size.Y + 10);
             }
 
-            InventoryText.Position = new TGCVector2(InventoryItems[0].sprite.Position.X, InventoryItems[0].sprite.Position.Y - 60);
+            InventoryText.Position = new TGCVector2(InventoryItems[0].sprite.Position.X, InventoryItems[0].sprite.Position.Y - 40);
             CraftingText.Position = new TGCVector2(InventoryItems[0].sprite.Position.X, InventoryItems[0].text.Position.Y + 40);
         }
 
@@ -130,17 +130,17 @@ namespace TGC.Group.Model._2D
         {
             TGCVector2 scale;
             if (Constants.SCREEN_WIDTH < 1366)
-                scale = new TGCVector2(0.8f / 2, 0.8f / 2);
+                scale = new TGCVector2(0.8f / 1.5f, 0.8f / 1.5f);
             else if (FastUtils.IsNumberBetweenInterval(Constants.SCREEN_WIDTH, (1366, 1700)))
-                scale = new TGCVector2(1f / 2, 1f / 2);
+                scale = new TGCVector2(1f / 1.5f, 1f / 1.5f);
             else
-                scale = new TGCVector2(1.3f / 2, 1.3f / 2);
+                scale = new TGCVector2(1.3f / 1.5f, 1.3f / 1.5f);
 
             var Size = new TGCVector2(100 * scale.X, 100 * scale.Y);
             TGCVector2 position = new TGCVector2(InventoryItems[1].sprite.Position.X, CraftingText.Position.Y + 30);                       
             
             CraftingItems[0].sprite.SetInitialScallingAndPosition(scale, position);
-            CraftingItems[0].button.ChangePosition(new TGCVector2(InventoryItems[5].sprite.Position.X, position.Y + (Size.Y - CraftingItems[0].button.SizeText.Y) / 2));
+            CraftingItems[0].button.ChangePosition(new TGCVector2(InventoryItems[5].sprite.Position.X, position.Y - 10 + (Size.Y - CraftingItems[0].button.SizeText.Y) / 2));
 
             for (int index = 1; index < CraftingItems.Count; index++)
             {
@@ -148,7 +148,7 @@ namespace TGC.Group.Model._2D
                 position.Y = CraftingItems[index - 1].sprite.Position.Y + Size.Y + 30;
 
                 CraftingItems[index].sprite.SetInitialScallingAndPosition(scale, position);
-                CraftingItems[index].button.ChangePosition(new TGCVector2(InventoryItems[5].sprite.Position.X, position.Y + (Size.Y - CraftingItems[0].button.SizeText.Y) / 2));
+                CraftingItems[index].button.ChangePosition(new TGCVector2(InventoryItems[5].sprite.Position.X, position.Y - 10 + (Size.Y - CraftingItems[0].button.SizeText.Y) / 2));
             }
         }
 
