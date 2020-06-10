@@ -317,6 +317,8 @@ namespace TGC.Group.Model
         private void CraftWeapon()
         {
             ObjectManager.Character.HasWeapon = GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
+            if (!ObjectManager.Character.HasWeapon)
+                MessageBox.Show("Insufficient materials");
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
         }
 
@@ -325,13 +327,16 @@ namespace TGC.Group.Model
             CharacterStatus.HasDivingHelmet = ObjectManager.Character.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
             if (CharacterStatus.HasDivingHelmet)
                 CharacterStatus.UpdateOxygenMax();
-
+            else
+                MessageBox.Show("Insufficient materials");
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
         }
 
         private void CraftSkillFish()
         {
             ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
+            if (!ObjectManager.Character.CanFish)
+                MessageBox.Show("Insufficient materials");
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
         }
 

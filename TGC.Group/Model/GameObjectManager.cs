@@ -202,6 +202,7 @@ namespace TGC.Group.Model
         {
             if (Input.keyPressed(Key.E))
             {
+                ShowInfoItemCollect = true;
                 ItemSelected = item.Mesh.Name;
                 Fishes.Remove(item);
                 Common.ListFishes.Remove(item.Mesh);
