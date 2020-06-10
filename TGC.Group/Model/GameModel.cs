@@ -252,6 +252,7 @@ namespace TGC.Group.Model
             UpdateInfoItemCollect();
             if (Input.keyPressed(Key.P)) ObjectManager.Character.CanFish = ObjectManager.Character.HasWeapon =
                 ObjectManager.Character.HasDivingHelmet = true;
+            Draw2DManager.Crafting.Input = Input;
         }
 
         private void UpdateEvents()
@@ -282,6 +283,7 @@ namespace TGC.Group.Model
             ObjectManager.Character.AttackedShark = SharkStatus.DamageReceived;
             Draw2DManager.Update();
             Draw2DManager.Inventory.UpdateItems(InventoryManager.Items);
+            Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
         }
 
         private void UpdateInfoItemCollect()
@@ -299,8 +301,9 @@ namespace TGC.Group.Model
 
         private void UpdateFlags()
         {
+            Draw2DManager.CanCraft = CanCraftObjects;
             if (CanCraftObjects && Draw2DManager.ActiveInventory)
-            {
+            {               
                 if (Input.keyPressed(Key.M)) ObjectManager.Character.HasWeapon = GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
                 if (Input.keyPressed(Key.N)) ObjectManager.Character.HasDivingHelmet = CharacterStatus.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
                 if (Input.keyPressed(Key.B)) ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);

@@ -22,7 +22,7 @@ namespace TGC.Group.Model._2D
         private readonly string MediaDir;
         private bool HasItems;
         private readonly DrawText InventoryText;
-        private List<(DrawSprite sprite, DrawText text)> InventoryItems;
+        private readonly List<(DrawSprite sprite, DrawText text)> InventoryItems;
 
         private TGCVector2 Size;
 
@@ -51,7 +51,7 @@ namespace TGC.Group.Model._2D
             InventoryItems.Add(InitializerItems("IRON"));
             InventoryItems.Add(InitializerItems("NORMALFISH"));
             InventoryItems.Add(InitializerItems("YELLOWFISH"));            
-            CalculateItemPosition(ref InventoryItems);
+            CalculateItemPosition();
         }       
                 
         private (DrawSprite, DrawText) InitializerItems(string sprite)
@@ -62,7 +62,7 @@ namespace TGC.Group.Model._2D
             return (item, text);
         }
 
-        private void CalculateItemPosition(ref List<(DrawSprite sprite, DrawText text)> inventory)
+        private void CalculateItemPosition()
         {
             TGCVector2 scale;
             if (Constants.SCREEN_WIDTH < 1366)
@@ -78,14 +78,14 @@ namespace TGC.Group.Model._2D
             var columns = 4;
             var count = 1;
             var position = initialPosition;
-            inventory[0].sprite.SetInitialScallingAndPosition(scale, position);
+            InventoryItems[0].sprite.SetInitialScallingAndPosition(scale, position);
 
-            for (int index = 1; index < inventory.Count; index++)
+            for (int index = 1; index < InventoryItems.Count; index++)
             {
                 if (count < columns)
                 {
-                    position.X = inventory[index - 1].sprite.Position.X + Size.X + 80;
-                    position.Y = inventory[index - 1].sprite.Position.Y;
+                    position.X = InventoryItems[index - 1].sprite.Position.X + Size.X + 80;
+                    position.Y = InventoryItems[index - 1].sprite.Position.Y;
                 }
                 else
                 {
@@ -95,10 +95,10 @@ namespace TGC.Group.Model._2D
                 }
                     
                 count++;
-                inventory[index].sprite.SetInitialScallingAndPosition(scale, position);
+                InventoryItems[index].sprite.SetInitialScallingAndPosition(scale, position);
             }
-
         }
+
         public void Render()
         {
             InventoryText.Render();

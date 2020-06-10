@@ -47,6 +47,25 @@ namespace TGC.Group.Utils
             ButtonText.SetTextAndPosition(text, position: Position + SizeText);
         }
 
+        public void ChangePosition(TGCVector2 position)
+        {
+            MarkedButton.Position = UnmarkedButton.Position = Position = position;
+            ButtonText.Position = position + SizeText;
+        }
+
+        public void InitializerButton(string text, TGCVector2 scale, TGCVector2 position)
+        {
+            Scale = scale;
+            Position = position;
+            MarkedButton.SetImage("marked.png");
+            MarkedButton.SetInitialScallingAndPosition(scale, position);
+            UnmarkedButton.SetImage("unmarked.png");
+            UnmarkedButton.SetInitialScallingAndPosition(scale, position);
+            Size = MarkedButton.Size;
+            SizeText = new TGCVector2(335 * scale.X * 0.6f, 66 * scale.Y * 0.5f);
+            ButtonText.SetTextAndPosition(text, position: Position + SizeText);
+        }
+
         public void Dispose()
         {
             ButtonText.Dispose();

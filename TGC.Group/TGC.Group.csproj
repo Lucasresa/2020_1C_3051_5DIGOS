@@ -104,6 +104,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
+    <Compile Include="Model\2D\Crafting2D.cs" />
     <Compile Include="Model\Callbacks\SharkAttackCallback.cs" />
     <Compile Include="Model\2D\Character2D.cs" />
     <Compile Include="Model\2D\Inventory2D.cs" />

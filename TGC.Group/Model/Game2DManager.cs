@@ -76,11 +76,13 @@ namespace TGC.Group.Model
         private readonly DrawText DistanceShipLocation;
 
         public Inventory2D Inventory { get; set; }
+        public Crafting2D Crafting { get; set; }
         public Character2D Character { get; set; }
         public Shark2D Shark { get; set; }
         public float ItemHistoryTime => Constants.TIME_HISTORY_TEXT;
         public float DistanceWithShip { get; set; }
         public bool ActiveInventory { get; set; }
+        public bool CanCraft { get; set; }
         public bool ShowHelp { get; set; }
         public bool ShowInfoExitShip { get; set; }
         public bool ShowInfoEnterShip { get; set; }
@@ -100,6 +102,7 @@ namespace TGC.Group.Model
             Pointer = new DrawSprite(MediaDir);
             MousePointer = new DrawSprite(MediaDir);
             Inventory = new Inventory2D(MediaDir);
+            Crafting = new Crafting2D(MediaDir);
             InstructionText = new DrawText();
             HelpText = new DrawText();
             ShipText = new DrawText();
@@ -227,7 +230,10 @@ namespace TGC.Group.Model
             }
             else
             {
-                Inventory.Render();
+                if (CanCraft)
+                    Crafting.Render();
+                else
+                    Inventory.Render();
                 RenderMousePointer();
             }
         }
