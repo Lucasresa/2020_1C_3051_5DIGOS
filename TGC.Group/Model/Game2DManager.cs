@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using TGC.Core.Direct3D;
+using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Group.Model._2D;
 using TGC.Group.Model.Status;
@@ -93,7 +94,7 @@ namespace TGC.Group.Model
 
         public List<string> ItemHistory { get; set; }
 
-        public Game2DManager(string mediaDir, CharacterStatus character, SharkStatus shark)
+        public Game2DManager(string mediaDir, CharacterStatus character, SharkStatus shark, TgcD3dInput input)
         {
             MediaDir = mediaDir;
             Character = new Character2D(mediaDir, character);
@@ -102,7 +103,7 @@ namespace TGC.Group.Model
             Pointer = new DrawSprite(MediaDir);
             MousePointer = new DrawSprite(MediaDir);
             Inventory = new Inventory2D(MediaDir);
-            Crafting = new Crafting2D(MediaDir);
+            Crafting = new Crafting2D(MediaDir, input);
             InstructionText = new DrawText();
             HelpText = new DrawText();
             ShipText = new DrawText();

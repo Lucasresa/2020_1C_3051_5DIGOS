@@ -23,13 +23,14 @@ namespace TGC.Group.Model._2D
         private readonly DrawText InventoryText;
         private readonly DrawText CraftingText;
         private readonly List<(DrawSprite sprite, DrawText text)> InventoryItems;
-        private readonly List<(DrawSprite sprite, DrawButton button)> CraftingItems;
+        public List<(DrawSprite sprite, DrawButton button)> CraftingItems;
 
         private TGCVector2 Size;
         public TgcD3dInput Input { get; set; }
 
-        public Crafting2D(string mediaDir)
+        public Crafting2D(string mediaDir, TgcD3dInput input)
         {
+            Input = input;
             MediaDir = mediaDir;
             InventoryText = new DrawText();
             CraftingText = new DrawText();
@@ -150,6 +151,9 @@ namespace TGC.Group.Model._2D
                 CraftingItems[index].button.ChangePosition(new TGCVector2(InventoryItems[5].sprite.Position.X, position.Y + (Size.Y - CraftingItems[0].button.SizeText.Y) / 2));
             }
         }
+
+        public void UpdateItemsCrafting() =>
+            CraftingItems.ForEach(item => item.button.Update());
 
         public void Render()
         {

@@ -113,8 +113,11 @@ namespace TGC.Group.Model
             CharacterStatus = new CharacterStatus(ObjectManager.Character);
             SharkStatus = new SharkStatus();
             EventsManager = new GameEventsManager(ObjectManager.Shark, ObjectManager.Character);
-            Draw2DManager = new Game2DManager(MediaDir, CharacterStatus, SharkStatus);
+            Draw2DManager = new Game2DManager(MediaDir, CharacterStatus, SharkStatus, Input);
             InventoryManager = new GameInventoryManager();
+            Draw2DManager.Crafting.CraftingItems[0].button.Action = CraftSkillFish;
+            Draw2DManager.Crafting.CraftingItems[1].button.Action = CraftWeapon;
+            Draw2DManager.Crafting.CraftingItems[2].button.Action = CraftDivingHelmet;
         }
 
         private void InitializerState()
@@ -251,8 +254,7 @@ namespace TGC.Group.Model
             UpdateFlags();
             UpdateInfoItemCollect();
             if (Input.keyPressed(Key.P)) ObjectManager.Character.CanFish = ObjectManager.Character.HasWeapon =
-                ObjectManager.Character.HasDivingHelmet = true;
-            Draw2DManager.Crafting.Input = Input;
+                ObjectManager.Character.HasDivingHelmet = true;            
         }
 
         private void UpdateEvents()
@@ -302,18 +304,25 @@ namespace TGC.Group.Model
         private void UpdateFlags()
         {
             Draw2DManager.CanCraft = CanCraftObjects;
-            if (CanCraftObjects && Draw2DManager.ActiveInventory)
-            {               
-                if (Input.keyPressed(Key.M)) ObjectManager.Character.HasWeapon = GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
-                if (Input.keyPressed(Key.N)) ObjectManager.Character.HasDivingHelmet = CharacterStatus.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
-                if (Input.keyPressed(Key.B)) ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
-            }
+            if (CanCraftObjects && Draw2DManager.ActiveInventory)                      
+                Draw2DManager.Crafting.UpdateItemsCrafting();
+            
 
             Draw2DManager.ShowInfoExitShip = ObjectManager.Character.LooksAtTheHatch;
             Draw2DManager.ShowInfoEnterShip = ObjectManager.Character.NearShip;
             Draw2DManager.NearObjectForSelect = ObjectManager.NearObjectForSelect;
             Draw2DManager.ShowInfoItemCollect = ObjectManager.ShowInfoItemCollect;
         }
+
+        private void CraftWeapon() =>
+            ObjectManager.Character.HasWeapon = GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
+
+        private void CraftDivingHelmet() =>
+            ObjectManager.Character.HasDivingHelmet = CharacterStatus.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
+
+        private void CraftSkillFish() =>
+            ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
+
         #endregion
     }
 }
