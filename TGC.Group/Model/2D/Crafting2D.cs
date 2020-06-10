@@ -60,9 +60,9 @@ namespace TGC.Group.Model._2D
             InventoryItems.Add(InitializerItems("YELLOWFISH"));
             CalculateItemPosition();
             CraftingText.Text = "Crafting:";
-            CraftingItems.Add(InitializerCraftItem("NORMALCORAL"));
-            CraftingItems.Add(InitializerCraftItem("NORMALCORAL"));
-            CraftingItems.Add(InitializerCraftItem("NORMALCORAL"));
+            CraftingItems.Add(InitializerCraftItem("CATCHFISH"));
+            CraftingItems.Add(InitializerCraftItem("WEAPON"));
+            CraftingItems.Add(InitializerCraftItem("OXYGEN"));
             CalculateCraftItemPosition();
         }
 
@@ -130,11 +130,11 @@ namespace TGC.Group.Model._2D
         {
             TGCVector2 scale;
             if (Constants.SCREEN_WIDTH < 1366)
-                scale = new TGCVector2(0.732f / 2, 0.783f / 2);
+                scale = new TGCVector2(0.8f / 2, 0.8f / 2);
             else if (FastUtils.IsNumberBetweenInterval(Constants.SCREEN_WIDTH, (1366, 1700)))
-                scale = new TGCVector2(0.9f / 2, 0.9f / 2);
+                scale = new TGCVector2(1f / 2, 1f / 2);
             else
-                scale = new TGCVector2(1.2f / 2, 1.2f / 2);
+                scale = new TGCVector2(1.3f / 2, 1.3f / 2);
 
             var Size = new TGCVector2(100 * scale.X, 100 * scale.Y);
             TGCVector2 position = new TGCVector2(InventoryItems[1].sprite.Position.X, CraftingText.Position.Y + 30);                       
