@@ -49,7 +49,7 @@ namespace TGC.Group.Model
         private Game2DManager PointerAndInstruction;
         private CharacterStatus CharacterStatus;
         private SharkStatus SharkStatus;
-        
+
         private bool ActiveInventory { get; set; }
         private bool ExitGame { get; set; }
         private bool CanCraftObjects => ObjectManager.Character.IsInsideShip;
@@ -85,7 +85,7 @@ namespace TGC.Group.Model
             InitializerMenu();
             InitializerGame();
         }
-        
+
         private void InitializerMenu()
         {
             Title = new DrawSprite(MediaDir);
@@ -99,7 +99,7 @@ namespace TGC.Group.Model
             Help.InitializerButton(text: "Help", scale: new TGCVector2(0.4f, 0.4f), position: new TGCVector2(50, 580),
                            action: () => CurrentState = StateHelp);
             Exit = new DrawButton(MediaDir, Input);
-            Exit.InitializerButton(text: "Exit", scale: new TGCVector2(0.4f, 0.4f), 
+            Exit.InitializerButton(text: "Exit", scale: new TGCVector2(0.4f, 0.4f),
                                    position: new TGCVector2(PointerAndInstruction.ScreenWitdh - Help.Size.X - 50, PointerAndInstruction.ScreenHeight - Help.Size.Y - 50),
                                    action: () => CurrentState = StateExit);
 
@@ -188,7 +188,7 @@ namespace TGC.Group.Model
         }
 
         private void UpdateMenu()
-        {            
+        {
             Play.Update();
             Help.Update();
             if (CurrentState == StateMenu)
@@ -227,7 +227,7 @@ namespace TGC.Group.Model
         }
 
         private void UpdateGame()
-        {          
+        {
             if (Input.keyPressed(Key.F1)) Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
             ObjectManager.CreateBulletCallbacks(CharacterStatus);
             if (CharacterStatus.IsDead)
@@ -254,7 +254,7 @@ namespace TGC.Group.Model
             UpdateFlags();
             UpdateInfoItemCollect();
             if (Input.keyPressed(Key.P)) ObjectManager.Character.CanFish = ObjectManager.Character.HasWeapon =
-                ObjectManager.Character.HasDivingHelmet = true;            
+                ObjectManager.Character.HasDivingHelmet = true;
         }
 
         private void UpdateEvents()
@@ -291,7 +291,7 @@ namespace TGC.Group.Model
         private void UpdateInfoItemCollect()
         {
             if (!Draw2DManager.ShowInfoItemCollect) return;
-            
+
             ItemHistoryTime += ElapsedTime;
             if (ItemHistoryTime > Draw2DManager.ItemHistoryTime)
             {
@@ -304,9 +304,9 @@ namespace TGC.Group.Model
         private void UpdateFlags()
         {
             Draw2DManager.CanCraft = CanCraftObjects;
-            if (CanCraftObjects && Draw2DManager.ActiveInventory)                      
+            if (CanCraftObjects && Draw2DManager.ActiveInventory)
                 Draw2DManager.Crafting.UpdateItemsCrafting();
-            
+
 
             Draw2DManager.ShowInfoExitShip = ObjectManager.Character.LooksAtTheHatch;
             Draw2DManager.ShowInfoEnterShip = ObjectManager.Character.NearShip;
@@ -314,14 +314,23 @@ namespace TGC.Group.Model
             Draw2DManager.ShowInfoItemCollect = ObjectManager.ShowInfoItemCollect;
         }
 
-        private void CraftWeapon() =>
+        private void CraftWeapon()
+        {
             ObjectManager.Character.HasWeapon = GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
+            Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
+        }
 
-        private void CraftDivingHelmet() =>
+        private void CraftDivingHelmet()
+        {
             ObjectManager.Character.HasDivingHelmet = CharacterStatus.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
+            Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
+        }
 
-        private void CraftSkillFish() =>
+        private void CraftSkillFish()
+        {
             ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
+            Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
+        }
 
         #endregion
     }
