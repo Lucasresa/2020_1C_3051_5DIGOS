@@ -7,7 +7,7 @@ using TGC.Core.Mathematica;
 
 namespace TGC.Group.Utils
 {
-    class CameraFPS : TgcCamera
+    public class CameraFPS : TgcCamera
     {
         private struct Constants
         {

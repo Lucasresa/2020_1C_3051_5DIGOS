@@ -220,7 +220,7 @@ namespace TGC.Group.Model
         private void RenderGame()
         {
             FullQuad.PreRenderMeshes();
-            ObjectManager.Render();
+            ObjectManager.Render(Frustum);
             FullQuad.Render();
             Draw2DManager.Render();
             PostRender();
@@ -260,7 +260,7 @@ namespace TGC.Group.Model
         private void UpdateEvents()
         {
             ObjectManager.UpdateCharacter(ElapsedTime);
-            ObjectManager.Update(ElapsedTime, TimeBetweenUpdates, Frustum);
+            ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
             EventsManager.Update(ElapsedTime, ObjectManager.Fishes, SharkStatus);
             InventoryManager.AddItem(ObjectManager.ItemSelected);
             Draw2DManager.ItemHistory = InventoryManager.ItemHistory;
