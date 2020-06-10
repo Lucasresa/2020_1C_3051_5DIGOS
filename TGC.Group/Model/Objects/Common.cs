@@ -39,8 +39,8 @@ namespace TGC.Group.Model.Objects
             public static int QUANTITY_ORE_SILVER = 75;
             public static int QUANTITY_ORE_GOLD = 75;
             public static int QUANTITY_ROCK = 75;
-            public static int QUANTITY_NORMAL_FISH = 75;
-            public static int QUANTITY_YELLOW_FISH = 75;
+            public static int QUANTITY_NORMAL_FISH = 30;
+            public static int QUANTITY_YELLOW_FISH = 30;
             public static TGCVector3 Scale = new TGCVector3(10, 10, 10);
         }
 
