@@ -322,7 +322,10 @@ namespace TGC.Group.Model
 
         private void CraftDivingHelmet()
         {
-            ObjectManager.Character.HasDivingHelmet = CharacterStatus.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
+            CharacterStatus.HasDivingHelmet = ObjectManager.Character.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
+            if (CharacterStatus.HasDivingHelmet)
+                CharacterStatus.UpdateOxygenMax();
+
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
         }
 

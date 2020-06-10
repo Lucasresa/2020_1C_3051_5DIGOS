@@ -31,7 +31,7 @@ namespace TGC.Group.Model.Status
         public float Life { get; set; } = Constants.LIFE_MAX;
         public float Oxygen { get; set; }
         public bool IsDead => Oxygen == 0 || Life == 0;
-        public bool HasDivingHelmet { set => OxygenMax += Constants.OXYGEN_INCREASE_BY_CRAFT; }
+        public bool HasDivingHelmet { get; set; }
         public float DamageReceived { get; set; }
         public bool ActiveRenderAlarm => Life < 20 || Oxygen < 15 || ActiveAlarmForDamageReceived;
         public int ShowLife { get => (int)Math.Round(Life, 0); }
@@ -48,6 +48,8 @@ namespace TGC.Group.Model.Status
         public float GetOxygenMax() => OxygenMax;
 
         private void RecoverLife() => UpdateLife(Constants.LIFE_INCREMENT_STEP);
+
+        public void UpdateOxygenMax() => OxygenMax += Constants.OXYGEN_INCREASE_BY_CRAFT;
 
         public void Reset()
         {
