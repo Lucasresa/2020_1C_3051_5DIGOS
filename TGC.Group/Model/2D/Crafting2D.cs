@@ -134,7 +134,7 @@ namespace TGC.Group.Model._2D
             else if (FastUtils.IsNumberBetweenInterval(Constants.SCREEN_WIDTH, (1366, 1700)))
                 scale = new TGCVector2(1f / 1.5f, 1f / 1.5f);
             else
-                scale = new TGCVector2(1.3f / 1.5f, 1.3f / 1.5f);
+                scale = new TGCVector2(1.2f / 2, 1.2f / 2);
 
             var Size = new TGCVector2(100 * scale.X, 100 * scale.Y);
             TGCVector2 position = new TGCVector2(InventoryItems[1].sprite.Position.X, CraftingText.Position.Y + 30);                       
