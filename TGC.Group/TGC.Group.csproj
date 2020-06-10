@@ -62,6 +62,9 @@
     <PlatformTarget>x86</PlatformTarget>
     <OutputPath>bin\x86\Release\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>subnautica_icono_original.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BulletSharp, Version=0.11.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\BulletSharp.0.11.1\lib\net40-client\BulletSharp.dll</HintPath>
@@ -101,35 +104,44 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Game.settings</DependentUpon>
     </Compile>
-    <Compile Include="Model\Bullet\Bodies\CharacterRigidBody.cs" />
-    <Compile Include="Model\Bullet\Bodies\IndoorShipRigidBody.cs" />
-    <Compile Include="Model\Bullet\Bodies\CommonRigidBody.cs" />
-    <Compile Include="Model\Bullet\Bodies\OutdoorShipRigidBody.cs" />
-    <Compile Include="Model\Bullet\GameEventsManager.cs" />
-    <Compile Include="Model\Bullet\RigidBodyManager.cs" />
-    <Compile Include="Model\Bullet\Bodies\SharkRigidBody.cs" />
-    <Compile Include="Model\Bullet\Bodies\TerrainRigidBody.cs" />
-    <Compile Include="Model\Craft\Crafting.cs" />
-    <Compile Include="Model\Draw\CharacterStatus.cs" />
-    <Compile Include="Model\Draw\Sprite.cs" />
-    <Compile Include="Model\Meshes\FishMesh.cs" />
+    <Compile Include="Model\2D\Crafting2D.cs" />
+    <Compile Include="Model\Callbacks\SharkAttackCallback.cs" />
+    <Compile Include="Model\2D\Character2D.cs" />
+    <Compile Include="Model\2D\Inventory2D.cs" />
+    <Compile Include="Model\2D\Shark2D.cs" />
+    <Compile Include="Model\Game2DManager.cs" />
+    <Compile Include="Model\GameCraftingManager.cs" />
+    <Compile Include="Model\GameEventsManager.cs" />
+    <Compile Include="Model\GameInventoryManager.cs" />
     <Compile Include="Model\GameModel.cs" />
-    <Compile Include="Model\Inventory\InventoryManagement.cs" />
-    <Compile Include="Model\Meshes\CommonMesh.cs" />
-    <Compile Include="Model\MeshBuilders\MeshBuilder.cs" />
-    <Compile Include="Model\MeshBuilders\MeshDuplicator.cs" />
-    <Compile Include="Model\MeshBuilders\MeshType.cs" />
-    <Compile Include="Model\Meshes\Shark.cs" />
-    <Compile Include="Model\Meshes\Weapon.cs" />
-    <Compile Include="Model\Terrains\Sky.cs" />
-    <Compile Include="Model\Terrains\Terrain.cs" />
-    <Compile Include="Model\Terrains\Water.cs" />
-    <Compile Include="Model\Terrains\World.cs" />
-    <Compile Include="Model\Meshes\Ship.cs" />
+    <Compile Include="Model\GameObjectManager.cs" />
+    <Compile Include="Model\GameState.cs" />
+    <Compile Include="Model\Objects\Character.cs" />
+    <Compile Include="Model\Objects\Common.cs" />
+    <Compile Include="Model\Objects\Fish.cs" />
+    <Compile Include="Model\Objects\MeshBuilder.cs" />
+    <Compile Include="Model\Objects\PhysicalWorld.cs" />
+    <Compile Include="Model\Objects\Shark.cs" />
+    <Compile Include="Model\Objects\Ship.cs" />
+    <Compile Include="Model\Objects\Skybox.cs" />
+    <Compile Include="Model\Objects\Terrain.cs" />
+    <Compile Include="Model\Objects\Vegetation.cs" />
+    <Compile Include="Model\Objects\Water.cs" />
+    <Compile Include="Model\Objects\Weapon.cs" />
+    <Compile Include="Model\Objects\World.cs" />
+    <Compile Include="Model\Optimization\Quadtree.cs" />
+    <Compile Include="Model\Optimization\QuadtreeBuilder.cs" />
+    <Compile Include="Model\Optimization\QuadtreeNode.cs" />
+    <Compile Include="Model\Status\CharacterStatus.cs" />
+    <Compile Include="Model\Status\SharkStatus.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\CameraFPS.cs" />
-    <Compile Include="Utils\CustomSprite.cs" />
+    <Compile Include="Utils\DrawButton.cs" />
+    <Compile Include="Utils\DrawSprite.cs" />
+    <Compile Include="Utils\DrawText.cs" />
+    <Compile Include="Utils\FastUtils.cs" />
+    <Compile Include="Utils\FullQuad.cs" />
     <Compile Include="Utils\Ray.cs" />
     <Compile Include="Utils\SmartTerrain.cs" />
     <EmbeddedResource Include="Form\GameForm.resx">
@@ -159,6 +171,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <None Include="Shaders\PostProcess.fx" />
     <None Include="Shaders\TgcKeyFrameMeshShader.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -200,23 +213,13 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Media\alga-TgcScene.xml" />
-    <Content Include="Media\alga_3-TgcScene.xml" />
-    <Content Include="Media\alga_4-TgcScene.xml" />
-    <Content Include="Media\fish-TgcScene.xml" />
-    <Content Include="Media\gold-TgcScene.xml" />
     <Content Include="Media\Heightmaps\oceano.jpg" />
     <Content Include="Media\Heightmaps\suelo.jpg" />
     <Content Include="Media\Imagenes\barra_oxigeno.png" />
     <Content Include="Media\Imagenes\barra_vida.png" />
+    <Content Include="Media\Imagenes\mira.png" />
     <Content Include="Media\Imagenes\PRE_CARGA_INICIAL.jpg" />
-    <Content Include="Media\iron-TgcScene.xml" />
-    <Content Include="Media\new_alga-TgcScene.xml" />
-    <Content Include="Media\normal_coral-TgcScene.xml" />
-    <Content Include="Media\rock-n-TgcScene.xml" />
-    <Content Include="Media\shark-TgcScene.xml" />
-    <Content Include="Media\ship-TgcScene.xml" />
-    <Content Include="Media\silver-TgcScene.xml" />
+    <Content Include="Media\Imagenes\puntero.png" />
     <Content Include="Media\SkyBox\der.jpg" />
     <Content Include="Media\SkyBox\front.jpg" />
     <Content Include="Media\SkyBox\inf.jpg" />
@@ -224,7 +227,6 @@
     <Content Include="Media\SkyBox\pngwave - copia.png" />
     <Content Include="Media\SkyBox\post.jpg" />
     <Content Include="Media\SkyBox\sup.jpg" />
-    <Content Include="Media\spiral_coral-TgcScene.xml" />
     <Content Include="Media\Textures\.png" />
     <Content Include="Media\Textures\10010_Coral_v1_Diffuse.jpg" />
     <Content Include="Media\Textures\20943_Spiral_Wire_Coral_v1_diff.JPG" />
@@ -232,6 +234,7 @@
     <Content Include="Media\Textures\Alga.png" />
     <Content Include="Media\Textures\alga_3.png" />
     <Content Include="Media\Textures\alga_4.png" />
+    <Content Include="Media\Textures\blade.jpg" />
     <Content Include="Media\Textures\blue.jpg" />
     <Content Include="Media\Textures\blue_fish.jpg" />
     <Content Include="Media\Textures\bodyColor_de_la_Superficie.png" />
@@ -241,6 +244,7 @@
     <Content Include="Media\Textures\difuse_enganche.png" />
     <Content Include="Media\Textures\fish.jpg" />
     <Content Include="Media\Textures\float_texColor_de_la_Superficie.png" />
+    <Content Include="Media\Textures\fondo_plano.png" />
     <Content Include="Media\Textures\Hierro.jpg" />
     <Content Include="Media\Textures\LAMPOclusión_Ambiental.jpg" />
     <Content Include="Media\Textures\LAMP_UVS.png" />
@@ -251,10 +255,9 @@
     <Content Include="Media\Textures\Plata.jpg" />
     <Content Include="Media\Textures\red.jpg" />
     <Content Include="Media\Textures\rock_wall.jpg" />
-    <Content Include="Media\Textures\sandy.png" />
-    <Content Include="Media\tree_coral-TgcScene.xml" />
-    <Content Include="Media\yellow_fish-TgcScene.xml" />
-    <None Include="Shaders\TerrainShader.fx">
+    <Content Include="Media\Textures\sand.jpg" />
+    <Content Include="subnautica_icono_original.ico" />
+    <None Include="Shaders\SmartTerrain.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

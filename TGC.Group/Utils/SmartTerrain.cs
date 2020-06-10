@@ -1,6 +1,6 @@
 ﻿using Microsoft.DirectX.Direct3D;
-using System;
 using System.Drawing;
+using TGC.Core.BoundingVolumes;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
@@ -11,54 +11,40 @@ namespace TGC.Group.Utils
 {
     public class SmartTerrain
     {
-        #region Atributos
-        public float length { get; protected set; }
-        public float width { get; protected set; }
-        private float maxIntensity = 0;
-        private float minIntensity = -1;
-        private TGCVector3 traslation;
-        private VertexBuffer vbTerrain;
-        private CustomVertex.PositionTextured[] vertices;
-        public CustomVertex.PositionTextured[] getVertices() { return vertices; }
-        private Texture terrainTexture;
-        public int TotalVertices { get; private set; }
+        public float Length { get; protected set; }
+        public float Width { get; protected set; }
         public float[,] HeightmapData { get; private set; }
-        public bool Enabled { get; set; }
-        private TGCVector3 center;
-        public TGCVector3 Center { get => center; set => center = value; }
-        public bool AlphaBlendEnable { get; set; }
+        public TGCVector3 Center { get; private set; }
 
-
-        protected Effect effect;
-        public Effect Effect { get => effect; set => effect = value; }
-        protected string technique;
-        public string Technique { get => technique; set => technique = value; }
+        private float MaxIntensity = 0;
+        private float MinIntensity = -1;
+        private TGCVector3 Traslation;
+        private VertexBuffer VertexTerrain;
+        private CustomVertex.PositionTextured[] Vertex;
+        private Texture Texture;
+        public TgcBoundingAxisAlignBox BoundingBox { get; private set; }
+        private int VertexTotal { get; set; }
+        public Effect Effect { get; set; }
+        private float TimeForWaves = 0;
         public float ScaleXZ { get; set; }
         public float ScaleY { get; set; }
-        #endregion
 
-        #region Constructor
         public SmartTerrain()
         {
-            Enabled = true;
-            AlphaBlendEnable = false;
+            BoundingBox = new TgcBoundingAxisAlignBox();
         }
-        #endregion       
-
-        #region Metodos
-
-        public void loadTexture(string path)
+        public void LoadTexture(string path)
         {
-            if (terrainTexture != null && !terrainTexture.Disposed)
-                terrainTexture.Dispose();
+            if (Texture != null && !Texture.Disposed)
+                Texture.Dispose();
 
             var bitMap = (Bitmap)Image.FromFile(path);
             bitMap.RotateFlip(RotateFlipType.Rotate90FlipX);
-            terrainTexture = Texture.FromBitmap(D3DDevice.Instance.Device, bitMap, Usage.AutoGenerateMipMap, Pool.Managed);
+            Texture = Texture.FromBitmap(D3DDevice.Instance.Device, bitMap, Usage.AutoGenerateMipMap, Pool.Managed);
             bitMap.Dispose();
         }
 
-        protected float[,] loadHeightMap(string path)
+        protected float[,] LoadHeightMap(string path)
         {
             var bitmap = (Bitmap)Image.FromFile(path);
             var width = bitmap.Size.Width;
@@ -79,138 +65,146 @@ namespace TGC.Group.Utils
             return heightmap;
         }
 
-        public void setHeightmapData(float[,] heightmapData)
+        public void SetHeightmapData(float[,] heightmapData)
         {
             if (heightmapData.GetLength(0) == HeightmapData.GetLength(0) && HeightmapData.GetLength(1) == heightmapData.GetLength(1))
                 HeightmapData = heightmapData;
         }
 
-        public void loadHeightmap(string heightmapPath, float scaleXZ, float scaleY, TGCVector3 center)
+        public void LoadHeightmap(string heightmapPath, float scaleXZ, float scaleY, TGCVector3 center)
         {
             Center = center;
             ScaleXZ = scaleXZ;
             ScaleY = scaleY;
 
-            if (vbTerrain != null && !vbTerrain.Disposed)
-                vbTerrain.Dispose();
+            if (VertexTerrain != null && !VertexTerrain.Disposed)
+                VertexTerrain.Dispose();
 
-            HeightmapData = loadHeightMap(heightmapPath);
-            width = HeightmapData.GetLength(0);
-            length = HeightmapData.GetLength(1);
-            var totalvertices = 2 * 3 * (width - 1) * (length - 1);
-            TotalVertices = (int)totalvertices;
+            HeightmapData = LoadHeightMap(heightmapPath);
+            Width = HeightmapData.GetLength(0);
+            Length = HeightmapData.GetLength(1);
+            var totalvertices = 2 * 3 * (Width - 1) * (Length - 1);
+            VertexTotal = (int)totalvertices;
 
-            vbTerrain = new VertexBuffer(typeof(CustomVertex.PositionTextured), TotalVertices,
+            VertexTerrain = new VertexBuffer(typeof(CustomVertex.PositionTextured), VertexTotal,
                                          D3DDevice.Instance.Device,
                                          Usage.Dynamic | Usage.WriteOnly, CustomVertex.PositionTextured.Format, Pool.Default);
 
-            loadVertices();
+            LoadVertices();
         }
 
-        private void loadVertices()
+        private void LoadVertices()
         {
-            traslation.X = center.X - width / 2;
-            traslation.Y = center.Y;
-            traslation.Z = center.Z - length / 2;
+            Traslation.X = Center.X - Width / 2;
+            Traslation.Y = Center.Y;
+            Traslation.Z = Center.Z - Length / 2;
 
             var dataIdx = 0;
 
-            vertices = new CustomVertex.PositionTextured[TotalVertices];
+            Vertex = new CustomVertex.PositionTextured[VertexTotal];
 
-            for (var i = 0; i < width - 1; i++)
+            for (var i = 0; i < Width - 1; i++)
             {
-                for (var j = 0; j < length - 1; j++)
+                for (var j = 0; j < Length - 1; j++)
                 {
-                    if (HeightmapData[i, j] > maxIntensity) maxIntensity = HeightmapData[i, j];
-                    if (minIntensity == -1 || HeightmapData[i, j] < minIntensity) minIntensity = HeightmapData[i, j];
+                    if (HeightmapData[i, j] > MaxIntensity) MaxIntensity = HeightmapData[i, j];
+                    if (MinIntensity == -1 || HeightmapData[i, j] < MinIntensity) MinIntensity = HeightmapData[i, j];
 
                     //Vertices
-                    var v1 = new TGCVector3((traslation.X + i) * ScaleXZ, (traslation.Y + HeightmapData[i, j]) * ScaleY, (traslation.Z + j) * ScaleXZ);
-                    var v2 = new TGCVector3((traslation.X + i) * ScaleXZ, (traslation.Y + HeightmapData[i, j + 1]) * ScaleY, (traslation.Z + (j + 1)) * ScaleXZ);
-                    var v3 = new TGCVector3((traslation.X + i + 1) * ScaleXZ, (traslation.Y + HeightmapData[i + 1, j]) * ScaleY, (traslation.Z + j) * ScaleXZ);
-                    var v4 = new TGCVector3((traslation.X + i + 1) * ScaleXZ, (traslation.Y + HeightmapData[i + 1, j + 1]) * ScaleY, (traslation.Z + j + 1) * ScaleXZ);
+                    var v1 = new TGCVector3((Traslation.X + i) * ScaleXZ, (Traslation.Y + HeightmapData[i, j]) * ScaleY, (Traslation.Z + j) * ScaleXZ);
+                    var v2 = new TGCVector3((Traslation.X + i) * ScaleXZ, (Traslation.Y + HeightmapData[i, j + 1]) * ScaleY, (Traslation.Z + (j + 1)) * ScaleXZ);
+                    var v3 = new TGCVector3((Traslation.X + i + 1) * ScaleXZ, (Traslation.Y + HeightmapData[i + 1, j]) * ScaleY, (Traslation.Z + j) * ScaleXZ);
+                    var v4 = new TGCVector3((Traslation.X + i + 1) * ScaleXZ, (Traslation.Y + HeightmapData[i + 1, j + 1]) * ScaleY, (Traslation.Z + j + 1) * ScaleXZ);
 
                     //Coordendas de textura
-                    var t1 = new TGCVector2(i / width, j / length);
-                    var t2 = new TGCVector2(i / width, (j + 1) / length);
-                    var t3 = new TGCVector2((i + 1) / width, j / length);
-                    var t4 = new TGCVector2((i + 1) / width, (j + 1) / length);
+                    var t1 = new TGCVector2(i / Width, j / Length);
+                    var t2 = new TGCVector2(i / Width, (j + 1) / Length);
+                    var t3 = new TGCVector2((i + 1) / Width, j / Length);
+                    var t4 = new TGCVector2((i + 1) / Width, (j + 1) / Length);
 
                     //Cargar triangulo 1
-                    vertices[dataIdx + 0] = new CustomVertex.PositionTextured(v1, t1.X, t1.Y);
-                    vertices[dataIdx + 1] = new CustomVertex.PositionTextured(v2, t2.X, t2.Y);
-                    vertices[dataIdx + 2] = new CustomVertex.PositionTextured(v4, t4.X, t4.Y);
+                    Vertex[dataIdx + 0] = new CustomVertex.PositionTextured(v1, t1.X, t1.Y);
+                    Vertex[dataIdx + 1] = new CustomVertex.PositionTextured(v2, t2.X, t2.Y);
+                    Vertex[dataIdx + 2] = new CustomVertex.PositionTextured(v4, t4.X, t4.Y);
 
                     //Cargar triangulo 2
-                    vertices[dataIdx + 3] = new CustomVertex.PositionTextured(v1, t1.X, t1.Y);
-                    vertices[dataIdx + 4] = new CustomVertex.PositionTextured(v4, t4.X, t4.Y);
-                    vertices[dataIdx + 5] = new CustomVertex.PositionTextured(v3, t3.X, t3.Y);
+                    Vertex[dataIdx + 3] = new CustomVertex.PositionTextured(v1, t1.X, t1.Y);
+                    Vertex[dataIdx + 4] = new CustomVertex.PositionTextured(v4, t4.X, t4.Y);
+                    Vertex[dataIdx + 5] = new CustomVertex.PositionTextured(v3, t3.X, t3.Y);
 
                     dataIdx += 6;
                 }
-                vbTerrain.SetData(vertices, 0, LockFlags.None);
+                VertexTerrain.SetData(Vertex, 0, LockFlags.None);
+
+                var size = HeightmapData.GetLength(0) / 2;
+                var pMin = new TGCVector3(size * -ScaleXZ,
+                                            MinIntensity * ScaleY,
+                                            size * -ScaleXZ);
+                var pMax = new TGCVector3(size * ScaleXZ,
+                                            MaxIntensity * ScaleY,
+                                            size * ScaleXZ);
+
+                BoundingBox.setExtremes(pMin, pMax);
             }
         }
 
-        public void updateVertices()
+        public void UpdateVertices()
         {
-            for (var i = 0; i < vertices.Length; i++)
+            for (var i = 0; i < Vertex.Length; i++)
             {
-                var intensity = HeightmapData[(int)vertices[i].X, (int)vertices[i].Z];
-                vertices[i].Y = intensity;
-                if (intensity > maxIntensity) maxIntensity = intensity;
-                if (minIntensity == -1 || intensity < minIntensity) minIntensity = intensity;
+                var intensity = HeightmapData[(int)Vertex[i].X, (int)Vertex[i].Z];
+                Vertex[i].Y = intensity;
+                if (intensity > MaxIntensity) MaxIntensity = intensity;
+                if (MinIntensity == -1 || intensity < MinIntensity) MinIntensity = intensity;
             }
 
-            vbTerrain.SetData(vertices, 0, LockFlags.None);
+            VertexTerrain.SetData(Vertex, 0, LockFlags.None);
         }
 
         public void Render()
         {
-            if (!Enabled) return;
-
             var d3dDevice = D3DDevice.Instance.Device;
             var texturesManager = TexturesManager.Instance;
             var shader = TGCShaders.Instance;
             
-            
-            texturesManager.clear(1);
-            shader.SetShaderMatrix(effect, TGCMatrix.Identity);
-            d3dDevice.VertexDeclaration = shader.VdecPositionTextured;
-            d3dDevice.SetStreamSource(0, vbTerrain, 0);
+            Effect.SetValue("time", TimeForWaves);
 
-            var p = effect.Begin(0);
+            texturesManager.clear(1);
+            shader.SetShaderMatrix(Effect, TGCMatrix.Identity);
+            d3dDevice.VertexDeclaration = shader.VdecPositionTextured;
+            d3dDevice.SetStreamSource(0, VertexTerrain, 0);
+            
+            var p = Effect.Begin(0);
             for (var i = 0; i < p; i++)
             {
-                effect.BeginPass(i);
-                d3dDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, TotalVertices / 3);
-                effect.EndPass();
+                Effect.BeginPass(i);
+                d3dDevice.DrawPrimitives(PrimitiveType.TriangleList, 0, VertexTotal / 3);
+                Effect.EndPass();
             }
-            effect.End();
+            Effect.End();
         }
 
         public void Dispose()
         {
-            if (vbTerrain != null) vbTerrain.Dispose();
-            if (terrainTexture != null) terrainTexture.Dispose();
+            if (VertexTerrain != null) VertexTerrain.Dispose();
+            if (Texture != null) Texture.Dispose();
         }
 
-        public void loadEffect(string effectPath, string tecnica)
+        public void LoadEffect(string effectPath, string technique)
         {
-            effect = TGCShaders.Instance.LoadEffect(effectPath);
-            effect.Technique = tecnica;
-            effect.SetValue("texDiffuseMap", terrainTexture);
+            Effect = TGCShaders.Instance.LoadEffect(effectPath);
+            Effect.Technique = technique;
+            Effect.SetValue("texDiffuseMap", Texture);
         }
 
+        public void SetTimeForWaves(float elapsedTime) => TimeForWaves += elapsedTime;
 
-        #endregion 
+        public CustomVertex.PositionTextured[] GetVertices() => Vertex;
 
-        #region Utils
-
-        public bool xzToHeightmapCoords(float x, float z, out TGCVector2 coords)
+        private bool XZToHeightmapCoords(float x, float z, out TGCVector2 coords)
         {
-            float i = x / ScaleXZ - traslation.X;
-            float j = z / ScaleXZ - traslation.Z;
+            float i = x / ScaleXZ - Traslation.X;
+            float j = z / ScaleXZ - Traslation.Z;
 
             coords = new TGCVector2(i, j);
 
@@ -219,43 +213,18 @@ namespace TGC.Group.Utils
             return true;
         }
 
-        public TGCVector2 xzWorldToHeightmap(float x, float z)
+        public bool InterpoledHeight(float x, float z, out float y)
         {
-            var WorldPosX = (x + traslation.X) * ScaleXZ;
-            var WorldPosZ = (z + traslation.Z) * ScaleXZ;
-
-            var sizeX = HeightmapData.GetLength(0) * ScaleXZ / 2;
-            var sizeZ = HeightmapData.GetLength(1) * ScaleXZ / 2;
-
-            WorldPosX = FastMath.Clamp(WorldPosX, -sizeX + 200, sizeX - 200);
-            WorldPosZ = FastMath.Clamp(WorldPosZ, -sizeZ + 200, sizeZ - 200);
-
-            return new TGCVector2(WorldPosX, WorldPosZ);
-
-        }
-
-        public float convertToWorld(float pos)
-        {
-            return (pos + traslation.X) * ScaleXZ;
-        }
-
-        public bool interpoledHeight(float x, float z, out float y)
-        {
-            TGCVector2 coords;
             y = 0;
-
-            if (!xzToHeightmapCoords(x, z, out coords)) return false;
-
-            interpoledIntensity(coords.X, coords.Y, out float i);
-
-            y = (i + traslation.Y) * ScaleY;
+            if (!XZToHeightmapCoords(x, z, out TGCVector2 coords)) return false;
+            InterpoledIntensity(coords.X, coords.Y, out float i);
+            y = (i + Traslation.Y) * ScaleY;
             return true;
         }
 
-        public bool interpoledIntensity(float u, float v, out float i)
+        private bool InterpoledIntensity(float u, float v, out float i)
         {
             i = 0;
-
             float maxX = HeightmapData.GetLength(0);
             float maxZ = HeightmapData.GetLength(1);
             if (u >= maxX || v >= maxZ || v < 0 || u < 0) return false;
@@ -285,25 +254,15 @@ namespace TGC.Group.Utils
         {
             float delta = 0.3f;
 
-            interpoledHeight(X, Z + delta, out float alturaN);
-            interpoledHeight(X, Z - delta, out float alturaS);
-            interpoledHeight(X + delta, Z, out float alturaE);
-            interpoledHeight(X - delta, Z, out float alturaO);
+            InterpoledHeight(X, Z + delta, out float alturaN);
+            InterpoledHeight(X, Z - delta, out float alturaS);
+            InterpoledHeight(X + delta, Z, out float alturaE);
+            InterpoledHeight(X - delta, Z, out float alturaO);
 
             TGCVector3 vectorEO = new TGCVector3(delta * 2, alturaE - alturaO, 0);
             TGCVector3 vectorNS = new TGCVector3(0, alturaN - alturaS, delta * 2);
 
             return TGCVector3.Cross(vectorNS, vectorEO);
         }
-
-        public bool setObjectPosition(ITransformObject o)
-        {
-            if (!interpoledHeight(o.Position.X, o.Position.Z, out float y)) return false;
-            o.Position = new TGCVector3(o.Position.X, y, o.Position.Z);
-            return true;
-        }
-
-        #endregion Utils
-
     }
 }

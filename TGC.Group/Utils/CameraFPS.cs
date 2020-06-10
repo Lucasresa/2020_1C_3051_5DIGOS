@@ -7,76 +7,56 @@ using TGC.Core.Mathematica;
 
 namespace TGC.Group.Utils
 {
-    class CameraFPS : TgcCamera
+    public class CameraFPS : TgcCamera
     {
-        #region Atributos
-        
-        public TGCVector3 position;
-        public TGCVector3 Direction { get { return TGCVector3.Normalize(LookAt - position); } }
-
         private struct Constants
         {
-            public static TGCVector3 outdoorPosition = new TGCVector3(1300, 3505, 20);
-            public static TGCVector3 indoorPosition  = new TGCVector3(515, -2340, -40);
-            public static float limitMax = FastMath.ToRad(60);
-            public static float limitMin = FastMath.ToRad(-60);
-            public static Point mouseCenter = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
-            public static float rotationSpeed = 0.1f;
-            public static TGCVector3 directionView = new TGCVector3(0, 0.1f, -1);
+            public static float LIIMIT_MAX = FastMath.ToRad(60);
+            public static float LIMIT_MIN = FastMath.ToRad(-60);
+            public static Point MOUSE_CENTER = new Point(D3DDevice.Instance.Device.Viewport.Width / 2, D3DDevice.Instance.Device.Viewport.Height / 2);
+            public static float ROTATION_SPEED = 0.1f;
+            public static TGCVector3 DIRECTION_VIEW = new TGCVector3(0, 0.1f, -1);
         }
+        
+        private readonly TgcD3dInput Input;
+        private TGCMatrix CameraRotation = TGCMatrix.Identity;
 
-        private TgcD3dInput Input { get; }
-        private TGCMatrix cameraRotation;
-        public float longitude { get; private set; } = -FastMath.PI / 10.0f;
-        public float latitude { get; private set; } = FastMath.PI_HALF;
-        public bool lockCam;
-        #endregion
+        public new TGCVector3 Position;
+        public TGCVector3 Direction => TGCVector3.Normalize(LookAt - Position);
+        public float Longitude { get; private set; } = -FastMath.PI / 10.0f;
+        public float Latitude { get; private set; } = FastMath.PI_HALF;
+        public bool Lock { get; set; }
 
-        #region Constructores
         public CameraFPS(TgcD3dInput input)
         {
-            position = Constants.indoorPosition;
             Input = input;
+            var d3Instance = D3DDevice.Instance;
+            d3Instance.Device.Transform.Projection = TGCMatrix.PerspectiveFovLH(d3Instance.FieldOfView, d3Instance.AspectRatio,
+                                                     d3Instance.ZNearPlaneDistance, d3Instance.ZFarPlaneDistance * 3f).ToMatrix();
+            Position.Y = -1;
         }
-        #endregion             
-        
+
         public override void UpdateCamera(float elapsedTime)
         {
-            if (lockCam)
-                return; 
-                
-            Cursor.Hide();
-            CameraRotation();
-            var target = TGCVector3.TransformNormal(Constants.directionView, cameraRotation);
-            var targetPosition = position + target;
-            var rotacionVectorUP = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, cameraRotation);
-            Cursor.Position = Constants.mouseCenter;
-            base.SetCamera(position, targetPosition, rotacionVectorUP);
-        }
-        public TGCVector3 getIndoorPosition()
-        {
-            return Constants.indoorPosition;
-        }
+            if (!Lock) 
+            {                
+                Rotation();
+                Cursor.Position = Constants.MOUSE_CENTER;
+            }
 
-        public TGCVector3 getOutdoorPosition()
-        {
-            return Constants.outdoorPosition;
+            var target = TGCVector3.TransformNormal(Constants.DIRECTION_VIEW, CameraRotation);
+            var targetPosition = Position + target;
+            var rotacionVectorUP = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, CameraRotation);
+            base.SetCamera(Position, targetPosition, rotacionVectorUP);
         }
-
-        public bool isOutside()
+    
+        private void Rotation()
         {
-            return position.Y > 0;
-        }
+            Latitude -= -Input.XposRelative * Constants.ROTATION_SPEED;
+            Longitude -= Input.YposRelative * Constants.ROTATION_SPEED;
+            Longitude = FastMath.Clamp(Longitude, Constants.LIMIT_MIN, Constants.LIIMIT_MAX);
 
-        #region Rotacion de la Camara
-        private void CameraRotation()
-        {
-            latitude -= -Input.XposRelative * Constants.rotationSpeed;
-            longitude -= Input.YposRelative * Constants.rotationSpeed;
-            longitude = FastMath.Clamp(longitude, Constants.limitMin, Constants.limitMax);
-
-            cameraRotation = TGCMatrix.RotationX(longitude) * TGCMatrix.RotationY(latitude);
+            CameraRotation = TGCMatrix.RotationX(Longitude) * TGCMatrix.RotationY(Latitude);
         }
-        #endregion
     }
 }

@@ -100,11 +100,9 @@ namespace TGC.Group.Form
             //Cargar shaders del framework
             TGCShaders.Instance.LoadCommonShaders(currentDirectory + Game.Default.ShadersDirectory, D3DDevice.Instance);
 
-            //Juego a ejecutar, si quisiéramos tener diferentes modelos aquí podemos cambiar la instancia e invocar a otra clase.
             Modelo = new GameModel(currentDirectory + Game.Default.MediaDirectory,
                 currentDirectory + Game.Default.ShadersDirectory);
 
-            //Cargar juego.
             ExecuteModel();
         }
 
@@ -122,7 +120,8 @@ namespace TGC.Group.Form
                     if (ApplicationActive())
                     {
                         Modelo.Tick();
-                        if (Input.keyDown(Key.Escape)) Close(); // TODO Cambiar cuando haya inventario y menu
+                        if (Input.keyDown(Key.Escape)) Close();
+                        Cursor.Hide();
                     }
                     else
                         Thread.Sleep(100);

@@ -19,7 +19,7 @@ namespace TGC.Group.Utils
             pickingRay = new TgcPickingRay(Input);
         }
 
-        public bool intersectsWithObject(TgcBoundingAxisAlignBox objectAABB, float distance)
+        public bool IntersectsWithObject(TgcBoundingAxisAlignBox objectAABB, float distance)
         {
             pickingRay.updateRay();
 
@@ -29,7 +29,7 @@ namespace TGC.Group.Utils
             return intersected && inSight;
         }
 
-        public bool intersectsWithObject(TGCPlane objectPlane, float distance)
+        public bool IntersectsWithObject(TGCPlane objectPlane, float distance)
         {
             pickingRay.updateRay();
 
@@ -37,6 +37,13 @@ namespace TGC.Group.Utils
             bool inSight = Math.Sqrt(TGCVector3.LengthSq(pickingRay.Ray.Origin, collisionPoint)) < distance;
 
             return intersected && inSight;
+        }
+
+        public bool GetDistanceWithObject(TgcBoundingAxisAlignBox objectAABB, out float distance)
+        {
+            pickingRay.updateRay();
+            distance = TgcCollisionUtils.sqDistPointAABB(pickingRay.Ray.Origin, objectAABB);
+            return distance > 0;
         }
     }
 }
