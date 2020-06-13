@@ -106,27 +106,23 @@ struct PS_INPUT_VERTEX_COLOR
 //Pixel Shader
 float4 ps_VertexColor(PS_INPUT_VERTEX_COLOR input) : COLOR0
 {
-	//Normalizar vectores
-	float3 Nn = normalize(input.WorldNormal);
-	float3 Ln = normalize(input.LightVec);
-	float3 Hn = normalize(input.HalfAngleVec);
+    input.WorldNormal = normalize(input.WorldNormal);
 
+    float3 lightDirection = normalize(input.LightVec);
+    float3 viewDirection = normalize(input.WorldNormal);
+    float3 halfVector = normalize(input.HalfAngleVec);
+	
 	//Componente Diffuse: N dot L
-	float3 n_dot_l = dot(Nn, Ln);
-	float3 diffuseLight = diffuseColor * max(0.0, n_dot_l); //Controlamos que no de negativo
+    float3 NdotL = dot(input.WorldNormal, lightDirection);
+    float3 diffuseLight = 0.75 * diffuseColor * max(0.0, NdotL);
 
-	//Componente Specular: (N dot H)^exp
-	float3 n_dot_h = dot(Nn, Hn);
-	float3 specularLight = n_dot_l <= 0.0
-			? float3(0.0, 0.0, 0.0)
-			: (specularColor * pow(max(0.0, n_dot_h), specularExp));
+	//Componente Specular: (N dot H)^shininess
+    float3 NdotH = dot(input.WorldNormal, halfVector);
+    float3 specularLight = ((NdotL <= 0.0) ? 0.0 : 0.5) * specularColor * pow(max(0.0, NdotH), 10);
 
-	//Color final: modular (Ambient + Diffuse) por el color del mesh, y luego sumar Specular.
-	float4 finalColor = float4(saturate(ambientColor + diffuseLight) * input.Color.rgb + specularLight , input.Color.a);
-
-	return finalColor;
+    float4 finalColor = float4(saturate(ambientColor * 0.5 + diffuseLight) * input.Color.rgb + specularLight, input.Color.a);
+    return finalColor;
 }
-
 /*
 * Technique VERTEX_COLOR
 */
@@ -307,29 +303,26 @@ struct PS_INPUT_DIFFUSE_MAP_AND_LIGHTMAP
 //Pixel Shader
 float4 ps_diffuseMapAndLightmap(PS_INPUT_DIFFUSE_MAP_AND_LIGHTMAP input) : COLOR0
 {
-	//Normalizar vectores
-	float3 Nn = normalize(input.WorldNormal);
-	float3 Ln = normalize(input.LightVec);
-	float3 Hn = normalize(input.HalfAngleVec);
+    input.WorldNormal = normalize(input.WorldNormal);
 
-	//Obtener color de diffuseMap y de Lightmap
-	float4 texelColor = tex2D(diffuseMap, input.Texcoord);
-	float4 lightmapColor = tex2D(lightMap, input.TexcoordLightmap);
+    float3 lightDirection = normalize(input.LightVec);
+    float3 viewDirection = normalize(input.WorldNormal);
+    float3 halfVector = normalize(input.HalfAngleVec);
 
+	// Obtener texel de la textura
+    float4 texelColor = tex2D(diffuseMap, input.Texcoord);
+    float4 lightmapColor = tex2D(lightMap, input.TexcoordLightmap);
+	
 	//Componente Diffuse: N dot L
-	float3 n_dot_l = dot(Nn, Ln);
-	float3 diffuseLight = diffuseColor * max(0.0, n_dot_l); //Controlamos que no de negativo
+    float3 NdotL = dot(input.WorldNormal, lightDirection);
+    float3 diffuseLight = 0.4 * diffuseColor * max(0.0, NdotL);
 
-	//Componente Specular: (N dot H)^exp
-	float3 n_dot_h = dot(Nn, Hn);
-	float3 specularLight = n_dot_l <= 0.0
-			? float3(0.0, 0.0, 0.0)
-			: (specularColor * pow(max(0.0, n_dot_h), specularExp));
+	//Componente Specular: (N dot H)^shininess
+    float3 NdotH = dot(input.WorldNormal, halfVector);
+    float3 specularLight = ((NdotL <= 0.0) ? 0.0 : 0.65) * specularColor * pow(max(0.0, NdotH), specularExp);
 
-	//Color final: modular (Ambient + Diffuse) por el color de la textura, y luego sumar Specular.
-	float4 finalColor = float4(saturate(ambientColor + diffuseLight) * (texelColor * lightmapColor) + specularLight, texelColor.a);
-
-	return finalColor;
+    float4 finalColor = float4(saturate(ambientColor * 0.5 + diffuseLight) * texelColor + specularLight, texelColor.a);
+    return finalColor;
 }
 
 //technique DIFFUSE_MAP_AND_LIGHTMAP

@@ -15,6 +15,8 @@ using TGC.Core.SceneLoader;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Collision;
 using TGC.Model.Optimization.Quadtree;
+using TGC.Core.Geometry;
+using Microsoft.DirectX.Direct3D;
 
 namespace TGC.Group.Model
 {
@@ -24,7 +26,8 @@ namespace TGC.Group.Model
         private MeshBuilder MeshBuilder;
         private readonly Ray Ray;
         private Effect FogShader;
-
+        private Effect BlinnShader;
+        private TGCVector3 LightPosition = new TGCVector3(1530, 7000, 100);
         public PhysicalWorld PhysicalWorld { get; set; }
         public TgcD3dInput Input { get; set; }
         public CameraFPS Camera { get; set; }
@@ -43,6 +46,7 @@ namespace TGC.Group.Model
         public bool ShowInfoItemCollect { get; set; }
         public bool ShowScene { get; set; }
         public Quadtree QuadTree { get; private set; }
+        public TGCBox LightBox { get; set; }
 
         public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input)
         {
@@ -58,13 +62,19 @@ namespace TGC.Group.Model
         private void InitializerObjects()
         {
             FogShader = TGCShaders.Instance.LoadEffect(ShadersDir + "SmartTerrain.fx");
-
+            BlinnShader = TGCShaders.Instance.LoadEffect(ShadersDir + "TgcMeshPhongShader.fx");
+            
             FogShader.SetValue("ColorFog", Color.SteelBlue.ToArgb());
             FogShader.SetValue("StartFogDistance", 5000);
             FogShader.SetValue("EndFogDistance", 10000);
 
-            /* Initializer object */
+            BlinnShader.SetValue("ambientColor", Color.White.ToArgb());
+            BlinnShader.SetValue("diffuseColor", Color.White.ToArgb());
+            BlinnShader.SetValue("specularColor", Color.White.ToArgb());
+            BlinnShader.SetValue("specularExp", 25);
 
+            /* Initializer object */
+            LightBox = TGCBox.fromSize(TGCVector3.One * 150, Color.White);
             Skybox = new Skybox(MediaDir, Camera);
             Water = new Water(MediaDir, ShadersDir, new TGCVector3(0, 3500, 0));
             Ship = new Ship(MediaDir);
@@ -105,10 +115,12 @@ namespace TGC.Group.Model
             Common.SetShader(FogShader, "Fog");
             Shark.SetShader(FogShader, "Fog");
             Vegetation.SetShader(FogShader, "FogVegetation");
+            Ship.SetShader(BlinnShader, "DIFFUSE_MAP_AND_LIGHTMAP");
+            //LightBox.Effect = BlinnShader;
+            //LightBox.Technique = "VERTEX_COLOR";
 
             QuadTree.Camera = Camera;
             QuadTree.create(GetStaticMeshes(), Terrain.world.BoundingBox);
-            
         }
 
         public void CreateBulletCallbacks(CharacterStatus characterStatus) =>
@@ -137,6 +149,13 @@ namespace TGC.Group.Model
             else
             {
                 FogShader.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
+                BlinnShader.SetValue("eyePosition", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
+
+                BlinnShader.SetValue("lightPosition", TGCVector3.TGCVector3ToFloat4Array(LightPosition));
+
+                LightBox.Transform = TGCMatrix.Translation(LightPosition);
+
+                LightBox.Render();
                 Ship.RenderOutdoorShip();
                 Skybox.Render(Terrain.SizeWorld());
                 Terrain.Render();
@@ -154,8 +173,7 @@ namespace TGC.Group.Model
             Skybox.Update();
             Shark.Update(elapsedTime);
             Water.Update(elapsedTime);
-            Terrain.Update(elapsedTime);           
-
+            Terrain.Update(elapsedTime);            
             Character.LooksAtTheHatch = Ray.IntersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
             Character.CanAttack = Ray.IntersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
             Character.NearShip = Ray.IntersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);
