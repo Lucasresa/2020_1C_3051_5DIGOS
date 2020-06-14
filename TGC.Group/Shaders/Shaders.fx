@@ -33,7 +33,7 @@ struct VS_OUTPUT
 {
     float4 Position : POSITION0;
     float2 Texcoord : TEXCOORD0;
-    float3 MeshPosition : TEXCOORD1;
+    float4 MeshPosition : TEXCOORD1;
     float3 WorldNormal : TEXCOORD2;
 };
 
@@ -57,9 +57,11 @@ VS_OUTPUT vs_main_water(VS_INPUT Input)
 float4 ps_main_water(VS_OUTPUT input) : COLOR0
 {
     float textureScale = 10;
-    float2 waterDirection = float2(0.003, 0.003) * time;
+    float2 waterDirection = float2(.003, .003) * time;
     float4 textureColor = tex2D(diffuseMap, input.Texcoord * textureScale + waterDirection);
-    textureColor.a = 0.35;     
+    float4 TexturePosition = mul(input.MeshPosition, matWorld);
+    float distance = distance(TexturePosition.xz, CameraPos.xz) / 1500;
+    textureColor.a = clamp(1 - 1 / distance, .3, .9);
     return textureColor;
 }
 
@@ -167,7 +169,7 @@ float4 ps_main_fog_vegetation(VS_OUTPUT_VERTEX input) : COLOR0
         else
         {
             Color = lerp(fvBaseColor, ColorFog, FogAmount);
-            if ((Color.r + Color.g + Color.b) / 3 >= 0.5 || (Color.r + Color.g + Color.b) / 3 <= 0.45)
+            if ((Color.r + Color.g + Color.b) / 3 >= 0.5 || (Color.r + Color.g + Color.b) / 3 <= 0.48)
                 return fvBaseColor;
             else
                 return Color;
@@ -224,7 +226,7 @@ float4 ps_main_terrain(VS_OUTPUT_VERTEX Input) : COLOR0
     float movement = 0.001 * sin(time * 2);
     float4 reflexTexture = tex2D(reflex, (Input.Texture + float2(1, 1) * movement) * 50);
     
-    float4 fvBaseColor = textureColor + reflexTexture * 0.4;
+    float4 fvBaseColor = textureColor * 0.9 + reflexTexture * 0.4;
     
     float zn = StartFogDistance;
     float zf = EndFogDistance;

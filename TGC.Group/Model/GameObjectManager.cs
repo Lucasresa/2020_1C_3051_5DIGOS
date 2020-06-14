@@ -116,9 +116,6 @@ namespace TGC.Group.Model
             Shark.SetShader(FogShader, "Fog");
             Vegetation.SetShader(FogShader, "FogVegetation");
             Ship.SetShader(BlinnShader, "DIFFUSE_MAP_AND_LIGHTMAP");
-            //LightBox.Color = Color.LightGoldenrodYellow;
-            //LightBox.Color = Color.LightGoldenrodYellow;
-            //LightBox.updateValues();
             LightBox.Effect = BlinnShader;
             LightBox.Technique = "VERTEX_COLOR";
 
@@ -153,12 +150,11 @@ namespace TGC.Group.Model
             {
                 FogShader.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
                 BlinnShader.SetValue("eyePosition", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
-
                 BlinnShader.SetValue("lightPosition", TGCVector3.TGCVector3ToFloat4Array(LightPosition));
 
                 LightBox.Transform = TGCMatrix.Translation(LightPosition);
 
-                LightBox.Render();
+                // LightBox.Render();
                 Ship.RenderOutdoorShip();
                 Skybox.Render(Terrain.SizeWorld());
                 Terrain.Render();
@@ -175,8 +171,8 @@ namespace TGC.Group.Model
             Fishes.ForEach(fish => fish.Update(elapsedTime, Camera));
             Skybox.Update();
             Shark.Update(elapsedTime);
-            Water.Update(elapsedTime);
-            Terrain.Update(elapsedTime);            
+            Water.Update(elapsedTime, Camera.Position);
+            Terrain.Update(elapsedTime, Camera.Position);            
             Character.LooksAtTheHatch = Ray.IntersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
             Character.CanAttack = Ray.IntersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
             Character.NearShip = Ray.IntersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);

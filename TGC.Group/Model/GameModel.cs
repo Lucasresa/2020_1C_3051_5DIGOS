@@ -203,7 +203,7 @@ namespace TGC.Group.Model
             if (ObjectManager.ShowScene)
             {
                 ObjectManager.Skybox.Update();
-                ObjectManager.Water.Update(ElapsedTime);
+                ObjectManager.Water.Update(ElapsedTime, Camera.Position);
             }
 
             if (CurrentState == StateGame)

@@ -46,6 +46,10 @@ namespace TGC.Group.Model.Objects
             return perimeter;
         }
 
-        public void Update(float elapsedTime) => world.SetTimeForWaves(elapsedTime);
+        public void Update(float elapsedTime, TGCVector3 cameraPos)
+        {
+            world.SetTimeForWaves(elapsedTime);
+            world.SetCameraPosition(cameraPos);
+        }
     }
 }
