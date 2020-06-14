@@ -34,6 +34,7 @@ namespace TGC.Group.Model
                 { "IRON", OreIron },
                 { "SILVER", OreSilver }
             };
+            GameCraftingManager.Items = Items;
         }
 
         public void AddItem(string itemSelected)

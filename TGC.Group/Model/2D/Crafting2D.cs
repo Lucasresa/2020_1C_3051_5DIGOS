@@ -20,10 +20,11 @@ namespace TGC.Group.Model._2D
         }
 
         private readonly string MediaDir;
-        private readonly DrawText InventoryText;
-        private readonly DrawText CraftingText;
+        private readonly DrawText TitleInventory;
+        private readonly DrawText TitleCrafting;
         private readonly List<(DrawSprite sprite, DrawText text)> InventoryItems;
         public List<(DrawSprite sprite, DrawButton button)> CraftingItems;
+        private readonly DrawSprite CountCraftingItems;
 
         private TGCVector2 Size;
         public TgcD3dInput Input { get; set; }
@@ -32,24 +33,25 @@ namespace TGC.Group.Model._2D
         {
             Input = input;
             MediaDir = mediaDir;
-            InventoryText = new DrawText();
-            CraftingText = new DrawText();
+            TitleInventory = new DrawText();
+            TitleCrafting = new DrawText();
             InventoryItems = new List<(DrawSprite, DrawText)>();
             CraftingItems = new List<(DrawSprite, DrawButton)>();
+            CountCraftingItems = new DrawSprite(MediaDir);
             Init();
         }
 
         public void Dispose()
         {
-            InventoryText.Dispose();
+            TitleInventory.Dispose();
             InventoryItems.ForEach(item => { item.sprite.Dispose(); item.text.Dispose(); });
-            CraftingText.Dispose();
+            TitleCrafting.Dispose();
             CraftingItems.ForEach(item => { item.sprite.Dispose(); item.button.Dispose(); });
         }
 
         public void Init()
         {
-            InventoryText.SetTextSizeAndPosition(text: "Inventory:", Constants.TEXT_SIZE, Constants.TEXT_POSITION);
+            TitleInventory.SetTextSizeAndPosition(text: "Inventory:", Constants.TEXT_SIZE, Constants.TEXT_POSITION);
             InventoryItems.Add(InitializerItems("NORMALCORAL"));
             InventoryItems.Add(InitializerItems("SPIRALCORAL"));
             InventoryItems.Add(InitializerItems("TREECORAL"));
@@ -59,11 +61,13 @@ namespace TGC.Group.Model._2D
             InventoryItems.Add(InitializerItems("NORMALFISH"));
             InventoryItems.Add(InitializerItems("YELLOWFISH"));
             CalculateItemPosition();
-            CraftingText.Text = "Crafting:";
+            TitleCrafting.Text = "Crafting:";
             CraftingItems.Add(InitializerCraftItem("CATCHFISH"));
             CraftingItems.Add(InitializerCraftItem("WEAPON"));
             CraftingItems.Add(InitializerCraftItem("OXYGEN"));
             CalculateCraftItemPosition();
+            CountCraftingItems.SetImage("textCrafting.png");
+            CountCraftingItems.Scaling = new TGCVector2(0.4f, 0.6f);
         }
 
         private (DrawSprite, DrawText) InitializerItems(string sprite)
@@ -122,8 +126,8 @@ namespace TGC.Group.Model._2D
                 InventoryItems[index].text.Position = new TGCVector2(InventoryItems[index].sprite.Position.X + Size.X, InventoryItems[index].sprite.Position.Y + Size.Y + 10);
             }
 
-            InventoryText.Position = new TGCVector2(InventoryItems[0].sprite.Position.X, InventoryItems[0].sprite.Position.Y - 40);
-            CraftingText.Position = new TGCVector2(InventoryItems[0].sprite.Position.X, InventoryItems[0].text.Position.Y + 40);
+            TitleInventory.Position = new TGCVector2(InventoryItems[0].sprite.Position.X, InventoryItems[0].sprite.Position.Y - 40);
+            TitleCrafting.Position = new TGCVector2(InventoryItems[0].sprite.Position.X, InventoryItems[0].text.Position.Y + 40);
         }
 
         private void CalculateCraftItemPosition()
@@ -137,7 +141,7 @@ namespace TGC.Group.Model._2D
                 scale = new TGCVector2(1.2f / 2, 1.2f / 2);
 
             var Size = new TGCVector2(100 * scale.X, 100 * scale.Y);
-            TGCVector2 position = new TGCVector2(InventoryItems[1].sprite.Position.X, CraftingText.Position.Y + 30);                       
+            TGCVector2 position = new TGCVector2(InventoryItems[1].sprite.Position.X, TitleCrafting.Position.Y + 30);                       
             
             CraftingItems[0].sprite.SetInitialScallingAndPosition(scale, position);
             CraftingItems[0].button.ChangePosition(new TGCVector2(InventoryItems[5].sprite.Position.X, position.Y - 10 + (Size.Y - CraftingItems[0].button.SizeText.Y) / 2));
@@ -157,10 +161,22 @@ namespace TGC.Group.Model._2D
 
         public void Render()
         {
-            InventoryText.Render();
-            CraftingText.Render();
+            TitleInventory.Render();
+            TitleCrafting.Render();
             InventoryItems.ForEach(item => { item.sprite.Render(); item.text.Render(); });
             CraftingItems.ForEach(item => { item.sprite.Render(); item.button.Render(); });
+
+            CraftingItems.ForEach(item => {
+                if (FastUtils.IsNumberBetweenInterval(Input.Xpos, (item.sprite.Position.X, item.sprite.Position.X + Size.X)) &&
+                    FastUtils.IsNumberBetweenInterval(Input.Ypos, (item.sprite.Position.Y, item.sprite.Position.Y + Size.Y)))
+                {
+                    CountCraftingItems.Position = new TGCVector2(Cursor.Position.X + 40, Cursor.Position.Y - 12);
+                    var text = GameCraftingManager.GetTextCraftingItems()[item.sprite.Name];
+                    text.Position = new TGCVector2(CountCraftingItems.Position.X + 10, CountCraftingItems.Position.Y);
+                    CountCraftingItems.Render();
+                    text.Render();
+                }
+            });
         }
 
         public void UpdateItems(Dictionary<string, List<string>> items) =>
