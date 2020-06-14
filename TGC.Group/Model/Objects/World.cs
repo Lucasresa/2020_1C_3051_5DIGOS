@@ -7,7 +7,7 @@ namespace TGC.Group.Model.Objects
     internal abstract class World
     {
         protected string FILE_HEIGHTMAPS, FILE_TEXTURES, FILE_EFFECT;
-        protected float SCALEXZ = 300f, SCALEY = 12f;
+        protected float SCALEXZ = 200f, SCALEY = 12f;
         protected readonly string MediaDir, ShadersDir;
         protected TGCVector3 Position = TGCVector3.Empty;
         protected string Technique;

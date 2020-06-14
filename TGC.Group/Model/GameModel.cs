@@ -242,10 +242,10 @@ namespace TGC.Group.Model
                 {
                     CharacterStatus.Respawn();
                     FullQuad.RenderTeleportEffect = FullQuad.RenderAlarmEffect = false;
+                    TimeToRevive = 0;
                 }
                 return;
             }
-            TimeToRevive = 0;
             if (Input.keyPressed(Key.I)) Draw2DManager.ActiveInventory = camera.Lock =
                     FullQuad.RenderPDA = ActiveInventory = !ActiveInventory;
             if (!ActiveInventory) UpdateEvents();
