@@ -67,7 +67,7 @@ namespace TGC.Group.Model._2D
             CraftingItems.Add(InitializerCraftItem("OXYGEN"));
             CalculateCraftItemPosition();
             CountCraftingItems.SetImage("textCrafting.png");
-            CountCraftingItems.Scaling = new TGCVector2(0.4f, 0.6f);
+            CountCraftingItems.Scaling = new TGCVector2(0.36f, 0.6f);
         }
 
         private (DrawSprite, DrawText) InitializerItems(string sprite)
@@ -167,8 +167,8 @@ namespace TGC.Group.Model._2D
             CraftingItems.ForEach(item => { item.sprite.Render(); item.button.Render(); });
 
             CraftingItems.ForEach(item => {
-                if (FastUtils.IsNumberBetweenInterval(Input.Xpos, (item.sprite.Position.X, item.sprite.Position.X + Size.X)) &&
-                    FastUtils.IsNumberBetweenInterval(Input.Ypos, (item.sprite.Position.Y, item.sprite.Position.Y + Size.Y)))
+                if (FastUtils.IsNumberBetweenInterval(Input.Xpos, (item.sprite.Position.X, item.sprite.Position.X + item.sprite.Size.X)) &&
+                    FastUtils.IsNumberBetweenInterval(Input.Ypos, (item.sprite.Position.Y, item.sprite.Position.Y + item.sprite.Size.Y)))
                 {
                     CountCraftingItems.Position = new TGCVector2(Cursor.Position.X + 40, Cursor.Position.Y - 12);
                     var text = GameCraftingManager.GetTextCraftingItems()[item.sprite.Name];
