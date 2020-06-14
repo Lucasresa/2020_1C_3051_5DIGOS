@@ -15,7 +15,7 @@ namespace TGC.Group.Model.Objects
         private struct Constants
         {
             public static int MESH_TERRAIN_OFFSET = 300;
-            public static int MAX_POSITION_Y = 200;
+            public static int MAX_POSITION_Y = 500;
         }
 
         private readonly Random random;

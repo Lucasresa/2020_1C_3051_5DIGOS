@@ -20,6 +20,30 @@ sampler2D diffuseMap = sampler_state
 float time = 0;
 float4 CameraPos;
 
+// variable de fogs
+float4 ColorFog;
+float StartFogDistance;
+float EndFogDistance;
+
+// Parametros de la Luz
+float3 diffuseColor; //Color RGB para Ambient de la luz
+float3 specularColor; //Color RGB para Ambient de la luz
+float4 lightPosition; //Posicion de la luz
+float4 eyePosition; //Posicion de la camara
+float specularExp; // Shininess
+
+float3 shipAmbientColor; // Color de ambiente para la nave
+float shipKSpecular; // Coeficiente de luz especular para la nave
+
+float3 goldAmbientColor; // Color de ambiente para el oro
+float goldKSpecular; // Coeficiente de luz especular para el oro
+
+float3 silverAmbientColor; // Color de ambiente para la plata
+float silverKSpecular; // Coeficiente de luz especular para la plata
+
+float3 ironAmbientColor; // Color de ambiente para el hierro
+float ironKSpecular; // Coeficiente de luz especular para el hierro
+
 //Input del Vertex Shader
 struct VS_INPUT
 {
@@ -46,7 +70,12 @@ VS_OUTPUT vs_main_water(VS_INPUT Input)
 {
     VS_OUTPUT Output;
     Output.MeshPosition = Input.Position;
-    Input.Position.y += 40 * sin(1/20 * (time + Input.Position.x)) + 35 * cos(3 * (time + Input.Position.z));
+    float dx = Input.Position.x;
+    float dy = Input.Position.z;
+    float freq = sqrt(dx * dx + dy * dy);
+    float amp = 30;
+    float angle = -time * 3 + freq / 300;
+    Input.Position.y += sin(angle) * amp;
     Output.Position = mul(Input.Position, matWorldViewProj);
     Output.Texcoord = Input.Texcoord;
     Output.WorldNormal = mul(float4(Input.Normal, 1.0), matInverseTransposeWorld);
@@ -90,51 +119,33 @@ sampler2D fogMap = sampler_state
     MIPFILTER = LINEAR;
 };
 
-// variable de fogs
-float4 ColorFog;
-float StartFogDistance;
-float EndFogDistance;
-float Density;
-
 //Output del Vertex Shader
 struct VS_OUTPUT_VERTEX
 {
     float4 Position : POSITION0;
     float2 Texture : TEXCOORD0;
     float4 PosView : COLOR0;
-    float4 TexturePosition : TEXCOORD1;
+    float4 WorldPosition : TEXCOORD1;
     float3 WorldNormal : TEXCOORD2;
 };
-
-VS_OUTPUT_VERTEX vs_main_fog(VS_INPUT input)
-{
-    VS_OUTPUT_VERTEX output;
-    output.Position = mul(input.Position, matWorldViewProj);
-    output.Texture = input.Texcoord;
-    output.PosView = mul(input.Position, matWorldView);
-    output.TexturePosition = mul(input.Position, matWorld);
-    output.WorldNormal = mul(float4(input.Normal, 1.0), matInverseTransposeWorld);
-    return output;
-}
 
 float get_fog_amount(float3 viewDirection, float fogStart, float fogRange)
 {
     return saturate((length(viewDirection) - fogStart) / fogRange);
 }
 
-//Pixel Shader
-float4 ps_main_fog(VS_OUTPUT_VERTEX input) : COLOR0
+float4 calculate_fog(VS_OUTPUT_VERTEX input)
 {
     float zn = StartFogDistance;
     float zf = EndFogDistance;
 
     float4 fvBaseColor = tex2D(fogMap, input.Texture);
     
-    if (input.TexturePosition.y > 3550)
+    if (input.WorldPosition.y > 3550)
         return fvBaseColor;
     else
     {
-        float3 viewDirection = CameraPos.xyz - input.TexturePosition.xyz;
+        float3 viewDirection = CameraPos.xyz - input.WorldPosition.xyz;
         float FogAmount = get_fog_amount(viewDirection, StartFogDistance, (EndFogDistance - StartFogDistance));
         
         if (input.PosView.z < zn)
@@ -146,6 +157,48 @@ float4 ps_main_fog(VS_OUTPUT_VERTEX input) : COLOR0
     }
 }
 
+float4 calculate_light(VS_OUTPUT_VERTEX input, float3 ambientColor, float specularK)
+{
+    /* Pasar normal a World-Space
+	Solo queremos rotarla, no trasladarla ni escalarla.
+	Por eso usamos matInverseTransposeWorld en vez de matWorld */
+    input.WorldNormal = normalize(input.WorldNormal);
+    
+    float3 lightDirection = normalize(lightPosition - input.WorldPosition);
+    float3 viewDirection = normalize(eyePosition - input.WorldPosition);
+    float3 halfVector = normalize(lightDirection + viewDirection);
+
+	// Obtener texel de la textura
+    float4 texelColor = tex2D(diffuseMap, input.Texture);
+
+	//Componente Diffuse: N dot L
+    float3 NdotL = dot(input.WorldNormal, lightDirection);
+    float3 diffuseLight = 0.6 * diffuseColor * max(0.0, NdotL);
+
+	//Componente Specular: (N dot H)^shininess
+    float3 NdotH = dot(input.WorldNormal, halfVector);
+    float3 specularLight = ((NdotL <= 0.0) ? 0.0 : specularK) * specularColor * pow(max(0.0, NdotH), specularExp);
+
+    float4 finalColor = float4(saturate(ambientColor * 0.3 + diffuseLight) * texelColor + specularLight, texelColor.a);
+    return finalColor;
+}
+
+VS_OUTPUT_VERTEX vs_main_fog(VS_INPUT input)
+{
+    VS_OUTPUT_VERTEX output;
+    output.Position = mul(input.Position, matWorldViewProj);
+    output.Texture = input.Texcoord;
+    output.PosView = mul(input.Position, matWorldView);
+    output.WorldPosition = mul(input.Position, matWorld);
+    output.WorldNormal = mul(input.Normal, matInverseTransposeWorld).xyz;
+    return output;
+}
+
+float4 ps_main_fog(VS_OUTPUT_VERTEX input) : COLOR0
+{
+    return calculate_fog(input);
+}
+
 //Pixel Shader
 float4 ps_main_fog_vegetation(VS_OUTPUT_VERTEX input) : COLOR0
 {
@@ -155,11 +208,11 @@ float4 ps_main_fog_vegetation(VS_OUTPUT_VERTEX input) : COLOR0
     float4 fvBaseColor = tex2D(fogMap, input.Texture);    
     float4 Color;
     
-    if (input.TexturePosition.y > 3550)
+    if (input.WorldPosition.y > 3550)
         return fvBaseColor;
     else
     {
-        float3 viewDirection = CameraPos.xyz - input.TexturePosition.xyz;
+        float3 viewDirection = CameraPos.xyz - input.WorldPosition.xyz;
         float FogAmount = get_fog_amount(viewDirection, StartFogDistance, (EndFogDistance - StartFogDistance));
        
         if (input.PosView.z < zn)
@@ -276,5 +329,24 @@ technique Sun
     {
         VertexShader = compile vs_3_0 vs_main_fog();
         PixelShader = compile ps_3_0 ps_sun();
+    }
+}
+
+/**************************************************************************************/
+                                    /* Ship */
+/**************************************************************************************/
+
+//Pixel Shader
+float4 ps_main_ship(VS_OUTPUT_VERTEX input) : COLOR0
+{
+    return calculate_light(input, shipAmbientColor, shipKSpecular);
+}
+
+technique Ship_Light
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 vs_main_fog();
+        PixelShader = compile ps_3_0 ps_main_ship();
     }
 }
