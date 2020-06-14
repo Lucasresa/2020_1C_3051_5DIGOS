@@ -26,7 +26,6 @@ namespace TGC.Group.Model
         private MeshBuilder MeshBuilder;
         private readonly Ray Ray;
         private Effect FogShader;
-        private Effect BlinnShader;
         private TGCVector3 LightPosition = new TGCVector3(1530, 14000, 100);
         public PhysicalWorld PhysicalWorld { get; set; }
         public TgcD3dInput Input { get; set; }
@@ -62,17 +61,17 @@ namespace TGC.Group.Model
         private void InitializerObjects()
         {
             FogShader = TGCShaders.Instance.LoadEffect(ShadersDir + "Shaders.fx");            
-            BlinnShader = TGCShaders.Instance.LoadEffect(ShadersDir + "TgcMeshPhongShader.fx");
                         
             FogShader.SetValue("ColorFog", Color.SteelBlue.ToArgb());
             FogShader.SetValue("StartFogDistance", 5000);
             FogShader.SetValue("EndFogDistance", 10000);
 
-            BlinnShader.SetValue("ambientColor", Color.SandyBrown.ToArgb());
-            BlinnShader.SetValue("diffuseColor", Color.LightGoldenrodYellow.ToArgb());
-            BlinnShader.SetValue("specularColor", Color.White.ToArgb());
-            BlinnShader.SetValue("specularExp", 20);
-            BlinnShader.SetValue("lightPosition", TGCVector3.TGCVector3ToFloat4Array(LightPosition));
+            FogShader.SetValue("shipAmbientColor", Color.White.ToArgb());
+            FogShader.SetValue("diffuseColor", Color.LightGoldenrodYellow.ToArgb());
+            FogShader.SetValue("specularColor", Color.White.ToArgb());
+            FogShader.SetValue("specularExp", 20);
+            FogShader.SetValue("shipKSpecular", 0.5f);
+            FogShader.SetValue("lightPosition", TGCVector3.TGCVector3ToFloat4Array(LightPosition));
 
             /* Initializer object */
             LightBox = TGCBox.fromSize(TGCVector3.One * 150, Color.White);
@@ -116,13 +115,13 @@ namespace TGC.Group.Model
             Common.SetShader(FogShader, "Fog");
             Shark.SetShader(FogShader, "Fog");
             Vegetation.SetShader(FogShader, "FogVegetation");
-            Ship.SetShader(BlinnShader, "DIFFUSE_MAP");
-            LightBox.Effect = BlinnShader;
-            LightBox.Technique = "VERTEX_COLOR";
+            Ship.SetShader(FogShader, "Ship_Light");
+
             LightBox.Transform = TGCMatrix.Translation(LightPosition);
 
+            var meshes = GetStaticMeshes();
             QuadTree.Camera = Camera;
-            QuadTree.create(GetStaticMeshes(), Terrain.world.BoundingBox);
+            QuadTree.create(meshes, Terrain.world.BoundingBox);
         }
 
         public void CreateBulletCallbacks(CharacterStatus characterStatus) =>
@@ -151,7 +150,7 @@ namespace TGC.Group.Model
             else
             {
                 FogShader.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
-                BlinnShader.SetValue("eyePosition", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));              
+                FogShader.SetValue("eyePosition", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));              
                 Ship.RenderOutdoorShip();
                 Skybox.Render(Terrain.SizeWorld());
                 Terrain.Render();
