@@ -91,7 +91,7 @@ namespace TGC.Group.Model.Status
 
         public void Respawn()
         {
-            Reset();
+            Reset();            
             Character.Respawn();
         }
     }
