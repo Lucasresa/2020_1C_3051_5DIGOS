@@ -61,9 +61,9 @@ namespace TGC.Group.Model
 
         private void InitializerObjects()
         {
-            FogShader = TGCShaders.Instance.LoadEffect(ShadersDir + "SmartTerrain.fx");
+            FogShader = TGCShaders.Instance.LoadEffect(ShadersDir + "Shaders.fx");            
             BlinnShader = TGCShaders.Instance.LoadEffect(ShadersDir + "TgcMeshPhongShader.fx");
-            
+                        
             FogShader.SetValue("ColorFog", Color.SteelBlue.ToArgb());
             FogShader.SetValue("StartFogDistance", 5000);
             FogShader.SetValue("EndFogDistance", 10000);
@@ -116,8 +116,11 @@ namespace TGC.Group.Model
             Shark.SetShader(FogShader, "Fog");
             Vegetation.SetShader(FogShader, "FogVegetation");
             Ship.SetShader(BlinnShader, "DIFFUSE_MAP_AND_LIGHTMAP");
-            //LightBox.Effect = BlinnShader;
-            //LightBox.Technique = "VERTEX_COLOR";
+            //LightBox.Color = Color.LightGoldenrodYellow;
+            //LightBox.Color = Color.LightGoldenrodYellow;
+            //LightBox.updateValues();
+            LightBox.Effect = BlinnShader;
+            LightBox.Technique = "VERTEX_COLOR";
 
             QuadTree.Camera = Camera;
             QuadTree.create(GetStaticMeshes(), Terrain.world.BoundingBox);

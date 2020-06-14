@@ -15,7 +15,7 @@ namespace TGC.Group.Model.Objects
             WaterPosition = position;
             FILE_HEIGHTMAPS = @"Heightmaps\oceano.jpg";
             FILE_TEXTURES = @"Textures\water.png";
-            FILE_EFFECT = "SmartTerrain.fx";
+            FILE_EFFECT = "Shaders.fx";
             Technique = "Waves";
             SCALEY = 1;
             LoadWorld();

@@ -18,6 +18,8 @@ sampler2D diffuseMap = sampler_state
 };
 
 float time = 0;
+float4 CameraPos;
+
 //Input del Vertex Shader
 struct VS_INPUT
 {
@@ -57,7 +59,7 @@ float4 ps_main_water(VS_OUTPUT input) : COLOR0
     float textureScale = 10;
     float2 waterDirection = float2(0.003, 0.003) * time;
     float4 textureColor = tex2D(diffuseMap, input.Texcoord * textureScale + waterDirection);
-    textureColor.a = 0.7;
+    textureColor.a = 0.35;     
     return textureColor;
 }
 
@@ -65,7 +67,7 @@ technique Waves
 {
     pass Pass_0
     {
-        AlphaBlendEnable = TRUE;
+        AlphaBlendEnable = true;
         VertexShader = compile vs_3_0 vs_main_water();
         PixelShader = compile ps_3_0 ps_main_water();
     }
@@ -88,7 +90,6 @@ sampler2D fogMap = sampler_state
 
 // variable de fogs
 float4 ColorFog;
-float4 CameraPos;
 float StartFogDistance;
 float EndFogDistance;
 float Density;
@@ -117,7 +118,6 @@ VS_OUTPUT_VERTEX vs_main_fog(VS_INPUT input)
 float get_fog_amount(float3 viewDirection, float fogStart, float fogRange)
 {
     return saturate((length(viewDirection) - fogStart) / fogRange);
-   // return clamp((length(viewDirection) - fogStart) / fogRange, 0.2, 0.5);
 }
 
 //Pixel Shader
@@ -248,5 +248,31 @@ technique DiffuseMap
     {
         VertexShader = compile vs_3_0 vs_main_fog();
         PixelShader = compile ps_3_0 ps_main_terrain();
+    }
+}
+
+/**************************************************************************************/
+                                    /* Sun */
+/**************************************************************************************/
+
+//Pixel Shader
+float4 ps_sun(VS_OUTPUT_VERTEX Input) : COLOR0
+{
+    float4 texel = tex2D(diffuseMap, Input.Texture);
+    float4 color = distance(Input.Texture.xy, .4);
+		
+    color = 1 / color;
+    if (distance(Input.Texture.xy, .5) > 0.8)
+        return texel;
+    else
+        return lerp(texel, color, 0.0070);
+}
+
+technique Sun
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 vs_main_fog();
+        PixelShader = compile ps_3_0 ps_sun();
     }
 }

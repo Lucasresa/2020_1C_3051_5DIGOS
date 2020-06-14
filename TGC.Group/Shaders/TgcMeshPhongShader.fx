@@ -118,9 +118,9 @@ float4 ps_VertexColor(PS_INPUT_VERTEX_COLOR input) : COLOR0
 
 	//Componente Specular: (N dot H)^shininess
     float3 NdotH = dot(input.WorldNormal, halfVector);
-    float3 specularLight = ((NdotL <= 0.0) ? 0.0 : 0.5) * specularColor * pow(max(0.0, NdotH), 10);
-
-    float4 finalColor = float4(saturate(ambientColor * 0.5 + diffuseLight) * input.Color.rgb + specularLight, input.Color.a);
+    float3 specularLight = NdotL <= 0.0 ? float3(0.0, 0.0, 0.0) : 0.5 * specularColor * pow(max(0.0, NdotH), 10);
+	
+    float4 finalColor = float4(saturate(ambientColor + diffuseLight) * input.Color.rgb + specularLight, input.Color.a);
     return finalColor;
 }
 /*

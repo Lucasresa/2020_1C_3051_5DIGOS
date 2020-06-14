@@ -175,9 +175,7 @@
     <None Include="Shaders\TgcKeyFrameMeshShader.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Shaders\TgcMeshPhongShader.fx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="Shaders\TgcMeshPhongShader.fx" />
     <None Include="Shaders\TgcMeshPointLightShader.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -257,7 +255,7 @@
     <Content Include="Media\Textures\rock_wall.jpg" />
     <Content Include="Media\Textures\sand.jpg" />
     <Content Include="subnautica_icono_original.ico" />
-    <None Include="Shaders\SmartTerrain.fx">
+    <None Include="Shaders\Shaders.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
