@@ -37,6 +37,7 @@ namespace TGC.Group.Model.Objects
         public bool IsInsideShip => Camera.Position.Y < 0;
         public bool IsOutsideShip => !IsInsideShip;
         public bool IsOutOfWater => Camera.Position.Y > 3605;
+        public bool Submerge => !IsInsideShip && !CanBreathe;
         public bool IsNearSkybox { get; set; }
         public bool CanBreathe => Camera.Position.Y > 3505;
 

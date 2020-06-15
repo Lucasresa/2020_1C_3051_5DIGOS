@@ -27,6 +27,7 @@ namespace TGC.Group.Model
         private readonly Ray Ray;
         private Effect FogShader;
         private TGCVector3 LightPosition = new TGCVector3(1530, 14000, 100);
+        private GameSoundManager SoundManager;
         public PhysicalWorld PhysicalWorld { get; set; }
         public TgcD3dInput Input { get; set; }
         public CameraFPS Camera { get; set; }
@@ -47,7 +48,7 @@ namespace TGC.Group.Model
         public Quadtree QuadTree { get; private set; }
         public TGCBox LightBox { get; set; }
 
-        public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input)
+        public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input, GameSoundManager soundManager)
         {
             MediaDir = mediaDir;
             ShadersDir = shadersDir;
@@ -55,6 +56,7 @@ namespace TGC.Group.Model
             Input = input;
             Ray = new Ray(input);
             QuadTree = new Quadtree();
+            SoundManager = soundManager;
             InitializerObjects();
         }
 
@@ -63,7 +65,7 @@ namespace TGC.Group.Model
             FogShader = TGCShaders.Instance.LoadEffect(ShadersDir + "Shaders.fx");            
                         
             FogShader.SetValue("ColorFog", Color.SteelBlue.ToArgb());
-            FogShader.SetValue("StartFogDistance", 5000);
+            FogShader.SetValue("StartFogDistance", 2000);
             FogShader.SetValue("EndFogDistance", 10000);
 
             FogShader.SetValue("shipAmbientColor", Color.White.ToArgb());
@@ -144,7 +146,7 @@ namespace TGC.Group.Model
         public void Render(TgcFrustum frustum)
         {
             Character.Render();
-            
+
             if (Character.IsInsideShip)
                 Ship.RenderIndoorShip();
             else
@@ -163,6 +165,8 @@ namespace TGC.Group.Model
 
         public void Update(float elapsedTime, float timeBeetweenUpdate)
         {
+            SoundManager.PlayMusicAmbient(Character.Submerge);
+            Character.Update(Ray, Shark.Mesh, elapsedTime);
             PhysicalWorld.dynamicsWorld.StepSimulation(elapsedTime, maxSubSteps: 10, timeBeetweenUpdate);
             Fishes.ForEach(fish => fish.Update(elapsedTime, Camera));
             Skybox.Update();
@@ -178,8 +182,6 @@ namespace TGC.Group.Model
         }
 
         public void AddWeaponToCharacter() => Character.Weapon = Weapon;
-
-        public void UpdateCharacter(float elapsedTime) => Character.Update(Ray, Shark.Mesh, elapsedTime);
 
         private void DetectSelectedItem()
         {
@@ -206,6 +208,7 @@ namespace TGC.Group.Model
         {
             if (item.Mesh != null && Input.keyPressed(Key.E))
             {
+                SoundManager.Collect.play();
                 ShowInfoItemCollect = true;
                 ItemSelected = item.Name;
                 PhysicalWorld.RemoveBodyToTheWorld(item.Body);
@@ -219,6 +222,7 @@ namespace TGC.Group.Model
         {
             if (Input.keyPressed(Key.E))
             {
+                SoundManager.CatchFish.play();
                 ShowInfoItemCollect = true;
                 ItemSelected = item.Mesh.Name;
                 Fishes.Remove(item);

@@ -36,11 +36,10 @@ namespace TGC.Group.Model
         private GameState StateExit;
         private GameState CurrentState;
 
+        private DrawSprite Title;
         private DrawButton Play;
         private DrawButton Help;
         private DrawButton Exit;
-
-        private DrawSprite Title;
 
         private GameObjectManager ObjectManager;
         private GameInventoryManager InventoryManager;
@@ -49,6 +48,7 @@ namespace TGC.Group.Model
         private Game2DManager PointerAndInstruction;
         private CharacterStatus CharacterStatus;
         private SharkStatus SharkStatus;
+        private GameSoundManager SoundManager;
 
         private bool ActiveInventory { get; set; }
         private bool ExitGame { get; set; }
@@ -80,14 +80,15 @@ namespace TGC.Group.Model
             Camera = camera = new CameraFPS(Input);
             FullQuad = new FullQuad(MediaDir, ShadersDir, ElapsedTime);
             PointerAndInstruction = new Game2DManager(MediaDir);
+            SoundManager = new GameSoundManager(MediaDir, DirectSound);
             InitializerState();
 
-            InitializerMenu();
+            InitializerMenu();            
             InitializerGame();
         }
 
         private void InitializerMenu()
-        {
+        {           
             Title = new DrawSprite(MediaDir);
             Title.SetImage("subnautica.png");
             Title.SetInitialScallingAndPosition(new TGCVector2(0.8f, 0.8f), new TGCVector2(50, 50));
@@ -109,12 +110,13 @@ namespace TGC.Group.Model
 
         private void InitializerGame()
         {
-            ObjectManager = new GameObjectManager(MediaDir, ShadersDir, camera, Input);
+            ObjectManager = new GameObjectManager(MediaDir, ShadersDir, camera, Input, SoundManager);
             CharacterStatus = new CharacterStatus(ObjectManager.Character);
             SharkStatus = new SharkStatus();
             EventsManager = new GameEventsManager(ObjectManager.Shark, ObjectManager.Character);
             Draw2DManager = new Game2DManager(MediaDir, CharacterStatus, SharkStatus, Input);
             InventoryManager = new GameInventoryManager();
+            SoundManager.Menu.play(true);
             Draw2DManager.Crafting.CraftingItems[0].button.Action = CraftSkillFish;
             Draw2DManager.Crafting.CraftingItems[1].button.Action = CraftWeapon;
             Draw2DManager.Crafting.CraftingItems[2].button.Action = CraftDivingHelmet;
@@ -188,7 +190,7 @@ namespace TGC.Group.Model
         }
 
         private void UpdateMenu()
-        {
+        {            
             Play.Update();
             Help.Update();
             if (CurrentState == StateMenu)
@@ -212,6 +214,7 @@ namespace TGC.Group.Model
                 Help.Dispose();
                 Exit.Dispose();
                 camera.Lock = false;
+                SoundManager.Dispose(SoundManager.Menu);
             }
         }
         #endregion
@@ -254,12 +257,11 @@ namespace TGC.Group.Model
             UpdateFlags();
             UpdateInfoItemCollect();
             if (Input.keyPressed(Key.P)) ObjectManager.Character.CanFish = ObjectManager.Character.HasWeapon =
-                ObjectManager.Character.HasDivingHelmet = true;
+                ObjectManager.Character.HasDivingHelmet = true; // TODO: Despues hay que sacar esto.
         }
 
         private void UpdateEvents()
         {
-            ObjectManager.UpdateCharacter(ElapsedTime);
             ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
             EventsManager.Update(ElapsedTime, ObjectManager.Fishes, SharkStatus);
             InventoryManager.AddItem(ObjectManager.ItemSelected);

@@ -25,7 +25,7 @@ namespace TGC.Group.Model.Objects
             var texture = TgcTexture.createTexture(MediaDir + @"Textures\reflex.jpg");
             world.Effect.SetValue("texReflex", texture.D3dTexture);
             world.Effect.SetValue("ColorFog", Color.SteelBlue.ToArgb());
-            world.Effect.SetValue("StartFogDistance", 5000);
+            world.Effect.SetValue("StartFogDistance", 2000);
             world.Effect.SetValue("EndFogDistance", 10000);
         }
 

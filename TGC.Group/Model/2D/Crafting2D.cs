@@ -44,9 +44,10 @@ namespace TGC.Group.Model._2D
         public void Dispose()
         {
             TitleInventory.Dispose();
-            InventoryItems.ForEach(item => { item.sprite.Dispose(); item.text.Dispose(); });
             TitleCrafting.Dispose();
+            InventoryItems.ForEach(item => { item.sprite.Dispose(); item.text.Dispose(); });
             CraftingItems.ForEach(item => { item.sprite.Dispose(); item.button.Dispose(); });
+            CountCraftingItems.Dispose();
         }
 
         public void Init()
