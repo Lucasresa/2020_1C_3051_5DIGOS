@@ -351,11 +351,15 @@ namespace TGC.Group.Model
 
         private void CraftSkillFish()
         {
-            ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
+            Draw2DManager.Crafting.Learned = ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
             if (!ObjectManager.Character.CanFish)
                 MessageBox.Show("Insufficient materials");
             else
                 SoundManager.Crafting.play();
+            Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Text = "Learned";
+            Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Color = Color.Orange;
+            var position = Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Position;
+            Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Position = new TGCVector2(position.X - 15, position.Y);            
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
         }
 

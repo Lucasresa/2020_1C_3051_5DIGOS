@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -30,6 +32,7 @@ namespace TGC.Group.Model._2D
 
         private TGCVector2 Size;
         public TgcD3dInput Input { get; set; }
+        public bool Learned { get; set; }
 
         public Crafting2D(string mediaDir, TgcD3dInput input)
         {
@@ -182,15 +185,30 @@ namespace TGC.Group.Model._2D
             }
         }
 
-        public void UpdateItemsCrafting() =>
-            CraftingItems.ForEach(item => item.button.Update());
+        public void UpdateItemsCrafting()
+        {
+            CraftingItems.ForEach(item => {
+                if (item.sprite.Name != "CATCHFISH")
+                    item.button.Update();
+                else if (!Learned)
+                    item.button.Update();
+            });
+        }
 
         public void Render()
         {
             TitleInventory.Render();
             TitleCrafting.Render();
             InventoryItems.ForEach(item => { item.sprite.Render(); item.text.Render(); });
-            CraftingItems.ForEach(item => { item.sprite.Render(); item.button.Render(); });
+            CraftingItems.ForEach(item => {                
+                item.sprite.Render();
+                if (item.sprite.Name != "CATCHFISH")
+                    item.button.Render();
+                else if (!Learned)
+                    item.button.Render();     
+                else
+                    item.button.ButtonText.Render();
+            });
 
             CraftingItems.ForEach(item => {
                 if (FastUtils.IsNumberBetweenInterval(Input.Xpos, (item.sprite.Position.X, item.sprite.Position.X + item.sprite.Size.X)) &&
@@ -214,7 +232,6 @@ namespace TGC.Group.Model._2D
             Weapon.button.Render();
         }
 
-        public void UpdateItemWeapon() => 
-            Weapon.button.Update();
+        public void UpdateItemWeapon() => Weapon.button.Update();
     }
 }
