@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -24,6 +25,7 @@ namespace TGC.Group.Model._2D
         private readonly DrawText TitleCrafting;
         private readonly List<(DrawSprite sprite, DrawText text)> InventoryItems;
         public List<(DrawSprite sprite, DrawButton button)> CraftingItems;
+        public (DrawSprite sprite, DrawButton button) Weapon;
         private readonly DrawSprite CountCraftingItems;
 
         private TGCVector2 Size;
@@ -69,6 +71,7 @@ namespace TGC.Group.Model._2D
             CalculateCraftItemPosition();
             CountCraftingItems.SetImage("textCrafting.png");
             CountCraftingItems.Scaling = new TGCVector2(0.36f, 0.6f);
+            InitializerWeapon();
         }
 
         private (DrawSprite, DrawText) InitializerItems(string sprite)
@@ -77,6 +80,28 @@ namespace TGC.Group.Model._2D
             item.SetImage(sprite + ".png");
             var text = new DrawText();
             return (item, text);
+        }
+
+        private void InitializerWeapon()
+        {
+            Weapon = InitializerCraftItem("WEAPON");
+
+            TGCVector2 scale;
+            if (Constants.SCREEN_WIDTH < 1366)
+                scale = new TGCVector2(0.8f / 1.5f, 0.8f / 1.5f);
+            else if (FastUtils.IsNumberBetweenInterval(Constants.SCREEN_WIDTH, (1366, 1700)))
+                scale = new TGCVector2(1f / 1.5f, 1f / 1.5f);
+            else
+                scale = new TGCVector2(1.2f / 2, 1.2f / 2);
+
+            var posY = TitleInventory.Position.Y;
+            var posX = InventoryItems[3].sprite.Position.X;
+            var position = new TGCVector2(posX, posY);
+            Weapon.sprite.SetInitialScallingAndPosition(scale, position);
+            position = new TGCVector2(position.X + 100, posY + 10);
+            Weapon.button.InitializerButton("Equip", new TGCVector2(0.4f, 0.4f), position);
+            var textPosition = Weapon.button.ButtonText.Position;
+            Weapon.button.ButtonText.Position = new TGCVector2(textPosition.X - 15, textPosition.Y);
         }
 
         private (DrawSprite, DrawButton) InitializerCraftItem(string sprite)
@@ -182,5 +207,14 @@ namespace TGC.Group.Model._2D
 
         public void UpdateItems(Dictionary<string, List<string>> items) =>
             InventoryItems.ForEach(item => item.text.Text = "x" + items[item.sprite.Name].Count);
+
+        public void RenderItemWeapon()
+        {
+            Weapon.sprite.Render();
+            Weapon.button.Render();
+        }
+
+        public void UpdateItemWeapon() => 
+            Weapon.button.Update();
     }
 }

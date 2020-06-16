@@ -46,5 +46,20 @@ namespace TGC.Group.Model
             Items[Name].Add(itemSelected);
             if (ItemHistory.Count == 6) ItemHistory.Remove(ItemHistory.First());
         }
+
+        public void Cheat()
+        {
+            for (int index = 0; index < 30; index++)
+            {
+                Items["NORMALCORAL"].Add("cheats");
+                Items["SPIRALCORAL"].Add("cheats");
+                Items["TREECORAL"].Add("cheats");
+                Items["NORMALFISH"].Add("cheats");
+                Items["YELLOWFISH"].Add("cheats");
+                Items["GOLD"].Add("cheats");
+                Items["IRON"].Add("cheats");
+                Items["SILVER"].Add("cheats");
+            }
+        }
     }
 }

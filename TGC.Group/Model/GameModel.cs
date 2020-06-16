@@ -232,6 +232,7 @@ namespace TGC.Group.Model
 
         private void UpdateGame()
         {
+            if (Input.keyPressed(Key.F2)) InventoryManager.Cheat();
             if (Input.keyPressed(Key.F1)) Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
             ObjectManager.CreateBulletCallbacks(CharacterStatus);
             if (CharacterStatus.IsDead)
@@ -253,6 +254,7 @@ namespace TGC.Group.Model
             if (Input.keyPressed(Key.I)) Draw2DManager.ActiveInventory = camera.Lock =
                     FullQuad.RenderPDA = ActiveInventory = !ActiveInventory;
             if (!ActiveInventory) UpdateEvents();
+            else Draw2DManager.UpdateItemWeapon();
             ObjectManager.Character.RestartBodySpeed();
             if (Input.keyPressed(Key.E)) ObjectManager.Character.Teleport();
             UpdateFlags();
@@ -325,9 +327,11 @@ namespace TGC.Group.Model
             else
             {
                 SoundManager.Crafting.play();
-                ObjectManager.Character.InHand = true;
-                Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Text = "Unequip";
-                Draw2DManager.Crafting.CraftingItems[1].button.Action = UseWeapon;
+                var textPosition = Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Position;
+                Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Position = new TGCVector2(textPosition.X - 15, textPosition.Y);
+                Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Text = " Equip";
+                Draw2DManager.Crafting.CraftingItems[1].button.Action = Draw2DManager.Crafting.Weapon.button.Action = UseWeapon;
+                Draw2DManager.ActiveWeapon = true;
             }
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
         }
@@ -357,26 +361,17 @@ namespace TGC.Group.Model
 
         private void UseWeapon()
         {
-            string text;            
-            TGCVector2 position;
-            var textPosition = Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Position;
+            string text;                       
             if (ObjectManager.Character.InHand)
-            {
-                position = new TGCVector2(textPosition.X - 10, textPosition.Y);
-                text = "Unequip";
-            }
+                text = " Equip";
             else
-            {
-                position = new TGCVector2(textPosition.X - 5, textPosition.Y);
-                text = "Equip";
-            }
+                text = "Unequip";
 
-            Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Position = position;
             ObjectManager.Character.InHand = !ObjectManager.Character.InHand;
             Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Text = text;
-            
+            Draw2DManager.Crafting.Weapon.button.ButtonText.Text = text;
+            ObjectManager.Character.Render();
         }
-
         #endregion
     }
 }

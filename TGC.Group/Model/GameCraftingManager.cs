@@ -104,7 +104,6 @@ namespace TGC.Group.Model
         public static bool CanCraftDivingHelmet(Dictionary<string, List<string>> items)
         {
             Items = items;
-            if (HasDivingHelmet) return false;
 
             if (items["GOLD"].Count >= Constants.DIVING_HELMET_COUNT_ORE_GOLD &&
                  items["IRON"].Count >= Constants.DIVING_HELMET_COUNT_ORE_IRON &&
@@ -122,6 +121,8 @@ namespace TGC.Group.Model
                 MessageBox.Show("Diving helmet crafted!");
                 HasDivingHelmet = true;
             }
+            else
+                HasDivingHelmet = false;
             return HasDivingHelmet;
         }
 

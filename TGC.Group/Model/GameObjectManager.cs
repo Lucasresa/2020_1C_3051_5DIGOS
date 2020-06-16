@@ -222,7 +222,7 @@ namespace TGC.Group.Model
         {
             if (Input.keyPressed(Key.E))
             {
-                SoundManager.CatchFish.play();
+                SoundManager.Collect.play();
                 ShowInfoItemCollect = true;
                 ItemSelected = item.Mesh.Name;
                 Fishes.Remove(item);

@@ -83,6 +83,7 @@ namespace TGC.Group.Model
         public float ItemHistoryTime => Constants.TIME_HISTORY_TEXT;
         public float DistanceWithShip { get; set; }
         public bool ActiveInventory { get; set; }
+        public bool ActiveWeapon { get; set; }
         public bool CanCraft { get; set; }
         public bool ShowHelp { get; set; }
         public bool ShowInfoExitShip { get; set; }
@@ -234,7 +235,11 @@ namespace TGC.Group.Model
                 if (CanCraft)
                     Crafting.Render();
                 else
+                {
                     Inventory.Render();
+                    if(ActiveWeapon)
+                        Crafting.RenderItemWeapon();
+                }
                 RenderMousePointer();
             }
         }
@@ -250,6 +255,12 @@ namespace TGC.Group.Model
         {
             Shark.Update();
             Character.Update();
+        }
+        
+        public void UpdateItemWeapon()
+        {
+            if(ActiveWeapon)
+                Crafting.UpdateItemWeapon();
         }
     }
 }

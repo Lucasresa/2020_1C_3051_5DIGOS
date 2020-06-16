@@ -9,7 +9,6 @@ namespace TGC.Group.Model
         public TgcMp3Player Menu { get; private set; }
         public TgcMp3Player Ambient { get; private set; }
         public TgcStaticSound SharkEntrance { get; private set; }
-        public TgcStaticSound CatchFish { get; private set; }
         public TgcStaticSound Crafting { get; private set; }
         public TgcStaticSound SharkDead { get; private set; }
         public TgcStaticSound Collect { get; private set; }
@@ -24,7 +23,6 @@ namespace TGC.Group.Model
             Menu = new TgcMp3Player();
             Ambient = new TgcMp3Player();
             SharkEntrance = new TgcStaticSound();
-            CatchFish = new TgcStaticSound();
             Crafting = new TgcStaticSound();
             SharkDead = new TgcStaticSound();
             Collect = new TgcStaticSound();
@@ -38,16 +36,15 @@ namespace TGC.Group.Model
             AmbientFileName = mediaDir + @"\Sounds\Ambient.mp3";
             UnderWaterFileName = mediaDir + @"\Sounds\UnderWater.mp3";
             SharkEntrance.loadSound(mediaDir + @"\Sounds\SharkNear.wav", sound.DsDevice);
-            CatchFish.loadSound(mediaDir + @"\Sounds\CatchFish.wav", sound.DsDevice);
             Crafting.loadSound(mediaDir + @"\Sounds\Crafting.wav", sound.DsDevice);
-            Collect.loadSound(mediaDir + @"\Sounds\Collect.wav", sound.DsDevice);
+            SharkDead.loadSound(mediaDir + @"\Sounds\SharkDead.wav", sound.DsDevice);
+            Collect.loadSound(mediaDir + @"\Sounds\gather_resource.wav", sound.DsDevice);
             Equip.loadSound(mediaDir + @"\Sounds\Equip.wav", sound.DsDevice);
         }
 
         public void Dispose()
         {
             SharkEntrance.dispose();
-            CatchFish.dispose();
             Crafting.dispose();
             SharkDead.dispose();
             Collect.dispose();
