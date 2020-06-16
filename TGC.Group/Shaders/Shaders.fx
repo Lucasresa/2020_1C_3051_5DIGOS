@@ -204,7 +204,7 @@ float4 ps_main_fog_vegetation(VS_OUTPUT_VERTEX input) : COLOR0
 {
     float zn = StartFogDistance;
     float zf = EndFogDistance;
-    ColorFog.a = 1;
+    
     float4 fvBaseColor = tex2D(fogMap, input.Texture);
     float4 Color;
     
@@ -217,12 +217,10 @@ float4 ps_main_fog_vegetation(VS_OUTPUT_VERTEX input) : COLOR0
         return ColorFog;
     else
     {
-        Color = lerp(fvBaseColor, ColorFog, FogAmount);
-        
-        if (Color.a <= 0.6)
+        if (fvBaseColor.a < 0.4)
             discard;
         else
-            return Color;
+            return lerp(fvBaseColor, ColorFog, FogAmount);
     }
 }
 
@@ -238,8 +236,7 @@ technique Fog
 technique FogVegetation
 {
     pass Pass_0
-    {
-        AlphaBlendEnable = true;   
+    {       
         VertexShader = compile vs_3_0 vs_main_fog();
         PixelShader = compile ps_3_0 ps_main_fog_vegetation();
     }
