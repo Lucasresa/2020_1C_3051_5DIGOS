@@ -35,12 +35,14 @@ namespace TGC.Group.Model
         private GameState StateMenu;
         private GameState StateHelp;
         private GameState StateExit;
+        private GameState StateGodMode;
         private GameState CurrentState;
 
         private DrawSprite Title;
         private DrawButton Play;
         private DrawButton Help;
         private DrawButton Exit;
+        private DrawButton ModeGod;
         
         private DrawText CraftingStatus;
 
@@ -111,6 +113,11 @@ namespace TGC.Group.Model
             Exit.InitializerButton(text: "Exit", scale: new TGCVector2(0.4f, 0.4f),
                                    position: new TGCVector2(PointerAndInstruction.ScreenWitdh - Help.Size.X - 50, PointerAndInstruction.ScreenHeight - Help.Size.Y - 50),
                                    action: () => CurrentState = StateExit);
+            ModeGod = new DrawButton(MediaDir, Input);
+            ModeGod.InitializerButton(text: "God Mode", scale: new TGCVector2(0.4f, 0.4f), 
+                                      position: new TGCVector2(50, 660),
+                                      action: () => CurrentState = StateGodMode);
+            ModeGod.ButtonText.Position = new TGCVector2(ModeGod.ButtonText.Position.X - 30, ModeGod.ButtonText.Position.Y);
 
             camera.Position = new TGCVector3(1030, 3900, 2500);
             camera.Lock = true;
@@ -161,6 +168,12 @@ namespace TGC.Group.Model
                 Render = RenderMenu
             };
 
+            StateGodMode = new GameState()
+            {
+                Update = UpdateGame,
+                Render = RenderGame
+            };
+
             CurrentState = StateMenu;
         }
 
@@ -169,6 +182,7 @@ namespace TGC.Group.Model
         {
             Play.Invisible = true;
             Help.Invisible = true;
+            ModeGod.Invisible = true;
             PointerAndInstruction.ShowHelp = true;
             UpdateMenu();
         }
@@ -197,6 +211,7 @@ namespace TGC.Group.Model
             Play.Render();
             Help.Render();
             Exit.Render();
+            ModeGod.Render();
 
             PointerAndInstruction.RenderMousePointer();
             PostRender();
@@ -206,6 +221,7 @@ namespace TGC.Group.Model
         {
             Play.Update();
             Help.Update();
+            ModeGod.Update();
             if (CurrentState == StateMenu)
             {
                 Exit.Update();
@@ -221,14 +237,22 @@ namespace TGC.Group.Model
                 ObjectManager.Water.Update(ElapsedTime, Camera.Position);
             }
 
-            if (CurrentState == StateGame)
+            if (CurrentState == StateGodMode)
+            {
+                GodMode = true;
+                InventoryManager.Cheat();
+                Draw2DManager.UpdateItems(InventoryManager.Items);
+            }
+
+            if (CurrentState == StateGame || CurrentState == StateGodMode)
             {
                 Play.Dispose();
                 Help.Dispose();
                 Exit.Dispose();
+                ModeGod.Dispose();
                 camera.Lock = false;
                 SoundManager.Dispose(SoundManager.Menu);
-            }
+            }            
         }
         #endregion
 
@@ -243,16 +267,10 @@ namespace TGC.Group.Model
             Draw2DManager.Render();
             PostRender();
         }
-
+               
         private void UpdateGame()
         {
-            if (Input.keyPressed(Key.F2) && !GodMode)
-            { 
-                GodMode = !GodMode; 
-                InventoryManager.Cheat();
-                Draw2DManager.UpdateItems(InventoryManager.Items);
-            }
-            else if (Input.keyPressed(Key.F2) && GodMode)
+            if (Input.keyPressed(Key.F2))
                 GodMode = !GodMode;
             Draw2DManager.GodMode = GodMode;
             if (Input.keyPressed(Key.F1)) Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
