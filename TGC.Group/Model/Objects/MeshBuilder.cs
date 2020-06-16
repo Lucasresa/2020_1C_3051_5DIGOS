@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TGC.Core.Geometry;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Utils;
@@ -49,10 +50,18 @@ namespace TGC.Group.Model.Objects
 
             return (XPosition: xPosition, ZPosition: zPosition);
         }
-        
+
         private bool IsFish(string name) => FastUtils.Contains(name, "fish");
 
         private void LocateFish(ref TgcMesh mesh, (int XPosition, int ZPosition) pairXZ, float YPosition)
+        {
+            YPosition = random.Next((int)YPosition + Constants.MESH_TERRAIN_OFFSET, (int)Water.world.Center.Y - Constants.MAX_POSITION_Y);
+            var position = new TGCVector3(pairXZ.XPosition, YPosition, pairXZ.ZPosition);
+            mesh.Transform *= TGCMatrix.Translation(pairXZ.XPosition, YPosition, pairXZ.ZPosition);
+            mesh.Position = position;
+        }
+
+        private void LocateBubble(ref TGCSphere mesh, (int XPosition, int ZPosition) pairXZ, float YPosition)
         {
             YPosition = random.Next((int)YPosition + Constants.MESH_TERRAIN_OFFSET, (int)Water.world.Center.Y - Constants.MAX_POSITION_Y);
             var position = new TGCVector3(pairXZ.XPosition, YPosition, pairXZ.ZPosition);
@@ -71,6 +80,15 @@ namespace TGC.Group.Model.Objects
                 LocateMeshesTypeTerrain(ref mesh, pairXZ, YPosition);
         }
 
+        public void LocateMeshInWorld(ref TGCSphere mesh, Perimeter area)
+        {
+            var pairXZ = GetXZPositionByPerimeter(area);
+            Terrain.world.InterpoledHeight(pairXZ.XPosition, pairXZ.ZPosition, out float YPosition);
+
+            LocateBubble(ref mesh, pairXZ, YPosition);
+        }
+
+        public void LocateMeshesInWorld(ref List<TGCSphere> meshes, Perimeter area) => meshes.ForEach(mesh => LocateMeshInWorld(ref mesh, area));
         public void LocateMeshesInWorld(ref List<TypeCommon> meshes, Perimeter area) => meshes.ForEach(common => LocateMeshInWorld(ref common.Mesh, area));
         public void LocateMeshesInWorld(ref List<TypeVegetation> meshes, Perimeter area) => meshes.ForEach(vegetation => LocateMeshInWorld(ref vegetation.Mesh, area));
 

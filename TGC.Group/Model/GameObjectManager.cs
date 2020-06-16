@@ -17,6 +17,7 @@ using TGC.Core.Collision;
 using TGC.Model.Optimization.Quadtree;
 using TGC.Core.Geometry;
 using Microsoft.DirectX.Direct3D;
+using System.Timers;
 
 namespace TGC.Group.Model
 {
@@ -47,6 +48,7 @@ namespace TGC.Group.Model
         public bool ShowScene { get; set; }
         public Quadtree QuadTree { get; private set; }
         public TGCBox LightBox { get; set; }
+        public Bubble Bubble { get; set; }
 
         public GameObjectManager(string mediaDir, string shadersDir, CameraFPS camera, TgcD3dInput input, GameSoundManager soundManager)
         {
@@ -88,7 +90,8 @@ namespace TGC.Group.Model
             Weapon = new Weapon(MediaDir, Camera);
             Vegetation = new Vegetation(MediaDir);
             Common = new Common(MediaDir);
-            Fishes = Common.ListFishes.Select(mesh => new Fish(MediaDir, Skybox, Terrain, mesh)).ToList();
+            Fishes = Common.ListFishes.Select(mesh => new Fish(Skybox, Terrain, mesh)).ToList();
+            Bubble = new Bubble(MediaDir);
             AddWeaponToCharacter();
 
             /* Location */
@@ -98,6 +101,7 @@ namespace TGC.Group.Model
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListOres, area: Skybox.CurrentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListRock, area: Skybox.CurrentPerimeter);
             MeshBuilder.LocateMeshesInWorld(meshes: ref Common.ListFishes, area: Skybox.CurrentPerimeter);
+            MeshBuilder.LocateMeshesInWorld(meshes: ref Bubble.Bubbles, area: Skybox.CurrentPerimeter);
 
             Common.LocateObjects();
 
@@ -113,6 +117,7 @@ namespace TGC.Group.Model
             Common.ListOres.ForEach(ore => PhysicalWorld.AddBodyToTheWorld(ore.Body));
             Common.ListRock.ForEach(rock => PhysicalWorld.AddBodyToTheWorld(rock.Body));
 
+            Bubble.SetShader(FogShader, "FogBubble");
             Skybox.SetShader(FogShader, "Fog");
             Common.SetShader(FogShader, "Fog");
             Shark.SetShader(FogShader, "Fog");
@@ -141,6 +146,7 @@ namespace TGC.Group.Model
             Vegetation.Dispose();
             Common.Dispose();
             Weapon.Dispose();
+            Bubble.Dispose();
         }
 
         public void Render(TgcFrustum frustum)
@@ -159,6 +165,7 @@ namespace TGC.Group.Model
                 Shark.Render();
                 QuadTree.Render(frustum, false);
                 Fishes.ForEach(fish => fish.Render());
+                Bubble.Render();
                 Water.Render();
             }
         }
@@ -177,7 +184,7 @@ namespace TGC.Group.Model
             Character.CanAttack = Ray.IntersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
             Character.NearShip = Ray.IntersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);
             Character.IsNearSkybox = Skybox.IsNearSkybox;
-
+            Bubble.Update(elapsedTime, MeshBuilder, Skybox);
             DetectSelectedItem();
         }
 

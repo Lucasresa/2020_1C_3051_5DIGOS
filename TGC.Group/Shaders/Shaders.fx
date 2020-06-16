@@ -224,6 +224,13 @@ float4 ps_main_fog_vegetation(VS_OUTPUT_VERTEX input) : COLOR0
     }
 }
 
+float4 ps_main_fog_bubble(VS_OUTPUT_VERTEX input) : COLOR0
+{
+    float4 fog = calculate_fog(input);
+    fog.a = 0.2;
+    return fog;
+}
+
 technique Fog
 {
     pass Pass_0
@@ -239,6 +246,15 @@ technique FogVegetation
     {       
         VertexShader = compile vs_3_0 vs_main_fog();
         PixelShader = compile ps_3_0 ps_main_fog_vegetation();
+    }
+}
+
+technique FogBubble
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 vs_main_fog();
+        PixelShader = compile ps_3_0 ps_main_fog_bubble();
     }
 }
 

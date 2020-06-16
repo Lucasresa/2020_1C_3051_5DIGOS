@@ -118,6 +118,7 @@
     <Compile Include="Model\GameObjectManager.cs" />
     <Compile Include="Model\GameSoundManager.cs" />
     <Compile Include="Model\GameState.cs" />
+    <Compile Include="Model\Objects\Bubble.cs" />
     <Compile Include="Model\Objects\Character.cs" />
     <Compile Include="Model\Objects\Common.cs" />
     <Compile Include="Model\Objects\Fish.cs" />
