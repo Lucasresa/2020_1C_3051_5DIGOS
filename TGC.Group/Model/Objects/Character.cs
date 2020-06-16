@@ -44,6 +44,7 @@ namespace TGC.Group.Model.Objects
         public bool LooksAtTheHatch { get; set; }
         public bool CanAttack { get; set; }
         public bool NearShip { get; set; }
+        public bool SwimActivated { get; set; }
 
         public bool HasWeapon { get; set; }
         public bool HasDivingHelmet { get; set; }
@@ -95,6 +96,11 @@ namespace TGC.Group.Model.Objects
             Movement(director, sideDirector, speed);
             if (Input.keyDown(Key.LeftControl)) Body.LinearVelocity = Vector3.UnitY * -speed;
             if (Input.keyDown(Key.Space)) Body.LinearVelocity = Vector3.UnitY * speed;
+            if (Input.keyDown(Key.LeftShift))
+            {
+                Body.LinearVelocity = MovementDirection * 2;
+                SwimActivated = true;
+            }
         }
 
         public void Respawn() => ChangePosition(Constants.INDOOR_POSITION);

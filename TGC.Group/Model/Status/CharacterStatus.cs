@@ -84,6 +84,12 @@ namespace TGC.Group.Model.Status
                 UpdateOxygen(Constants.OXYGEN_INCREMENT_STEP);
             else
                 UpdateOxygen(-elapsedTime);
+
+            if (Character.SwimActivated)
+            {
+                UpdateOxygen(-elapsedTime * 3);
+                Character.SwimActivated = false;
+            }
         }
 
         private void UpdateLife(float value) => Life = FastMath.Clamp(Life + value, Constants.LIFE_MIN, Constants.LIFE_MAX);
