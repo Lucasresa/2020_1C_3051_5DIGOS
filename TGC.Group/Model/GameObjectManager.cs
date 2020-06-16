@@ -13,11 +13,9 @@ using static TGC.Group.Model.Objects.Common;
 using Effect = Microsoft.DirectX.Direct3D.Effect;
 using TGC.Core.SceneLoader;
 using TGC.Core.BoundingVolumes;
-using TGC.Core.Collision;
 using TGC.Model.Optimization.Quadtree;
 using TGC.Core.Geometry;
-using Microsoft.DirectX.Direct3D;
-using System.Timers;
+using BulletSharp;
 
 namespace TGC.Group.Model
 {
@@ -116,6 +114,7 @@ namespace TGC.Group.Model
             Common.ListCorals.ForEach(coral => PhysicalWorld.AddBodyToTheWorld(coral.Body));
             Common.ListOres.ForEach(ore => PhysicalWorld.AddBodyToTheWorld(ore.Body));
             Common.ListRock.ForEach(rock => PhysicalWorld.AddBodyToTheWorld(rock.Body));
+            AddRoofRigidBody();
 
             Bubble.SetShader(FogShader, "FogBubble");
             Skybox.SetShader(FogShader, "Fog");
@@ -243,6 +242,15 @@ namespace TGC.Group.Model
             meshes.AddRange(Common.AllMeshes());
             meshes.AddRange(Vegetation.ListAlgas.Select(mesh => mesh.Mesh));
             return meshes;
+        }
+
+        private void AddRoofRigidBody()
+        {
+            var roofShape = new StaticPlaneShape(TGCVector3.Down.ToBulletVector3(), -3550);
+            var roofMotionState = new DefaultMotionState();
+            var roofInfo = new RigidBodyConstructionInfo(0, roofMotionState, roofShape);
+            var roofBody = new RigidBody(roofInfo);
+            PhysicalWorld.AddBodyToTheWorld(roofBody);
         }
     }
 }
