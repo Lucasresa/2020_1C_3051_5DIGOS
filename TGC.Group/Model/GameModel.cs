@@ -334,8 +334,6 @@ namespace TGC.Group.Model
             Draw2DManager.CanCraft = CanCraftObjects;
             if (CanCraftObjects && Draw2DManager.ActiveInventory)
                 Draw2DManager.Crafting.UpdateItemsCrafting();
-
-
             Draw2DManager.ShowInfoExitShip = ObjectManager.Character.LooksAtTheHatch;
             Draw2DManager.ShowInfoEnterShip = ObjectManager.Character.NearShip;
             Draw2DManager.NearObjectForSelect = ObjectManager.NearObjectForSelect;
