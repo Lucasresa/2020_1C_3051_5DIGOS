@@ -16,9 +16,9 @@ namespace TGC.Group.Model.Objects
         public List<TGCSphere> Bubbles = new List<TGCSphere>();
         public List<TGCSphere> BubblesAux = new List<TGCSphere>();
         public List<TGCVector3> Scales = new List<TGCVector3>();
-        private readonly float Speed = 70;        
+        private readonly float Speed = 50;        
         private float Time = 0;
-        private Random Random;
+        private readonly Random Random;
         
         public Bubble(string mediaDir)
         {

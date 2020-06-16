@@ -357,11 +357,13 @@ namespace TGC.Group.Model
             if (!ObjectManager.Character.CanFish)
                 MessageBox.Show("Insufficient materials");
             else
+            {
                 SoundManager.Crafting.play();
-            Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Text = "Learned";
-            Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Color = Color.Orange;
-            var position = Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Position;
-            Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Position = new TGCVector2(position.X - 15, position.Y);            
+                Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Text = "Learned";
+                Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Color = Color.Orange;
+                var position = Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Position;
+                Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Position = new TGCVector2(position.X - 15, position.Y);
+            }
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
         }
 
