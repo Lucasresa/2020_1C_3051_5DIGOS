@@ -15,27 +15,34 @@ namespace TGC.Group.Model.Objects
         private TGCSphere BubbleTemplate;
         public List<TGCSphere> Bubbles = new List<TGCSphere>();
         public List<TGCSphere> BubblesAux = new List<TGCSphere>();
-        private readonly float Speed = 70;
-        private TGCVector3 Scale = new TGCVector3(25, 25, 25);
+        public List<TGCVector3> Scales = new List<TGCVector3>();
+        private readonly float Speed = 70;        
         private float Time = 0;
+        private Random Random;
         
         public Bubble(string mediaDir)
         {
+            Random = new Random();
             MediaDir = mediaDir;
             Init();
         }
 
         private void Init()
         {
+            Scales.Add(new TGCVector3(10, 10, 10));
+            Scales.Add(new TGCVector3(25, 25, 25));
+            Scales.Add(new TGCVector3(35, 35, 35));
+            Scales.Add(new TGCVector3(50, 50, 50));
+
             var texture = TgcTexture.createTexture(MediaDir + @"\Textures\bubble.png");
             BubbleTemplate = new TGCSphere(30, texture, new TGCVector3(0, 0, 0))
             {
                 AlphaBlendEnable = true
             };
             BubbleTemplate.updateValues();
-            BubbleTemplate.Transform = TGCMatrix.Scaling(Scale);
+            BubbleTemplate.Transform = TGCMatrix.Scaling(Scales[Random.Next(0, Scales.Count)]);
 
-            for (int index = 1; index <= 250; index++)
+            for (int index = 1; index <= 200; index++)
             {
                 Bubbles.Add(BubbleTemplate.clone());
                 BubblesAux.Add(BubbleTemplate.clone());
@@ -69,7 +76,7 @@ namespace TGC.Group.Model.Objects
             if (Time > 10 && BubblesAux.Count > 100)
             {
                 var bubbles = BubblesAux.Take(100).ToList();
-                bubbles.ForEach(bubble => bubble.Transform = TGCMatrix.Scaling(Scale));
+                bubbles.ForEach(bubble => bubble.Transform = TGCMatrix.Scaling(Scales[Random.Next(0, Scales.Count)]));
                 meshBuilder.LocateMeshesInWorld(meshes: ref bubbles, area: skybox.CurrentPerimeter);
                 Bubbles.AddRange(bubbles);
                 BubblesAux.RemoveRange(0, 100);
