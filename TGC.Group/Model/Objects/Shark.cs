@@ -176,15 +176,17 @@ namespace TGC.Group.Model.Objects
             var XRotationStep = FastMath.PI * 0.1f * elapsedTime;
             var YRotationStep = FastMath.PI * 0.4f * elapsedTime;
 
-            if (IsNearFromSurface(headPosition.Y) && AcumulatedXRotation > -Constants.MaxAxisRotation)
-                XRotation = -XRotationStep;
-            else if (distanceToFloor < Constants.SHARK_HEIGHT.X - 150 && AcumulatedXRotation < Constants.MaxAxisRotation)
+            var distanceToWater = Constants.WATER_HEIGHT - floorHeight - 200;
+            TGCVector2 sharkRangePosition = 
+                new TGCVector2(Constants.SHARK_HEIGHT.X, FastMath.Min(distanceToWater, Constants.SHARK_HEIGHT.Y));
+
+            if (distanceToFloor < sharkRangePosition.X - 150 && AcumulatedXRotation < Constants.MaxAxisRotation)
                 XRotation = XRotationStep;
-            else if (FastUtils.IsNumberBetweenInterval(distanceToFloor, Constants.SHARK_HEIGHT) && AcumulatedXRotation > 0.0012)
+            else if (FastUtils.IsNumberBetweenInterval(distanceToFloor, sharkRangePosition) && AcumulatedXRotation > 0.0012)
                 XRotation = -XRotationStep;
-            if (distanceToFloor > Constants.SHARK_HEIGHT.Y + 150 && AcumulatedXRotation > -Constants.MaxAxisRotation)
+            else if (distanceToFloor > sharkRangePosition.Y + 150 && AcumulatedXRotation > -Constants.MaxAxisRotation)
                 XRotation = -XRotationStep;
-            else if (FastUtils.IsNumberBetweenInterval(distanceToFloor, Constants.SHARK_HEIGHT) && AcumulatedXRotation < -0.0012)
+            else if (FastUtils.IsNumberBetweenInterval(distanceToFloor, sharkRangePosition) && AcumulatedXRotation < -0.0012)
                 XRotation = XRotationStep;
 
             if (ChangeDirectionTimeCounter <= 0)

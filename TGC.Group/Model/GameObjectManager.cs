@@ -246,7 +246,7 @@ namespace TGC.Group.Model
 
         private void AddRoofRigidBody()
         {
-            var roofShape = new StaticPlaneShape(TGCVector3.Down.ToBulletVector3(), -3550);
+            var roofShape = new StaticPlaneShape(TGCVector3.Down.ToBulletVector3(), -3580);
             var roofMotionState = new DefaultMotionState();
             var roofInfo = new RigidBodyConstructionInfo(0, roofMotionState, roofShape);
             var roofBody = new RigidBody(roofInfo);
