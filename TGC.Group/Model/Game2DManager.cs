@@ -92,6 +92,7 @@ namespace TGC.Group.Model
         public bool ShowInfoItemCollect { get; set; }
         public bool ShowIndicatorShip { get; set; }
         public bool ShowSharkLife { get; set; }
+        public bool GodMode { get; set; }
 
         public List<string> ItemHistory { get; set; }
 
@@ -254,13 +255,20 @@ namespace TGC.Group.Model
         public void Update()
         {
             Shark.Update();
-            Character.Update();
+            if (!GodMode)
+                Character.Update();
         }
         
         public void UpdateItemWeapon()
         {
             if(ActiveWeapon)
                 Crafting.UpdateItemWeapon();
+        }
+        
+        public void UpdateItems(Dictionary<string, List<string>> items)
+        {
+            Crafting.UpdateItems(items);
+            Inventory.UpdateItems(items);
         }
 
         public void Reset()

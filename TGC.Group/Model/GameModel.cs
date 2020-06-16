@@ -57,6 +57,7 @@ namespace TGC.Group.Model
         private bool ExitGame { get; set; }
         private bool CanCraftObjects => ObjectManager.Character.IsInsideShip;
         private bool RenderCraftingStatus { get; set; }
+        private bool GodMode { get; set; }
 
         public float TimeToRevive { get; set; }
         public float TimeToAlarm { get; set; }
@@ -245,10 +246,18 @@ namespace TGC.Group.Model
 
         private void UpdateGame()
         {
-            if (Input.keyPressed(Key.F2)) InventoryManager.Cheat();
+            if (Input.keyPressed(Key.F2) && !GodMode)
+            { 
+                GodMode = !GodMode; 
+                InventoryManager.Cheat();
+                Draw2DManager.UpdateItems(InventoryManager.Items);
+            }
+            else if (Input.keyPressed(Key.F2) && GodMode)
+                GodMode = !GodMode;
+            Draw2DManager.GodMode = GodMode;
             if (Input.keyPressed(Key.F1)) Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
             ObjectManager.CreateBulletCallbacks(CharacterStatus);
-            if (CharacterStatus.IsDead)
+            if (CharacterStatus.IsDead && !GodMode && !ActiveInventory)
             {
                 TimeToRevive += ElapsedTime;
                 if (TimeToRevive < 5)
@@ -270,6 +279,7 @@ namespace TGC.Group.Model
                     FullQuad.RenderPDA = ActiveInventory = !ActiveInventory;
             if (!ActiveInventory) UpdateEvents();
             else Draw2DManager.UpdateItemWeapon();
+            CharacterStatus.Update(ElapsedTime, GodMode);
             ObjectManager.Character.RestartBodySpeed();
             if (Input.keyPressed(Key.E)) ObjectManager.Character.Teleport();
             UpdateFlags();
@@ -292,8 +302,7 @@ namespace TGC.Group.Model
             EventsManager.Update(ElapsedTime, ObjectManager.Fishes, SharkStatus);
             InventoryManager.AddItem(ObjectManager.ItemSelected);
             Draw2DManager.ItemHistory = InventoryManager.ItemHistory;
-            ObjectManager.ItemSelected = null;
-            CharacterStatus.Update(ElapsedTime);
+            ObjectManager.ItemSelected = null;            
             FullQuad.RenderAlarmEffect = CharacterStatus.ActiveRenderAlarm;
             Draw2DManager.DistanceWithShip = FastUtils.DistanceBetweenVectors(camera.Position, ObjectManager.Ship.PositionShip);
             Draw2DManager.ShowIndicatorShip = Draw2DManager.DistanceWithShip > 15000 && !ObjectManager.Character.IsInsideShip;
@@ -312,8 +321,7 @@ namespace TGC.Group.Model
             ObjectManager.Shark.DeathMove = SharkStatus.IsDead;
             ObjectManager.Character.AttackedShark = SharkStatus.DamageReceived;
             Draw2DManager.Update();
-            Draw2DManager.Inventory.UpdateItems(InventoryManager.Items);
-            Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
+            Draw2DManager.UpdateItems(InventoryManager.Items);
         }
 
         private void UpdateInfoItemCollect()

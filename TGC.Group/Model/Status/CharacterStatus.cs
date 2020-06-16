@@ -59,9 +59,9 @@ namespace TGC.Group.Model.Status
             ActiveAlarmForDamageReceived = false;
         }
 
-        public void Update(float elapsedTime)
+        public void Update(float elapsedTime, bool godMode)
         {
-            if (IsDead)
+            if (IsDead || godMode)
                 return;
 
             if (DamageReceived > 0)

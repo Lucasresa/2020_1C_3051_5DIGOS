@@ -50,7 +50,7 @@ namespace TGC.Group.Model
 
         public void Cheat()
         {
-            for (int index = 0; index < 30; index++)
+            for (int index = 0; index < 100; index++)
             {
                 Items["NORMALCORAL"].Add("cheats");
                 Items["SPIRALCORAL"].Add("cheats");
