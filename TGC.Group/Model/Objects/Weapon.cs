@@ -52,6 +52,8 @@ namespace TGC.Group.Model.Objects
                              TGCMatrix.RotationYawPitchRoll(Camera.Latitude - AttackSideRotation,
                                 Camera.Longitude + RotationXOffset - AttackForwardRotation, 0) *
                              TGCMatrix.Translation(newPosition);
+
+            Mesh.BoundingBox.transform(Mesh.Transform);
         }
 
         public void Render() => Mesh.Render();
