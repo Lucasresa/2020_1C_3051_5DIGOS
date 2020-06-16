@@ -62,7 +62,11 @@ namespace TGC.Group.Model.Status
         public void Update(float elapsedTime, bool godMode)
         {
             if (IsDead || godMode)
+            {
+                DamageAcumulated = 0;
+                DamageReceived = 0;
                 return;
+            }
 
             if (DamageReceived > 0)
             {

@@ -26,9 +26,7 @@ namespace TGC.Group.Model
         public void Update(float elapsedTime, List<Fish> fishes, SharkStatus status)
         {
             if (Character.IsOutsideShip)
-            {
                 CheckIfSharkCanAttack(elapsedTime, status);
-            }
             else
             {
                 Shark.EndSharkAttack();
