@@ -238,6 +238,8 @@ namespace TGC.Group.Model
             if (CharacterStatus.IsDead)
             {
                 TimeToRevive += ElapsedTime;
+                Draw2DManager.Reset();
+                InventoryManager.Reset();
                 if (TimeToRevive < 5)
                 {
                     FullQuad.SetTime(ElapsedTime);

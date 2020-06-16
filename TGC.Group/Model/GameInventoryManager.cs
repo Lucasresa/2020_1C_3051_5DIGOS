@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace TGC.Group.Model
@@ -60,6 +61,12 @@ namespace TGC.Group.Model
                 Items["IRON"].Add("cheats");
                 Items["SILVER"].Add("cheats");
             }
+        }
+
+        public void Reset()
+        {
+            ItemHistory.RemoveRange(0, ItemHistory.Count);
+            Items.Values.ToList().ForEach(item => item.RemoveRange(0, item.Count));
         }
     }
 }
