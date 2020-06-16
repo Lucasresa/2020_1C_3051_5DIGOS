@@ -84,8 +84,7 @@ float4 ps_diving_helmet(PS_INPUT_DEFAULT Input) : COLOR0
 {
     float4 renderTarget = tex2D(RenderTarget, Input.Texcoord);
     float4 divingHelmet = tex2D(DivingHelmet2D, Input.Texcoord);
-    
-    return divingHelmet.a < 1 ? renderTarget : divingHelmet;
+    return divingHelmet.a < 0.5 ? renderTarget : divingHelmet;
 }
 
 technique DivingHelmet
