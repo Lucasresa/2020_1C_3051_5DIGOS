@@ -66,6 +66,7 @@ namespace TGC.Group.Model
             ObjectManager.Dispose();
             Draw2DManager.Dispose();
             Title.Dispose();
+            SoundManager.Dispose();
         }
 
         public override void Update() => CurrentState.Update();
