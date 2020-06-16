@@ -71,9 +71,9 @@ namespace TGC.Group.Model._2D
         {
             LifeCharacter.Render();
             OxygenCharacter.Render();
-            LifeCharacterText.SetTextAndPosition(text: " Life   " + Status.ShowLife + @" \ " + Status.GetLifeMax(),
+            LifeCharacterText.SetTextAndPosition(text: " Life   " + Status.ShowLife + @" / " + Status.GetLifeMax(),
                                                  position: Constants.LIFE_CHARACTER_TEXT_POSITION);
-            OxygenCharacterText.SetTextAndPosition(text: "    O₂    " + Status.ShowOxygen + @" \ " + Status.GetOxygenMax(),
+            OxygenCharacterText.SetTextAndPosition(text: "    O₂    " + Status.ShowOxygen + @" / " + Status.GetOxygenMax(),
                                                    position: Constants.OXYGEN_CHARACTER_TEXT_POSITION);
             LifeCharacterText.Render();
             OxygenCharacterText.Render();

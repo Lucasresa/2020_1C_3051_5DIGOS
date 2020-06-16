@@ -10,6 +10,7 @@ using TGC.Group.Form;
 using TGC.Group.Model.Objects;
 using TGC.Group.Model.Status;
 using TGC.Group.Utils;
+using Font = System.Drawing.Font;
 
 namespace TGC.Group.Model
 {
@@ -40,6 +41,8 @@ namespace TGC.Group.Model
         private DrawButton Play;
         private DrawButton Help;
         private DrawButton Exit;
+        
+        private DrawText CraftingStatus;
 
         private GameObjectManager ObjectManager;
         private GameInventoryManager InventoryManager;
@@ -53,10 +56,12 @@ namespace TGC.Group.Model
         private bool ActiveInventory { get; set; }
         private bool ExitGame { get; set; }
         private bool CanCraftObjects => ObjectManager.Character.IsInsideShip;
+        private bool RenderCraftingStatus { get; set; }
 
         public float TimeToRevive { get; set; }
         public float TimeToAlarm { get; set; }
         public float ItemHistoryTime { get; set; }
+        private float TimeToRenderCraftingStatus = 1;
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir) => FixedTickEnable = true;
 
@@ -67,6 +72,7 @@ namespace TGC.Group.Model
             Draw2DManager.Dispose();
             Title.Dispose();
             SoundManager.Dispose();
+            CraftingStatus.Dispose();
         }
 
         public override void Update() => CurrentState.Update();
@@ -121,6 +127,11 @@ namespace TGC.Group.Model
             Draw2DManager.Crafting.CraftingItems[0].button.Action = CraftSkillFish;
             Draw2DManager.Crafting.CraftingItems[1].button.Action = CraftWeapon;
             Draw2DManager.Crafting.CraftingItems[2].button.Action = CraftDivingHelmet;
+            CraftingStatus = new DrawText();
+            CraftingStatus.SetTextSizeAndPosition("Insufficient materials", size: new TGCVector2(400, 100),
+                           position: new TGCVector2(Draw2DManager.ScreenWitdh / 2 , Draw2DManager.ScreenHeight / 2));
+            CraftingStatus.Font = new Font("Arial Black", 15, FontStyle.Bold);
+            CraftingStatus.Color = Color.Crimson;
         }
 
         private void InitializerState()
@@ -226,6 +237,8 @@ namespace TGC.Group.Model
             FullQuad.PreRenderMeshes();
             ObjectManager.Render(Frustum);
             FullQuad.Render();
+            if (RenderCraftingStatus)
+                CraftingStatus.Render();
             Draw2DManager.Render();
             PostRender();
         }
@@ -261,8 +274,16 @@ namespace TGC.Group.Model
             if (Input.keyPressed(Key.E)) ObjectManager.Character.Teleport();
             UpdateFlags();
             UpdateInfoItemCollect();
-            if (Input.keyPressed(Key.P)) ObjectManager.Character.CanFish = ObjectManager.Character.HasWeapon =
-                ObjectManager.Character.HasDivingHelmet = true; // TODO: Despues hay que sacar esto.
+           
+            if (RenderCraftingStatus)
+            {
+                TimeToRenderCraftingStatus -= ElapsedTime;
+                if (TimeToRenderCraftingStatus < 0)
+                {
+                    RenderCraftingStatus = false;
+                    TimeToRenderCraftingStatus = 1;
+                }
+            }
         }
 
         private void UpdateEvents()
@@ -325,7 +346,7 @@ namespace TGC.Group.Model
         {
             ObjectManager.Character.HasWeapon = GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
             if (!ObjectManager.Character.HasWeapon)
-                MessageBox.Show("Insufficient materials");
+                RenderCraftingStatus = true;
             else
             {
                 SoundManager.Crafting.play();
@@ -347,7 +368,7 @@ namespace TGC.Group.Model
                 CharacterStatus.UpdateOxygenMax();
             }
             else
-                MessageBox.Show("Insufficient materials");
+                RenderCraftingStatus = true;
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
         }
 
@@ -355,7 +376,7 @@ namespace TGC.Group.Model
         {
             Draw2DManager.Crafting.Learned = ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
             if (!ObjectManager.Character.CanFish)
-                MessageBox.Show("Insufficient materials");
+                RenderCraftingStatus = true;
             else
             {
                 SoundManager.Crafting.play();

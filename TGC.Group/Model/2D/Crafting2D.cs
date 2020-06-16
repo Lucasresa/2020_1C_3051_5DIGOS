@@ -57,6 +57,8 @@ namespace TGC.Group.Model._2D
 
         public void Init()
         {
+            TitleInventory.Font = new Font("Arial Black", 15, FontStyle.Bold);
+            TitleInventory.Color = Color.Crimson;
             TitleInventory.SetTextSizeAndPosition(text: "Inventory:", Constants.TEXT_SIZE, Constants.TEXT_POSITION);
             InventoryItems.Add(InitializerItems("NORMALCORAL"));
             InventoryItems.Add(InitializerItems("SPIRALCORAL"));
@@ -67,6 +69,8 @@ namespace TGC.Group.Model._2D
             InventoryItems.Add(InitializerItems("NORMALFISH"));
             InventoryItems.Add(InitializerItems("YELLOWFISH"));
             CalculateItemPosition();
+            TitleCrafting.Font = new Font("Arial Black", 15, FontStyle.Bold);
+            TitleCrafting.Color = Color.Crimson;
             TitleCrafting.Text = "Crafting:";
             CraftingItems.Add(InitializerCraftItem("CATCHFISH"));
             CraftingItems.Add(InitializerCraftItem("WEAPON"));

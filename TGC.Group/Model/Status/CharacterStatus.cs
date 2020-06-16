@@ -61,6 +61,9 @@ namespace TGC.Group.Model.Status
 
         public void Update(float elapsedTime)
         {
+            if (IsDead)
+                return;
+
             if (DamageReceived > 0)
             {
                 TakeDamage();
@@ -73,7 +76,7 @@ namespace TGC.Group.Model.Status
                 UpdateLife(Constants.LIFE_REDUCE_STEP);
                 DamageAcumulated += Constants.LIFE_REDUCE_STEP;
             }
-
+                        
             if (Character.IsInsideShip)
                 RecoverLife();
                         

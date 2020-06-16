@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
@@ -21,7 +22,7 @@ namespace TGC.Group.Model._2D
 
         private readonly string MediaDir;
         private bool HasItems;
-        private readonly DrawText InventoryText;
+        private readonly DrawText TitleInventory;
         private readonly List<(DrawSprite sprite, DrawText text)> InventoryItems;
 
         private TGCVector2 Size;
@@ -29,20 +30,22 @@ namespace TGC.Group.Model._2D
         public Inventory2D(string mediaDir)
         {
             MediaDir = mediaDir;
-            InventoryText = new DrawText();
+            TitleInventory = new DrawText();
             InventoryItems = new List<(DrawSprite, DrawText)>();
             Init();
         }
 
         public void Dispose()
         {
-            InventoryText.Dispose();
+            TitleInventory.Dispose();
             InventoryItems.ForEach(item => { item.sprite.Dispose(); item.text.Dispose(); });
         }
 
         public void Init()
         {
-            InventoryText.SetTextSizeAndPosition(text: "", Constants.INVENTORY_TEXT_SIZE, Constants.INVENTORY_TEXT_POSITION);
+            TitleInventory.Font = new Font("Arial Black", 15, FontStyle.Bold);
+            TitleInventory.Color = Color.Crimson;
+            TitleInventory.SetTextSizeAndPosition(text: "", Constants.INVENTORY_TEXT_SIZE, Constants.INVENTORY_TEXT_POSITION);
             InventoryItems.Add(InitializerItems("NORMALCORAL"));
             InventoryItems.Add(InitializerItems("SPIRALCORAL"));
             InventoryItems.Add(InitializerItems("TREECORAL"));
@@ -101,7 +104,7 @@ namespace TGC.Group.Model._2D
 
         public void Render()
         {
-            InventoryText.Render();
+            TitleInventory.Render();
             if (HasItems)
                 InventoryItems.ForEach(item => { item.sprite.Render(); item.text.Render(); });
         }
@@ -112,7 +115,7 @@ namespace TGC.Group.Model._2D
 
             if (HasItems)
             { 
-                InventoryText.SetTextAndPosition("Inventory:", position: new TGCVector2(InventoryItems[0].sprite.Position.X, 
+                TitleInventory.SetTextAndPosition("Inventory:", position: new TGCVector2(InventoryItems[0].sprite.Position.X, 
                                                   InventoryItems[0].sprite.Position.Y - 60));
                 InventoryItems.ForEach(item =>
                 {
@@ -122,7 +125,7 @@ namespace TGC.Group.Model._2D
                 });
             }
             else
-                InventoryText.Text = Constants.INVENTORY_TEXT_GENERIC;
+                TitleInventory.Text = Constants.INVENTORY_TEXT_GENERIC;
         }
     }
 }

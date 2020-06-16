@@ -94,7 +94,6 @@ namespace TGC.Group.Model
                 items["TREECORAL"].RemoveRange(0, Constants.WEAPON_COUNT_CORAL_TREE);
                 items["NORMALFISH"].RemoveRange(0, Constants.WEAPON_COUNT_FISH_NORMAL);
                 items["YELLOWFISH"].RemoveRange(0, Constants.WEAPON_COUNT_FISH_YELLOW);
-                MessageBox.Show("Weapon crafted!");
                 HasWeapon = true;
             }
 
@@ -118,7 +117,6 @@ namespace TGC.Group.Model
                 items["TREECORAL"].RemoveRange(0, Constants.DIVING_HELMET_COUNT_CORAL_TREE);
                 items["NORMALFISH"].RemoveRange(0, Constants.DIVING_HELMET_COUNT_FISH_NORMAL);
                 items["YELLOWFISH"].RemoveRange(0, Constants.DIVING_HELMET_COUNT_FISH_YELLOW);
-                MessageBox.Show("Diving helmet crafted!");
                 HasDivingHelmet = true;
             }
             else
@@ -140,7 +138,6 @@ namespace TGC.Group.Model
                 items["SILVER"].RemoveRange(0, Constants.CATCH_FISH_COUNT_ORE_SILVER);
                 items["NORMALCORAL"].RemoveRange(0, Constants.CATCH_FISH_COUNT_CORAL_NORMAL);
                 items["TREECORAL"].RemoveRange(0, Constants.CATCH_FISH_COUNT_CORAL_TREE);
-                MessageBox.Show("You can catch fish!");
                 CanFish = true;
             }
             return CanFish;
