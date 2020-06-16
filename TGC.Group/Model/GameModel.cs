@@ -84,12 +84,12 @@ namespace TGC.Group.Model
             SoundManager = new GameSoundManager(MediaDir, DirectSound);
             InitializerState();
 
-            InitializerMenu();            
+            InitializerMenu();
             InitializerGame();
         }
 
         private void InitializerMenu()
-        {           
+        {
             Title = new DrawSprite(MediaDir);
             Title.SetImage("subnautica.png");
             Title.SetInitialScallingAndPosition(new TGCVector2(0.8f, 0.8f), new TGCVector2(50, 50));
@@ -191,7 +191,7 @@ namespace TGC.Group.Model
         }
 
         private void UpdateMenu()
-        {            
+        {
             Play.Update();
             Help.Update();
             if (CurrentState == StateMenu)
@@ -322,6 +322,13 @@ namespace TGC.Group.Model
             ObjectManager.Character.HasWeapon = GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
             if (!ObjectManager.Character.HasWeapon)
                 MessageBox.Show("Insufficient materials");
+            else
+            {
+                SoundManager.Crafting.play();
+                ObjectManager.Character.InHand = true;
+                Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Text = "Unequip";
+                Draw2DManager.Crafting.CraftingItems[1].button.Action = UseWeapon;
+            }
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
         }
 
@@ -329,7 +336,10 @@ namespace TGC.Group.Model
         {
             CharacterStatus.HasDivingHelmet = ObjectManager.Character.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
             if (CharacterStatus.HasDivingHelmet)
+            {
+                SoundManager.Crafting.play();
                 CharacterStatus.UpdateOxygenMax();
+            }
             else
                 MessageBox.Show("Insufficient materials");
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
@@ -340,7 +350,31 @@ namespace TGC.Group.Model
             ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
             if (!ObjectManager.Character.CanFish)
                 MessageBox.Show("Insufficient materials");
+            else
+                SoundManager.Crafting.play();
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
+        }
+
+        private void UseWeapon()
+        {
+            string text;            
+            TGCVector2 position;
+            var textPosition = Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Position;
+            if (ObjectManager.Character.InHand)
+            {
+                position = new TGCVector2(textPosition.X - 10, textPosition.Y);
+                text = "Unequip";
+            }
+            else
+            {
+                position = new TGCVector2(textPosition.X - 5, textPosition.Y);
+                text = "Equip";
+            }
+
+            Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Position = position;
+            ObjectManager.Character.InHand = !ObjectManager.Character.InHand;
+            Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Text = text;
+            
         }
 
         #endregion

@@ -48,7 +48,7 @@ namespace TGC.Group.Model.Objects
         public bool HasWeapon { get; set; }
         public bool HasDivingHelmet { get; set; }
         public bool CanFish { get; set; }
-        public int InHand = 0; // 0-Nada 1-Arma
+        public bool InHand;
 
         public bool AttackedShark { get; set; }
 
@@ -138,7 +138,7 @@ namespace TGC.Group.Model.Objects
             else
                 OutsideMovement(director, sideDirector, speed);
 
-            if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT) && HasWeapon)
+            if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT) && HasWeapon && InHand)
             {
                 Weapon.ActivateAtackMove();
                 AttackedShark = ray.IntersectsWithObject(shark.BoundingBox, 150);
@@ -149,16 +149,10 @@ namespace TGC.Group.Model.Objects
             Body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * Gravity;
             Camera.Position = new TGCVector3(Body.CenterOfMassPosition) + Constants.CAMERA_HEIGHT;
 
-            if (InHand == 1)
-                Weapon.Update(new TGCVector3(director), elapsedTime);
-
-            if (Input.keyPressed(Key.D0))
-                InHand = 0;
-
-            if (HasWeapon && Input.keyPressed(Key.D1))
-                InHand = 1;
+            if (InHand)
+                Weapon.Update(new TGCVector3(director), elapsedTime);                      
         }
 
-        public void Render() { if(InHand == 1) Weapon.Render(); }
+        public void Render() { if(InHand) Weapon.Render(); }
     }
 }

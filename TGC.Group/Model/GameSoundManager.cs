@@ -40,7 +40,6 @@ namespace TGC.Group.Model
             SharkEntrance.loadSound(mediaDir + @"\Sounds\SharkNear.wav", sound.DsDevice);
             CatchFish.loadSound(mediaDir + @"\Sounds\CatchFish.wav", sound.DsDevice);
             Crafting.loadSound(mediaDir + @"\Sounds\Crafting.wav", sound.DsDevice);
-            SharkDead.loadSound(mediaDir + @"\Sounds\SharkDead.wav", sound.DsDevice);
             Collect.loadSound(mediaDir + @"\Sounds\Collect.wav", sound.DsDevice);
             Equip.loadSound(mediaDir + @"\Sounds\Equip.wav", sound.DsDevice);
         }
