@@ -251,21 +251,21 @@ namespace TGC.Group.Model
             if (CharacterStatus.IsDead)
             {
                 TimeToRevive += ElapsedTime;
-                Draw2DManager.Reset();
-                InventoryManager.Reset();
                 if (TimeToRevive < 5)
                 {
                     FullQuad.SetTime(ElapsedTime);
                     FullQuad.RenderTeleportEffect = true;
+                    Draw2DManager.Reset();
+                    InventoryManager.Reset();
                 }
                 else
                 {
                     CharacterStatus.Respawn();
                     FullQuad.RenderTeleportEffect = FullQuad.RenderAlarmEffect = false;
-                    TimeToRevive = 0;
                 }
                 return;
             }
+            TimeToRevive = 0;
             if (Input.keyPressed(Key.I)) Draw2DManager.ActiveInventory = camera.Lock =
                     FullQuad.RenderPDA = ActiveInventory = !ActiveInventory;
             if (!ActiveInventory) UpdateEvents();
