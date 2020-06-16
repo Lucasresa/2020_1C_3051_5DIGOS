@@ -202,6 +202,9 @@ namespace TGC.Group.Utils
             Effect = TGCShaders.Instance.LoadEffect(effectPath);
             Effect.Technique = technique;
             Effect.SetValue("texDiffuseMap", Texture);
+            Effect.SetValue("ColorFog", Color.SteelBlue.ToArgb());
+            Effect.SetValue("StartFogDistance", 2000);
+            Effect.SetValue("EndFogDistance", 10000);
         }
 
         public void SetTimeForWaves(float elapsedTime) => TimeForWaves += elapsedTime;

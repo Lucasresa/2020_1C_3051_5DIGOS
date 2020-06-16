@@ -17,6 +17,17 @@ sampler2D diffuseMap = sampler_state
     MIPFILTER = LINEAR;
 };
 
+texture texFogMap;
+sampler2D fogMap = sampler_state
+{
+    Texture = (texDiffuseMap);
+    ADDRESSU = WRAP;
+    ADDRESSV = WRAP;
+    MINFILTER = LINEAR;
+    MAGFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+};
+
 float time = 0;
 float4 CameraPos;
 
@@ -61,15 +72,31 @@ struct VS_OUTPUT
     float3 WorldNormal : TEXCOORD2;
 };
 
+
+//Output del Vertex Shader
+struct VS_OUTPUT_VERTEX
+{
+    float4 Position : POSITION0;
+    float2 Texture : TEXCOORD0;
+    float4 PosView : COLOR0;
+    float4 WorldPosition : TEXCOORD1;
+    float3 WorldNormal : TEXCOORD2;
+};
+
+
+float get_fog_amount(float3 viewDirection, float fogStart, float fogRange)
+{
+    return saturate((length(viewDirection) - fogStart) / fogRange);
+}
+
 /**************************************************************************************/
                                         /* Mar */
 /**************************************************************************************/
 
 //Vertex Shader
-VS_OUTPUT vs_main_water(VS_INPUT Input)
+VS_OUTPUT_VERTEX vs_main_water(VS_INPUT Input)
 {
-    VS_OUTPUT Output;
-    Output.MeshPosition = Input.Position;
+    VS_OUTPUT_VERTEX Output;
     float dx = Input.Position.x;
     float dy = Input.Position.z;
     float freq = sqrt(dx * dx + dy * dy);
@@ -77,21 +104,35 @@ VS_OUTPUT vs_main_water(VS_INPUT Input)
     float angle = -time * 3 + freq / 300;
     Input.Position.y += sin(angle) * amp;
     Output.Position = mul(Input.Position, matWorldViewProj);
-    Output.Texcoord = Input.Texcoord;
-    Output.WorldNormal = mul(float4(Input.Normal, 1.0), matInverseTransposeWorld);
+    Output.Texture = Input.Texcoord;
+    Output.PosView = mul(Input.Position, matWorldView);
+    Output.WorldPosition = mul(Input.Position, matWorld);
+    Output.WorldNormal = mul(Input.Normal, matInverseTransposeWorld).xyz;
     return Output;
 }
 
 //Pixel Shader
-float4 ps_main_water(VS_OUTPUT input) : COLOR0
+float4 ps_main_water(VS_OUTPUT_VERTEX input) : COLOR0
 {
     float textureScale = 10;
     float2 waterDirection = float2(.003, .003) * time;
-    float4 textureColor = tex2D(diffuseMap, input.Texcoord * textureScale + waterDirection);
-    float4 TexturePosition = mul(input.MeshPosition, matWorld);
-    float distance = distance(TexturePosition.xz, CameraPos.xz) / 1500;
+    float4 textureColor = tex2D(diffuseMap, input.Texture * textureScale + waterDirection);
+    float distance = distance(input.WorldPosition.xz, CameraPos.xz) / 1500;
     textureColor.a = clamp(1 - 1 / distance, .3, .9);
-    return textureColor;
+    
+    float zn = StartFogDistance;
+    float zf = EndFogDistance;
+    
+    float3 viewDirection = CameraPos.xyz - input.WorldPosition.xyz;
+    float FogAmount = get_fog_amount(viewDirection, StartFogDistance, (EndFogDistance - StartFogDistance));
+    
+    if (input.PosView.z < zn)
+        return textureColor;
+    else if (input.PosView.z > zf)
+        return ColorFog;
+    else
+        return lerp(textureColor, ColorFog, FogAmount);    
+    
 }
 
 technique Waves
@@ -107,32 +148,6 @@ technique Waves
 /**************************************************************************************/
                                         /* Niebla */
 /**************************************************************************************/
-
-texture texFogMap;
-sampler2D fogMap = sampler_state
-{
-    Texture = (texDiffuseMap);
-    ADDRESSU = WRAP;
-    ADDRESSV = WRAP;
-    MINFILTER = LINEAR;
-    MAGFILTER = LINEAR;
-    MIPFILTER = LINEAR;
-};
-
-//Output del Vertex Shader
-struct VS_OUTPUT_VERTEX
-{
-    float4 Position : POSITION0;
-    float2 Texture : TEXCOORD0;
-    float4 PosView : COLOR0;
-    float4 WorldPosition : TEXCOORD1;
-    float3 WorldNormal : TEXCOORD2;
-};
-
-float get_fog_amount(float3 viewDirection, float fogStart, float fogRange)
-{
-    return saturate((length(viewDirection) - fogStart) / fogRange);
-}
 
 float4 calculate_fog(VS_OUTPUT_VERTEX input)
 {
