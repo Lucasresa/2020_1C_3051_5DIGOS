@@ -28,6 +28,17 @@ sampler2D fogMap = sampler_state
     MIPFILTER = LINEAR;
 };
 
+texture texBubble;
+sampler2D sampler_bubble = sampler_state
+{
+    Texture = (texBubble);
+    ADDRESSU = MIRROR;
+    ADDRESSV = MIRROR;
+    MINFILTER = LINEAR;
+    MAGFILTER = LINEAR;
+    MIPFILTER = LINEAR;
+};
+
 float time = 0;
 float4 CameraPos;
 
@@ -83,10 +94,22 @@ struct VS_OUTPUT_VERTEX
     float3 WorldNormal : TEXCOORD2;
 };
 
-
 float get_fog_amount(float3 viewDirection, float fogStart, float fogRange)
 {
     return saturate((length(viewDirection) - fogStart) / fogRange);
+}
+
+float4 calculate_fog(VS_OUTPUT_VERTEX input, float4 texel)
+{
+    float3 viewDirection = CameraPos.xyz - input.WorldPosition.xyz;
+    float FogAmount = get_fog_amount(viewDirection, StartFogDistance, (EndFogDistance - StartFogDistance));
+
+    if (input.PosView.z < StartFogDistance)
+        return texel;
+    else if (input.PosView.z > EndFogDistance)
+        return ColorFog;
+    else 
+        return lerp(texel, ColorFog, FogAmount);
 }
 
 /**************************************************************************************/
@@ -119,20 +142,7 @@ float4 ps_main_water(VS_OUTPUT_VERTEX input) : COLOR0
     float4 textureColor = tex2D(diffuseMap, input.Texture * textureScale + waterDirection);
     float distance = distance(input.WorldPosition.xz, CameraPos.xz) / 1500;
     textureColor.a = clamp(1 - 1 / distance, .3, .9);
-    
-    float zn = StartFogDistance;
-    float zf = EndFogDistance;
-    
-    float3 viewDirection = CameraPos.xyz - input.WorldPosition.xyz;
-    float FogAmount = get_fog_amount(viewDirection, StartFogDistance, (EndFogDistance - StartFogDistance));
-    
-    if (input.PosView.z < zn)
-        return textureColor;
-    else if (input.PosView.z > zf)
-        return ColorFog;
-    else
-        return lerp(textureColor, ColorFog, FogAmount);    
-    
+    return calculate_fog(input, textureColor);
 }
 
 technique Waves
@@ -148,29 +158,6 @@ technique Waves
 /**************************************************************************************/
                                         /* Niebla */
 /**************************************************************************************/
-
-float4 calculate_fog(VS_OUTPUT_VERTEX input)
-{
-    float zn = StartFogDistance;
-    float zf = EndFogDistance;
-
-    float4 fvBaseColor = tex2D(fogMap, input.Texture);
-    
-    if (input.WorldPosition.y > 3550)
-        return fvBaseColor;
-    else
-    {
-        float3 viewDirection = CameraPos.xyz - input.WorldPosition.xyz;
-        float FogAmount = get_fog_amount(viewDirection, StartFogDistance, (EndFogDistance - StartFogDistance));
-        
-        if (input.PosView.z < zn)
-            return fvBaseColor;
-        else if (input.PosView.z > zf)
-            return ColorFog;
-        else
-            return lerp(fvBaseColor, ColorFog, FogAmount);
-    }
-}
 
 float4 calculate_light(VS_OUTPUT_VERTEX input, float3 ambientColor, float specularK)
 {
@@ -211,37 +198,39 @@ VS_OUTPUT_VERTEX vs_main_fog(VS_INPUT input)
 
 float4 ps_main_fog(VS_OUTPUT_VERTEX input) : COLOR0
 {
-    return calculate_fog(input);
+    float4 fvBaseColor = tex2D(fogMap, input.Texture);
+    
+    if (input.WorldPosition.y > 3550)
+        return fvBaseColor;
+    else
+        return calculate_fog(input, fvBaseColor);
 }
 
 //Pixel Shader
 float4 ps_main_fog_vegetation(VS_OUTPUT_VERTEX input) : COLOR0
 {
-    float zn = StartFogDistance;
-    float zf = EndFogDistance;
-    
-    float4 fvBaseColor = tex2D(fogMap, input.Texture);
-    float4 Color;
+    float4 texel = tex2D(fogMap, input.Texture);
     
     float3 viewDirection = CameraPos.xyz - input.WorldPosition.xyz;
     float FogAmount = get_fog_amount(viewDirection, StartFogDistance, (EndFogDistance - StartFogDistance));
     
-    if (input.PosView.z < zn)
-        return fvBaseColor;
-    else if (input.PosView.z > zf)
+    if (input.PosView.z < StartFogDistance)
+        return texel;
+    else if (input.PosView.z > EndFogDistance)
         return ColorFog;
     else
     {
-        if (fvBaseColor.a < 0.4)
+        if (texel.a < 0.4)
             discard;
         else
-            return lerp(fvBaseColor, ColorFog, FogAmount);
+            return lerp(texel, ColorFog, FogAmount);
     }
 }
 
 float4 ps_main_fog_bubble(VS_OUTPUT_VERTEX input) : COLOR0
 {
-    float4 fog = calculate_fog(input);
+    float4 texel = tex2D(fogMap, input.Texture);
+    float4 fog = calculate_fog(input, texel);
     fog.a = 0.2;
     return fog;
 }
@@ -270,7 +259,7 @@ technique FogBubble
     {
         VertexShader = compile vs_3_0 vs_main_fog();
         PixelShader = compile ps_3_0 ps_main_fog_bubble();
-    }
+    }   
 }
 
 /**************************************************************************************/
@@ -289,35 +278,19 @@ sampler2D reflex = sampler_state
 };
 
 //Pixel Shader
-float4 ps_main_terrain(VS_OUTPUT_VERTEX Input) : COLOR0
+float4 ps_main_terrain(VS_OUTPUT_VERTEX input) : COLOR0
 {
-    float3 Nn = normalize(Input.WorldNormal);
+    float3 Nn = normalize(input.WorldNormal);
     float3 Ln = normalize(float3(0, -2, 1));
     float n_dot_l = abs(dot(Nn, Ln));
     float textureScale = 200;
-    float4 textureColor = tex2D(diffuseMap, Input.Texture * textureScale);
+    float4 textureColor = tex2D(diffuseMap, input.Texture * textureScale);
     float3 diffuseColor = 0.4 * float3(0.5, 0.4, 0.2) * n_dot_l;
-    textureColor += float4(diffuseColor, 1);
-    
+    textureColor += float4(diffuseColor, 1);    
     float movement = 0.001 * sin(time * 2);
-    float4 reflexTexture = tex2D(reflex, (Input.Texture + float2(1, 1) * movement) * 50);
-    
-    float4 fvBaseColor = textureColor * 0.9 + reflexTexture * 0.4;
-    
-    float zn = StartFogDistance;
-    float zf = EndFogDistance;
-        
-    if (Input.PosView.z < zn)
-        return fvBaseColor;
-    else if (Input.PosView.z > zf)
-        return ColorFog;
-    else
-    {
-        float total = zf - zn;
-        float resto = Input.PosView.z - zn;
-        float proporcion = resto / total;
-        return fvBaseColor * (1 - proporcion) + ColorFog * proporcion;
-    }
+    float4 reflexTexture = tex2D(reflex, (input.Texture + float2(1, 1) * movement) * 50);
+    float4 fvBaseColor = textureColor * 0.9 + reflexTexture * 0.4;    
+    return calculate_fog(input, fvBaseColor);
 }
 
 technique DiffuseMap

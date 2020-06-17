@@ -66,6 +66,7 @@ namespace TGC.Group.Model.Status
                 DamageAcumulated = 0;
                 DamageReceived = 0;
                 Oxygen = OxygenMax;
+                Life = GetLifeMax();
                 return;
             }
 

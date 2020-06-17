@@ -23,28 +23,28 @@ namespace TGC.Group.Model._2D
             public static TGCVector2 OXYGEN_CHARACTER_TEXT_POSITION = new TGCVector2(((1000 * OXYGEN_CHARACTER_SCALE.X) - OXYGEN_CHARACTER_TEXT_SIZE.X + 20) / 2, OXYGEN_CHARACTER_POSITION.Y + 15);
         }
 
-        private readonly DrawSprite LifeCharacter;
-        private readonly DrawSprite OxygenCharacter;
-        private readonly DrawText LifeCharacterText;
-        private readonly DrawText OxygenCharacterText;
+        private readonly DrawSprite Life;
+        private readonly DrawSprite Oxygen;
+        private readonly DrawText LifeText;
+        private readonly DrawText OxygenText;
         private CharacterStatus Status { get; set; }
 
         public Character2D(string MediaDir, CharacterStatus status)
         {
             Status = status;
-            LifeCharacter = new DrawSprite(MediaDir);
-            OxygenCharacter = new DrawSprite(MediaDir);
-            LifeCharacterText = new DrawText();
-            OxygenCharacterText = new DrawText();
+            Life = new DrawSprite(MediaDir);
+            Oxygen = new DrawSprite(MediaDir);
+            LifeText = new DrawText();
+            OxygenText = new DrawText();
             Init();
         }
 
         public void Dispose()
         {
-            LifeCharacter.Dispose();
-            LifeCharacterText.Dispose();
-            OxygenCharacter.Dispose();
-            OxygenCharacterText.Dispose();
+            Life.Dispose();
+            LifeText.Dispose();
+            Oxygen.Dispose();
+            OxygenText.Dispose();
         }
 
         public void Init()
@@ -55,36 +55,44 @@ namespace TGC.Group.Model._2D
 
         private void InitializerLifeCharacter()
         {
-            LifeCharacter.SetImage("LifeBar.png");
-            LifeCharacter.SetInitialScallingAndPosition(Constants.LIFE_CHARACTER_SCALE, Constants.LIFE_CHARACTER_POSITION);
-            LifeCharacterText.Size = Constants.LIFE_CHARACTER_TEXT_SIZE;
+            Life.SetImage("LifeBar.png");
+            Life.SetInitialScallingAndPosition(Constants.LIFE_CHARACTER_SCALE, Constants.LIFE_CHARACTER_POSITION);
+            LifeText.Size = Constants.LIFE_CHARACTER_TEXT_SIZE;
         }
 
         private void InitializerOxygenCharacter()
         {
-            OxygenCharacter.SetImage("OxygenBar.png");
-            OxygenCharacter.SetInitialScallingAndPosition(Constants.OXYGEN_CHARACTER_SCALE, Constants.OXYGEN_CHARACTER_POSITION);
-            OxygenCharacterText.Size = new TGCVector2(Constants.OXYGEN_CHARACTER_TEXT_SIZE.X + 300, Constants.OXYGEN_CHARACTER_TEXT_SIZE.Y);
+            Oxygen.SetImage("OxygenBar.png");
+            Oxygen.SetInitialScallingAndPosition(Constants.OXYGEN_CHARACTER_SCALE, Constants.OXYGEN_CHARACTER_POSITION);
+            OxygenText.Size = new TGCVector2(Constants.OXYGEN_CHARACTER_TEXT_SIZE.X + 300, Constants.OXYGEN_CHARACTER_TEXT_SIZE.Y);
         }
 
         public void Render()
         {
-            LifeCharacter.Render();
-            OxygenCharacter.Render();
-            LifeCharacterText.SetTextAndPosition(text: " Life   " + Status.ShowLife + @" / " + Status.GetLifeMax(),
+            Life.Render();
+            Oxygen.Render();
+            LifeText.SetTextAndPosition(text: " Life   " + Status.ShowLife + @" / " + Status.GetLifeMax(),
                                                  position: Constants.LIFE_CHARACTER_TEXT_POSITION);
-            OxygenCharacterText.SetTextAndPosition(text: "    O₂    " + Status.ShowOxygen + @" / " + Status.GetOxygenMax(),
+            OxygenText.SetTextAndPosition(text: "    O₂    " + Status.ShowOxygen + @" / " + Status.GetOxygenMax(),
                                                    position: Constants.OXYGEN_CHARACTER_TEXT_POSITION);
-            LifeCharacterText.Render();
-            OxygenCharacterText.Render();
+            LifeText.Render();
+            OxygenText.Render();
         }
 
         public void Update()
         {
-            UpdateSprite(LifeCharacter, Status.Life, Status.GetLifeMax());
-            UpdateSprite(OxygenCharacter, Status.Oxygen, Status.GetOxygenMax());
+            UpdateSprite(Life, Status.Life, Status.GetLifeMax());
+            UpdateSprite(Oxygen, Status.Oxygen, Status.GetOxygenMax());
+        }
+
+        public void UpdateForGodMode()
+        {
+            ResetSprite(Oxygen);
+            ResetSprite(Life);
         }
 
         private void UpdateSprite(DrawSprite sprite, float percentage, float max) => sprite.Scaling = new TGCVector2((percentage / max) * sprite.ScalingInitial.X, sprite.ScalingInitial.Y);
+
+        private void ResetSprite(DrawSprite sprite) => sprite.Scaling = sprite.ScalingInitial;
     }
 }

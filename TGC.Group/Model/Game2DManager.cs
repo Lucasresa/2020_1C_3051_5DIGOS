@@ -257,6 +257,8 @@ namespace TGC.Group.Model
             Shark.Update();
             if (!GodMode)
                 Character.Update();
+            else
+                Character.UpdateForGodMode();
         }
         
         public void UpdateItemWeapon()
