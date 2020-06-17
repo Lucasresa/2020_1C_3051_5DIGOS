@@ -271,7 +271,14 @@ namespace TGC.Group.Model
         private void UpdateGame()
         {
             if (Input.keyPressed(Key.F2))
+            {
                 GodMode = !GodMode;
+                if (GodMode)
+                {
+                    InventoryManager.Cheat();
+                    Draw2DManager.UpdateItems(InventoryManager.Items);
+                }
+            }
             Draw2DManager.GodMode = GodMode;
             if (Input.keyPressed(Key.F1)) Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
             ObjectManager.CreateBulletCallbacks(CharacterStatus);
