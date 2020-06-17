@@ -28,17 +28,6 @@ sampler2D fogMap = sampler_state
     MIPFILTER = LINEAR;
 };
 
-texture texBubble;
-sampler2D sampler_bubble = sampler_state
-{
-    Texture = (texBubble);
-    ADDRESSU = MIRROR;
-    ADDRESSV = MIRROR;
-    MINFILTER = LINEAR;
-    MAGFILTER = LINEAR;
-    MIPFILTER = LINEAR;
-};
-
 float time = 0;
 float4 CameraPos;
 

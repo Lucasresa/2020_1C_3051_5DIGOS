@@ -164,8 +164,8 @@ namespace TGC.Group.Model
                 Shark.Render();
                 QuadTree.Render(frustum, false);
                 Fishes.ForEach(fish => fish.Render());
-                Bubble.Render();
                 Water.Render();
+                Bubble.Render();
             }
         }
 
