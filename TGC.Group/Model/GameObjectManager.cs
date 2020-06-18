@@ -21,12 +21,13 @@ namespace TGC.Group.Model
 {
     class GameObjectManager
     {
+        private readonly GameSoundManager SoundManager;
         private readonly string MediaDir, ShadersDir;
         private MeshBuilder MeshBuilder;
         private readonly Ray Ray;
+        private float Timer;
         private Effect FogShader;
         private TGCVector3 LightPosition = new TGCVector3(1530, 14000, 100);
-        private GameSoundManager SoundManager;
         public PhysicalWorld PhysicalWorld { get; set; }
         public TgcD3dInput Input { get; set; }
         public CameraFPS Camera { get; set; }
@@ -155,7 +156,7 @@ namespace TGC.Group.Model
             if (Character.IsInsideShip)
                 Ship.RenderIndoorShip();
             else
-            {
+            {                
                 FogShader.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
                 FogShader.SetValue("eyePosition", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));              
                 Ship.RenderOutdoorShip();
@@ -171,6 +172,8 @@ namespace TGC.Group.Model
 
         public void Update(float elapsedTime, float timeBeetweenUpdate)
         {
+            Timer += elapsedTime;
+            FogShader.SetValue("time", Timer);
             SoundManager.PlayMusicAmbient(Character.Submerge);
             Character.Update(Ray, Shark.Mesh, elapsedTime);
             PhysicalWorld.dynamicsWorld.StepSimulation(elapsedTime, maxSubSteps: 10, timeBeetweenUpdate);

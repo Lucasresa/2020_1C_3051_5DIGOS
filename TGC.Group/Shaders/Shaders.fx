@@ -185,6 +185,24 @@ VS_OUTPUT_VERTEX vs_main_fog(VS_INPUT input)
     return output;
 }
 
+VS_OUTPUT_VERTEX vs_main_bubble(VS_INPUT input)
+{
+    VS_OUTPUT_VERTEX output;
+    float dx = input.Position.x;
+    float dy = input.Position.y;
+    float freq = sqrt(dx * dx + dy * dy) / 300;
+    float amp = 4;
+    float angle = -time * 2 + freq;
+    input.Position.z += sin(angle) * amp;
+    input.Position.x += amp * cos(angle);
+    output.Position = mul(input.Position, matWorldViewProj);
+    output.Texture = input.Texcoord;
+    output.PosView = mul(input.Position, matWorldView);
+    output.WorldPosition = mul(input.Position, matWorld);
+    output.WorldNormal = mul(input.Normal, matInverseTransposeWorld).xyz;
+    return output;
+}
+
 float4 ps_main_fog(VS_OUTPUT_VERTEX input) : COLOR0
 {
     float4 fvBaseColor = tex2D(fogMap, input.Texture);
@@ -246,7 +264,7 @@ technique FogBubble
 {
     pass Pass_0
     {
-        VertexShader = compile vs_3_0 vs_main_fog();
+        VertexShader = compile vs_3_0 vs_main_bubble();
         PixelShader = compile ps_3_0 ps_main_fog_bubble();
     }   
 }
