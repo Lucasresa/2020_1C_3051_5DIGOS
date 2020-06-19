@@ -128,7 +128,7 @@ namespace TGC.Group.Model
             ObjectManager = new GameObjectManager(MediaDir, ShadersDir, camera, Input, SoundManager);
             CharacterStatus = new CharacterStatus(ObjectManager.Character);
             SharkStatus = new SharkStatus();
-            EventsManager = new GameEventsManager(ObjectManager.Shark, ObjectManager.Character);
+            EventsManager = new GameEventsManager(ObjectManager.Shark, ObjectManager.Character, SoundManager);
             Draw2DManager = new Game2DManager(MediaDir, CharacterStatus, SharkStatus, Input);
             InventoryManager = new GameInventoryManager();
             SoundManager.Menu.play(true);
@@ -430,6 +430,8 @@ namespace TGC.Group.Model
             ObjectManager.Character.InHand = !ObjectManager.Character.InHand;
             Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Text = text;
             Draw2DManager.Crafting.Weapon.button.ButtonText.Text = text;
+            if (ObjectManager.Character.InHand)
+                SoundManager.EquipWeapon.play();
             ObjectManager.Character.Render();
         }
         #endregion

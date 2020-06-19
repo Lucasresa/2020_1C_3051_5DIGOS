@@ -84,8 +84,8 @@ namespace TGC.Group.Model
             ShowScene = true;
             Terrain = new Terrain(MediaDir, ShadersDir);
             MeshBuilder = new MeshBuilder(Terrain, Water);
-            Shark = new Shark(MediaDir, Skybox, Terrain, Camera);
-            Character = new Character(Camera, Input);
+            Shark = new Shark(MediaDir, Skybox, Terrain, Camera, SoundManager);
+            Character = new Character(Camera, Input, SoundManager);
             Weapon = new Weapon(MediaDir, Camera);
             Vegetation = new Vegetation(MediaDir);
             Common = new Common(MediaDir);
@@ -132,7 +132,8 @@ namespace TGC.Group.Model
         }
 
         public void CreateBulletCallbacks(CharacterStatus characterStatus) =>
-            PhysicalWorld.AddContactPairTest(Shark.Body, Character.Body, new SharkAttackCallback(Shark, characterStatus));
+            PhysicalWorld.AddContactPairTest(Shark.Body, Character.Body, 
+                                                new SharkAttackCallback(Shark, characterStatus, SoundManager));
 
         public void Dispose()
         {

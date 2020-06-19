@@ -28,6 +28,7 @@ namespace TGC.Group.Model.Objects
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
         private readonly TgcD3dInput Input;
         private readonly CameraFPS Camera;
+        private readonly GameSoundManager SoundManager;
         private Vector3 MovementDirection;
         private float prevLatitude;
         private float Gravity => Body.CenterOfMassPosition.Y < 0 ? -200 : 0;
@@ -49,14 +50,15 @@ namespace TGC.Group.Model.Objects
         public bool HasWeapon { get; set; }
         public bool HasDivingHelmet { get; set; }
         public bool CanFish { get; set; }
-        public bool InHand;
+        public bool InHand { get; set; }
 
         public bool AttackedShark { get; set; }
 
-        public Character(CameraFPS camera, TgcD3dInput input)
+        public Character(CameraFPS camera, TgcD3dInput input, GameSoundManager soundManager)
         {
             Camera = camera;
             Input = input;
+            SoundManager = soundManager;
             Init();
         }
 
@@ -147,7 +149,10 @@ namespace TGC.Group.Model.Objects
             if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT) && HasWeapon && InHand)
             {
                 Weapon.ActivateAtackMove();
+                SoundManager.WeaponHit.play();
                 AttackedShark = ray.IntersectsWithObject(shark.BoundingBox, 150);
+                if (AttackedShark)
+                    SoundManager.HitToShark.play();
             }
 
             RestartSpeedForKeyUp();

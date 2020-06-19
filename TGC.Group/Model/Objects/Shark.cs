@@ -36,6 +36,7 @@ namespace TGC.Group.Model.Objects
         private readonly Skybox Skybox;
         private readonly Terrain Terrain;
         private readonly CameraFPS Camera;
+        private readonly GameSoundManager SoundManager;
         private bool NormalMove;
         private bool StalkerModeMove;
         public bool DeathMove { get; set; }
@@ -56,12 +57,13 @@ namespace TGC.Group.Model.Objects
 
         private readonly string MediaDir;
 
-        public Shark(string mediaDir, Skybox skybox, Terrain terrain, CameraFPS camera)
+        public Shark(string mediaDir, Skybox skybox, Terrain terrain, CameraFPS camera, GameSoundManager soundManager)
         {
             MediaDir = mediaDir;
             Skybox = skybox;
             Terrain = terrain;
             Camera = camera;
+            SoundManager = soundManager;
             Init();
         }
 
@@ -113,12 +115,21 @@ namespace TGC.Group.Model.Objects
             if (!StalkerModeMove && !NormalMove && !DeathMove)
                 return;
 
-            if (DeathMove)
+            if (DeathMove) 
+            { 
                 PerformDeathMove(elapsedTime);
+                SoundManager.SharkStalking.stop();
+            }
             else if (StalkerModeMove && CanSeekPlayer(out float rotationAngle, out TGCVector3 rotationAxis))
+            {
                 PerformStalkerMove(elapsedTime, speed, rotationAngle, rotationAxis);
+                SoundManager.SharkStalking.play();
+            }
             else if (NormalMove)
+            {
                 PerformNormalMove(elapsedTime, speed, headPosition);
+                SoundManager.SharkStalking.stop();
+            }
 
             if (EventTimeCounter <= 0)
                 ManageEndOfAttack();
@@ -157,7 +168,7 @@ namespace TGC.Group.Model.Objects
             TotalRotation = rotation;
         }
 
-        public void EndSharkAttack()
+    public void EndSharkAttack()
         {
             NormalMove = false;
             StalkerModeMove = false;

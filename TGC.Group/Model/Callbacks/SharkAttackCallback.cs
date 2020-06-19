@@ -16,14 +16,15 @@ namespace TGC.Group.Model.Callbacks
         {
             public static float DAMAGE_TO_CHARACTER = 30f;
         }
-
+        private readonly GameSoundManager SoundManager;
         public Shark Shark { get; }
         public CharacterStatus CharacterStatus { get; }
-
-        public SharkAttackCallback(Shark shark, CharacterStatus characterStatus)
+        
+        public SharkAttackCallback(Shark shark, CharacterStatus characterStatus, GameSoundManager soundManager)
         {
             Shark = shark;
             CharacterStatus = characterStatus;
+            SoundManager = soundManager;
         }
 
         public override float AddSingleResult(ManifoldPoint cp, CollisionObjectWrapper colObj0Wrap, int partId0, int index0, CollisionObjectWrapper colObj1Wrap, int partId1, int index1)
@@ -32,6 +33,7 @@ namespace TGC.Group.Model.Callbacks
             {
                 CharacterStatus.DamageReceived = Constants.DAMAGE_TO_CHARACTER;
                 Shark.ChangeSharkWay();
+                SoundManager.SharkAttack.play();
             }
             return 0;
         }
