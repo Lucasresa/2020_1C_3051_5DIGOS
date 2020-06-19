@@ -148,7 +148,7 @@ technique Waves
                                         /* Niebla */
 /**************************************************************************************/
 
-float4 calculate_light(VS_OUTPUT_VERTEX input, float3 ambientColor, float specularK)
+float4 calculate_light(VS_OUTPUT_VERTEX input, float3 ambientColor, float specularK, float4 texel)
 {
     /* Pasar normal a World-Space
 	Solo queremos rotarla, no trasladarla ni escalarla.
@@ -159,9 +159,6 @@ float4 calculate_light(VS_OUTPUT_VERTEX input, float3 ambientColor, float specul
     float3 viewDirection = normalize(eyePosition - input.WorldPosition);
     float3 halfVector = normalize(lightDirection + viewDirection);
 
-	// Obtener texel de la textura
-    float4 texelColor = tex2D(diffuseMap, input.Texture);
-
 	//Componente Diffuse: N dot L
     float3 NdotL = dot(input.WorldNormal, lightDirection);
     float3 diffuseLight = 0.6 * diffuseColor * max(0.0, NdotL);
@@ -170,7 +167,7 @@ float4 calculate_light(VS_OUTPUT_VERTEX input, float3 ambientColor, float specul
     float3 NdotH = dot(input.WorldNormal, halfVector);
     float3 specularLight = ((NdotL <= 0.0) ? 0.0 : specularK) * specularColor * pow(max(0.0, NdotH), specularExp);
 
-    float4 finalColor = float4(saturate(ambientColor * 0.3 + diffuseLight) * texelColor + specularLight, texelColor.a);
+    float4 finalColor = float4(saturate(ambientColor * 0.3 + diffuseLight) * texel + specularLight, texel.a);
     return finalColor;
 }
 
@@ -342,7 +339,13 @@ technique Sun
 //Pixel Shader
 float4 ps_main_ship(VS_OUTPUT_VERTEX input) : COLOR0
 {
-    return calculate_light(input, shipAmbientColor, shipKSpecular);
+    float4 texel = tex2D(diffuseMap, input.Texture);
+    float4 light_color = calculate_light(input, shipAmbientColor, shipKSpecular, texel);
+    
+    if (input.WorldPosition.y < 3550)
+        return calculate_fog(input, light_color);
+    else
+        return light_color;
 }
 
 technique Ship_Light
