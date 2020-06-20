@@ -2,6 +2,7 @@
 using BulletSharp.Math;
 using Microsoft.DirectX.Direct3D;
 using System;
+using System.Drawing;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Geometry;
 using TGC.Core.Mathematica;
@@ -81,10 +82,18 @@ namespace TGC.Group.Model.Objects
             return rigidBody;
         }
 
-        public void SetShader(Effect fogShader, string technique)
+        public void SetShader(ref Effect fogShader)
         {
+            fogShader.SetValue("shipAmbientColor", Color.White.ToArgb());
+            fogShader.SetValue("shipDiffuseColor", Color.LightGoldenrodYellow.ToArgb());
+            fogShader.SetValue("shipSpecularColor", Color.White.ToArgb());
+            TGCVector3 insideLightPosition = new TGCVector3(-200, 200, -100);
+            fogShader.SetValue("insideShipLightPosition", TGCVector3.TGCVector3ToFloat4Array(insideLightPosition));
+
             OutdoorMesh.Effect = fogShader;
-            OutdoorMesh.Technique = technique;
+            OutdoorMesh.Technique = "Ship_Light";
+            IndoorMesh.Effect = fogShader;
+            IndoorMesh.Technique = "Inside_Ship_Light";
         }
     }
 }

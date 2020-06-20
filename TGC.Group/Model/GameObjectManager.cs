@@ -68,13 +68,8 @@ namespace TGC.Group.Model
             FogShader.SetValue("ColorFog", Color.SteelBlue.ToArgb());
             FogShader.SetValue("StartFogDistance", 2000);
             FogShader.SetValue("EndFogDistance", 10000);
-
-            FogShader.SetValue("shipAmbientColor", Color.White.ToArgb());
-            FogShader.SetValue("diffuseColor", Color.LightGoldenrodYellow.ToArgb());
-            FogShader.SetValue("specularColor", Color.White.ToArgb());
             FogShader.SetValue("specularExp", 20);
-            FogShader.SetValue("shipKSpecular", 0.5f);
-            FogShader.SetValue("lightPosition", TGCVector3.TGCVector3ToFloat4Array(LightPosition));
+            FogShader.SetValue("globalLightPosition", TGCVector3.TGCVector3ToFloat4Array(LightPosition));
 
             /* Initializer object */
             LightBox = TGCBox.fromSize(TGCVector3.One * 150, Color.White);
@@ -122,7 +117,7 @@ namespace TGC.Group.Model
             Common.SetShader(FogShader, "Fog");
             Shark.SetShader(FogShader, "Fog");
             Vegetation.SetShader(FogShader, "FogVegetation");
-            Ship.SetShader(FogShader, "Ship_Light");
+            Ship.SetShader(ref FogShader);
 
             LightBox.Transform = TGCMatrix.Translation(LightPosition);
 

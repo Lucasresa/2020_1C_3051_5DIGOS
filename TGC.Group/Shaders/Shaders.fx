@@ -37,14 +37,14 @@ float StartFogDistance;
 float EndFogDistance;
 
 // Parametros de la Luz
-float3 diffuseColor; //Color RGB para Ambient de la luz
-float3 specularColor; //Color RGB para Ambient de la luz
-float4 lightPosition; //Posicion de la luz
+float4 globalLightPosition; //Posicion de la luz externa
+float4 insideShipLightPosition; //Posicion de la luz indoor
 float4 eyePosition; //Posicion de la camara
 float specularExp; // Shininess
 
 float3 shipAmbientColor; // Color de ambiente para la nave
-float shipKSpecular; // Coeficiente de luz especular para la nave
+float3 shipDiffuseColor; //Color RGB de la luz difusa
+float3 shipSpecularColor; //Color RGB de la luz especular
 
 float3 goldAmbientColor; // Color de ambiente para el oro
 float goldKSpecular; // Coeficiente de luz especular para el oro
@@ -148,7 +148,8 @@ technique Waves
                                         /* Niebla */
 /**************************************************************************************/
 
-float4 calculate_light(VS_OUTPUT_VERTEX input, float3 ambientColor, float specularK, float4 texel)
+float4 calculate_light(VS_OUTPUT_VERTEX input, float4 lightPosition, float3 ambientColor, float3 diffuseColor, float3 specularColor, 
+                        float specularK, float ambientK, float diffuseK, float4 texel)
 {
     /* Pasar normal a World-Space
 	Solo queremos rotarla, no trasladarla ni escalarla.
@@ -161,13 +162,13 @@ float4 calculate_light(VS_OUTPUT_VERTEX input, float3 ambientColor, float specul
 
 	//Componente Diffuse: N dot L
     float3 NdotL = dot(input.WorldNormal, lightDirection);
-    float3 diffuseLight = 0.6 * diffuseColor * max(0.0, NdotL);
+    float3 diffuseLight = diffuseK * diffuseColor * max(0.0, NdotL);
 
 	//Componente Specular: (N dot H)^shininess
     float3 NdotH = dot(input.WorldNormal, halfVector);
     float3 specularLight = ((NdotL <= 0.0) ? 0.0 : specularK) * specularColor * pow(max(0.0, NdotH), specularExp);
 
-    float4 finalColor = float4(saturate(ambientColor * 0.3 + diffuseLight) * texel + specularLight, texel.a);
+    float4 finalColor = float4(saturate(ambientColor * ambientK + diffuseLight) * texel + specularLight, texel.a);
     return finalColor;
 }
 
@@ -340,13 +341,22 @@ technique Sun
 float4 ps_main_ship(VS_OUTPUT_VERTEX input) : COLOR0
 {
     float4 texel = tex2D(diffuseMap, input.Texture);
-    float4 light_color = calculate_light(input, shipAmbientColor, shipKSpecular, texel);
-    
+    float4 light_color = calculate_light(input, globalLightPosition, shipAmbientColor, shipDiffuseColor, shipSpecularColor, 
+                                            0.5, 0.3, 0.6, texel);
     if (input.WorldPosition.y < 3550)
         return calculate_fog(input, light_color);
     else
         return light_color;
 }
+
+//Pixel Shader Inside Ship
+float4 ps_inside_ship(VS_OUTPUT_VERTEX input) : COLOR0
+{
+    float4 texel = tex2D(diffuseMap, input.Texture);
+    return calculate_light(input, insideShipLightPosition, shipAmbientColor, shipDiffuseColor, shipSpecularColor,
+                            0.1, 0.7, 0.6, texel);
+}
+
 
 technique Ship_Light
 {
@@ -354,5 +364,14 @@ technique Ship_Light
     {
         VertexShader = compile vs_3_0 vs_main_fog();
         PixelShader = compile ps_3_0 ps_main_ship();
+    }
+}
+
+technique Inside_Ship_Light
+{
+    pass Pass_0
+    {
+        VertexShader = compile vs_3_0 vs_main_fog();
+        PixelShader = compile ps_3_0 ps_inside_ship();
     }
 }
