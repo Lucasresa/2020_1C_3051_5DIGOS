@@ -158,7 +158,16 @@ namespace TGC.Group.Model.Objects
         public void SetShader(Effect fogShader, string technique)
         {
             ListCorals.ForEach(coral => { coral.Mesh.Effect = fogShader; coral.Mesh.Technique = technique; });
-            ListOres.ForEach(ore => { ore.Mesh.Effect = fogShader; ore.Mesh.Technique = technique; });
+            ListOres.ForEach(ore => { ore.Mesh.Effect = fogShader;
+                if (ore.Name.ToLower().Contains("gold"))
+                    ore.Mesh.Technique = "Gold";
+                else if (ore.Name.ToLower().Contains("silver"))
+                    ore.Mesh.Technique = "Silver";
+                else if (ore.Name.ToLower().Contains("iron"))
+                    ore.Mesh.Technique = "Iron";
+                else
+                    ore.Mesh.Technique = technique;
+            });
             ListRock.ForEach(rock => { rock.Mesh.Effect = fogShader; rock.Mesh.Technique = technique; });
             ListFishes.ForEach(fish => { fish.Mesh.Effect = fogShader; fish.Mesh.Technique = technique; });
         }

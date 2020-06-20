@@ -63,13 +63,14 @@ namespace TGC.Group.Model
 
         private void InitializerObjects()
         {
-            FogShader = TGCShaders.Instance.LoadEffect(ShadersDir + "Shaders.fx");            
-                        
+            FogShader = TGCShaders.Instance.LoadEffect(ShadersDir + "Shaders.fx");
+
             FogShader.SetValue("ColorFog", Color.SteelBlue.ToArgb());
             FogShader.SetValue("StartFogDistance", 2000);
             FogShader.SetValue("EndFogDistance", 10000);
-            FogShader.SetValue("specularExp", 20);
             FogShader.SetValue("globalLightPosition", TGCVector3.TGCVector3ToFloat4Array(LightPosition));
+
+            SetMaterialColors();
 
             /* Initializer object */
             LightBox = TGCBox.fromSize(TGCVector3.One * 150, Color.White);
@@ -250,6 +251,21 @@ namespace TGC.Group.Model
             var roofInfo = new RigidBodyConstructionInfo(0, roofMotionState, roofShape);
             var roofBody = new RigidBody(roofInfo);
             PhysicalWorld.AddBodyToTheWorld(roofBody);
+        }
+
+        private void SetMaterialColors()
+        {
+            FogShader.SetValue("goldAmbientColor", Color.FromArgb(194, 178, 128).ToArgb());
+            FogShader.SetValue("goldDiffuseColor", Color.FromArgb(191, 191, 0).ToArgb());
+            FogShader.SetValue("goldSpecularColor", Color.FromArgb(212, 175, 55).ToArgb());
+
+            FogShader.SetValue("silverAmbientColor", Color.FromArgb(194, 178, 128).ToArgb());
+            FogShader.SetValue("silverDiffuseColor", Color.FromArgb(128, 128, 128).ToArgb());
+            FogShader.SetValue("silverSpecularColor", Color.FromArgb(192, 192, 192).ToArgb());
+
+            FogShader.SetValue("ironAmbientColor", Color.FromArgb(194, 178, 128).ToArgb());
+            FogShader.SetValue("ironDiffuseColor", Color.FromArgb(224, 156, 85).ToArgb());
+            FogShader.SetValue("ironSpecularColor", Color.FromArgb(214, 126, 39).ToArgb());
         }
     }
 }
