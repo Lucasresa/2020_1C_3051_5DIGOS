@@ -185,6 +185,20 @@ VS_OUTPUT_VERTEX vs_main_fog(VS_INPUT input)
     return output;
 }
 
+VS_OUTPUT_VERTEX vs_main_fog_vegetation(VS_INPUT input)
+{
+    VS_OUTPUT_VERTEX output;
+    
+    input.Position.x += sin(time * 0.5) * input.Position.y * 0.1;
+    
+    output.Position = mul(input.Position, matWorldViewProj);
+    output.Texture = input.Texcoord;
+    output.PosView = mul(input.Position, matWorldView);
+    output.WorldPosition = mul(input.Position, matWorld);
+    output.WorldNormal = mul(input.Normal, matInverseTransposeWorld).xyz;
+    return output;
+}
+
 VS_OUTPUT_VERTEX vs_main_bubble(VS_INPUT input)
 {
     VS_OUTPUT_VERTEX output;
@@ -255,7 +269,7 @@ technique FogVegetation
 {
     pass Pass_0
     {       
-        VertexShader = compile vs_3_0 vs_main_fog();
+        VertexShader = compile vs_3_0 vs_main_fog_vegetation();
         PixelShader = compile ps_3_0 ps_main_fog_vegetation();
     }
 }
