@@ -1,11 +1,8 @@
 ﻿using BulletSharp;
 using Microsoft.DirectX.Direct3D;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using TGC.Core.BoundingVolumes;
 using TGC.Core.BulletPhysics;
-using TGC.Core.Collision;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 
@@ -109,18 +106,24 @@ namespace TGC.Group.Model.Objects
 
         public void LocateObjects()
         {
-            ListCorals.ForEach(coral => {
-                coral.Body.Translate(coral.Mesh.Position.ToBulletVector3()); 
-                coral.Mesh.BoundingBox.scaleTranslate(coral.Mesh.Position, Constants.Scale); });
-            
-            ListOres.ForEach(ore => { 
-                ore.Body.Translate(ore.Mesh.Position.ToBulletVector3()); 
-                ore.Mesh.BoundingBox.scaleTranslate(ore.Mesh.Position, Constants.Scale); });
-            
-            ListRock.ForEach(rock => { 
-                rock.Body.Translate(rock.Mesh.Position.ToBulletVector3()); 
-                rock.Mesh.BoundingBox.scaleTranslate(rock.Mesh.Position, Constants.Scale); });
-            
+            ListCorals.ForEach(coral =>
+            {
+                coral.Body.Translate(coral.Mesh.Position.ToBulletVector3());
+                coral.Mesh.BoundingBox.scaleTranslate(coral.Mesh.Position, Constants.Scale);
+            });
+
+            ListOres.ForEach(ore =>
+            {
+                ore.Body.Translate(ore.Mesh.Position.ToBulletVector3());
+                ore.Mesh.BoundingBox.scaleTranslate(ore.Mesh.Position, Constants.Scale);
+            });
+
+            ListRock.ForEach(rock =>
+            {
+                rock.Body.Translate(rock.Mesh.Position.ToBulletVector3());
+                rock.Mesh.BoundingBox.scaleTranslate(rock.Mesh.Position, Constants.Scale);
+            });
+
             ListFishes.ForEach(fish => fish.Mesh.BoundingBox.scaleTranslate(fish.Mesh.Position, Constants.Scale));
         }
 
@@ -143,7 +146,10 @@ namespace TGC.Group.Model.Objects
                 newCommon.Mesh = common.createMeshInstance(newCommon.Name);
                 newCommon.Mesh.Transform = TGCMatrix.Scaling(Constants.Scale);
                 if (createRB)
+                {
                     CreateRigidBody(ref newCommon);
+                }
+
                 commons.Add(newCommon);
             }
         }
@@ -158,15 +164,25 @@ namespace TGC.Group.Model.Objects
         public void SetShader(Effect fogShader, string technique)
         {
             ListCorals.ForEach(coral => { coral.Mesh.Effect = fogShader; coral.Mesh.Technique = technique; });
-            ListOres.ForEach(ore => { ore.Mesh.Effect = fogShader;
+            ListOres.ForEach(ore =>
+            {
+                ore.Mesh.Effect = fogShader;
                 if (ore.Name.ToLower().Contains("gold"))
+                {
                     ore.Mesh.Technique = "Gold";
+                }
                 else if (ore.Name.ToLower().Contains("silver"))
+                {
                     ore.Mesh.Technique = "Silver";
+                }
                 else if (ore.Name.ToLower().Contains("iron"))
+                {
                     ore.Mesh.Technique = "Iron";
+                }
                 else
+                {
                     ore.Mesh.Technique = technique;
+                }
             });
             ListRock.ForEach(rock => { rock.Mesh.Effect = fogShader; rock.Mesh.Technique = technique; });
             ListFishes.ForEach(fish => { fish.Mesh.Effect = fogShader; fish.Mesh.Technique = technique; });

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Drawing;
-using TGC.Core.Interpolation;
-using TGC.Core.Mathematica;
-using TGC.Core.Textures;
+﻿using TGC.Core.Mathematica;
 
 namespace TGC.Group.Model.Objects
 {
@@ -19,6 +15,6 @@ namespace TGC.Group.Model.Objects
             Technique = "Waves";
             SCALEY = 1;
             LoadWorld();
-        }        
+        }
     }
 }

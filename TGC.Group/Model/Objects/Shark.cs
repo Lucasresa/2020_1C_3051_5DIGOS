@@ -1,9 +1,7 @@
 ﻿using BulletSharp;
 using BulletSharp.Math;
 using Microsoft.DirectX.Direct3D;
-using System;
 using TGC.Core.BulletPhysics;
-using TGC.Core.Input;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Utils;
@@ -113,10 +111,12 @@ namespace TGC.Group.Model.Objects
             Body.AngularVelocity = Vector3.Zero;
 
             if (!StalkerModeMove && !NormalMove && !DeathMove)
+            {
                 return;
+            }
 
-            if (DeathMove) 
-            { 
+            if (DeathMove)
+            {
                 PerformDeathMove(elapsedTime);
                 SoundManager.SharkStalking.stop();
             }
@@ -132,10 +132,14 @@ namespace TGC.Group.Model.Objects
             }
 
             if (EventTimeCounter <= 0)
+            {
                 ManageEndOfAttack();
+            }
 
             if (DeathTimeCounter <= 0)
+            {
                 ManageEndOfDeath();
+            }
         }
 
         public void SetShader(Effect fogShader, string technique)
@@ -168,7 +172,7 @@ namespace TGC.Group.Model.Objects
             TotalRotation = rotation;
         }
 
-    public void EndSharkAttack()
+        public void EndSharkAttack()
         {
             NormalMove = false;
             StalkerModeMove = false;
@@ -188,25 +192,41 @@ namespace TGC.Group.Model.Objects
             var YRotationStep = FastMath.PI * 0.4f * elapsedTime;
 
             var distanceToWater = Constants.WATER_HEIGHT - floorHeight - 200;
-            TGCVector2 sharkRangePosition = 
+            TGCVector2 sharkRangePosition =
                 new TGCVector2(Constants.SHARK_HEIGHT.X, FastMath.Min(distanceToWater, Constants.SHARK_HEIGHT.Y));
 
             if (distanceToFloor < sharkRangePosition.X - 150 && AcumulatedXRotation < Constants.MaxAxisRotation)
+            {
                 XRotation = XRotationStep;
+            }
             else if (FastUtils.IsNumberBetweenInterval(distanceToFloor, sharkRangePosition) && AcumulatedXRotation > 0.0012)
+            {
                 XRotation = -XRotationStep;
+            }
             else if (distanceToFloor > sharkRangePosition.Y + 150 && AcumulatedXRotation > -Constants.MaxAxisRotation)
+            {
                 XRotation = -XRotationStep;
+            }
             else if (FastUtils.IsNumberBetweenInterval(distanceToFloor, sharkRangePosition) && AcumulatedXRotation < -0.0012)
+            {
                 XRotation = XRotationStep;
+            }
 
             if (ChangeDirectionTimeCounter <= 0)
+            {
                 if (FastMath.Abs(AcumulatedYRotation) < Constants.MaxYRotation)
+                {
                     YRotation = YRotationStep * RotationYSign();
+                }
                 else
+                {
                     ChangeDirectionTimeCounter = Constants.CHANGE_DIRECTION_TIME;
+                }
+            }
             else
+            {
                 AcumulatedYRotation = 0;
+            }
 
             AcumulatedXRotation += XRotation;
             AcumulatedYRotation += YRotation;
@@ -239,7 +259,10 @@ namespace TGC.Group.Model.Objects
             var RotationStep = FastMath.PI * 0.3f * elapsedTime;
 
             if (rotationAngle <= RotationStep)
+            {
                 return;
+            }
+
             actualDirector.TransformCoordinate(TGCMatrix.RotationAxis(rotationAxis, RotationStep));
             var newRotation = TGCMatrix.RotationAxis(rotationAxis, RotationStep);
             TotalRotation *= newRotation;
@@ -257,7 +280,10 @@ namespace TGC.Group.Model.Objects
             DeathTimeCounter -= elapsedTime;
             var RotationStep = FastMath.PI * 0.4f * elapsedTime;
             if (FastUtils.GreaterThan(AcumulatedZRotation, Constants.MaxZRotation))
+            {
                 return;
+            }
+
             AcumulatedZRotation += RotationStep;
             TotalRotation *= TGCMatrix.RotationAxis(director, RotationStep);
             Mesh.Transform = TotalRotation * TGCMatrix.Translation(new TGCVector3(Body.CenterOfMassPosition));
@@ -269,7 +295,10 @@ namespace TGC.Group.Model.Objects
         private void ManageEndOfAttack()
         {
             if (StalkerModeMove)
+            {
                 ChangeSharkWay();
+            }
+
             StalkerModeMove = false;
             if (!Skybox.Contains(Body))
             {
@@ -323,7 +352,7 @@ namespace TGC.Group.Model.Objects
 
         private TGCVector3 GetHeadPosition() => new TGCVector3(Body.CenterOfMassPosition) + director * -560;
 
-        private bool IsNearFromSurface(float sharkHeight) => 
+        private bool IsNearFromSurface(float sharkHeight) =>
                                         Constants.WATER_HEIGHT - sharkHeight <= Constants.MIN_DISTANCE_TO_SURFACE;
 
     }

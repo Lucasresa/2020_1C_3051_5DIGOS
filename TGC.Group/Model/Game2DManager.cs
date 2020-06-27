@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 using TGC.Core.Direct3D;
 using TGC.Core.Input;
@@ -67,7 +65,7 @@ namespace TGC.Group.Model
         private readonly string MediaDir;
         private readonly DrawSprite MousePointer;
         private readonly DrawSprite Pointer;
-        
+
         private readonly DrawText InstructionText;
         private readonly DrawText HelpText;
         private readonly DrawText ShipText;
@@ -116,7 +114,7 @@ namespace TGC.Group.Model
             Init();
         }
 
-        public Game2DManager(string mediaDir) 
+        public Game2DManager(string mediaDir)
         {
             MousePointer = new DrawSprite(mediaDir);
             InstructionText = new DrawText();
@@ -145,7 +143,7 @@ namespace TGC.Group.Model
         private void Init()
         {
             InitializerPointer();
-            InitializerMousePointer();           
+            InitializerMousePointer();
             InitializerInstructionText();
             InitializerSimpleText();
             InitializerIndicatorShip();
@@ -157,7 +155,7 @@ namespace TGC.Group.Model
             ShipLocationIndicator.SetInitialScallingAndPosition(Constants.SHIP_INDICATOR_SCALE, Constants.SHIP_INDICATOR_POSITION);
             DistanceShipLocation.SetTextAndPosition(text: DistanceWithShip.ToString(), position: Constants.SHIP_INDICATOR_TEXT_POSITION);
         }
-       
+
         private void InitializerPointer()
         {
             Pointer.SetImage("Pointer.png");
@@ -189,13 +187,21 @@ namespace TGC.Group.Model
         public void Render()
         {
             if (ShowHelp)
+            {
                 InstructionText.Render();
+            }
             else
+            {
                 HelpText.Render();
+            }
 
             if (!ActiveInventory)
             {
-                if (ShowSharkLife) Shark.Render();
+                if (ShowSharkLife)
+                {
+                    Shark.Render();
+                }
+
                 Character.Render();
                 Pointer.Render();
 
@@ -210,7 +216,9 @@ namespace TGC.Group.Model
                     ShipText.Render();
                 }
                 if (NearObjectForSelect)
+                {
                     CollectText.Render();
+                }
 
                 if (ShowInfoItemCollect)
                 {
@@ -234,12 +242,16 @@ namespace TGC.Group.Model
             else
             {
                 if (CanCraft)
+                {
                     Crafting.Render();
+                }
                 else
                 {
                     Inventory.Render();
-                    if(ActiveWeapon)
+                    if (ActiveWeapon)
+                    {
                         Crafting.RenderItemWeapon();
+                    }
                 }
                 RenderMousePointer();
             }
@@ -247,7 +259,11 @@ namespace TGC.Group.Model
 
         public void RenderMousePointer()
         {
-            if(ShowHelp) InstructionText.Render();
+            if (ShowHelp)
+            {
+                InstructionText.Render();
+            }
+
             MousePointer.Position = new TGCVector2(Cursor.Position.X - 16, Cursor.Position.Y - 16);
             MousePointer.Render();
         }
@@ -256,17 +272,23 @@ namespace TGC.Group.Model
         {
             Shark.Update();
             if (!GodMode)
+            {
                 Character.Update();
+            }
             else
+            {
                 Character.UpdateForGodMode();
+            }
         }
-        
+
         public void UpdateItemWeapon()
         {
-            if(ActiveWeapon)
+            if (ActiveWeapon)
+            {
                 Crafting.UpdateItemWeapon();
+            }
         }
-        
+
         public void UpdateItems(Dictionary<string, List<string>> items)
         {
             Crafting.UpdateItems(items);
@@ -285,7 +307,7 @@ namespace TGC.Group.Model
             ShowInfoItemCollect =
             ShowIndicatorShip =
             ShowSharkLife = false;
-           
+
         }
     }
 }

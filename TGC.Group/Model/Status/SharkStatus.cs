@@ -1,5 +1,4 @@
 ﻿using TGC.Core.Mathematica;
-using TGC.Group.Model.Objects;
 
 namespace TGC.Group.Model.Status
 {

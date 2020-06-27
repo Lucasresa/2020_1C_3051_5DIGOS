@@ -1,11 +1,8 @@
 ﻿using BulletSharp;
 using BulletSharp.Math;
 using Microsoft.DirectX.DirectInput;
-using System;
-using System.Windows.Forms;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Input;
-using TGC.Core.Interpolation;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Utils;
@@ -81,10 +78,25 @@ namespace TGC.Group.Model.Objects
 
         private void Movement(Vector3 director, Vector3 sideDirector, float speed)
         {
-            if (Input.keyDown(Key.W)) Body.LinearVelocity = MovementDirection = director * speed;
-            if (Input.keyDown(Key.S)) Body.LinearVelocity = MovementDirection = director * -speed;
-            if (Input.keyDown(Key.A)) Body.LinearVelocity = MovementDirection = sideDirector * -speed;
-            if (Input.keyDown(Key.D)) Body.LinearVelocity = MovementDirection = sideDirector * speed;
+            if (Input.keyDown(Key.W))
+            {
+                Body.LinearVelocity = MovementDirection = director * speed;
+            }
+
+            if (Input.keyDown(Key.S))
+            {
+                Body.LinearVelocity = MovementDirection = director * -speed;
+            }
+
+            if (Input.keyDown(Key.A))
+            {
+                Body.LinearVelocity = MovementDirection = sideDirector * -speed;
+            }
+
+            if (Input.keyDown(Key.D))
+            {
+                Body.LinearVelocity = MovementDirection = sideDirector * speed;
+            }
         }
 
         private void OutsideMovement(Vector3 director, Vector3 sideDirector, float speed)
@@ -96,8 +108,16 @@ namespace TGC.Group.Model.Objects
             }
 
             Movement(director, sideDirector, speed);
-            if (Input.keyDown(Key.LeftControl)) Body.LinearVelocity = Vector3.UnitY * -speed;
-            if (Input.keyDown(Key.Space)) Body.LinearVelocity = Vector3.UnitY * speed;
+            if (Input.keyDown(Key.LeftControl))
+            {
+                Body.LinearVelocity = Vector3.UnitY * -speed;
+            }
+
+            if (Input.keyDown(Key.Space))
+            {
+                Body.LinearVelocity = Vector3.UnitY * speed;
+            }
+
             if (Input.keyDown(Key.LeftShift))
             {
                 Body.LinearVelocity = MovementDirection * 2;
@@ -117,13 +137,22 @@ namespace TGC.Group.Model.Objects
         {
             if (Input.keyUp(Key.W) || Input.keyUp(Key.S) || Input.keyUp(Key.A) || Input.keyUp(Key.D) ||
                     Input.keyUp(Key.Space) || Input.keyUp(Key.LeftControl))
+            {
                 RestartBodySpeed();
+            }
         }
 
         public void Teleport()
         {
-            if (LooksAtTheHatch) ChangePosition(Constants.OUTDOOR_POSITION);
-            if (NearShip) ChangePosition(Constants.INDOOR_POSITION);
+            if (LooksAtTheHatch)
+            {
+                ChangePosition(Constants.OUTDOOR_POSITION);
+            }
+
+            if (NearShip)
+            {
+                ChangePosition(Constants.INDOOR_POSITION);
+            }
         }
 
         public void Update(Ray ray, TgcMesh shark, float elapsedTime)
@@ -142,9 +171,13 @@ namespace TGC.Group.Model.Objects
                 Body.ApplyCentralImpulse(Vector3.UnitY * -100);
             }
             else if (IsInsideShip)
+            {
                 Movement(director, sideDirector, speed);
+            }
             else
+            {
                 OutsideMovement(director, sideDirector, speed);
+            }
 
             if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT) && HasWeapon && InHand)
             {
@@ -152,7 +185,9 @@ namespace TGC.Group.Model.Objects
                 SoundManager.WeaponHit.play();
                 AttackedShark = ray.IntersectsWithObject(shark.BoundingBox, 150);
                 if (AttackedShark)
+                {
                     SoundManager.HitToShark.play();
+                }
             }
 
             RestartSpeedForKeyUp();
@@ -161,9 +196,17 @@ namespace TGC.Group.Model.Objects
             Camera.Position = new TGCVector3(Body.CenterOfMassPosition) + Constants.CAMERA_HEIGHT;
 
             if (InHand)
-                Weapon.Update(new TGCVector3(director), elapsedTime);                      
+            {
+                Weapon.Update(new TGCVector3(director), elapsedTime);
+            }
         }
 
-        public void Render() { if(InHand) Weapon.Render(); }
+        public void Render()
+        {
+            if (InHand)
+            {
+                Weapon.Render();
+            }
+        }
     }
 }

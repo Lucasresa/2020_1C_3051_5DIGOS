@@ -1,5 +1,6 @@
-﻿using System;
-using Microsoft.DirectX.DirectInput;
+﻿using Microsoft.DirectX.DirectInput;
+using System;
+using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using TGC.Core.Direct3D;
@@ -9,8 +10,6 @@ using TGC.Core.Shaders;
 using TGC.Core.Sound;
 using TGC.Core.Textures;
 using TGC.Group.Model;
-using System.Drawing;
-using Microsoft.DirectX.Direct3D;
 
 namespace TGC.Group.Form
 {
@@ -26,7 +25,7 @@ namespace TGC.Group.Form
         public GameForm()
         {
             InitializeComponent();
-            
+
             WindowState = FormWindowState.Normal;
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
@@ -58,7 +57,7 @@ namespace TGC.Group.Form
         private TgcD3dInput Input { get; set; }
 
         private void GameForm_Load(object sender, EventArgs e)
-        {         
+        {
             InitGraphics();
             Text = Modelo.Name + @" - " + Modelo.Description;
             panel3D.Focus();
@@ -68,14 +67,16 @@ namespace TGC.Group.Form
         private void GameForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (ApplicationRunning)
+            {
                 ShutDown();
+            }
         }
 
         /// <summary>
         ///     Inicio todos los objetos necesarios para cargar el ejemplo y directx.
         /// </summary>
         public void InitGraphics()
-        {         
+        {
             ApplicationRunning = true;
             D3DDevice.Instance.InitializeD3DDevice(panel3D);
 
@@ -84,10 +85,10 @@ namespace TGC.Group.Form
             Input.Initialize(this, panel3D);
 
             //Inicio sonido
-            DirectSound = new TgcDirectSound(); 
-            try 
+            DirectSound = new TgcDirectSound();
+            try
             {
-                DirectSound.InitializeD3DDevice(panel3D); 
+                DirectSound.InitializeD3DDevice(panel3D);
             }
             catch (ApplicationException ex)
             {
@@ -120,11 +121,17 @@ namespace TGC.Group.Form
                     if (ApplicationActive())
                     {
                         Modelo.Tick();
-                        if (Input.keyDown(Key.Escape)) Close();
+                        if (Input.keyDown(Key.Escape))
+                        {
+                            Close();
+                        }
+
                         Cursor.Hide();
                     }
                     else
+                    {
                         Thread.Sleep(100);
+                    }
                 }
                 // Process application messages.
                 Application.DoEvents();
@@ -138,12 +145,16 @@ namespace TGC.Group.Form
         public bool ApplicationActive()
         {
             if (ContainsFocus)
+            {
                 return true;
+            }
 
             foreach (var form in OwnedForms)
             {
                 if (form.ContainsFocus)
+                {
                     return true;
+                }
             }
 
             return false;

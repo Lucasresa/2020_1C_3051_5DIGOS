@@ -30,7 +30,10 @@ namespace TGC.Group.Utils
 
         public void Dispose()
         {
-            if (Text2D != null) Text2D.Dispose();
+            if (Text2D != null)
+            {
+                Text2D.Dispose();
+            }
         }
 
         private void Initializer()

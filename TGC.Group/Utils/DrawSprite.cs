@@ -1,7 +1,6 @@
 using Microsoft.DirectX.Direct3D;
 using System;
 using System.Drawing;
-using System.Linq;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Core.Textures;
@@ -41,8 +40,15 @@ namespace TGC.Group.Utils
 
         public void Dispose()
         {
-            if (Texture != null) Texture.dispose();
-            if (Sprite != null && !Sprite.Disposed) Sprite.Dispose();
+            if (Texture != null)
+            {
+                Texture.dispose();
+            }
+
+            if (Sprite != null && !Sprite.Disposed)
+            {
+                Sprite.Dispose();
+            }
         }
 
         private void Initialize()

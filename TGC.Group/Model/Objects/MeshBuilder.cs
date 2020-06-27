@@ -6,7 +6,6 @@ using TGC.Core.SceneLoader;
 using TGC.Group.Utils;
 using static TGC.Group.Model.GameModel;
 using static TGC.Group.Model.Objects.Common;
-using static TGC.Group.Model.Objects.Fish;
 using static TGC.Group.Model.Objects.Vegetation;
 
 namespace TGC.Group.Model.Objects
@@ -75,9 +74,13 @@ namespace TGC.Group.Model.Objects
             Terrain.world.InterpoledHeight(pairXZ.XPosition, pairXZ.ZPosition, out float YPosition);
 
             if (IsFish(mesh.Name))
+            {
                 LocateFish(ref mesh, pairXZ, YPosition);
+            }
             else
+            {
                 LocateMeshesTypeTerrain(ref mesh, pairXZ, YPosition);
+            }
         }
 
         public void LocateMeshInWorld(ref TGCSphere mesh, Perimeter area)

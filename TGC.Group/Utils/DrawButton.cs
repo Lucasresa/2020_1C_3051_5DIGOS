@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using TGC.Core.Input;
 using TGC.Core.Mathematica;
 
@@ -76,29 +70,42 @@ namespace TGC.Group.Utils
         public void Render()
         {
             if (Invisible)
+            {
                 return;
+            }
 
             if (IsMarked)
+            {
                 MarkedButton.Render();
+            }
             else
+            {
                 UnmarkedButton.Render();
+            }
+
             ButtonText.Render();
         }
 
         public void Update()
         {
             if (Invisible)
+            {
                 return;
+            }
 
             if (FastUtils.IsNumberBetweenInterval(Input.Xpos, (Position.X, Position.X + Size.X)) &&
                 FastUtils.IsNumberBetweenInterval(Input.Ypos, (Position.Y, Position.Y + Size.Y)))
             {
                 IsMarked = true;
                 if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT))
+                {
                     Action();
+                }
             }
             else
+            {
                 IsMarked = false;
+            }
         }
     }
 }

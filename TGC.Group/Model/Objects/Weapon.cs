@@ -1,4 +1,3 @@
-using BulletSharp.Math;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Group.Utils;
@@ -7,7 +6,7 @@ namespace TGC.Group.Model.Objects
 {
     class Weapon
     {
-        private string FILE_NAME;
+        private readonly string FILE_NAME;
         private readonly string MediaDir;
 
         public TgcMesh Mesh;
@@ -63,7 +62,10 @@ namespace TGC.Group.Model.Objects
         public void ActivateAtackMove()
         {
             if (Attacking || AttackLocked)
+            {
                 return;
+            }
+
             Attacking = true;
             AttackLocked = true;
         }

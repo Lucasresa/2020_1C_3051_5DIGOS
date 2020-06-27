@@ -1,10 +1,8 @@
 ﻿using Microsoft.DirectX.Direct3D;
-using System;
 using System.Drawing;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
-using TGC.Core.SceneLoader;
 using TGC.Core.Shaders;
 using TGC.Core.Textures;
 
@@ -37,7 +35,9 @@ namespace TGC.Group.Utils
         public void LoadTexture(string path)
         {
             if (Texture != null && !Texture.Disposed)
+            {
                 Texture.Dispose();
+            }
 
             var bitMap = (Bitmap)Image.FromFile(path);
             bitMap.RotateFlip(RotateFlipType.Rotate90FlipX);
@@ -74,7 +74,9 @@ namespace TGC.Group.Utils
         public void SetHeightmapData(float[,] heightmapData)
         {
             if (heightmapData.GetLength(0) == HeightmapData.GetLength(0) && HeightmapData.GetLength(1) == heightmapData.GetLength(1))
+            {
                 HeightmapData = heightmapData;
+            }
         }
 
         public void LoadHeightmap(string heightmapPath, float scaleXZ, float scaleY, TGCVector3 center)
@@ -84,7 +86,9 @@ namespace TGC.Group.Utils
             ScaleY = scaleY;
 
             if (VertexTerrain != null && !VertexTerrain.Disposed)
+            {
                 VertexTerrain.Dispose();
+            }
 
             HeightmapData = LoadHeightMap(heightmapPath);
             Width = HeightmapData.GetLength(0);
@@ -113,8 +117,15 @@ namespace TGC.Group.Utils
             {
                 for (var j = 0; j < Length - 1; j++)
                 {
-                    if (HeightmapData[i, j] > MaxIntensity) MaxIntensity = HeightmapData[i, j];
-                    if (MinIntensity == -1 || HeightmapData[i, j] < MinIntensity) MinIntensity = HeightmapData[i, j];
+                    if (HeightmapData[i, j] > MaxIntensity)
+                    {
+                        MaxIntensity = HeightmapData[i, j];
+                    }
+
+                    if (MinIntensity == -1 || HeightmapData[i, j] < MinIntensity)
+                    {
+                        MinIntensity = HeightmapData[i, j];
+                    }
 
                     //Vertices
                     var v1 = new TGCVector3((Traslation.X + i) * ScaleXZ, (Traslation.Y + HeightmapData[i, j]) * ScaleY, (Traslation.Z + j) * ScaleXZ);
@@ -160,8 +171,15 @@ namespace TGC.Group.Utils
             {
                 var intensity = HeightmapData[(int)Vertex[i].X, (int)Vertex[i].Z];
                 Vertex[i].Y = intensity;
-                if (intensity > MaxIntensity) MaxIntensity = intensity;
-                if (MinIntensity == -1 || intensity < MinIntensity) MinIntensity = intensity;
+                if (intensity > MaxIntensity)
+                {
+                    MaxIntensity = intensity;
+                }
+
+                if (MinIntensity == -1 || intensity < MinIntensity)
+                {
+                    MinIntensity = intensity;
+                }
             }
 
             VertexTerrain.SetData(Vertex, 0, LockFlags.None);
@@ -180,7 +198,7 @@ namespace TGC.Group.Utils
             shader.SetShaderMatrix(Effect, TGCMatrix.Identity);
             d3dDevice.VertexDeclaration = shader.VdecPositionTextured;
             d3dDevice.SetStreamSource(0, VertexTerrain, 0);
-            
+
             var p = Effect.Begin(0);
             for (var i = 0; i < p; i++)
             {
@@ -193,8 +211,15 @@ namespace TGC.Group.Utils
 
         public void Dispose()
         {
-            if (VertexTerrain != null) VertexTerrain.Dispose();
-            if (Texture != null) Texture.Dispose();
+            if (VertexTerrain != null)
+            {
+                VertexTerrain.Dispose();
+            }
+
+            if (Texture != null)
+            {
+                Texture.Dispose();
+            }
         }
 
         public void LoadEffect(string effectPath, string technique)
@@ -219,14 +244,21 @@ namespace TGC.Group.Utils
             coords = new TGCVector2(i, j);
 
             if (coords.X >= HeightmapData.GetLength(0) || coords.Y >= HeightmapData.GetLength(1) || coords.Y < 0 || coords.X < 0)
+            {
                 return false;
+            }
+
             return true;
         }
 
         public bool InterpoledHeight(float x, float z, out float y)
         {
             y = 0;
-            if (!XZToHeightmapCoords(x, z, out TGCVector2 coords)) return false;
+            if (!XZToHeightmapCoords(x, z, out TGCVector2 coords))
+            {
+                return false;
+            }
+
             InterpoledIntensity(coords.X, coords.Y, out float i);
             y = (i + Traslation.Y) * ScaleY;
             return true;
@@ -237,7 +269,10 @@ namespace TGC.Group.Utils
             i = 0;
             float maxX = HeightmapData.GetLength(0);
             float maxZ = HeightmapData.GetLength(1);
-            if (u >= maxX || v >= maxZ || v < 0 || u < 0) return false;
+            if (u >= maxX || v >= maxZ || v < 0 || u < 0)
+            {
+                return false;
+            }
 
             int x1, x2, z1, z2;
             float s, t;
@@ -250,8 +285,15 @@ namespace TGC.Group.Utils
             z2 = z1 + 1;
             t = v - z1;
 
-            if (z2 >= maxZ) z2--;
-            if (x2 >= maxX) x2--;
+            if (z2 >= maxZ)
+            {
+                z2--;
+            }
+
+            if (x2 >= maxX)
+            {
+                x2--;
+            }
 
             var i1 = HeightmapData[x1, z1] + s * (HeightmapData[x2, z1] - HeightmapData[x1, z1]);
             var i2 = HeightmapData[x1, z2] + s * (HeightmapData[x2, z2] - HeightmapData[x1, z2]);

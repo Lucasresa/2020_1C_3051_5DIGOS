@@ -1,10 +1,4 @@
 ﻿using BulletSharp;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using TGC.Group.Model.Objects;
 using TGC.Group.Model.Status;
 
@@ -19,7 +13,7 @@ namespace TGC.Group.Model.Callbacks
         private readonly GameSoundManager SoundManager;
         public Shark Shark { get; }
         public CharacterStatus CharacterStatus { get; }
-        
+
         public SharkAttackCallback(Shark shark, CharacterStatus characterStatus, GameSoundManager soundManager)
         {
             Shark = shark;
@@ -41,9 +35,13 @@ namespace TGC.Group.Model.Callbacks
         public override bool NeedsCollision(BroadphaseProxy proxy)
         {
             if (base.NeedsCollision(proxy))
+            {
                 return Shark.Body.CheckCollideWithOverride(proxy.ClientObject as CollisionObject);
+            }
             else
+            {
                 return false;
+            }
         }
     }
 }

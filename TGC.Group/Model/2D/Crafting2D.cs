@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 using TGC.Core.Direct3D;
 using TGC.Core.Input;
@@ -95,11 +91,17 @@ namespace TGC.Group.Model._2D
 
             TGCVector2 scale;
             if (Constants.SCREEN_WIDTH < 1366)
+            {
                 scale = new TGCVector2(0.8f / 1.5f, 0.8f / 1.5f);
+            }
             else if (FastUtils.IsNumberBetweenInterval(Constants.SCREEN_WIDTH, (1366, 1700)))
+            {
                 scale = new TGCVector2(1f / 1.5f, 1f / 1.5f);
+            }
             else
+            {
                 scale = new TGCVector2(1.2f / 2, 1.2f / 2);
+            }
 
             var posY = TitleInventory.Position.Y;
             var posX = InventoryItems[3].sprite.Position.X;
@@ -125,11 +127,17 @@ namespace TGC.Group.Model._2D
         {
             TGCVector2 scale;
             if (Constants.SCREEN_WIDTH < 1366)
+            {
                 scale = new TGCVector2(0.8f / 1.85f, 0.8f / 1.85f);
+            }
             else if (FastUtils.IsNumberBetweenInterval(Constants.SCREEN_WIDTH, (1366, 1700)))
+            {
                 scale = new TGCVector2(0.9f / 1.85f, 0.9f / 1.85f);
+            }
             else
+            {
                 scale = new TGCVector2(1.2f / 1.85f, 1.2f / 1.85f);
+            }
 
             Size = new TGCVector2(100 * scale.X, 100 * scale.Y);
             TGCVector2 initialPosition = new TGCVector2(Constants.SCREEN_WIDTH * 0.39f, Constants.SCREEN_HEIGHT * 0.30f);
@@ -167,15 +175,21 @@ namespace TGC.Group.Model._2D
         {
             TGCVector2 scale;
             if (Constants.SCREEN_WIDTH < 1366)
+            {
                 scale = new TGCVector2(0.8f / 1.5f, 0.8f / 1.5f);
+            }
             else if (FastUtils.IsNumberBetweenInterval(Constants.SCREEN_WIDTH, (1366, 1700)))
+            {
                 scale = new TGCVector2(1f / 1.5f, 1f / 1.5f);
+            }
             else
+            {
                 scale = new TGCVector2(1.2f / 2, 1.2f / 2);
+            }
 
             var Size = new TGCVector2(100 * scale.X, 100 * scale.Y);
-            TGCVector2 position = new TGCVector2(InventoryItems[1].sprite.Position.X, TitleCrafting.Position.Y + 30);                       
-            
+            TGCVector2 position = new TGCVector2(InventoryItems[1].sprite.Position.X, TitleCrafting.Position.Y + 30);
+
             CraftingItems[0].sprite.SetInitialScallingAndPosition(scale, position);
             CraftingItems[0].button.ChangePosition(new TGCVector2(InventoryItems[5].sprite.Position.X, position.Y - 10 + (Size.Y - CraftingItems[0].button.SizeText.Y) / 2));
 
@@ -191,11 +205,16 @@ namespace TGC.Group.Model._2D
 
         public void UpdateItemsCrafting()
         {
-            CraftingItems.ForEach(item => {
+            CraftingItems.ForEach(item =>
+            {
                 if (item.sprite.Name != "CATCHFISH")
+                {
                     item.button.Update();
+                }
                 else if (!Learned)
+                {
                     item.button.Update();
+                }
             });
         }
 
@@ -204,17 +223,25 @@ namespace TGC.Group.Model._2D
             TitleInventory.Render();
             TitleCrafting.Render();
             InventoryItems.ForEach(item => { item.sprite.Render(); item.text.Render(); });
-            CraftingItems.ForEach(item => {                
+            CraftingItems.ForEach(item =>
+            {
                 item.sprite.Render();
                 if (item.sprite.Name != "CATCHFISH")
+                {
                     item.button.Render();
+                }
                 else if (!Learned)
-                    item.button.Render();     
+                {
+                    item.button.Render();
+                }
                 else
+                {
                     item.button.ButtonText.Render();
+                }
             });
 
-            CraftingItems.ForEach(item => {
+            CraftingItems.ForEach(item =>
+            {
                 if (FastUtils.IsNumberBetweenInterval(Input.Xpos, (item.sprite.Position.X, item.sprite.Position.X + item.sprite.Size.X)) &&
                     FastUtils.IsNumberBetweenInterval(Input.Ypos, (item.sprite.Position.Y, item.sprite.Position.Y + item.sprite.Size.Y)))
                 {

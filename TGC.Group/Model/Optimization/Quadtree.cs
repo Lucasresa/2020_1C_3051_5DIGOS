@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using TGC.Core.BoundingVolumes;
-using TGC.Core.Camara;
 using TGC.Core.Collision;
 using TGC.Core.Geometry;
 using TGC.Core.Mathematica;
@@ -136,7 +135,9 @@ namespace TGC.Model.Optimization.Quadtree
 
             var distanceToCamera = caja.calculateBoxCenter() - Camera.Position;
             if (TGCVector3.Length(distanceToCamera) > 10000 + caja.calculateBoxRadius())
+            {
                 return;
+            }
 
             var c = TgcCollisionUtils.classifyFrustumAABB(frustum, caja);
 

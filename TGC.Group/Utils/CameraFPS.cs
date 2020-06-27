@@ -17,7 +17,7 @@ namespace TGC.Group.Utils
             public static float ROTATION_SPEED = 0.1f;
             public static TGCVector3 DIRECTION_VIEW = new TGCVector3(0, 0.1f, -1);
         }
-        
+
         private readonly TgcD3dInput Input;
         private TGCMatrix CameraRotation = TGCMatrix.Identity;
 
@@ -38,8 +38,8 @@ namespace TGC.Group.Utils
 
         public override void UpdateCamera(float elapsedTime)
         {
-            if (!Lock) 
-            {                
+            if (!Lock)
+            {
                 Rotation();
                 Cursor.Position = Constants.MOUSE_CENTER;
             }
@@ -49,7 +49,7 @@ namespace TGC.Group.Utils
             var rotacionVectorUP = TGCVector3.TransformNormal(DEFAULT_UP_VECTOR, CameraRotation);
             base.SetCamera(Position, targetPosition, rotacionVectorUP);
         }
-    
+
         private void Rotation()
         {
             Latitude -= -Input.XposRelative * Constants.ROTATION_SPEED;

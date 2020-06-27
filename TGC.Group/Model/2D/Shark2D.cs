@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Drawing;
-using System.Linq;
+﻿using System.Drawing;
 using TGC.Core.Direct3D;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Status;

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TGC.Core.Mathematica;
 using TGC.Group.Model.Objects;
 
@@ -82,14 +78,20 @@ namespace TGC.Group.Model.Status
                 UpdateLife(Constants.LIFE_REDUCE_STEP);
                 DamageAcumulated += Constants.LIFE_REDUCE_STEP;
             }
-                        
+
             if (Character.IsInsideShip)
+            {
                 RecoverLife();
-                        
+            }
+
             if (CanBreathe)
+            {
                 UpdateOxygen(Constants.OXYGEN_INCREMENT_STEP);
+            }
             else
+            {
                 UpdateOxygen(-elapsedTime);
+            }
 
             if (Character.SwimActivated)
             {
@@ -106,7 +108,7 @@ namespace TGC.Group.Model.Status
 
         public void Respawn()
         {
-            Reset();            
+            Reset();
             Character.Respawn();
         }
     }

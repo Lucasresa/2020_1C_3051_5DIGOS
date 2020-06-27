@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace TGC.Group.Model
@@ -40,12 +39,18 @@ namespace TGC.Group.Model
 
         public void AddItem(string itemSelected)
         {
-            if (itemSelected is null) return;
+            if (itemSelected is null)
+            {
+                return;
+            }
 
             Name = itemSelected.Substring(0, itemSelected.IndexOf('_'));
             ItemHistory.Add(Name);
             Items[Name].Add(itemSelected);
-            if (ItemHistory.Count == 6) ItemHistory.Remove(ItemHistory.First());
+            if (ItemHistory.Count == 6)
+            {
+                ItemHistory.Remove(ItemHistory.First());
+            }
         }
 
         public void Cheat()

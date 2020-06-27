@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Windows.Forms;
 using TGC.Core.Mathematica;
 using TGC.Group.Utils;
 
@@ -71,7 +70,7 @@ namespace TGC.Group.Model
             weapon.Font = new Font("Arial Black", 10, FontStyle.Bold);
             divingHelmet.Font = new Font("Arial Black", 10, FontStyle.Bold);
 
-            CountItemsText.Add("CATCHFISH",catchFish);
+            CountItemsText.Add("CATCHFISH", catchFish);
             CountItemsText.Add("WEAPON", weapon);
             CountItemsText.Add("OXYGEN", divingHelmet);
 
@@ -81,7 +80,10 @@ namespace TGC.Group.Model
         public static bool CanCraftWeapon(Dictionary<string, List<string>> items)
         {
             Items = items;
-            if (HasWeapon) return false;
+            if (HasWeapon)
+            {
+                return false;
+            }
 
             if (items["SILVER"].Count >= Constants.WEAPON_COUNT_ORE_SILVER &&
                  items["NORMALCORAL"].Count >= Constants.WEAPON_COUNT_CORAL_NORMAL &&
@@ -120,14 +122,20 @@ namespace TGC.Group.Model
                 HasDivingHelmet = true;
             }
             else
+            {
                 HasDivingHelmet = false;
+            }
+
             return HasDivingHelmet;
         }
 
         public static bool CanCatchFish(Dictionary<string, List<string>> items)
         {
             Items = items;
-            if (CanFish) return false;
+            if (CanFish)
+            {
+                return false;
+            }
 
             if (items["IRON"].Count >= Constants.CATCH_FISH_COUNT_ORE_IRON &&
                  items["SILVER"].Count >= Constants.CATCH_FISH_COUNT_ORE_SILVER &&
@@ -141,6 +149,6 @@ namespace TGC.Group.Model
                 CanFish = true;
             }
             return CanFish;
-        }       
+        }
     }
 }

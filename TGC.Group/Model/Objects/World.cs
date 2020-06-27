@@ -34,7 +34,7 @@ namespace TGC.Group.Model.Objects
         {
             var sizeX = world.HeightmapData.GetLength(0) * SCALEXZ / 2;
             var sizeZ = world.HeightmapData.GetLength(1) * SCALEXZ / 2;
-            
+
             Perimeter perimeter = new Perimeter
             {
                 xMax = sizeX,

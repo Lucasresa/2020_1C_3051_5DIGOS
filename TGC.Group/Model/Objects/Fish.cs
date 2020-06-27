@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using TGC.Core.BoundingVolumes;
+﻿using TGC.Core.BoundingVolumes;
 using TGC.Core.Mathematica;
-using TGC.Core.SceneLoader;
 using TGC.Group.Utils;
 using static TGC.Group.Model.Objects.Common;
 
@@ -38,7 +35,7 @@ namespace TGC.Group.Model.Objects
         public TgcBoundingAxisAlignBox BoundingBox { get { return Mesh.Mesh.BoundingBox; } }
 
         public Fish(Skybox skybox, Terrain terrain, TypeCommon mesh)
-        {           
+        {
             director = new TGCVector3(0, 0, 1);
             Skybox = skybox;
             Terrain = terrain;
@@ -58,9 +55,13 @@ namespace TGC.Group.Model.Objects
         public void Update(float elapsedTime, CameraFPS camera)
         {
             if (IsNearFromPlayer(camera.Position) && time <= 0)
+            {
                 ChangeFishWay();
+            }
             else if (ActivateMove)
+            {
                 PerformNormalMove(elapsedTime, speed: 500, GetFishHeadPosition());
+            }
         }
 
         public void Render() => Mesh.Mesh.Render();
@@ -80,21 +81,38 @@ namespace TGC.Group.Model.Objects
             var YRotationStep = FastMath.PI * 0.03f * elapsedTime;
 
             if (FastUtils.LessThan(distanceToFloor, Constants.FishHeight.X - 40) && FastUtils.LessThan(acumulatedXRotation, Constants.MaxAxisRotation))
+            {
                 XRotation = XRotationStep;
+            }
             else if (FastUtils.IsNumberBetweenInterval(distanceToFloor, Constants.FishHeight) && FastUtils.GreaterThan(acumulatedXRotation, 0.0012f))
+            {
                 XRotation = -XRotationStep;
+            }
+
             if (FastUtils.GreaterThan(distanceToFloor, Constants.FishHeight.Y + 40) && FastUtils.GreaterThan(acumulatedXRotation, -Constants.MaxAxisRotation))
+            {
                 XRotation = -XRotationStep;
+            }
             else if (FastUtils.IsNumberBetweenInterval(distanceToFloor, Constants.FishHeight) && FastUtils.LessThan(acumulatedXRotation, -0.0012f))
+            {
                 XRotation = XRotationStep;
+            }
 
             if (ChangeDirectionTimeCounter <= 0)
+            {
                 if (FastUtils.LessThan(FastMath.Abs(acumulatedYRotation), Constants.MaxYRotation))
+                {
                     YRotation = YRotationStep * RotationYSign();
+                }
                 else
+                {
                     ChangeDirectionTimeCounter = Constants.CHANGE_DIRECTION_TIME;
+                }
+            }
             else
+            {
                 acumulatedYRotation = 0;
+            }
 
             acumulatedXRotation += XRotation;
             acumulatedYRotation += YRotation;

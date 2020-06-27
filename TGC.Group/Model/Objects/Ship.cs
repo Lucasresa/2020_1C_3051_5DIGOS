@@ -1,7 +1,6 @@
 ﻿using BulletSharp;
 using BulletSharp.Math;
 using Microsoft.DirectX.Direct3D;
-using System;
 using System.Drawing;
 using TGC.Core.BulletPhysics;
 using TGC.Core.Geometry;

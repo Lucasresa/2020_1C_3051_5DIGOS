@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TGC.Core.Geometry;
 using TGC.Core.Mathematica;
-using TGC.Core.SceneLoader;
 using TGC.Core.Textures;
 
 namespace TGC.Group.Model.Objects
@@ -16,10 +15,10 @@ namespace TGC.Group.Model.Objects
         public List<TGCSphere> Bubbles = new List<TGCSphere>();
         public List<TGCSphere> BubblesAux = new List<TGCSphere>();
         public List<TGCVector3> Scales = new List<TGCVector3>();
-        private readonly float Speed = 50;        
+        private readonly float Speed = 50;
         private float Time = 0;
         private readonly Random Random;
-        
+
         public Bubble(string mediaDir)
         {
             Random = new Random();
@@ -66,10 +65,13 @@ namespace TGC.Group.Model.Objects
         public void Update(float elapsedTime, MeshBuilder meshBuilder, Skybox skybox)
         {
             Time += elapsedTime;
-            Bubbles.ForEach(bubble => {
+            Bubbles.ForEach(bubble =>
+            {
                 bubble.Transform *= TGCMatrix.Translation(TGCVector3.Up * Speed * elapsedTime);
                 if (bubble.Transform.Origin.Y > 3400)
-                    BubblesAux.Add(bubble);                    
+                {
+                    BubblesAux.Add(bubble);
+                }
             });
             Bubbles.RemoveAll(bubble => BubblesAux.Contains(bubble));
 

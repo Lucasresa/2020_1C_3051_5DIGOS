@@ -1,6 +1,4 @@
-﻿using System.Windows.Forms;
-using TGC.Core.Sound;
-using TGC.Group.Model.Objects;
+﻿using TGC.Core.Sound;
 
 namespace TGC.Group.Model
 {
@@ -78,7 +76,7 @@ namespace TGC.Group.Model
         }
 
         public void PlayMusicAmbient(bool submerge)
-        {    
+        {
             if (submerge)
             {
                 if (JustSubmerge)
@@ -107,8 +105,10 @@ namespace TGC.Group.Model
 
         public void Dispose(TgcMp3Player music)
         {
-            if(music.FileName != null)
+            if (music.FileName != null)
+            {
                 music.closeFile();
+            }
         }
     }
 }

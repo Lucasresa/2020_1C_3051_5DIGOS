@@ -1,11 +1,9 @@
 using BulletSharp;
 using Microsoft.DirectX.Direct3D;
-using System;
 using System.Linq;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Terrain;
-using TGC.Core.Textures;
 using TGC.Group.Utils;
 using static TGC.Group.Model.GameModel;
 
@@ -63,7 +61,8 @@ namespace TGC.Group.Model.Objects
 
         public void SetShader(Effect effect, string technique)
         {
-            skybox.Faces.ToList().ForEach(face => {
+            skybox.Faces.ToList().ForEach(face =>
+            {
                 face.Effect = effect;
                 face.Technique = technique;
             });

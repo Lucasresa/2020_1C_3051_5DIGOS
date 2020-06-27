@@ -119,11 +119,15 @@ namespace TGC.Group.Utils
                     Effect.SetValue("alarmScaleFactor", IntVaivenAlarm.update(ElapsedTime));
                 }
                 else
+                {
                     Effect.Technique = "DivingHelmet";
+                }
             }
 
             if (RenderPDA)
+            {
                 Effect.Technique = "PDA";
+            }
 
             Device.Clear(ClearFlags.Target | ClearFlags.ZBuffer, Color.Black, 1f, 0);
 
@@ -136,13 +140,40 @@ namespace TGC.Group.Utils
 
         public void Dispose()
         {
-            if (FullScreenQuad != null && !FullScreenQuad.Disposed) FullScreenQuad.Dispose();
-            if (Effect != null && !Effect.Disposed) Effect.Dispose();
-            if (AlarmTexture != null && !AlarmTexture.D3dTexture.Disposed) AlarmTexture.dispose();
-            if (RenderTarget2D != null && !RenderTarget2D.Disposed) RenderTarget2D.Dispose();
-            if (DepthStencil != null && !DepthStencil.Disposed) DepthStencil.Dispose();
-            if (OldDepthStencil != null && !OldDepthStencil.Disposed) OldDepthStencil.Dispose();
-            if (OldRenderTarget != null && !OldRenderTarget.Disposed) OldRenderTarget.Dispose();
+            if (FullScreenQuad != null && !FullScreenQuad.Disposed)
+            {
+                FullScreenQuad.Dispose();
+            }
+
+            if (Effect != null && !Effect.Disposed)
+            {
+                Effect.Dispose();
+            }
+
+            if (AlarmTexture != null && !AlarmTexture.D3dTexture.Disposed)
+            {
+                AlarmTexture.dispose();
+            }
+
+            if (RenderTarget2D != null && !RenderTarget2D.Disposed)
+            {
+                RenderTarget2D.Dispose();
+            }
+
+            if (DepthStencil != null && !DepthStencil.Disposed)
+            {
+                DepthStencil.Dispose();
+            }
+
+            if (OldDepthStencil != null && !OldDepthStencil.Disposed)
+            {
+                OldDepthStencil.Dispose();
+            }
+
+            if (OldRenderTarget != null && !OldRenderTarget.Disposed)
+            {
+                OldRenderTarget.Dispose();
+            }
         }
     }
 }

@@ -373,9 +373,14 @@ namespace TGC.Model.Optimization.Quadtree
             {
                 var n = node.models.Length;
                 if (n < minModels)
+                {
                     minModels = n;
+                }
+
                 if (n > maxModels)
+                {
                     maxModels = n;
+                }
             }
             else
             {

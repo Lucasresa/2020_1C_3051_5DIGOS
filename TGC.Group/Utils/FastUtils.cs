@@ -1,5 +1,4 @@
-﻿using BulletSharp;
-using System;
+﻿using System;
 using TGC.Core.Mathematica;
 
 namespace TGC.Group.Utils

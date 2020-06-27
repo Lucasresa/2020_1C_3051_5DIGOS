@@ -1,21 +1,21 @@
-﻿using Microsoft.DirectX.DirectInput;
+﻿using BulletSharp;
+using Microsoft.DirectX.DirectInput;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using TGC.Core.BoundingVolumes;
+using TGC.Core.Geometry;
 using TGC.Core.Input;
-using TGC.Group.Model.Callbacks;
 using TGC.Core.Mathematica;
+using TGC.Core.SceneLoader;
 using TGC.Core.Shaders;
+using TGC.Group.Model.Callbacks;
 using TGC.Group.Model.Objects;
 using TGC.Group.Model.Status;
 using TGC.Group.Utils;
+using TGC.Model.Optimization.Quadtree;
 using static TGC.Group.Model.Objects.Common;
 using Effect = Microsoft.DirectX.Direct3D.Effect;
-using TGC.Core.SceneLoader;
-using TGC.Core.BoundingVolumes;
-using TGC.Model.Optimization.Quadtree;
-using TGC.Core.Geometry;
-using BulletSharp;
 
 namespace TGC.Group.Model
 {
@@ -128,7 +128,7 @@ namespace TGC.Group.Model
         }
 
         public void CreateBulletCallbacks(CharacterStatus characterStatus) =>
-            PhysicalWorld.AddContactPairTest(Shark.Body, Character.Body, 
+            PhysicalWorld.AddContactPairTest(Shark.Body, Character.Body,
                                                 new SharkAttackCallback(Shark, characterStatus, SoundManager));
 
         public void Dispose()
@@ -151,11 +151,13 @@ namespace TGC.Group.Model
             Character.Render();
 
             if (Character.IsInsideShip)
+            {
                 Ship.RenderIndoorShip();
+            }
             else
-            {                
+            {
                 FogShader.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
-                FogShader.SetValue("eyePosition", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));              
+                FogShader.SetValue("eyePosition", TGCVector3.TGCVector3ToFloat4Array(Camera.Position));
                 Ship.RenderOutdoorShip();
                 Skybox.Render(Terrain.SizeWorld());
                 Terrain.Render();
@@ -178,7 +180,7 @@ namespace TGC.Group.Model
             Skybox.Update();
             Shark.Update(elapsedTime);
             Water.Update(elapsedTime, Camera.Position);
-            Terrain.Update(elapsedTime, Camera.Position);            
+            Terrain.Update(elapsedTime, Camera.Position);
             Character.LooksAtTheHatch = Ray.IntersectsWithObject(objectAABB: Ship.Plane.BoundingBox, distance: 500);
             Character.CanAttack = Ray.IntersectsWithObject(objectAABB: Shark.Mesh.BoundingBox, distance: 150);
             Character.NearShip = Ray.IntersectsWithObject(objectAABB: Ship.OutdoorMesh.BoundingBox, distance: 500);
@@ -194,20 +196,29 @@ namespace TGC.Group.Model
             bool NearCoralForSelect = false;
             bool NearOreForSelect = false;
             bool NearFishForSelect = false;
-                        
+
             TypeCommon Coral = Common.ListCorals.Find(coral => NearCoralForSelect = Ray.IntersectsWithObject(objectAABB: coral.Mesh.BoundingBox, distance: 500));
             TypeCommon Ore = Common.ListOres.Find(ore => NearOreForSelect = Ray.IntersectsWithObject(objectAABB: ore.Mesh.BoundingBox, distance: 500));
 
             if (Character.CanFish && Coral.Mesh is null && Ore.Mesh is null)
             {
                 Fish itemFish = Fishes.Find(fish => NearFishForSelect = Ray.IntersectsWithObject(objectAABB: fish.BoundingBox, distance: 500));
-                if (NearFishForSelect) SelectItem(itemFish);
+                if (NearFishForSelect)
+                {
+                    SelectItem(itemFish);
+                }
             }
-            
+
             NearObjectForSelect = NearCoralForSelect || NearOreForSelect || NearFishForSelect;
 
-            if (NearCoralForSelect) SelectItem(Coral);
-            else if (NearOreForSelect) SelectItem(Ore);
+            if (NearCoralForSelect)
+            {
+                SelectItem(Coral);
+            }
+            else if (NearOreForSelect)
+            {
+                SelectItem(Ore);
+            }
         }
 
         private void SelectItem(TypeCommon item)
@@ -219,8 +230,14 @@ namespace TGC.Group.Model
                 ItemSelected = item.Name;
                 PhysicalWorld.RemoveBodyToTheWorld(item.Body);
                 QuadTree.RemoveMesh(item.Mesh);
-                if (item.Name.Contains("CORAL")) Common.ListCorals.Remove(item);
-                else Common.ListOres.Remove(item);
+                if (item.Name.Contains("CORAL"))
+                {
+                    Common.ListCorals.Remove(item);
+                }
+                else
+                {
+                    Common.ListOres.Remove(item);
+                }
             }
         }
 
@@ -234,7 +251,7 @@ namespace TGC.Group.Model
                 Fishes.Remove(item);
                 Common.ListFishes.Remove(item.Mesh);
             }
-        }       
+        }
 
         private List<TgcMesh> GetStaticMeshes()
         {
