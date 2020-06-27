@@ -17,7 +17,7 @@ namespace TGC.Group.Model.Status
             public static int OXYGEN_MIN = 0;
             public static int OXYGEN_INCREASE_BY_CRAFT = 20;
             public static float LIFE_REDUCE_STEP = -0.3f;
-            public static float LIFE_INCREMENT_STEP = 0.01f;
+            public static float LIFE_INCREMENT_STEP = 0.05f;
             public static float OXYGEN_INCREMENT_STEP = 1f;
             public static float DAMAGE_RECEIVED = 30f;
         }
@@ -59,8 +59,17 @@ namespace TGC.Group.Model.Status
             ActiveAlarmForDamageReceived = false;
         }
 
-        public void Update(float elapsedTime)
+        public void Update(float elapsedTime, bool godMode)
         {
+            if (IsDead || godMode)
+            {
+                DamageAcumulated = 0;
+                DamageReceived = 0;
+                Oxygen = OxygenMax;
+                Life = GetLifeMax();
+                return;
+            }
+
             if (DamageReceived > 0)
             {
                 TakeDamage();
@@ -73,7 +82,7 @@ namespace TGC.Group.Model.Status
                 UpdateLife(Constants.LIFE_REDUCE_STEP);
                 DamageAcumulated += Constants.LIFE_REDUCE_STEP;
             }
-
+                        
             if (Character.IsInsideShip)
                 RecoverLife();
                         
@@ -81,6 +90,12 @@ namespace TGC.Group.Model.Status
                 UpdateOxygen(Constants.OXYGEN_INCREMENT_STEP);
             else
                 UpdateOxygen(-elapsedTime);
+
+            if (Character.SwimActivated)
+            {
+                UpdateOxygen(-elapsedTime * 3);
+                Character.SwimActivated = false;
+            }
         }
 
         private void UpdateLife(float value) => Life = FastMath.Clamp(Life + value, Constants.LIFE_MIN, Constants.LIFE_MAX);
@@ -91,7 +106,7 @@ namespace TGC.Group.Model.Status
 
         public void Respawn()
         {
-            Reset();
+            Reset();            
             Character.Respawn();
         }
     }

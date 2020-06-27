@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace TGC.Group.Model
@@ -34,6 +35,7 @@ namespace TGC.Group.Model
                 { "IRON", OreIron },
                 { "SILVER", OreSilver }
             };
+            GameCraftingManager.Items = Items;
         }
 
         public void AddItem(string itemSelected)
@@ -44,6 +46,27 @@ namespace TGC.Group.Model
             ItemHistory.Add(Name);
             Items[Name].Add(itemSelected);
             if (ItemHistory.Count == 6) ItemHistory.Remove(ItemHistory.First());
+        }
+
+        public void Cheat()
+        {
+            for (int index = 0; index < 100; index++)
+            {
+                Items["NORMALCORAL"].Add("cheats");
+                Items["SPIRALCORAL"].Add("cheats");
+                Items["TREECORAL"].Add("cheats");
+                Items["NORMALFISH"].Add("cheats");
+                Items["YELLOWFISH"].Add("cheats");
+                Items["GOLD"].Add("cheats");
+                Items["IRON"].Add("cheats");
+                Items["SILVER"].Add("cheats");
+            }
+        }
+
+        public void Reset()
+        {
+            ItemHistory.RemoveRange(0, ItemHistory.Count);
+            Items.Values.ToList().ForEach(item => item.RemoveRange(0, item.Count));
         }
     }
 }

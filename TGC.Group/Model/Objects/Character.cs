@@ -28,6 +28,7 @@ namespace TGC.Group.Model.Objects
         private readonly BulletRigidBodyFactory RigidBodyFactory = BulletRigidBodyFactory.Instance;
         private readonly TgcD3dInput Input;
         private readonly CameraFPS Camera;
+        private readonly GameSoundManager SoundManager;
         private Vector3 MovementDirection;
         private float prevLatitude;
         private float Gravity => Body.CenterOfMassPosition.Y < 0 ? -200 : 0;
@@ -37,24 +38,27 @@ namespace TGC.Group.Model.Objects
         public bool IsInsideShip => Camera.Position.Y < 0;
         public bool IsOutsideShip => !IsInsideShip;
         public bool IsOutOfWater => Camera.Position.Y > 3605;
+        public bool Submerge => !IsInsideShip && !CanBreathe;
         public bool IsNearSkybox { get; set; }
         public bool CanBreathe => Camera.Position.Y > 3505;
 
         public bool LooksAtTheHatch { get; set; }
         public bool CanAttack { get; set; }
         public bool NearShip { get; set; }
+        public bool SwimActivated { get; set; }
 
         public bool HasWeapon { get; set; }
         public bool HasDivingHelmet { get; set; }
         public bool CanFish { get; set; }
-        public int InHand = 0; // 0-Nada 1-Arma
+        public bool InHand { get; set; }
 
         public bool AttackedShark { get; set; }
 
-        public Character(CameraFPS camera, TgcD3dInput input)
+        public Character(CameraFPS camera, TgcD3dInput input, GameSoundManager soundManager)
         {
             Camera = camera;
             Input = input;
+            SoundManager = soundManager;
             Init();
         }
 
@@ -94,6 +98,11 @@ namespace TGC.Group.Model.Objects
             Movement(director, sideDirector, speed);
             if (Input.keyDown(Key.LeftControl)) Body.LinearVelocity = Vector3.UnitY * -speed;
             if (Input.keyDown(Key.Space)) Body.LinearVelocity = Vector3.UnitY * speed;
+            if (Input.keyDown(Key.LeftShift))
+            {
+                Body.LinearVelocity = MovementDirection * 2;
+                SwimActivated = true;
+            }
         }
 
         public void Respawn() => ChangePosition(Constants.INDOOR_POSITION);
@@ -137,10 +146,13 @@ namespace TGC.Group.Model.Objects
             else
                 OutsideMovement(director, sideDirector, speed);
 
-            if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT) && HasWeapon)
+            if (Input.buttonPressed(TgcD3dInput.MouseButtons.BUTTON_LEFT) && HasWeapon && InHand)
             {
                 Weapon.ActivateAtackMove();
+                SoundManager.WeaponHit.play();
                 AttackedShark = ray.IntersectsWithObject(shark.BoundingBox, 150);
+                if (AttackedShark)
+                    SoundManager.HitToShark.play();
             }
 
             RestartSpeedForKeyUp();
@@ -148,16 +160,10 @@ namespace TGC.Group.Model.Objects
             Body.LinearVelocity += TGCVector3.Up.ToBulletVector3() * Gravity;
             Camera.Position = new TGCVector3(Body.CenterOfMassPosition) + Constants.CAMERA_HEIGHT;
 
-            if (InHand == 1)
-                Weapon.Update(new TGCVector3(director), elapsedTime);
-
-            if (Input.keyPressed(Key.D0))
-                InHand = 0;
-
-            if (HasWeapon && Input.keyPressed(Key.D1))
-                InHand = 1;
+            if (InHand)
+                Weapon.Update(new TGCVector3(director), elapsedTime);                      
         }
 
-        public void Render() { if(InHand == 1) Weapon.Render(); }
+        public void Render() { if(InHand) Weapon.Render(); }
     }
 }

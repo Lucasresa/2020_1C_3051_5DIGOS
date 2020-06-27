@@ -59,8 +59,8 @@ namespace TGC.Group.Utils
             Effect = TGCShaders.Instance.LoadEffect(ShadersDir + "PostProcess.fx");
             Effect.Technique = "DefaultTechnique";
             AlarmTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Textures\alarm.png");
-            DivingHelmetTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Imagenes\divingHelmet.png");
-            PDA = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Imagenes\PDA.png");
+            DivingHelmetTexture = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Images\divingHelmet.png");
+            PDA = TgcTexture.createTexture(D3DDevice.Instance.Device, MediaDir + @"Images\PDA.png");
             IntVaivenAlarm = new InterpoladorVaiven
             {
                 Min = 0,

@@ -84,6 +84,7 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\..\..\..\Windows\Microsoft.NET\DirectX for Managed Code\1.0.2902.0\Microsoft.DirectX.DirectInput.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.DirectX.DirectSound, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
     <Reference Include="Microsoft.VisualC" />
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -115,7 +116,9 @@
     <Compile Include="Model\GameInventoryManager.cs" />
     <Compile Include="Model\GameModel.cs" />
     <Compile Include="Model\GameObjectManager.cs" />
+    <Compile Include="Model\GameSoundManager.cs" />
     <Compile Include="Model\GameState.cs" />
+    <Compile Include="Model\Objects\Bubble.cs" />
     <Compile Include="Model\Objects\Character.cs" />
     <Compile Include="Model\Objects\Common.cs" />
     <Compile Include="Model\Objects\Fish.cs" />
@@ -175,9 +178,7 @@
     <None Include="Shaders\TgcKeyFrameMeshShader.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Shaders\TgcMeshPhongShader.fx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="Shaders\TgcMeshPhongShader.fx" />
     <None Include="Shaders\TgcMeshPointLightShader.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -213,13 +214,26 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Media\alga1-TgcScene.xml" />
+    <Content Include="Media\alga2-TgcScene.xml" />
+    <Content Include="Media\alga3-TgcScene.xml" />
+    <Content Include="Media\alga4-TgcScene.xml" />
+    <Content Include="Media\EspadaDoble-TgcScene.xml" />
+    <Content Include="Media\gold-TgcScene.xml" />
     <Content Include="Media\Heightmaps\oceano.jpg" />
     <Content Include="Media\Heightmaps\suelo.jpg" />
-    <Content Include="Media\Imagenes\barra_oxigeno.png" />
-    <Content Include="Media\Imagenes\barra_vida.png" />
-    <Content Include="Media\Imagenes\mira.png" />
-    <Content Include="Media\Imagenes\PRE_CARGA_INICIAL.jpg" />
-    <Content Include="Media\Imagenes\puntero.png" />
+    <Content Include="Media\Images\barra_oxigeno.png" />
+    <Content Include="Media\Images\barra_vida.png" />
+    <Content Include="Media\Images\mira.png" />
+    <Content Include="Media\Images\PRE_CARGA_INICIAL.jpg" />
+    <Content Include="Media\Images\puntero.png" />
+    <Content Include="Media\iron-TgcScene.xml" />
+    <Content Include="Media\normalCoral-TgcScene.xml" />
+    <Content Include="Media\normalFish-TgcScene.xml" />
+    <Content Include="Media\rock-TgcScene.xml" />
+    <Content Include="Media\shark-TgcScene.xml" />
+    <Content Include="Media\ship-TgcScene.xml" />
+    <Content Include="Media\silver-TgcScene.xml" />
     <Content Include="Media\SkyBox\der.jpg" />
     <Content Include="Media\SkyBox\front.jpg" />
     <Content Include="Media\SkyBox\inf.jpg" />
@@ -227,10 +241,20 @@
     <Content Include="Media\SkyBox\pngwave - copia.png" />
     <Content Include="Media\SkyBox\post.jpg" />
     <Content Include="Media\SkyBox\sup.jpg" />
+    <Content Include="Media\Sounds\Ambient.mp3" />
+    <Content Include="Media\Sounds\CatchFish.wav" />
+    <Content Include="Media\Sounds\Collect.wav" />
+    <Content Include="Media\Sounds\Crafting.wav" />
+    <Content Include="Media\Sounds\Equip.wav" />
+    <Content Include="Media\Sounds\Menu.mp3" />
+    <Content Include="Media\Sounds\SharkDead.wav" />
+    <Content Include="Media\Sounds\SharkNear.wav" />
+    <Content Include="Media\Sounds\UnderWater.mp3" />
+    <Content Include="Media\spiralCoral-TgcScene.xml" />
     <Content Include="Media\Textures\.png" />
     <Content Include="Media\Textures\10010_Coral_v1_Diffuse.jpg" />
     <Content Include="Media\Textures\20943_Spiral_Wire_Coral_v1_diff.JPG" />
-    <Content Include="Media\Textures\agua.jpg" />
+    <Content Include="Media\Textures\alarm.png" />
     <Content Include="Media\Textures\Alga.png" />
     <Content Include="Media\Textures\alga_3.png" />
     <Content Include="Media\Textures\alga_4.png" />
@@ -245,6 +269,7 @@
     <Content Include="Media\Textures\fish.jpg" />
     <Content Include="Media\Textures\float_texColor_de_la_Superficie.png" />
     <Content Include="Media\Textures\fondo_plano.png" />
+    <Content Include="Media\Textures\fund_ship.png" />
     <Content Include="Media\Textures\Hierro.jpg" />
     <Content Include="Media\Textures\LAMPOclusión_Ambiental.jpg" />
     <Content Include="Media\Textures\LAMP_UVS.png" />
@@ -254,10 +279,14 @@
     <Content Include="Media\Textures\normal_float.png" />
     <Content Include="Media\Textures\Plata.jpg" />
     <Content Include="Media\Textures\red.jpg" />
+    <Content Include="Media\Textures\reflex.jpg" />
     <Content Include="Media\Textures\rock_wall.jpg" />
     <Content Include="Media\Textures\sand.jpg" />
+    <Content Include="Media\Textures\water.png" />
+    <Content Include="Media\treeCoral-TgcScene.xml" />
+    <Content Include="Media\yellowFish-TgcScene.xml" />
     <Content Include="subnautica_icono_original.ico" />
-    <None Include="Shaders\SmartTerrain.fx">
+    <None Include="Shaders\Shaders.fx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

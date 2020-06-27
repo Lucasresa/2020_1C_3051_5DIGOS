@@ -54,7 +54,7 @@ namespace TGC.Group.Model
                                                     "\n\t- Ability to collect fish: \n\t\t- Iron x1 - Silver x2 - Normal Coral x3 - Tree Coral x1" +
                                                     "\nTo open and close help, press F1 key.";
             public static TGCVector2 PRESS_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 145) / 2, (SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y - 30) / 2);
-            public static TGCVector2 COLLECT_TEXT_SIZE = new TGCVector2(320, 50);
+            public static TGCVector2 COLLECT_TEXT_SIZE = new TGCVector2(520, 50);
             public static TGCVector2 COLLECT_TEXT_POSITION = new TGCVector2(SCREEN_WIDTH - COLLECT_TEXT_SIZE.X, SCREEN_HEIGHT - COLLECT_TEXT_SIZE.Y - 100);
             public static TGCVector2 SHIP_INDICATOR_SCALE = new TGCVector2(1, 1);
             public static TGCVector2 SHIP_INDICATOR_POSITION = new TGCVector2((SCREEN_WIDTH - 128) / 2, 20);
@@ -83,6 +83,7 @@ namespace TGC.Group.Model
         public float ItemHistoryTime => Constants.TIME_HISTORY_TEXT;
         public float DistanceWithShip { get; set; }
         public bool ActiveInventory { get; set; }
+        public bool ActiveWeapon { get; set; }
         public bool CanCraft { get; set; }
         public bool ShowHelp { get; set; }
         public bool ShowInfoExitShip { get; set; }
@@ -91,6 +92,7 @@ namespace TGC.Group.Model
         public bool ShowInfoItemCollect { get; set; }
         public bool ShowIndicatorShip { get; set; }
         public bool ShowSharkLife { get; set; }
+        public bool GodMode { get; set; }
 
         public List<string> ItemHistory { get; set; }
 
@@ -181,7 +183,7 @@ namespace TGC.Group.Model
             ShipText.SetTextSizeAndPosition(text: Constants.SHIP_EXIT_TEXT, Constants.COMMON_TEXT_SIZE, Constants.PRESS_TEXT_POSITION);
             CollectText.SetTextSizeAndPosition(text: Constants.COLLECT_TEXT, Constants.COMMON_TEXT_SIZE, Constants.PRESS_TEXT_POSITION);
             ItemsHistoryText.Size = Constants.COLLECT_TEXT_SIZE;
-            ItemsHistoryText.Color = Color.Black;
+            ItemsHistoryText.Color = Color.Blue;
         }
 
         public void Render()
@@ -234,7 +236,11 @@ namespace TGC.Group.Model
                 if (CanCraft)
                     Crafting.Render();
                 else
+                {
                     Inventory.Render();
+                    if(ActiveWeapon)
+                        Crafting.RenderItemWeapon();
+                }
                 RenderMousePointer();
             }
         }
@@ -249,7 +255,37 @@ namespace TGC.Group.Model
         public void Update()
         {
             Shark.Update();
-            Character.Update();
+            if (!GodMode)
+                Character.Update();
+            else
+                Character.UpdateForGodMode();
+        }
+        
+        public void UpdateItemWeapon()
+        {
+            if(ActiveWeapon)
+                Crafting.UpdateItemWeapon();
+        }
+        
+        public void UpdateItems(Dictionary<string, List<string>> items)
+        {
+            Crafting.UpdateItems(items);
+            Inventory.UpdateItems(items);
+        }
+
+        public void Reset()
+        {
+            ActiveInventory =
+            ActiveWeapon =
+            CanCraft =
+            ShowHelp =
+            ShowInfoExitShip =
+            ShowInfoEnterShip =
+            NearObjectForSelect =
+            ShowInfoItemCollect =
+            ShowIndicatorShip =
+            ShowSharkLife = false;
+           
         }
     }
 }

@@ -16,7 +16,7 @@ namespace TGC.Group.Model.Objects
             public static string NAME_FISH_YELLOW = "YELLOWFISH";
             public static int QUANTITY_FISH_NORMAL = 20;
             public static int QUANTITY_FISH_YELLOW = 20;
-            public static TGCVector2 FishHeight = new TGCVector2(700, 2000);
+            public static TGCVector2 FishHeight = new TGCVector2(700, 900);
             public static TGCVector3 Scale = new TGCVector3(10, 10, 10);
             public static float MaxYRotation = FastMath.PI_HALF / 1.3f;
             public static float MaxAxisRotation = FastMath.QUARTER_PI;
@@ -24,7 +24,6 @@ namespace TGC.Group.Model.Objects
             public static float CHANGE_DIRECTION_TIME = 3;
         }
 
-        private readonly string MediaDir;
         private TGCVector3 director;
         private float acumulatedXRotation = 0;
         private float acumulatedYRotation = 0;
@@ -38,9 +37,8 @@ namespace TGC.Group.Model.Objects
         public TypeCommon Mesh { get; private set; }
         public TgcBoundingAxisAlignBox BoundingBox { get { return Mesh.Mesh.BoundingBox; } }
 
-        public Fish(string mediaDir, Skybox skybox, Terrain terrain, TypeCommon mesh)
-        {
-            MediaDir = mediaDir;
+        public Fish(Skybox skybox, Terrain terrain, TypeCommon mesh)
+        {           
             director = new TGCVector3(0, 0, 1);
             Skybox = skybox;
             Terrain = terrain;

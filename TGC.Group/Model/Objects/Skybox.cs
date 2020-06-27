@@ -5,6 +5,7 @@ using System.Linq;
 using TGC.Core.Mathematica;
 using TGC.Core.SceneLoader;
 using TGC.Core.Terrain;
+using TGC.Core.Textures;
 using TGC.Group.Utils;
 using static TGC.Group.Model.GameModel;
 
@@ -66,6 +67,7 @@ namespace TGC.Group.Model.Objects
                 face.Effect = effect;
                 face.Technique = technique;
             });
+            skybox.Faces[0].Technique = "Sun";
         }
 
         public void Update() => CalculatePerimeter();

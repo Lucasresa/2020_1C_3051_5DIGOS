@@ -84,8 +84,7 @@ float4 ps_diving_helmet(PS_INPUT_DEFAULT Input) : COLOR0
 {
     float4 renderTarget = tex2D(RenderTarget, Input.Texcoord);
     float4 divingHelmet = tex2D(DivingHelmet2D, Input.Texcoord);
-    
-    return divingHelmet.a < 1 ? renderTarget : divingHelmet;
+    return divingHelmet.a < 0.5 ? renderTarget : divingHelmet;
 }
 
 technique DivingHelmet
@@ -140,7 +139,7 @@ float4 ps_alarm(PS_INPUT_DEFAULT Input) : COLOR0
     float4 alarm = tex2D(sampler_alarm, Input.Texcoord) * alarmScaleFactor;
     float4 divingHelmet = tex2D(DivingHelmet2D, Input.Texcoord);
     
-    return divingHelmet.a < 1 ? renderTarget + alarm : divingHelmet + alarm;
+    return divingHelmet.a < 0.5 ? renderTarget + alarm : divingHelmet + alarm;
 }
 
 technique AlarmTechnique
@@ -234,7 +233,7 @@ float4 ps_PDA(PS_INPUT_DEFAULT Input) : COLOR0
         pda.a = 0.7;
         return pda * 0.2 + Color * 0.2 + renderTarget * 0.6;
     }
-    else if (pda.a < 1)
+    else if (pda.a < 0.3)
         return renderTarget;
     else
         return pda;

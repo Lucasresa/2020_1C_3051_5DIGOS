@@ -32,13 +32,13 @@ namespace TGC.Group.Model.Objects
             public static string NAME_ROCK = "ROCK";
             public static string NAME_NORMAL_FISH = "NORMALFISH";
             public static string NAME_YELLOW_FISH = "YELLOWFISH";
-            public static int QUANTITY_CORAL_NORMAL = 75;
-            public static int QUANTITY_CORAL_TREE = 75;
-            public static int QUANTITY_CORAL_SPIRAL = 75;
-            public static int QUANTITY_ORE_IRON = 75;
-            public static int QUANTITY_ORE_SILVER = 75;
-            public static int QUANTITY_ORE_GOLD = 75;
-            public static int QUANTITY_ROCK = 75;
+            public static int QUANTITY_CORAL_NORMAL = 30;
+            public static int QUANTITY_CORAL_TREE = 30;
+            public static int QUANTITY_CORAL_SPIRAL = 30;
+            public static int QUANTITY_ORE_IRON = 30;
+            public static int QUANTITY_ORE_SILVER = 30;
+            public static int QUANTITY_ORE_GOLD = 30;
+            public static int QUANTITY_ROCK = 30;
             public static int QUANTITY_NORMAL_FISH = 30;
             public static int QUANTITY_YELLOW_FISH = 30;
             public static TGCVector3 Scale = new TGCVector3(10, 10, 10);
@@ -158,7 +158,16 @@ namespace TGC.Group.Model.Objects
         public void SetShader(Effect fogShader, string technique)
         {
             ListCorals.ForEach(coral => { coral.Mesh.Effect = fogShader; coral.Mesh.Technique = technique; });
-            ListOres.ForEach(ore => { ore.Mesh.Effect = fogShader; ore.Mesh.Technique = technique; });
+            ListOres.ForEach(ore => { ore.Mesh.Effect = fogShader;
+                if (ore.Name.ToLower().Contains("gold"))
+                    ore.Mesh.Technique = "Gold";
+                else if (ore.Name.ToLower().Contains("silver"))
+                    ore.Mesh.Technique = "Silver";
+                else if (ore.Name.ToLower().Contains("iron"))
+                    ore.Mesh.Technique = "Iron";
+                else
+                    ore.Mesh.Technique = technique;
+            });
             ListRock.ForEach(rock => { rock.Mesh.Effect = fogShader; rock.Mesh.Technique = technique; });
             ListFishes.ForEach(fish => { fish.Mesh.Effect = fogShader; fish.Mesh.Technique = technique; });
         }

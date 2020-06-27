@@ -68,7 +68,7 @@ namespace TGC.Group.Utils
 
         public void SetImage(string imageNameAndExtension)
         {
-            try { Texture = TgcTexture.createTexture(MediaDir + @"Imagenes\" + imageNameAndExtension); }
+            try { Texture = TgcTexture.createTexture(MediaDir + @"Images\" + imageNameAndExtension); }
             catch { throw new Exception("Sprite image file, not found!"); }
             Name = imageNameAndExtension.Split('.')[0].ToUpper();
         }

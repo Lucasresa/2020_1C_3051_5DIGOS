@@ -31,7 +31,7 @@ namespace TGC.Group.Form
             FormBorderStyle = FormBorderStyle.None;
             WindowState = FormWindowState.Maximized;
 
-            Image = new Bitmap(Game.Default.MediaDirectory + @"Imagenes\PRE_CARGA_INICIAL.jpg");
+            Image = new Bitmap(Game.Default.MediaDirectory + @"Images\PRE_CARGA_INICIAL.jpg");
             panel3D.BackgroundImage = Image;
         }
 

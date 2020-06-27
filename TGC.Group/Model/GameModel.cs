@@ -10,6 +10,7 @@ using TGC.Group.Form;
 using TGC.Group.Model.Objects;
 using TGC.Group.Model.Status;
 using TGC.Group.Utils;
+using Font = System.Drawing.Font;
 
 namespace TGC.Group.Model
 {
@@ -34,13 +35,16 @@ namespace TGC.Group.Model
         private GameState StateMenu;
         private GameState StateHelp;
         private GameState StateExit;
+        private GameState StateGodMode;
         private GameState CurrentState;
 
+        private DrawSprite Title;
         private DrawButton Play;
         private DrawButton Help;
         private DrawButton Exit;
-
-        private DrawSprite Title;
+        private DrawButton ModeGod;
+        
+        private DrawText CraftingStatus;
 
         private GameObjectManager ObjectManager;
         private GameInventoryManager InventoryManager;
@@ -49,14 +53,18 @@ namespace TGC.Group.Model
         private Game2DManager PointerAndInstruction;
         private CharacterStatus CharacterStatus;
         private SharkStatus SharkStatus;
+        private GameSoundManager SoundManager;
 
         private bool ActiveInventory { get; set; }
         private bool ExitGame { get; set; }
         private bool CanCraftObjects => ObjectManager.Character.IsInsideShip;
+        private bool RenderCraftingStatus { get; set; }
+        private bool GodMode { get; set; }
 
         public float TimeToRevive { get; set; }
         public float TimeToAlarm { get; set; }
         public float ItemHistoryTime { get; set; }
+        private float TimeToRenderCraftingStatus = 1;
 
         public GameModel(string mediaDir, string shadersDir) : base(mediaDir, shadersDir) => FixedTickEnable = true;
 
@@ -66,6 +74,8 @@ namespace TGC.Group.Model
             ObjectManager.Dispose();
             Draw2DManager.Dispose();
             Title.Dispose();
+            SoundManager.Dispose();
+            CraftingStatus.Dispose();
         }
 
         public override void Update() => CurrentState.Update();
@@ -80,6 +90,7 @@ namespace TGC.Group.Model
             Camera = camera = new CameraFPS(Input);
             FullQuad = new FullQuad(MediaDir, ShadersDir, ElapsedTime);
             PointerAndInstruction = new Game2DManager(MediaDir);
+            SoundManager = new GameSoundManager(MediaDir, DirectSound);
             InitializerState();
 
             InitializerMenu();
@@ -102,6 +113,11 @@ namespace TGC.Group.Model
             Exit.InitializerButton(text: "Exit", scale: new TGCVector2(0.4f, 0.4f),
                                    position: new TGCVector2(PointerAndInstruction.ScreenWitdh - Help.Size.X - 50, PointerAndInstruction.ScreenHeight - Help.Size.Y - 50),
                                    action: () => CurrentState = StateExit);
+            ModeGod = new DrawButton(MediaDir, Input);
+            ModeGod.InitializerButton(text: "God Mode", scale: new TGCVector2(0.4f, 0.4f), 
+                                      position: new TGCVector2(50, 660),
+                                      action: () => CurrentState = StateGodMode);
+            ModeGod.ButtonText.Position = new TGCVector2(ModeGod.ButtonText.Position.X - 30, ModeGod.ButtonText.Position.Y);
 
             camera.Position = new TGCVector3(1030, 3900, 2500);
             camera.Lock = true;
@@ -109,15 +125,21 @@ namespace TGC.Group.Model
 
         private void InitializerGame()
         {
-            ObjectManager = new GameObjectManager(MediaDir, ShadersDir, camera, Input);
+            ObjectManager = new GameObjectManager(MediaDir, ShadersDir, camera, Input, SoundManager);
             CharacterStatus = new CharacterStatus(ObjectManager.Character);
             SharkStatus = new SharkStatus();
-            EventsManager = new GameEventsManager(ObjectManager.Shark, ObjectManager.Character);
+            EventsManager = new GameEventsManager(ObjectManager.Shark, ObjectManager.Character, SoundManager);
             Draw2DManager = new Game2DManager(MediaDir, CharacterStatus, SharkStatus, Input);
             InventoryManager = new GameInventoryManager();
+            SoundManager.Menu.play(true);
             Draw2DManager.Crafting.CraftingItems[0].button.Action = CraftSkillFish;
             Draw2DManager.Crafting.CraftingItems[1].button.Action = CraftWeapon;
             Draw2DManager.Crafting.CraftingItems[2].button.Action = CraftDivingHelmet;
+            CraftingStatus = new DrawText();
+            CraftingStatus.SetTextSizeAndPosition("Insufficient materials", size: new TGCVector2(400, 100),
+                           position: new TGCVector2(Draw2DManager.ScreenWitdh / 2 , Draw2DManager.ScreenHeight / 2));
+            CraftingStatus.Font = new Font("Arial Black", 15, FontStyle.Bold);
+            CraftingStatus.Color = Color.Crimson;
         }
 
         private void InitializerState()
@@ -146,6 +168,12 @@ namespace TGC.Group.Model
                 Render = RenderMenu
             };
 
+            StateGodMode = new GameState()
+            {
+                Update = UpdateGame,
+                Render = RenderGame
+            };
+
             CurrentState = StateMenu;
         }
 
@@ -154,6 +182,7 @@ namespace TGC.Group.Model
         {
             Play.Invisible = true;
             Help.Invisible = true;
+            ModeGod.Invisible = true;
             PointerAndInstruction.ShowHelp = true;
             UpdateMenu();
         }
@@ -182,6 +211,7 @@ namespace TGC.Group.Model
             Play.Render();
             Help.Render();
             Exit.Render();
+            ModeGod.Render();
 
             PointerAndInstruction.RenderMousePointer();
             PostRender();
@@ -191,6 +221,7 @@ namespace TGC.Group.Model
         {
             Play.Update();
             Help.Update();
+            ModeGod.Update();
             if (CurrentState == StateMenu)
             {
                 Exit.Update();
@@ -203,16 +234,25 @@ namespace TGC.Group.Model
             if (ObjectManager.ShowScene)
             {
                 ObjectManager.Skybox.Update();
-                ObjectManager.Water.Update(ElapsedTime);
+                ObjectManager.Water.Update(ElapsedTime, Camera.Position);
             }
 
-            if (CurrentState == StateGame)
+            if (CurrentState == StateGodMode)
+            {
+                GodMode = true;
+                InventoryManager.Cheat();
+                Draw2DManager.UpdateItems(InventoryManager.Items);
+            }
+
+            if (CurrentState == StateGame || CurrentState == StateGodMode)
             {
                 Play.Dispose();
                 Help.Dispose();
                 Exit.Dispose();
+                ModeGod.Dispose();
                 camera.Lock = false;
-            }
+                SoundManager.Dispose(SoundManager.Menu);
+            }            
         }
         #endregion
 
@@ -222,21 +262,35 @@ namespace TGC.Group.Model
             FullQuad.PreRenderMeshes();
             ObjectManager.Render(Frustum);
             FullQuad.Render();
+            if (RenderCraftingStatus)
+                CraftingStatus.Render();
             Draw2DManager.Render();
             PostRender();
         }
-
+               
         private void UpdateGame()
         {
+            if (Input.keyPressed(Key.F2))
+            {
+                GodMode = !GodMode;
+                if (GodMode)
+                {
+                    InventoryManager.Cheat();
+                    Draw2DManager.UpdateItems(InventoryManager.Items);
+                }
+            }
+            Draw2DManager.GodMode = GodMode;
             if (Input.keyPressed(Key.F1)) Draw2DManager.ShowHelp = !Draw2DManager.ShowHelp;
             ObjectManager.CreateBulletCallbacks(CharacterStatus);
-            if (CharacterStatus.IsDead)
+            if (CharacterStatus.IsDead && !GodMode && !ActiveInventory)
             {
                 TimeToRevive += ElapsedTime;
                 if (TimeToRevive < 5)
                 {
                     FullQuad.SetTime(ElapsedTime);
                     FullQuad.RenderTeleportEffect = true;
+                    Draw2DManager.Reset();
+                    InventoryManager.Reset();
                 }
                 else
                 {
@@ -249,23 +303,31 @@ namespace TGC.Group.Model
             if (Input.keyPressed(Key.I)) Draw2DManager.ActiveInventory = camera.Lock =
                     FullQuad.RenderPDA = ActiveInventory = !ActiveInventory;
             if (!ActiveInventory) UpdateEvents();
+            else Draw2DManager.UpdateItemWeapon();
+            CharacterStatus.Update(ElapsedTime, GodMode);
             ObjectManager.Character.RestartBodySpeed();
             if (Input.keyPressed(Key.E)) ObjectManager.Character.Teleport();
             UpdateFlags();
             UpdateInfoItemCollect();
-            if (Input.keyPressed(Key.P)) ObjectManager.Character.CanFish = ObjectManager.Character.HasWeapon =
-                ObjectManager.Character.HasDivingHelmet = true;
+           
+            if (RenderCraftingStatus)
+            {
+                TimeToRenderCraftingStatus -= ElapsedTime;
+                if (TimeToRenderCraftingStatus < 0)
+                {
+                    RenderCraftingStatus = false;
+                    TimeToRenderCraftingStatus = 1;
+                }
+            }
         }
 
         private void UpdateEvents()
         {
-            ObjectManager.UpdateCharacter(ElapsedTime);
             ObjectManager.Update(ElapsedTime, TimeBetweenUpdates);
             EventsManager.Update(ElapsedTime, ObjectManager.Fishes, SharkStatus);
             InventoryManager.AddItem(ObjectManager.ItemSelected);
             Draw2DManager.ItemHistory = InventoryManager.ItemHistory;
-            ObjectManager.ItemSelected = null;
-            CharacterStatus.Update(ElapsedTime);
+            ObjectManager.ItemSelected = null;            
             FullQuad.RenderAlarmEffect = CharacterStatus.ActiveRenderAlarm;
             Draw2DManager.DistanceWithShip = FastUtils.DistanceBetweenVectors(camera.Position, ObjectManager.Ship.PositionShip);
             Draw2DManager.ShowIndicatorShip = Draw2DManager.DistanceWithShip > 15000 && !ObjectManager.Character.IsInsideShip;
@@ -284,8 +346,7 @@ namespace TGC.Group.Model
             ObjectManager.Shark.DeathMove = SharkStatus.IsDead;
             ObjectManager.Character.AttackedShark = SharkStatus.DamageReceived;
             Draw2DManager.Update();
-            Draw2DManager.Inventory.UpdateItems(InventoryManager.Items);
-            Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
+            Draw2DManager.UpdateItems(InventoryManager.Items);
         }
 
         private void UpdateInfoItemCollect()
@@ -306,8 +367,6 @@ namespace TGC.Group.Model
             Draw2DManager.CanCraft = CanCraftObjects;
             if (CanCraftObjects && Draw2DManager.ActiveInventory)
                 Draw2DManager.Crafting.UpdateItemsCrafting();
-
-
             Draw2DManager.ShowInfoExitShip = ObjectManager.Character.LooksAtTheHatch;
             Draw2DManager.ShowInfoEnterShip = ObjectManager.Character.NearShip;
             Draw2DManager.NearObjectForSelect = ObjectManager.NearObjectForSelect;
@@ -318,7 +377,16 @@ namespace TGC.Group.Model
         {
             ObjectManager.Character.HasWeapon = GameCraftingManager.CanCraftWeapon(InventoryManager.Items);
             if (!ObjectManager.Character.HasWeapon)
-                MessageBox.Show("Insufficient materials");
+                RenderCraftingStatus = true;
+            else
+            {
+                SoundManager.Crafting.play();
+                var textPosition = Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Position;
+                Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Position = new TGCVector2(textPosition.X - 15, textPosition.Y);
+                Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Text = " Equip";
+                Draw2DManager.Crafting.CraftingItems[1].button.Action = Draw2DManager.Crafting.Weapon.button.Action = UseWeapon;
+                Draw2DManager.ActiveWeapon = true;
+            }
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
         }
 
@@ -326,20 +394,46 @@ namespace TGC.Group.Model
         {
             CharacterStatus.HasDivingHelmet = ObjectManager.Character.HasDivingHelmet = GameCraftingManager.CanCraftDivingHelmet(InventoryManager.Items);
             if (CharacterStatus.HasDivingHelmet)
+            {
+                SoundManager.Crafting.play();
                 CharacterStatus.UpdateOxygenMax();
+            }
             else
-                MessageBox.Show("Insufficient materials");
+                RenderCraftingStatus = true;
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
         }
 
         private void CraftSkillFish()
         {
-            ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
+            Draw2DManager.Crafting.Learned = ObjectManager.Character.CanFish = GameCraftingManager.CanCatchFish(InventoryManager.Items);
             if (!ObjectManager.Character.CanFish)
-                MessageBox.Show("Insufficient materials");
+                RenderCraftingStatus = true;
+            else
+            {
+                SoundManager.Crafting.play();
+                Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Text = "Learned";
+                Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Color = Color.Orange;
+                var position = Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Position;
+                Draw2DManager.Crafting.CraftingItems[0].button.ButtonText.Position = new TGCVector2(position.X - 15, position.Y);
+            }
             Draw2DManager.Crafting.UpdateItems(InventoryManager.Items);
         }
 
+        private void UseWeapon()
+        {
+            string text;                       
+            if (ObjectManager.Character.InHand)
+                text = " Equip";
+            else
+                text = "Unequip";
+
+            ObjectManager.Character.InHand = !ObjectManager.Character.InHand;
+            Draw2DManager.Crafting.CraftingItems[1].button.ButtonText.Text = text;
+            Draw2DManager.Crafting.Weapon.button.ButtonText.Text = text;
+            if (ObjectManager.Character.InHand)
+                SoundManager.EquipWeapon.play();
+            ObjectManager.Character.Render();
+        }
         #endregion
     }
 }

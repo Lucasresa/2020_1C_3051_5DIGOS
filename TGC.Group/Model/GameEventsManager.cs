@@ -13,24 +13,25 @@ namespace TGC.Group.Model
 
         private readonly Shark Shark;
         private readonly Character Character;
+        private readonly GameSoundManager SoundManager;
         private float timeBetweenAttacks = Constants.TIME_BETWEEN_ATTACKS;
 
         public bool SharkIsAttacking { get; private set; } = false;
 
-        public GameEventsManager(Shark shark, Character character)
+        public GameEventsManager(Shark shark, Character character, GameSoundManager soundManager)
         {
             Shark = shark;
             Character = character;
+            SoundManager = soundManager;
         }
 
         public void Update(float elapsedTime, List<Fish> fishes, SharkStatus status)
         {
             if (Character.IsOutsideShip)
-            {
                 CheckIfSharkCanAttack(elapsedTime, status);
-            }
             else
             {
+                SoundManager.SharkStalking.stop();
                 Shark.EndSharkAttack();
                 timeBetweenAttacks = Constants.TIME_BETWEEN_ATTACKS;
                 InformFinishFromAttack();
@@ -48,6 +49,7 @@ namespace TGC.Group.Model
                 if (timeBetweenAttacks <= 0)
                 {
                     if (status.IsDead) status.Reset();
+                    SoundManager.SharkAppear.play();
                     Shark.ActivateShark(this);
                     SharkIsAttacking = true;
                     timeBetweenAttacks = Constants.TIME_BETWEEN_ATTACKS;

@@ -1,4 +1,5 @@
 ﻿using Microsoft.DirectX.Direct3D;
+using System;
 using System.Drawing;
 using TGC.Core.BoundingVolumes;
 using TGC.Core.Direct3D;
@@ -15,7 +16,7 @@ namespace TGC.Group.Utils
         public float Width { get; protected set; }
         public float[,] HeightmapData { get; private set; }
         public TGCVector3 Center { get; private set; }
-
+        public TGCVector3 CameraPos { get; private set; }
         private float MaxIntensity = 0;
         private float MinIntensity = -1;
         private TGCVector3 Traslation;
@@ -63,6 +64,11 @@ namespace TGC.Group.Utils
 
             bitmap.Dispose();
             return heightmap;
+        }
+
+        internal void SetCameraPosition(TGCVector3 cameraPos)
+        {
+            CameraPos = cameraPos;
         }
 
         public void SetHeightmapData(float[,] heightmapData)
@@ -166,7 +172,8 @@ namespace TGC.Group.Utils
             var d3dDevice = D3DDevice.Instance.Device;
             var texturesManager = TexturesManager.Instance;
             var shader = TGCShaders.Instance;
-            
+
+            Effect.SetValue("CameraPos", TGCVector3.TGCVector3ToFloat4Array(CameraPos));
             Effect.SetValue("time", TimeForWaves);
 
             texturesManager.clear(1);
@@ -195,6 +202,9 @@ namespace TGC.Group.Utils
             Effect = TGCShaders.Instance.LoadEffect(effectPath);
             Effect.Technique = technique;
             Effect.SetValue("texDiffuseMap", Texture);
+            Effect.SetValue("ColorFog", Color.SteelBlue.ToArgb());
+            Effect.SetValue("StartFogDistance", 2000);
+            Effect.SetValue("EndFogDistance", 10000);
         }
 
         public void SetTimeForWaves(float elapsedTime) => TimeForWaves += elapsedTime;
