@@ -42,14 +42,11 @@ namespace TGC.Group.Model
                                                     "\n\t- To enter the ship, come closer and press the E key." +
                                                     "\nCollect and attack: " +
                                                     "\n\t- To collect the objects, press E key on them." +
-                                                    "\n\t- To attack the shark, right click when you have the weapon." +
-                                                    "\n\t- Once the weapon is crafted, it is equipped and unequipped with the 1 key." +
+                                                    "\n\t- To attack the shark, left click when you have the weapon." +
+                                                    "\n\t- Once the weapon is crafted, you can equip it opening the inventory." +
                                                     "\nInventory: " +
                                                     "\n\t- To open and close, press I key." +
                                                     "\nCrafting inside the ship: " +
-                                                    "\n\t- Weapon craft: \n\t\t- Silver x4 - Normal Coral x3 - Tree Coral x2 \n\t\t- Normal Fish x4 - Yellow Fish x6" +
-                                                    "\n\t- Diving Helmet: \n\t\t- Gold x2 - Iron x3 - Spiral Coral x1 - Tree Coral x2 \n\t\t- Normal Fish x4 - Yellow Fish x1" +
-                                                    "\n\t- Ability to collect fish: \n\t\t- Iron x1 - Silver x2 - Normal Coral x3 - Tree Coral x1" +
                                                     "\nTo open and close help, press F1 key.";
             public static TGCVector2 PRESS_TEXT_POSITION = new TGCVector2((SCREEN_WIDTH - COMMON_TEXT_SIZE.X + 145) / 2, (SCREEN_HEIGHT - COMMON_TEXT_SIZE.Y - 30) / 2);
             public static TGCVector2 COLLECT_TEXT_SIZE = new TGCVector2(520, 50);

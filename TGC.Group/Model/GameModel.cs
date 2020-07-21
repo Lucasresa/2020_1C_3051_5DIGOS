@@ -189,6 +189,7 @@ namespace TGC.Group.Model
         {
             Play.Invisible = false;
             Help.Invisible = false;
+            ModeGod.Invisible = false;
             PointerAndInstruction.ShowHelp = false;
             CurrentState = StateMenu;
             UpdateMenu();
