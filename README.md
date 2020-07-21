@@ -5,7 +5,7 @@
 [![GitHub release](https://img.shields.io/github/release/tgc-utn/tgc-group.svg)](https://github.com/tgc-utn/tgc-group/releases)
 
 ## Descripción
-Proyecto plantilla para los trabajos prácticos de la asignatura electiva [Técnicas de Gráficos por Computadora](http://tgc-utn.github.io/) (TGC) en la carrera de Ingeniería en Sistemas de Información. Universidad Tecnológica Nacional, Facultad Regional Buenos Aires (UTN-FRBA).
+Proyecto para el trabajo práctico de la asignatura electiva [Técnicas de Gráficos por Computadora](http://tgc-utn.github.io/) (TGC) en la carrera de Ingeniería en Sistemas de Información. Universidad Tecnológica Nacional, Facultad Regional Buenos Aires (UTN-FRBA).
 
 ## Requisitos
 * [DirectX 9 SDK](http://www.microsoft.com/en-us/download/details.aspx?displaylang=en&id=6812)
@@ -14,16 +14,19 @@ Proyecto plantilla para los trabajos prácticos de la asignatura electiva [Técn
 * [TGC.Core](https://www.nuget.org/packages/TGC.Core/) (se baja automáticamente al hacer build por primera vez)
 
 ## Integrantes ##
-TGC, Tgcito  |  Apellido, Nombre
------------- | -------------
-<img src="https://github.com/tgc-utn/tgc-utn.github.io/blob/master/images/robotgc.png" height="500"> | <img src="https://github.com/tgc-utn/tgc-utn.github.io/blob/master/images/trofeotp.png" height="500">
+Legajo  |  Apellido, Nombre | Email
+------------ | ------------- | -------------
+155.930-8 | Miguel Romagnoli | migueromagnoli@gmail.com
+159.445-0 | Lucas Resa | lukkitas.1597@gmail.com
+168.128-0 | Manuel Pawlow | manupaw2000@gmail.com
+168.120-5 | Matias goñi | matiaseze98@gmail.com
 
 ## ScreenShot ##
-![screenshot1](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
-![screenshot2](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
-![screenshot3](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
-![screenshot4](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
-![screenshot5](https://github.com/tgc-utn/tgc-group/blob/master/TGC.Group/Media/cajaMadera4.jpg)
+![screenshot1](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/1.png)
+![screenshot2](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/2.png)
+![screenshot3](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/3.png)
+![screenshot4](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/4.png)
+![screenshot5](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/5.png)
 
 ## Game Play ##
 [![Watch the video](https://img.youtube.com/vi/qESIu8ozanU/0.jpg)](https://www.youtube.com/playlist?list=PLRM4L32DjvnazuMl8wZlbpEYL5Qh63ulG)
