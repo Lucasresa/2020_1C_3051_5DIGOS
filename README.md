@@ -22,11 +22,11 @@ Legajo  |  Apellido, Nombre | Email
 168.120-5 | Matias goñi | matiaseze98@gmail.com
 
 ## ScreenShot ##
-![screenshot1](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/1.png)
-![screenshot2](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/2.png)
-![screenshot3](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/3.png)
-![screenshot4](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/4.png)
-![screenshot5](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/5.png)
+![screenshot1](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/1.jpg)
+![screenshot2](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/2.jpg)
+![screenshot3](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/3.jpg)
+![screenshot4](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/4.jpg)
+![screenshot5](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/5.jpg)
 
 ## Game Play ##
 [![Watch the video](https://img.youtube.com/vi/qESIu8ozanU/0.jpg)](https://www.youtube.com/playlist?list=PLRM4L32DjvnazuMl8wZlbpEYL5Qh63ulG)
