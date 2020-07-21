@@ -22,7 +22,7 @@ Legajo  |  Apellido, Nombre | Email
 168.120-5 | Matias goñi | matiaseze98@gmail.com
 
 ## ScreenShot ##
-![screenshot1](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/1.jpg)
+![screenshot1](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/1.jpg?raw=true)
 ![screenshot2](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/2.jpg)
 ![screenshot3](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/3.jpg)
 ![screenshot4](https://github.com/Lucasresa/2020_1C_3051_5DIGOS/tree/master/TGC.Group/Documentacion/4.jpg)
