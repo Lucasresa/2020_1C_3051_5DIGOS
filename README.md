@@ -29,4 +29,4 @@ Legajo  |  Apellido, Nombre | Email
 ![5](https://user-images.githubusercontent.com/27779324/88001915-a0a26c80-cad7-11ea-8333-c7299efb1c11.png)
 
 ## Game Play ##
-[![Watch the video](http://i3.ytimg.com/vi/l0X2xMVmAWM/maxresdefault.jpg)](https://youtu.be/l0X2xMVmAWM)
+[![Watch the video](http://i3.ytimg.com/vi/l0X2xMVmAWM/hqdefault.jpg)](https://youtu.be/l0X2xMVmAWM)
