@@ -1,3 +1,8 @@
+/*
+* Shaders para luces, niebla, movimientos de las olas, burbujas y algas
+*/
+
+
 
 //Matrices de transformacion
 float4x4 matWorld; //Matriz de transformacion World
